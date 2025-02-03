@@ -1,0 +1,9 @@
+org/example/meetlearning/controller/manager/AffiliateListController.class
+org/example/meetlearning/controller/manager/IndependentSitesController.class
+org/example/meetlearning/dao/entity/Student.class
+org/example/meetlearning/dao/mapper/StudentMapper.class
+org/example/meetlearning/vo/student/StudentRequestQueryVo.class
+org/example/meetlearning/vo/common/PageRequestQuery.class
+org/example/meetlearning/util/MD5Util.class
+org/example/meetlearning/common/CustomCorsConfig.class
+org/example/meetlearning/vo/classes/StudentClassAddReqVo.class
