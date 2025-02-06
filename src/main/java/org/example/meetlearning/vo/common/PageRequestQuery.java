@@ -14,6 +14,7 @@ public class PageRequestQuery<T> {
     @Schema(name = "pageSize", description = "起始页数")
     private Integer pageSize = 20;
 
+    @Schema(hidden = true)
     public Page<T> getPageRequest() {
         return Page.of(current, pageSize);
     }

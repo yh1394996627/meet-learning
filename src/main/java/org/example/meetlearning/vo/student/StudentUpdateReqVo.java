@@ -1,5 +1,6 @@
 package org.example.meetlearning.vo.student;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class StudentUpdateReqVo {
     private String name;
 
     @Schema(name = "age", description = "年龄")
-    private BigDecimal age;
+    private Integer age;
 
     @Schema(name = "gender", description = "性别 0男  1女")
     private Integer gender;
@@ -28,8 +29,6 @@ public class StudentUpdateReqVo {
 
     @Schema(name = "recommender", description = "推荐人")
     private String recommender;
-
-
 
 
 }

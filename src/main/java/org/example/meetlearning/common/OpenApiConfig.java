@@ -1,4 +1,3 @@
-/*
 package org.example.meetlearning.common;
 
 import io.swagger.v3.oas.models.media.StringSchema;
@@ -13,8 +12,9 @@ public class OpenApiConfig {
     public OpenApiCustomizer globalHeaderOpenApiCustomiser() {
         return openApi -> {
             openApi.getPaths().values().forEach(pathItem -> pathItem.readOperations().forEach(operation -> {
-                operation.addParametersItem(new Parameter().in("header").name("userCode").description("当前登录用户Code").required(false).schema(new StringSchema()));
+                operation.addParametersItem(new Parameter().in("header").name("userCode").description("当前登录用户编码").required(false).schema(new StringSchema()))
+                        .addParametersItem(new Parameter().in("header").name("userName").description("当前登录用户名称").required(false).schema(new StringSchema()));
             }));
         };
     }
-}*/
+}

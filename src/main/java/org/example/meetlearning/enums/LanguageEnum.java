@@ -1,11 +1,9 @@
 package org.example.meetlearning.enums;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
-public enum LANGUAGE {
+public enum LanguageEnum {
 
     ENGLISH("English"),
     S_CHINESE("简体中文"),
@@ -17,6 +15,7 @@ public enum LANGUAGE {
 
     private final String content;
 
-
-
+    LanguageEnum(String content) {
+        this.content = content;
+    }
 }

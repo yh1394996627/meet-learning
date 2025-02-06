@@ -1,12 +1,16 @@
 package org.example.meetlearning.vo.student;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class StudentListRespVo {
 
     @Schema(name = "recordId", description = "业务ID")

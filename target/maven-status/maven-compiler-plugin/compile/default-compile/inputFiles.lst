@@ -13,13 +13,13 @@
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/common/PageVo.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/classes/StudentClassListRespVo.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/classes/StudentClassQueryVo.java
+/Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/util/BigDecimalUtil.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/service/impl/StudentService.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/student/StudentAddReqVo.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/student/StudentStatementRecordReqVo.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/student/StudentRecordReqVo.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/controller/BaseController.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/common/RespVo.java
-/Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/enums/LANGUAGE.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/enums/GenderEnum.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/classes/StudentClassCommonQueryVo.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/student/StudentUpdateReqVo.java
@@ -27,6 +27,7 @@
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/enums/CourseTypeEnum.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/service/StudentPcService.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/service/BaseService.java
+/Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/enums/LanguageEnum.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/common/SelectValueVo.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/controller/manager/StudentController.java
 /Users/yuhang/workspace/meet-learning/src/main/java/org/example/meetlearning/vo/student/StudentRemarkUpdateReqVo.java

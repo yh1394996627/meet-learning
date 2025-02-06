@@ -39,11 +39,41 @@ public class StudentService {
 
     /**
      * 根据Map参数查询学生信息 分页
+     *
      * @param params 查询参数
      * @return 学生信息
      */
     public Page<Student> findPageByParams(Map<String, Object> params, Page<Student> page) {
         return studentMapper.selectPageByParams(params, page);
+    }
+
+
+    /**
+     * 保存学生信息
+     *
+     * @param student 学生信息
+     */
+    public void save(Student student) {
+        studentMapper.insertSelective(student);
+    }
+
+
+    /**
+     * 更新学生信息
+     *Ï
+     * @param student 学生信息
+     */
+    public void update(Student student) {
+        studentMapper.updateByRecordId(student);
+    }
+
+    /**
+     * 删除学生信息
+     *
+     * @param recordId 学生recordId
+     */
+    public void deletedByRecordId(String recordId) {
+        studentMapper.deletedByRecordId(recordId);
     }
 
 

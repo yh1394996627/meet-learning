@@ -17,8 +17,8 @@ public interface BaseController {
 
 
     @JsonIgnore
-    default String getMacCode() {
-        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("macCode");
+    default String getUserName() {
+        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("userName");
     }
 
 }

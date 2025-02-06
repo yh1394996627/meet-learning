@@ -1,11 +1,15 @@
 package org.example.meetlearning.dao.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Student {
 
     private Integer id;
@@ -34,9 +38,9 @@ public class Student {
 
     private String password;
 
-    private Long age;
+    private Integer age;
 
-    private Boolean gender;
+    private Integer gender;
 
     private String phone;
 

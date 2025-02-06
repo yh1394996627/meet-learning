@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class PageVo<T> extends Page<T> {
@@ -26,7 +27,7 @@ public class PageVo<T> extends Page<T> {
         pageVo.setSize(page.getSize());
         pageVo.setTotal(page.getTotal());
         pageVo.setPages(page.getPages());
-        pageVo.setRecords(page.getRecords());
+        pageVo.setRecords(page.getRecords().stream().map(mapper).collect(Collectors.toList()));
         return pageVo;
     }
 

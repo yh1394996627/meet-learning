@@ -3,6 +3,7 @@ package org.example.meetlearning.vo.student;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import lombok.EqualsAndHashCode;
 import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.vo.common.PageRequestQuery;
 import org.springframework.util.StringUtils;
@@ -10,6 +11,7 @@ import org.springframework.util.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class StudentRequestQueryVo extends PageRequestQuery<Student> {
 

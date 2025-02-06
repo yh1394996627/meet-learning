@@ -208,10 +208,10 @@
         #{password,jdbcType=VARCHAR},
       </if>
       <if test="age != null">
-        #{age,jdbcType=DECIMAL},
+        #{age,jdbcType=INTEGER},
       </if>
       <if test="gender != null">
-        #{gender,jdbcType=BIT},
+        #{gender,jdbcType=INTEGER},
       </if>
       <if test="phone != null">
         #{phone,jdbcType=VARCHAR},
@@ -250,8 +250,7 @@
   </insert>
 
 
-  <update id="updateByPrimaryKeySelective" parameterType="org.example.meetlearning.dao.entity.Student">
-
+  <update id="updateByRecordId" parameterType="org.example.meetlearning.dao.entity.Student">
     update student
     <set>
       <if test="deleted != null">
@@ -327,6 +326,14 @@
         learn_plan = #{learnPlan,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where record_id = #{recordId}
   </update>
+
+
+  <update id="deletedByRecordId">
+    update student
+    set deleted = 1
+    where record_id = #{recordId}
+  </update>
+
 </mapper>

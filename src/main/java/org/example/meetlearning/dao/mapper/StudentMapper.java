@@ -14,10 +14,12 @@ public interface StudentMapper {
 
     Student selectByRecordId(String recordId);
 
-    List<Student> selectByParams(Map<String,Object> params);
+    List<Student> selectByParams(Map<String, Object> params);
 
-    Page<Student> selectPageByParams(Map<String,Object> params, Page<Student> page);
+    Page<Student> selectPageByParams(Map<String, Object> params, Page<Student> page);
 
-    int updateByPrimaryKeySelective(Student record);
+    int updateByRecordId(Student record);
+
+    int deletedByRecordId(String recordId);
 
 }

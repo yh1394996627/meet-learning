@@ -3,6 +3,7 @@ package org.example.meetlearning.vo.student;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.example.meetlearning.enums.LanguageEnum;
 
 @Data
 public class StudentAddReqVo {
@@ -14,7 +15,7 @@ public class StudentAddReqVo {
     private String password;
 
     @Schema(name = "language", description = "语言")
-    private String language;
+    private LanguageEnum language;
 
     @Schema(name = "website", description = "网站")
     private String website;
