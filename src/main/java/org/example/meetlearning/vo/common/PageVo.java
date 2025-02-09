@@ -1,7 +1,6 @@
 package org.example.meetlearning.vo.common;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -31,4 +30,14 @@ public class PageVo<T> extends Page<T> {
         return pageVo;
     }
 
+    public static <T> PageVo<T> getNewPageVo(long current, long size, long total, long pages, List<T> records) {
+        PageVo<T> pageVo = new PageVo<>();
+        pageVo.setRecords(records);
+        pageVo.setTotal(total);
+        pageVo.setSize(size);
+        pageVo.setCurrent(current);
+        pageVo.setPages(pages);
+        return pageVo;
+
+    }
 }

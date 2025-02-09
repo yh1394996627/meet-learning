@@ -5,6 +5,7 @@ org/example/meetlearning/dao/mapper/StudentMapper.class
 org/example/meetlearning/controller/BaseController.class
 org/example/meetlearning/service/StudentPcService.class
 org/example/meetlearning/converter/student/StudentConverterImpl.class
+org/example/meetlearning/vo/classes/StudentClassTotalRespVo.class
 org/example/meetlearning/vo/classes/StudentClassAddReqVo.class
 org/example/meetlearning/controller/manager/AffiliateListController.class
 org/example/meetlearning/vo/student/StudentStatementRecordReqVo.class

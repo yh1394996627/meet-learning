@@ -47,17 +47,17 @@ public class StudentClassListRespVo {
     @Schema(name = "courseLongTime", description = "课程时常 分钟")
     private BigDecimal courseLongTime;
 
-    @Schema(name = "teacherCourseStatus", description = "老师课程状态")
-    private String teacherCourseStatus;
+    @Schema(name = "teacherCourseStatus", description = "老师课程状态 ")
+    private String teacherCourseStatusContent;
 
     @Schema(name = "studentCourseStatus", description = "学生课程状态")
-    private String studentCourseStatus;
+    private String studentCourseStatusContent;
 
     @Schema(name = "courseVideoUrl", description = "课程录像")
     private String courseVideoUrl;
 
     @Schema(name = "isCourseVideoExpired", description = "课程录像是否失效")
-    private String isCourseVideoExpired;
+    private Boolean isCourseVideoExpired;
 
     @Schema(name = "affiliateId", description = "代理商ID")
     private String affiliateId;
