@@ -66,7 +66,7 @@ public class AffiliateListController {
     }
 
     @Operation(summary = "代理商充值记录列表", operationId = "affiliatePage")
-    @PostMapping(value = "v1/affiliate/page")
+    @PostMapping(value = "v1/affiliate/recharge/page")
     public RespVo<PageVo<AffiliateRechargeRecordRespVo>> affiliatePage(AffiliateRechargeQueryVo queryVo) {
         AffiliateRechargeRecordRespVo respVo = new AffiliateRechargeRecordRespVo();
         respVo.setRecordId("123123213");
