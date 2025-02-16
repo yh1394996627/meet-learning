@@ -107,4 +107,14 @@ public class TeacherController {
         return new RespVo<>("设置成功");
     }
 
+    @Operation(summary = "老师工资统计", operationId = "teacherTotal")
+    @PostMapping(value = "v1/teacher/teacher/total")
+    public RespVo<TeacherTotalRespVo> teacherTotal(@RequestBody TeacherQueryVo queryVo) {
+        TeacherTotalRespVo respVo = new TeacherTotalRespVo();
+        respVo.setTotalSalary(new BigDecimal("12"));
+        respVo.setTeacherTotalSalary(new BigDecimal("8"));
+        respVo.setManagerTotalSalary(new BigDecimal("4"));
+        return new RespVo<>(respVo);
+    }
+
 }
