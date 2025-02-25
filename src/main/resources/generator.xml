@@ -10,7 +10,11 @@
         </jdbcConnection>
         <javaModelGenerator targetPackage="org.example.meetlearning.dao.entity" targetProject="src/main/java"/>
         <sqlMapGenerator targetPackage="org.example.meetlearning.mapper" targetProject="src/main/resources"/>
-        <javaClientGenerator type="XMLMAPPER" targetPackage="org.example.meetlearning.dao.mapper" targetProject="src/main/java"/>
-        <table tableName="student" domainObjectName="Student"/>
+        <javaClientGenerator type="XMLMAPPER" targetPackage="org.example.meetlearning.dao.mapper"
+                             targetProject="src/main/java"/>
+        <!--        <table tableName="student" domainObjectName="Student"/>-->
+        <!--        <table tableName="affiliate" domainObjectName="Affiliate"/>-->
+        <!--        <table tableName="user" domainObjectName="User"/>-->
+        <table tableName="tokens_log" domainObjectName="TokensLog"/>
     </context>
 </generatorConfiguration>

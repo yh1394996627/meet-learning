@@ -12,8 +12,8 @@ public class TeacherUpdateReqVo {
     @Schema(name = "recordId", description = "业务ID")
     private String recordId;
 
-    @Schema(name = "avatarUtl", description = "头像路径")
-    private String avatarUtl;
+    @Schema(name = "avatarUrl", description = "头像路径")
+    private String avatarUrl;
 
     @Schema(name = "name", description = "名称")
     private String name;
@@ -34,13 +34,13 @@ public class TeacherUpdateReqVo {
     private BigDecimal creditsPrice ;
 
     @Schema(name = "currencyCode", description = "币种编码")
-    private BigDecimal currencyCode;
+    private String currencyCode;
 
     @Schema(name = "currencyName", description = "币种名称")
-    private BigDecimal currencyName;
+    private String currencyName;
 
     @Schema(name = "currencySymbol", description = "币种符号")
-    private BigDecimal currencySymbol;
+    private String currencySymbol;
 
     @Schema(name = "rate", description = "比率")
     private BigDecimal rate;
@@ -48,11 +48,14 @@ public class TeacherUpdateReqVo {
     @Schema(name = "managerId", description = "管理ID")
     private String managerId;
 
+    @Schema(name = "manager", description = "管理")
+    private String manager;
+
     @Schema(name = "specialties", description = "特点")
     private String specialties;
 
-    @Schema(name = "viewUtl", description = "视频路径")
-    private String viewUtl;
+    @Schema(name = "videoUrl", description = "视频路径")
+    private String videoUrl;
 
 
 }

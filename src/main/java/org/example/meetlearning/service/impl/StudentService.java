@@ -2,6 +2,7 @@ package org.example.meetlearning.service.impl;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.mapper.StudentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
 public class StudentService {
 
-    @Autowired
-    private StudentMapper studentMapper;
+    private final StudentMapper studentMapper;
 
     /**
      * 根据recordId查询学生信息

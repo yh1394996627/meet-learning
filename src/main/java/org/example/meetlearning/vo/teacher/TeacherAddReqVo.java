@@ -25,4 +25,7 @@ public class TeacherAddReqVo {
     @Schema(name = "managerId", description = "管理者ID")
     private String managerId;
 
+    @Schema(name = "manager", description = "管理者")
+    private String manager;
+
 }

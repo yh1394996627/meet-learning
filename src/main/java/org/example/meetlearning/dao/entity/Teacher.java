@@ -1,0 +1,79 @@
+package org.example.meetlearning.dao.entity;
+
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+@Data
+public class Teacher {
+
+    private Long id;
+
+    private Boolean deleted;
+
+    private String creator;
+
+    private String createName;
+
+    private Date createTime;
+
+    private String updator;
+
+    private String updateName;
+
+    private Date updateTime;
+
+    private String recordId;
+
+    private String name;
+
+    private String enName;
+
+    private BigDecimal attendance;
+
+    private BigDecimal rating;
+
+    private BigDecimal price;
+
+    private BigDecimal creditsPrice;
+
+    private BigDecimal rate;
+
+    private BigDecimal confirmedQty;
+
+    private BigDecimal canceledQty;
+
+    private BigDecimal complaintsQty;
+
+    private BigDecimal salaryAmount;
+
+    private String email;
+
+    private String country;
+
+    private String managerId;
+
+    private String manager;
+
+    private String avatarUrl;
+
+    private String language;
+
+    private String currencyCode;
+
+    private String currencyName;
+
+    private String currencySymbol;
+
+    private String specialties;
+
+    private Boolean managerStatus;
+
+    private Boolean testStatus;
+
+    private Boolean enabledStatus;
+
+    private String videoUrl;
+
+}

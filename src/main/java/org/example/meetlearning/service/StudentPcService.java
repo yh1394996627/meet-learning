@@ -2,14 +2,14 @@ package org.example.meetlearning.service;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.converter.student.StudentConverter;
+import org.example.meetlearning.converter.StudentConverter;
 import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.service.impl.StudentService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -18,10 +18,10 @@ import java.util.Date;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class StudentPcService {
 
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
 
 
     /**

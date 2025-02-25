@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.TeacherMapper">
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.Teacher">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updator" jdbcType="VARCHAR" property="updator"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="en_name" jdbcType="VARCHAR" property="enName"/>
+        <result column="attendance" jdbcType="DECIMAL" property="attendance"/>
+        <result column="rating" jdbcType="DECIMAL" property="rating"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="credits_price" jdbcType="DECIMAL" property="creditsPrice"/>
+        <result column="rate" jdbcType="DECIMAL" property="rate"/>
+        <result column="confirmed_qty" jdbcType="DECIMAL" property="confirmedQty"/>
+        <result column="canceled_qty" jdbcType="DECIMAL" property="canceledQty"/>
+        <result column="complaints_qty" jdbcType="DECIMAL" property="complaintsQty"/>
+        <result column="salary_amount" jdbcType="DECIMAL" property="salaryAmount"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="country" jdbcType="VARCHAR" property="country"/>
+        <result column="manager_id" jdbcType="VARCHAR" property="managerId"/>
+        <result column="manager" jdbcType="VARCHAR" property="manager"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
+        <result column="language" jdbcType="VARCHAR" property="language"/>
+        <result column="currency_code" jdbcType="VARCHAR" property="currencyCode"/>
+        <result column="currency_name" jdbcType="VARCHAR" property="currencyName"/>
+        <result column="specialties" jdbcType="VARCHAR" property="specialties"/>
+        <result column="manager_status" jdbcType="BIT" property="managerStatus"/>
+        <result column="test_status" jdbcType="BIT" property="testStatus"/>
+        <result column="enabled_status" jdbcType="BIT" property="enabledStatus"/>
+        <result column="video_url" jdbcType="VARCHAR" property="videoUrl"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , deleted, creator, create_name, create_time, updator, update_name, update_time,
+    record_id, name, en_name, attendance, rating, price, credits_price, rate, confirmed_qty,
+    canceled_qty, complaints_qty, salary_amount, email, country, manager_id, manager,
+    avatar_url, language, currency_code, currency_name, specialties, manager_status, 
+    test_status, enabled_status, video_url
+    </sql>
+
+    <select id="selectByRecordId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        where record_id = #{recordId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectPageByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        <where>
+            deleted = 0
+            <include refid="common_where"/>
+        </where>
+    </select>
+
+    <select id="selectSalaryTotal" resultType="java.math.BigDecimal">
+        select
+        sum(IFNULL(salary_amount, 0)) as totalSalary
+        from teacher
+        <where>
+            deleted = 0
+            <include refid="common_where"/>
+        </where>
+    </select>
+
+    <select id="selectGroupManager" resultType="org.example.meetlearning.vo.common.SelectValueVo">
+        select
+        manager_id as "value",
+        manager as "label"
+        from teacher
+        <where>
+            deleted = 0
+            <include refid="common_where"/>
+            and manager_id is not null and manager_id != ''
+        </where>
+        group by manager_id
+    </select>
+
+    <select id="selectGroupCountry" resultType="org.example.meetlearning.vo.common.SelectValueVo">
+        select
+        country as "value",
+        country as "label"
+        from teacher
+        <where>
+            deleted = 0
+            <include refid="common_where"/>
+        </where>
+        group by country
+    </select>
+
+    <sql id="common_where">
+        <if test="params.managerId != null">
+            and manager_id = #{params.managerId}
+        </if>
+        <if test="params.country != null">
+            and country = #{params.country}
+        </if>
+        <if test="params.testStatus != null">
+            and test_status = #{params.testStatus}
+        </if>
+        <if test="params.enabledStatus != null">
+            and enabled_status = #{params.enabledStatus}
+        </if>
+        <if test="params.managerStatus != null">
+            and manager_status = #{params.managerStatus}
+        </if>
+        <if test="params.keyword != null">
+            and name like LOWER(#{params.keyword})
+        </if>
+    </sql>
+
+    <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.Teacher">
+        insert into teacher
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="deleted != null">
+                deleted,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updator != null">
+                updator,
+            </if>
+            <if test="updateName != null">
+                update_name,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="recordId != null">
+                record_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="enName != null">
+                en_name,
+            </if>
+            <if test="attendance != null">
+                attendance,
+            </if>
+            <if test="rating != null">
+                rating,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="creditsPrice != null">
+                credits_price,
+            </if>
+            <if test="rate != null">
+                rate,
+            </if>
+            <if test="confirmedQty != null">
+                confirmed_qty,
+            </if>
+            <if test="canceledQty != null">
+                canceled_qty,
+            </if>
+            <if test="complaintsQty != null">
+                complaints_qty,
+            </if>
+            <if test="salaryAmount != null">
+                salary_amount,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="country != null">
+                country,
+            </if>
+            <if test="managerId != null">
+                manager_id,
+            </if>
+            <if test="manager != null">
+                manager,
+            </if>
+            <if test="avatarUrl != null">
+                avatar_url,
+            </if>
+            <if test="language != null">
+                language,
+            </if>
+            <if test="currencyCode != null">
+                currency_code,
+            </if>
+            <if test="currencyName != null">
+                currency_name,
+            </if>
+            <if test="specialties != null">
+                specialties,
+            </if>
+            <if test="managerStatus != null">
+                manager_status,
+            </if>
+            <if test="testStatus != null">
+                test_status,
+            </if>
+            <if test="enabledStatus != null">
+                enabled_status,
+            </if>
+            <if test="videoUrl != null">
+                video_url,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updator != null">
+                #{updator,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordId != null">
+                #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="enName != null">
+                #{enName,jdbcType=VARCHAR},
+            </if>
+            <if test="attendance != null">
+                #{attendance,jdbcType=DECIMAL},
+            </if>
+            <if test="rating != null">
+                #{rating,jdbcType=DECIMAL},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="creditsPrice != null">
+                #{creditsPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="rate != null">
+                #{rate,jdbcType=DECIMAL},
+            </if>
+            <if test="confirmedQty != null">
+                #{confirmedQty,jdbcType=DECIMAL},
+            </if>
+            <if test="canceledQty != null">
+                #{canceledQty,jdbcType=DECIMAL},
+            </if>
+            <if test="complaintsQty != null">
+                #{complaintsQty,jdbcType=DECIMAL},
+            </if>
+            <if test="salaryAmount != null">
+                #{salaryAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="managerId != null">
+                #{managerId,jdbcType=VARCHAR},
+            </if>
+            <if test="manager != null">
+                #{manager,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarUrl != null">
+                #{avatarUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="language != null">
+                #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="currencyCode != null">
+                #{currencyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currencyName != null">
+                #{currencyName,jdbcType=VARCHAR},
+            </if>
+            <if test="specialties != null">
+                #{specialties,jdbcType=VARCHAR},
+            </if>
+            <if test="managerStatus != null">
+                #{managerStatus,jdbcType=BIT},
+            </if>
+            <if test="testStatus != null">
+                #{testStatus,jdbcType=BIT},
+            </if>
+            <if test="enabledStatus != null">
+                #{enabledStatus,jdbcType=BIT},
+            </if>
+            <if test="videoUrl != null">
+                #{videoUrl,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.Teacher">
+        update teacher
+        <set>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                create_name = #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updator != null">
+                updator = #{updator,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                update_name = #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordId != null">
+                record_id = #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="enName != null">
+                en_name = #{enName,jdbcType=VARCHAR},
+            </if>
+            <if test="attendance != null">
+                attendance = #{attendance,jdbcType=DECIMAL},
+            </if>
+            <if test="rating != null">
+                rating = #{rating,jdbcType=DECIMAL},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="creditsPrice != null">
+                credits_price = #{creditsPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="rate != null">
+                rate = #{rate,jdbcType=DECIMAL},
+            </if>
+            <if test="confirmedQty != null">
+                confirmed_qty = #{confirmedQty,jdbcType=DECIMAL},
+            </if>
+            <if test="canceledQty != null">
+                canceled_qty = #{canceledQty,jdbcType=DECIMAL},
+            </if>
+            <if test="complaintsQty != null">
+                complaints_qty = #{complaintsQty,jdbcType=DECIMAL},
+            </if>
+            <if test="salaryAmount != null">
+                salary_amount = #{salaryAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="managerId != null">
+                manager_id = #{managerId,jdbcType=VARCHAR},
+            </if>
+            <if test="manager != null">
+                manager = #{manager,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarUrl != null">
+                avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="language != null">
+                language = #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="currencyCode != null">
+                currency_code = #{currencyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="currencyName != null">
+                currency_name = #{currencyName,jdbcType=VARCHAR},
+            </if>
+            <if test="specialties != null">
+                specialties = #{specialties,jdbcType=VARCHAR},
+            </if>
+            <if test="managerStatus != null">
+                manager_status = #{managerStatus,jdbcType=BIT},
+            </if>
+            <if test="testStatus != null">
+                test_status = #{testStatus,jdbcType=BIT},
+            </if>
+            <if test="enabledStatus != null">
+                enabled_status = #{enabledStatus,jdbcType=BIT},
+            </if>
+            <if test="videoUrl != null">
+                video_url = #{videoUrl,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

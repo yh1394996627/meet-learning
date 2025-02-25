@@ -84,7 +84,7 @@ public class ServiceDeployService {
             Process process1 = Runtime.getRuntime().exec(command);
             process1.waitFor();
             System.out.println("重新加载配置完成");
-            command = " ";
+            command = "sudo systemctl restart nginx";
             Process process2 = Runtime.getRuntime().exec(command);
             process2.waitFor();
             System.out.println("重新启动nginx完成");

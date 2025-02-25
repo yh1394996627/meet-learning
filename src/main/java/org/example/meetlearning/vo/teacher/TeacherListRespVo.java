@@ -27,7 +27,7 @@ public class TeacherListRespVo {
     private BigDecimal price;
 
     @Schema(name = "creditsPrice", description = "积分价格")
-    private String creditsPrice;
+    private BigDecimal creditsPrice;
 
     @Schema(name = "rate", description = "比例")
     private BigDecimal rate;

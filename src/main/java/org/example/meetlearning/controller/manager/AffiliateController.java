@@ -1,10 +1,13 @@
 package org.example.meetlearning.controller.manager;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.service.AffiliatePcService;
+import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -20,42 +23,34 @@ import java.util.UUID;
 @Tag(name = "代理商接口")
 @RestController
 @Slf4j
-public class AffiliateListController {
+@AllArgsConstructor
+public class AffiliateController implements BaseController {
+
+    private final AffiliatePcService affiliatePcService;
 
     @Operation(summary = "代理商列表", operationId = "affiliatePage")
     @PostMapping(value = "v1/affiliate/page")
-    public RespVo<PageVo<AffiliateListPageRespVo>> affiliatePage(AffiliateQueryVo queryVo) {
-        AffiliateListPageRespVo reqVo = new AffiliateListPageRespVo();
-        reqVo.setRecordId(UUID.randomUUID().toString());
-        reqVo.setName("11112222");
-        reqVo.setEmail("11113333@qq.com");
-        reqVo.setBalance(new BigDecimal("12"));
-        reqVo.setCommissionRate(new BigDecimal("33"));
-        reqVo.setRate(new BigDecimal("10"));
-        reqVo.setStudentTotal(new BigDecimal("5"));
-        reqVo.setCourseTotal(new BigDecimal("20"));
-        reqVo.setRemark("123123123123123");
-        PageVo<AffiliateListPageRespVo> pageVo = PageVo.getNewPageVo(1, 10, 1, 1, List.of(reqVo));
-        return new RespVo<>(pageVo);
+    public RespVo<PageVo<AffiliateListPageRespVo>> affiliatePage(@RequestBody AffiliateQueryVo queryVo) {
+        return affiliatePcService.affiliatePage(queryVo);
     }
 
     @Operation(summary = "新增代理商", operationId = "affiliateAdd")
     @PostMapping(value = "v1/affiliate/add")
     public RespVo<String> affiliateAdd(@RequestBody AffiliateAddReqVo reqVo) {
-        return new RespVo<>("新增成功");
+        return affiliatePcService.affiliateAdd(getUserCode(), getUserName(), reqVo);
     }
 
 
     @Operation(summary = "修改代理商", operationId = "affiliateUpdate")
     @PostMapping(value = "v1/affiliate/update")
     public RespVo<String> affiliateUpdate(@RequestBody AffiliateUpdateReqVo reqVo) {
-        return new RespVo<>("更新成功");
+        return affiliatePcService.affiliateUpdate(getUserCode(), getUserName(), reqVo);
     }
 
     @Operation(summary = "修改代理商备注", operationId = "affiliateUpdateRemark")
     @PostMapping(value = "v1/affiliate/update/remark")
     public RespVo<String> affiliateUpdateRemark(@RequestBody AffiliateRemarkUpdateReqVo reqVo) {
-        return new RespVo<>("更新备注成功");
+        return affiliatePcService.affiliateUpdateRemark(getUserCode(), getUserName(), reqVo);
     }
 
 
@@ -67,7 +62,7 @@ public class AffiliateListController {
 
     @Operation(summary = "代理商充值记录列表", operationId = "affiliatePage")
     @PostMapping(value = "v1/affiliate/recharge/page")
-    public RespVo<PageVo<AffiliateRechargeRecordRespVo>> affiliatePage(AffiliateRechargeQueryVo queryVo) {
+    public RespVo<PageVo<AffiliateRechargeRecordRespVo>> affiliatePage(@RequestBody AffiliateRechargeQueryVo queryVo) {
         AffiliateRechargeRecordRespVo respVo = new AffiliateRechargeRecordRespVo();
         respVo.setRecordId("123123213");
         respVo.setAmount(new BigDecimal("2"));

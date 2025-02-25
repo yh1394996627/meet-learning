@@ -4,6 +4,7 @@ package org.example.meetlearning.vo.teacher;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.example.meetlearning.dao.entity.Student;
+import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.vo.common.PageRequestQuery;
 import org.springframework.util.StringUtils;
 
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class TeacherQueryVo extends PageRequestQuery<Student> {
+public class TeacherQueryVo extends PageRequestQuery<Teacher> {
 
     @Schema(name = "managerCode", description = "管理者过滤code")
     private String managerCode;
@@ -32,6 +33,24 @@ public class TeacherQueryVo extends PageRequestQuery<Student> {
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
+        if (StringUtils.hasText(managerCode)) {
+            if (StringUtils.pathEquals(managerCode, "ALL")) {
+                params.put("managerId", null);
+            } else if (StringUtils.pathEquals(managerCode, "NO MANAGER")) {
+                params.put("managerStatus", false);
+            } else {
+                params.put("managerId", managerCode);
+            }
+        }
+        if (StringUtils.hasText(countryCode)) {
+            params.put("country", countryCode);
+        }
+        if (teacherType != null) {
+            params.put("testStatus", teacherType);
+        }
+        if (accountStatus != null) {
+            params.put("enabledStatus", accountStatus);
+        }
         if (StringUtils.hasText(keyword)) {
             String keywordStr = "%" + keyword.toLowerCase() + "%";
             params.put("keyword", keywordStr);
