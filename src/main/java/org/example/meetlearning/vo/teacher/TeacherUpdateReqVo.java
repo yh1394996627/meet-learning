@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class TeacherUpdateReqVo {
@@ -51,11 +52,14 @@ public class TeacherUpdateReqVo {
     @Schema(name = "manager", description = "管理")
     private String manager;
 
-    @Schema(name = "specialties", description = "特点")
-    private String specialties;
-
     @Schema(name = "videoUrl", description = "视频路径")
     private String videoUrl;
+
+    @Schema(name = "specialists", description = "教学特点")
+    private List<String> specialists;
+
+    @Schema(name = "about", description = "关于")
+    private String about;
 
 
 }

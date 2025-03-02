@@ -69,7 +69,7 @@ public interface TeacherConverter {
         teacher.setLanguage(reqVo.getLanguage());
         teacher.setCurrencyCode(reqVo.getCurrencyCode());
         teacher.setCurrencyName(reqVo.getCurrencySymbol());
-        teacher.setSpecialties(reqVo.getSpecialties());
+//        teacher.setSpecialties(reqVo.getSpecialties());
         teacher.setVideoUrl(reqVo.getVideoUrl());
         return teacher;
     }
