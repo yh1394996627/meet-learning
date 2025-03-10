@@ -93,15 +93,21 @@ public class TeacherController implements BaseController {
     }
 
     @Operation(summary = "老师类型设置", operationId = "teacherTypeStatusSet")
-    @PostMapping(value = "v1/teacher/teacher/type")
+    @PostMapping(value = "v1/teacher/type")
     public RespVo<String> teacherTypeStatusSet(@RequestBody TeacherStatusReqVo reqVo) {
         return teacherPcService.teacherTypeStatusSet(getUserCode(), getUserName(), reqVo);
     }
 
     @Operation(summary = "老师工资统计", operationId = "teacherTotal")
-    @PostMapping(value = "v1/teacher/teacher/total")
+    @PostMapping(value = "v1/teacher/total")
     public RespVo<TeacherTotalRespVo> teacherTotal(@RequestBody TeacherQueryVo queryVo) {
         return teacherPcService.teacherTotal(queryVo);
+    }
+
+    @Operation(summary = "老师最新评论", operationId = "teacherLastComment")
+    @PostMapping(value = "v1/teacher/last/comment")
+    public RespVo<PageVo<TeacherLastCommentRespVo>> teacherLastComment(@RequestBody TeacherCommentQueryVo queryVo) {
+        return teacherPcService.teacherLastCommentRespVo(getUserCode(), getUserName(), queryVo);
     }
 
 }

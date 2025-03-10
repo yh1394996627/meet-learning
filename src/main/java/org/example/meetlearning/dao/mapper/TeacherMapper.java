@@ -14,7 +14,13 @@ public interface TeacherMapper {
 
     Teacher selectByRecordId(String recordId);
 
+    Teacher selectById(Long id);
+
+    List<BigDecimal> priceGroupList();
+
     Page<Teacher> selectPageByParams(Map<String, Object> params, Page<Teacher> page);
+
+    List<Teacher> selectListByParams(Map<String, Object> params);
 
     /**
      * 查询条件-管理者查询

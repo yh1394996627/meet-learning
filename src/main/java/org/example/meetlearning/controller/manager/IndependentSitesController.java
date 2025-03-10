@@ -8,10 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "独立站点接口")
 @RestController
 @Slf4j
+@Deprecated
 public class IndependentSitesController {
-
-
-
 
 
 }

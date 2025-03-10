@@ -27,6 +27,21 @@ public class TeacherService {
         return teacherMapper.selectByRecordId(recordId);
     }
 
+
+    /**
+     * 根据ID查询老师
+     *
+     * @return 老师信息
+     */
+    public Teacher selectById(Long id) {
+        return teacherMapper.selectById(id);
+    }
+
+    public List<BigDecimal> priceGroupList() {
+        return teacherMapper.priceGroupList();
+    }
+
+
     /**
      * 新增老师
      *
@@ -54,6 +69,10 @@ public class TeacherService {
      */
     public Page<Teacher> selectPageParams(Map<String, Object> params, Page<Teacher> page) {
         return teacherMapper.selectPageByParams(params, page);
+    }
+
+    public List<Teacher> selectListParams(Map<String, Object> params) {
+        return teacherMapper.selectListByParams(params);
     }
 
     /**

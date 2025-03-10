@@ -4,13 +4,15 @@ package org.example.meetlearning.vo.classes;
 import cn.hutool.core.date.DateUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.example.meetlearning.dao.entity.StudentClass;
+import org.example.meetlearning.vo.common.PageRequestQuery;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class StudentClassQueryVo {
+public class StudentClassQueryVo extends PageRequestQuery<StudentClass> {
 
     @Schema(name = "teacherKeyword", description = "老师模糊匹配")
     private String teacherKeyword;

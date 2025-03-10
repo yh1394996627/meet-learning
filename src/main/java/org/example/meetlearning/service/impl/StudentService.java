@@ -27,6 +27,16 @@ public class StudentService {
         return studentMapper.selectByRecordId(recordId);
     }
 
+    /**
+     * 根据ID查询学生信息
+     *
+     * @param id 业务ID
+     * @return 学生信息
+     */
+    public Student findById(Long id) {
+        return studentMapper.selectById(id);
+    }
+
 
     /**
      * 根据Map参数查询学生信息
@@ -61,7 +71,8 @@ public class StudentService {
 
     /**
      * 更新学生信息
-     *Ï
+     * Ï
+     *
      * @param student 学生信息
      */
     public void update(Student student) {

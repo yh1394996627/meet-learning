@@ -40,10 +40,10 @@ public class StudentPcService {
         try {
             Student student = StudentConverter.INSTANCE.toCreateStudent(userCode, userName, reqVo);
             studentService.save(student);
-            return new RespVo<>("新增成功");
+            return new RespVo<>("New successfully added");
         } catch (Exception ex) {
-            log.error("新增失败", ex);
-            return new RespVo<>("新增失败", false, ex.getMessage());
+            log.error("Addition failed", ex);
+            return new RespVo<>("Addition failed", false, ex.getMessage());
         }
     }
 

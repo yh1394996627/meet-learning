@@ -22,6 +22,9 @@ public class TokensLogListRespVo {
     @Schema(name = "balance", description = "余额")
     private BigDecimal balance;
 
+    @Schema(name = "currencyCode", description = "余额")
+    private BigDecimal currencyCode;
+
     @Schema(name = "createTime", description = "创建时间")
     private Date createTime;
 

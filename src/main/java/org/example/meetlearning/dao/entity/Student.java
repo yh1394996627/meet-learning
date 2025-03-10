@@ -1,5 +1,6 @@
 package org.example.meetlearning.dao.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class Student {
 
-    private Integer id;
+    private Long id;
 
     private Boolean deleted;
 
@@ -50,6 +51,8 @@ public class Student {
 
     private BigDecimal consumption;
 
+    private String country;
+
     private Date expirationTime;
 
     private String lastActivities;
@@ -67,5 +70,9 @@ public class Student {
     private String learnPlan;
 
     private String language;
+
+    private String affiliateId;
+
+    private String affiliateName;
 
 }

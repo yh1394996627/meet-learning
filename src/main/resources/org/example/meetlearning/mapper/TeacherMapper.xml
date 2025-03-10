@@ -53,7 +53,33 @@
         where record_id = #{recordId,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        where id = #{id}
+    </select>
+
+    <select id="priceGroupList" resultType="java.math.BigDecimal">
+        select IFNULL(price, 0) as price
+        from teacher
+        where deleted = 0
+        group by price
+        order by price asc
+    </select>
+
+
     <select id="selectPageByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        <where>
+            deleted = 0
+            <include refid="common_where"/>
+        </where>
+    </select>
+
+    <select id="selectListByParams" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from teacher
@@ -114,8 +140,11 @@
         <if test="params.managerStatus != null">
             and manager_status = #{params.managerStatus}
         </if>
+        <if test="params.price != null">
+            and price = #{params.price}
+        </if>
         <if test="params.keyword != null">
-            and name like LOWER(#{params.keyword})
+            and `name` like LOWER(#{params.keyword})
         </if>
     </sql>
 

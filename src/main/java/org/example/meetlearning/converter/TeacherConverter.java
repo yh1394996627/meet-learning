@@ -1,16 +1,11 @@
 package org.example.meetlearning.converter;
 
-import java.math.BigDecimal;
-
+import cn.hutool.core.util.BooleanUtil;
 import org.example.meetlearning.dao.entity.Teacher;
-import org.example.meetlearning.dao.entity.User;
-import org.example.meetlearning.enums.RoleEnum;
-import org.example.meetlearning.util.MD5Util;
 import org.example.meetlearning.vo.teacher.TeacherAddReqVo;
+import org.example.meetlearning.vo.teacher.TeacherLastCommentRespVo;
 import org.example.meetlearning.vo.teacher.TeacherListRespVo;
 import org.example.meetlearning.vo.teacher.TeacherUpdateReqVo;
-import org.example.meetlearning.vo.user.UserInfoRespVo;
-import org.example.meetlearning.vo.user.UserManageOperaReqVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -35,6 +30,8 @@ public interface TeacherConverter {
         respVo.setCanceled(teacher.getCanceledQty());
         respVo.setComplaints(teacher.getComplaintsQty());
         respVo.setSalary(teacher.getSalaryAmount());
+        respVo.setTestStatus(BooleanUtil.isTrue(teacher.getTestStatus()));
+        respVo.setManagerStatus(BooleanUtil.isTrue(teacher.getManagerStatus()));
         return respVo;
     }
 
@@ -72,6 +69,16 @@ public interface TeacherConverter {
 //        teacher.setSpecialties(reqVo.getSpecialties());
         teacher.setVideoUrl(reqVo.getVideoUrl());
         return teacher;
+    }
+
+    default TeacherLastCommentRespVo toCommentVo(String userCode, String userName) {
+        TeacherLastCommentRespVo commentVo = new TeacherLastCommentRespVo();
+        commentVo.setRecordId(UUID.randomUUID().toString());
+        commentVo.setCreator(userCode);
+        commentVo.setCreateName(userName);
+        commentVo.setComment("测试评论");
+        commentVo.setCreateTime(new Date());
+        return commentVo;
     }
 
 }

@@ -23,7 +23,7 @@ public class StudentClassListRespVo {
     private String studentLanguage;
 
     @Schema(name = "teacherId", description = "老师ID")
-    private String teacherId;
+    private Long teacherId;
 
     @Schema(name = "teacherName", description = "老师")
     private String teacherName;
@@ -74,6 +74,5 @@ public class StudentClassListRespVo {
     @Schema(name = "efficientDate", description = "产品最新有效期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date efficientDate;
-
 
 }

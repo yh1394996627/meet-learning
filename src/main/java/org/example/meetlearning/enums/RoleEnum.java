@@ -10,8 +10,8 @@ import java.util.List;
 public enum RoleEnum {
 
     MANAGER("管理员", List.of("studentList", "studentClasses", "affiliateList", "teachersList", "sharedTeachers", "materials", "tokensLog")),
-    AFFILIATE("代理商", new ArrayList<>()),
-    TEACHER("老师", new ArrayList<>()),
+    AFFILIATE("代理商",List.of("studentList","studentClasses","materials","tokensLog")),
+    TEACHER("老师", List.of("bookedClasses", "schedule", "materials", "teachersList")),
     STUDENT("学生", new ArrayList<>());
 
 

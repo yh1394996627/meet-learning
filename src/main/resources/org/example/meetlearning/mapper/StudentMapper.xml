@@ -45,6 +45,13 @@
     where record_id = #{recordId}
   </select>
 
+  <select id="selectById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from student
+    where id = #{id}
+  </select>
+
   <select id="selectByParams" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List"/>

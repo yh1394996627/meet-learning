@@ -8,7 +8,6 @@ import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.util.BigDecimalUtil;
-import org.example.meetlearning.vo.common.KeywordQueryVo;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
@@ -16,7 +15,6 @@ import org.example.meetlearning.vo.teacher.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -87,9 +85,9 @@ public class TeacherPcService {
         try {
             Teacher teacher = TeacherConverter.INSTANCE.toCreateTeacher(userCode, userName, reqVo);
             teacherService.insertEntity(teacher);
-            return new RespVo<>("新增成功");
+            return new RespVo<>("New successfully added");
         } catch (Exception ex) {
-            log.error("新增失败", ex);
+            log.error("Addition failed", ex);
             return new RespVo<>(null, false, ex.getMessage());
         }
     }
@@ -173,4 +171,17 @@ public class TeacherPcService {
         }
     }
 
+
+    public RespVo<PageVo<TeacherLastCommentRespVo>> teacherLastCommentRespVo(String userCode, String userName, TeacherCommentQueryVo queryVo) {
+        try {
+            TeacherLastCommentRespVo vo = TeacherConverter.INSTANCE.toCommentVo(userCode, userName);
+            Page<TeacherLastCommentRespVo> page = new Page<>(queryVo.getCurrent(), queryVo.getPageSize(), 1);
+            page.setRecords(List.of(vo));
+            PageVo<TeacherLastCommentRespVo> pageVo = PageVo.map(page, list -> TeacherConverter.INSTANCE.toCommentVo(userCode, userName));
+            return new RespVo<>(pageVo);
+        } catch (Exception ex) {
+            log.error("Query Error", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+    }
 }

@@ -18,8 +18,6 @@ public class TokensLog {
 
     private String createName;
 
-    private String note;
-
     private Date createTime;
 
     private String updator;
@@ -32,6 +30,8 @@ public class TokensLog {
 
     private BigDecimal quantity;
 
+    private BigDecimal balance;
+
     private BigDecimal amount;
 
     private String currencyCode;
@@ -39,5 +39,7 @@ public class TokensLog {
     private String currencyName;
 
     private String currencySymbol;
+
+    private String note;
 
 }

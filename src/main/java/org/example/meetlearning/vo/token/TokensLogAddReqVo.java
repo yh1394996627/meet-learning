@@ -1,4 +1,4 @@
-package org.example.meetlearning.vo.affiliate;
+package org.example.meetlearning.vo.token;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,10 +7,10 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class AffiliateRechargeReqVo {
+public class TokensLogAddReqVo {
 
-    @Schema(name = "recordId", description = "业务ID")
-    private String recordId;
+    @Schema(name = "userId", description = "业务ID")
+    private String userId;
 
     @Schema(name = "quantity", description = "数量")
     private BigDecimal quantity;
@@ -25,7 +25,7 @@ public class AffiliateRechargeReqVo {
     private String currencySymbol;
 
     @Schema(name = "amount", description = "支付金额")
-    private String amount;
+    private BigDecimal amount;
 
     @Schema(name = "remark", description = "备注")
     private String remark;

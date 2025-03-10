@@ -1,0 +1,26 @@
+package org.example.meetlearning.vo.token;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import org.example.meetlearning.dao.entity.TokensLog;
+import org.example.meetlearning.vo.common.PageRequestQuery;
+import org.springframework.util.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Data
+public class TokensLogQueryVo extends PageRequestQuery<TokensLog> {
+
+    @Schema(name = "userId", description = "用户ID")
+    private String userId;
+
+    @Schema(hidden = true)
+    public Map<String, Object> getParams() {
+        Map<String, Object> params = new HashMap<>();
+        if (StringUtils.hasText(userId)) {
+            params.put("userId", userId);
+        }
+        return params;
+    }
+}

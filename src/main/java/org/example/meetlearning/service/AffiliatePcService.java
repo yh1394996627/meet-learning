@@ -35,10 +35,10 @@ public class AffiliatePcService {
         try {
             Affiliate affiliate = AffiliateConverter.INSTANCE.toCreateAffiliate(userCode, userName, reqVo);
             affiliateService.insertEntity(affiliate);
-            return new RespVo<>("新增成功");
+            return new RespVo<>("New successfully added");
         } catch (Exception ex) {
-            log.error("新增失败", ex);
-            return new RespVo<>(null, false, "新增失败,未知错误!");
+            log.error("Addition failed", ex);
+            return new RespVo<>(null, false, "Addition failed,未知错误!");
         }
     }
 
@@ -50,10 +50,10 @@ public class AffiliatePcService {
             Assert.notNull(affiliate, "为获取到对象信息 recordId" + reqVo.getRecordId());
             affiliate = AffiliateConverter.INSTANCE.toUpdateAffiliate(userCode, userName, affiliate, reqVo);
             affiliateService.insertEntity(affiliate);
-            return new RespVo<>("新增成功");
+            return new RespVo<>("New successfully added");
         } catch (Exception ex) {
-            log.error("新增失败", ex);
-            return new RespVo<>(null, false, "新增失败,未知错误!");
+            log.error("Addition failed", ex);
+            return new RespVo<>(null, false, "Addition failed,未知错误!");
         }
     }
 
@@ -65,10 +65,10 @@ public class AffiliatePcService {
             Assert.notNull(affiliate, "为获取到对象信息 recordId" + reqVo.getRecordId());
             affiliate.setRemark(reqVo.getRemark());
             affiliateService.insertEntity(affiliate);
-            return new RespVo<>("新增成功");
+            return new RespVo<>("New successfully added");
         } catch (Exception ex) {
-            log.error("新增失败", ex);
-            return new RespVo<>(null, false, "新增失败,未知错误!");
+            log.error("Addition failed", ex);
+            return new RespVo<>(null, false, "Addition failed,未知错误!");
         }
     }
 

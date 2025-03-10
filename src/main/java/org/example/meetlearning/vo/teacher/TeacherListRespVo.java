@@ -44,6 +44,11 @@ public class TeacherListRespVo {
     @Schema(name = "salary", description = "薪水")
     private BigDecimal salary;
 
+    @Schema(name = "testStatus", description = "测试老师状态")
+    private Boolean testStatus;
+
+    @Schema(name = "managerStatus", description = "管理员状态")
+    private Boolean managerStatus;
 
 
 

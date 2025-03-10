@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.StudentClassMapper">
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.StudentClass">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+        <result column="is_course_video_expired" jdbcType="BIT" property="isCourseVideoExpired"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="teacher_course_status" jdbcType="INTEGER" property="teacherCourseStatus"/>
+        <result column="student_course_status" jdbcType="INTEGER" property="studentCourseStatus"/>
+        <result column="course_video_url" jdbcType="VARCHAR" property="courseVideoUrl"/>
+        <result column="zoom_id" jdbcType="VARCHAR" property="zoomId"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updator" jdbcType="VARCHAR" property="updator"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
+        <result column="student_id" jdbcType="VARCHAR" property="studentId"/>
+        <result column="student_name" jdbcType="VARCHAR" property="studentName"/>
+        <result column="student_country" jdbcType="VARCHAR" property="studentCountry"/>
+        <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
+        <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
+        <result column="teacher_country" jdbcType="VARCHAR" property="teacherCountry"/>
+        <result column="course_id" jdbcType="VARCHAR" property="courseId"/>
+        <result column="course_name" jdbcType="VARCHAR" property="courseName"/>
+        <result column="course_type" jdbcType="VARCHAR" property="courseType"/>
+        <result column="course_long_time" jdbcType="DECIMAL" property="courseLongTime"/>
+        <result column="course_time" jdbcType="TIMESTAMP" property="courseTime"/>
+        <result column="affiliate_id" jdbcType="VARCHAR" property="affiliateId"/>
+        <result column="affiliate_name" jdbcType="VARCHAR" property="affiliateName"/>
+        <result column="student_consumption" jdbcType="DECIMAL" property="studentConsumption"/>
+        <result column="efficient_date" jdbcType="TIMESTAMP" property="efficientDate"/>
+        <result column="student_balance" jdbcType="DECIMAL" property="studentBalance"/>
+        <result column="class_status" jdbcType="DECIMAL" property="classStatus"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , deleted, is_course_video_expired, creator, teacher_course_status, student_course_status,
+    course_video_url, zoom_id, create_name, create_time, updator, update_name, update_time, 
+    record_id, student_id, student_name, student_country, teacher_id, teacher_name, teacher_country, 
+    course_id, course_name, course_type, course_long_time, course_time, affiliate_id, 
+    affiliate_name, student_consumption, efficient_date, student_balance
+    </sql>
+
+    <select id="selectByRecordId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student_class
+        where record_id = #{record_id}
+    </select>
+
+    <select id="selectByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student_class
+        where deleted = 0
+        <include refid="common_where"/>
+    </select>
+
+    <select id="selectCancelByParams" resultType="java.lang.Long">
+        select
+        count(1)
+        from student_class
+        where deleted = 0 and student_course_status = 1
+        <include refid="common_where"/>
+    </select>
+
+    <select id="selectCompleteByParams" resultType="java.lang.Long">
+        select
+        count(1)
+        from student_class
+        where deleted = 0 and student_course_status = 0
+        <include refid="common_where"/>
+    </select>
+
+    <sql id="common_where">
+        <if test="params.teacherKeyword != null">
+            and teacher_name like #{params.teacherKeyword}
+        </if>
+        <if test="params.studentKeyword != null">
+            and student_name = #{params.studentKeyword}
+        </if>
+        <if test="params.beginDate != null">
+            and create_time >= #{params.beginDate}
+        </if>
+        <if test="params.endDate != null">
+            and create_time &lt;= #{params.endDate}
+        </if>
+    </sql>
+
+    <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.StudentClass">
+        insert into student_class
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="deleted != null">
+                deleted,
+            </if>
+            <if test="isCourseVideoExpired != null">
+                is_course_video_expired,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="teacherCourseStatus != null">
+                teacher_course_status,
+            </if>
+            <if test="studentCourseStatusa != null">
+                student_course_status,
+            </if>
+            <if test="courseVideoUrl != null">
+                course_video_url,
+            </if>
+            <if test="zoomId != null">
+                zoom_id,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updator != null">
+                updator,
+            </if>
+            <if test="updateName != null">
+                update_name,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="recordId != null">
+                record_id,
+            </if>
+            <if test="studentId != null">
+                student_id,
+            </if>
+            <if test="studentName != null">
+                student_name,
+            </if>
+            <if test="studentCountry != null">
+                student_country,
+            </if>
+            <if test="teacherId != null">
+                teacher_id,
+            </if>
+            <if test="teacherName != null">
+                teacher_name,
+            </if>
+            <if test="teacherCountry != null">
+                teacher_country,
+            </if>
+            <if test="courseId != null">
+                course_id,
+            </if>
+            <if test="courseName != null">
+                course_name,
+            </if>
+            <if test="courseType != null">
+                course_type,
+            </if>
+            <if test="courseLongTime != null">
+                course_long_time,
+            </if>
+            <if test="courseTime != null">
+                course_time,
+            </if>
+            <if test="affiliateId != null">
+                affiliate_id,
+            </if>
+            <if test="affiliateName != null">
+                affiliate_name,
+            </if>
+            <if test="studentConsumption != null">
+                student_consumption,
+            </if>
+            <if test="efficientDate != null">
+                efficient_date,
+            </if>
+            <if test="studentBalance != null">
+                student_balance,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="isCourseVideoExpired != null">
+                #{isCourseVideoExpired,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherCourseStatus != null">
+                #{teacherCourseStatus,jdbcType=INTEGER},
+            </if>
+            <if test="studentCourseStatusa != null">
+                #{studentCourseStatusa,jdbcType=INTEGER},
+            </if>
+            <if test="courseVideoUrl != null">
+                #{courseVideoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="zoomId != null">
+                #{zoomId,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updator != null">
+                #{updator,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordId != null">
+                #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="studentId != null">
+                #{studentId,jdbcType=VARCHAR},
+            </if>
+            <if test="studentName != null">
+                #{studentName,jdbcType=VARCHAR},
+            </if>
+            <if test="studentCountry != null">
+                #{studentCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherId != null">
+                #{teacherId,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherName != null">
+                #{teacherName,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherCountry != null">
+                #{teacherCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="courseId != null">
+                #{courseId,jdbcType=VARCHAR},
+            </if>
+            <if test="courseName != null">
+                #{courseName,jdbcType=VARCHAR},
+            </if>
+            <if test="courseType != null">
+                #{courseType,jdbcType=VARCHAR},
+            </if>
+            <if test="courseLongTime != null">
+                #{courseLongTime,jdbcType=DECIMAL},
+            </if>
+            <if test="courseTime != null">
+                #{courseTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="affiliateId != null">
+                #{affiliateId,jdbcType=VARCHAR},
+            </if>
+            <if test="affiliateName != null">
+                #{affiliateName,jdbcType=VARCHAR},
+            </if>
+            <if test="studentConsumption != null">
+                #{studentConsumption,jdbcType=DECIMAL},
+            </if>
+            <if test="efficientDate != null">
+                #{efficientDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="studentBalance != null">
+                #{studentBalance,jdbcType=DECIMAL},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.StudentClass">
+        update student_class
+        <set>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="isCourseVideoExpired != null">
+                is_course_video_expired = #{isCourseVideoExpired,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherCourseStatus != null">
+                teacher_course_status = #{teacherCourseStatus,jdbcType=INTEGER},
+            </if>
+            <if test="studentCourseStatusa != null">
+                student_course_status = #{studentCourseStatusa,jdbcType=INTEGER},
+            </if>
+            <if test="courseVideoUrl != null">
+                course_video_url = #{courseVideoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="zoomId != null">
+                zoom_id = #{zoomId,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                create_name = #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updator != null">
+                updator = #{updator,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                update_name = #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordId != null">
+                record_id = #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="studentId != null">
+                student_id = #{studentId,jdbcType=VARCHAR},
+            </if>
+            <if test="studentName != null">
+                student_name = #{studentName,jdbcType=VARCHAR},
+            </if>
+            <if test="studentCountry != null">
+                student_country = #{studentCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherId != null">
+                teacher_id = #{teacherId,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherName != null">
+                teacher_name = #{teacherName,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherCountry != null">
+                teacher_country = #{teacherCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="courseId != null">
+                course_id = #{courseId,jdbcType=VARCHAR},
+            </if>
+            <if test="courseName != null">
+                course_name = #{courseName,jdbcType=VARCHAR},
+            </if>
+            <if test="courseType != null">
+                course_type = #{courseType,jdbcType=VARCHAR},
+            </if>
+            <if test="courseLongTime != null">
+                course_long_time = #{courseLongTime,jdbcType=DECIMAL},
+            </if>
+            <if test="courseTime != null">
+                course_time = #{courseTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="affiliateId != null">
+                affiliate_id = #{affiliateId,jdbcType=VARCHAR},
+            </if>
+            <if test="affiliateName != null">
+                affiliate_name = #{affiliateName,jdbcType=VARCHAR},
+            </if>
+            <if test="studentConsumption != null">
+                student_consumption = #{studentConsumption,jdbcType=DECIMAL},
+            </if>
+            <if test="efficientDate != null">
+                efficient_date = #{efficientDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="studentBalance != null">
+                student_balance = #{studentBalance,jdbcType=DECIMAL},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>
