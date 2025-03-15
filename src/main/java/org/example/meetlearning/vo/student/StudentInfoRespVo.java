@@ -1,22 +1,13 @@
-package org.example.meetlearning.dao.entity;
+package org.example.meetlearning.vo.student;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Transient;
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class Student {
-
-    private Long id;
-
-    private Boolean deleted;
+public class StudentInfoRespVo {
 
     private String creator;
 
@@ -69,11 +60,5 @@ public class Student {
     private String affiliateId;
 
     private String affiliateName;
-
-    @Transient
-    private String encryption;
-
-    @Transient
-    private String password;
 
 }

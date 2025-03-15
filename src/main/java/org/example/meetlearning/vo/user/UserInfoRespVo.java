@@ -3,6 +3,7 @@ package org.example.meetlearning.vo.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.example.meetlearning.enums.RoleEnum;
 
 import java.util.List;
 
@@ -26,5 +27,8 @@ public class UserInfoRespVo {
 
     @Schema(name = "menus", description = "菜单集合")
     private List<String> menus;
+
+    @Schema(name = "role", description = "角色")
+    private String role;
 
 }

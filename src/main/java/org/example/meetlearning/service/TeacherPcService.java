@@ -6,15 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.Teacher;
+import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
+import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
+import org.example.meetlearning.vo.shared.teacher.SharedTeacherPriceReqVo;
 import org.example.meetlearning.vo.teacher.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,7 +28,7 @@ import java.util.Map;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class TeacherPcService {
+public class TeacherPcService extends BasePcService {
 
     private final TeacherService teacherService;
 
@@ -83,8 +87,14 @@ public class TeacherPcService {
 
     public RespVo<String> teacherAdd(String userCode, String userName, TeacherAddReqVo reqVo) {
         try {
+            Assert.isTrue(StringUtils.hasText(reqVo.getEmail()), "Email cannot be empty");
+            Assert.isTrue(StringUtils.hasText(reqVo.getPassword()), "Password cannot be empty");
             Teacher teacher = TeacherConverter.INSTANCE.toCreateTeacher(userCode, userName, reqVo);
             teacherService.insertEntity(teacher);
+            //创建登陆帐号
+            addUser(userCode, userName, teacher.getRecordId(), teacher.getEmail(), reqVo.getPassword(),
+                    RoleEnum.STUDENT, teacher.getName(), teacher.getEnName(), teacher.getEmail());
+
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("Addition failed", ex);
@@ -184,4 +194,27 @@ public class TeacherPcService {
             return new RespVo<>(null, false, ex.getMessage());
         }
     }
+
+
+    public RespVo<List<SharedTeacherListRespVo>> sharedTeacherList() {
+        List<Teacher> teacherList = teacherService.selectListByAll();
+        List<SharedTeacherListRespVo> respVos = teacherList.stream().map(TeacherConverter.INSTANCE::toSharedTeacherListRespVo).toList();
+        return new RespVo<>(respVos);
+    }
+
+    public RespVo<String> sharedTeacherPriceSet(SharedTeacherPriceReqVo reqVo) {
+        try {
+            Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "RecordId cannot be empty");
+            Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
+            Assert.notNull(teacher, "Teacher information not obtained");
+            teacher.setPrice(reqVo.getPrice());
+            teacherService.updateEntity(teacher);
+            return new RespVo<>("Price setting successful");
+        } catch (Exception ex) {
+            log.error("Price setting failed", ex);
+            return new RespVo<>("Price setting failed", false, ex.getMessage());
+        }
+    }
+
+
 }

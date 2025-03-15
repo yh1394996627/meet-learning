@@ -53,4 +53,11 @@ public class FileController {
         return fileService.uploadFolder(path, file);
     }
 
+
+    @Operation(summary = "清空私人文件夹", operationId = "removeDic")
+    @PostMapping(value = "v1/file/delete")
+    public RespVo<String> removeDic(@RequestBody FileInfoReqVo reqVo) {
+        return fileService.removeDic(reqVo.getPath());
+    }
+
 }

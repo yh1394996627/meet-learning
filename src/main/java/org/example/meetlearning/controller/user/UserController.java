@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.UserPcService;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.UserInfoRespVo;
@@ -19,11 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class UserController {
+public class UserController implements BaseController {
 
     private final UserPcService userPcService;
 
-    @Operation(summary = "管理员注册", operationId = "sharedTeacherList")
+    @Operation(summary = "管理员注册", operationId = "manageRegister")
     @PostMapping(value = "v1/user/manager/register")
     public RespVo<String> manageRegister(@RequestBody UserManageOperaReqVo reqVo) {
         return userPcService.manageRegister(reqVo);
@@ -36,5 +37,11 @@ public class UserController {
         return userPcService.loginUser(reqVo);
     }
 
+
+    @Operation(summary = "用户信息查询", operationId = "login")
+    @PostMapping(value = "v1/user/info")
+    public RespVo<UserInfoRespVo> userInfo() {
+        return userPcService.userInfo(getUserCode());
+    }
 
 }

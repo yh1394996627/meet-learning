@@ -9,9 +9,13 @@ import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -68,9 +72,29 @@ public class AffiliatePcService {
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("Addition failed", ex);
-            return new RespVo<>(null, false, "Addition failed,未知错误!");
+            return new RespVo<>("Addition failed", false, ex.getMessage());
         }
     }
 
+
+    public RespVo<List<SelectValueVo>> affiliateSelect() {
+        try {
+            List<SelectValueVo> selectValueVos = affiliateService.affiliateSelect();
+            return new RespVo<>(selectValueVos);
+        } catch (Exception ex) {
+            log.error("查询失败", ex);
+            return new RespVo<>(null, false, "查询失败,未知错误!");
+        }
+    }
+
+
+    public RespVo<AffiliateDashboardRespVo> dashboard(String userCode) {
+        try {
+            return new RespVo<>(new AffiliateDashboardRespVo(new BigDecimal(12), new BigDecimal(13), new BigDecimal(14)));
+        } catch (Exception ex) {
+            log.error("Query failed", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+    }
 
 }

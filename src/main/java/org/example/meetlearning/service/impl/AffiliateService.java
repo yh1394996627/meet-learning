@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.Affiliate;
 import org.example.meetlearning.dao.mapper.AffiliateMapper;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -44,6 +46,13 @@ public class AffiliateService {
      */
     public Page<Affiliate> findPageByParams(Map<String, Object> params, Page<Affiliate> page) {
         return affiliateMapper.selectByParams(params, page);
+    }
+
+    /**
+     * 代理商选择查询
+     */
+    public List<SelectValueVo> affiliateSelect() {
+        return affiliateMapper.selectValueAll();
     }
 
 }

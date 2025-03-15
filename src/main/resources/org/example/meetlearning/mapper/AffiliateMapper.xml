@@ -1,250 +1,259 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.meetlearning.dao.mapper.AffiliateMapper">
-  <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.Affiliate">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="deleted" jdbcType="BIT" property="deleted" />
-    <result column="creator" jdbcType="VARCHAR" property="creator" />
-    <result column="create_name" jdbcType="VARCHAR" property="createName" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="updator" jdbcType="VARCHAR" property="updator" />
-    <result column="update_name" jdbcType="VARCHAR" property="updateName" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="record_id" jdbcType="VARCHAR" property="recordId" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="en_name" jdbcType="VARCHAR" property="enName" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="balance" jdbcType="DECIMAL" property="balance" />
-    <result column="commission_rate" jdbcType="DECIMAL" property="commissionRate" />
-    <result column="rate" jdbcType="DECIMAL" property="rate" />
-    <result column="student_total" jdbcType="DECIMAL" property="studentTotal" />
-    <result column="course_total" jdbcType="DECIMAL" property="courseTotal" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="recommender_id" jdbcType="VARCHAR" property="recommenderId" />
-    <result column="recommender" jdbcType="VARCHAR" property="recommender" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.Affiliate">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updator" jdbcType="VARCHAR" property="updator"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="en_name" jdbcType="VARCHAR" property="enName"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="balance" jdbcType="DECIMAL" property="balance"/>
+        <result column="commission_rate" jdbcType="DECIMAL" property="commissionRate"/>
+        <result column="rate" jdbcType="DECIMAL" property="rate"/>
+        <result column="student_total" jdbcType="DECIMAL" property="studentTotal"/>
+        <result column="course_total" jdbcType="DECIMAL" property="courseTotal"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="recommender_id" jdbcType="VARCHAR" property="recommenderId"/>
+        <result column="recommender" jdbcType="VARCHAR" property="recommender"/>
+    </resultMap>
     <sql id="Base_Column_List">
-    id, deleted, creator, create_name, create_time, updator, update_name, update_time, 
+        id
+        , deleted, creator, create_name, create_time, updator, update_name, update_time,
     record_id, name, en_name, email, balance, commission_rate, rate, student_total, course_total, 
     remark, recommender_id, recommender
-  </sql>
+    </sql>
 
-  <select id="selectByRecordId" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"/>
-    from affiliate
-    where record_id = #{recordId,jdbcType=VARCHAR}
-  </select>
+    <select id="selectByRecordId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from affiliate
+        where record_id = #{recordId,jdbcType=VARCHAR}
+    </select>
 
-  <select id="selectByParams" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"/>
-    from affiliate
-    where deleted = 0
-    <include refid="common_where"/>
-  </select>
+    <select id="selectValueAll" resultType="org.example.meetlearning.vo.common.SelectValueVo">
+        select record_id as value,
+    `name` as label
+        from affiliate
+        where deleted = 0 and name is not null
+        order by name asc;
+    </select>
+
+    <select id="selectByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from affiliate
+        where deleted = 0
+        <include refid="common_where"/>
+    </select>
 
 
-  <sql id="common_where">
-    <if test="params.keyword != null">
-      and (name like LOWER(#{params.keyword}) or email like LOWER(#{params.keyword}))
-    </if>
-  </sql>
+    <sql id="common_where">
+        <if test="params.keyword != null">
+            and (name like LOWER(#{params.keyword}) or email like LOWER(#{params.keyword}))
+        </if>
+    </sql>
 
-  <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.Affiliate">
-    insert into affiliate
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="deleted != null">
-        deleted,
-      </if>
-      <if test="creator != null">
-        creator,
-      </if>
-      <if test="createName != null">
-        create_name,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updator != null">
-        updator,
-      </if>
-      <if test="updateName != null">
-        update_name,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="recordId != null">
-        record_id,
-      </if>
-      <if test="name != null">
-        name,
-      </if>
-      <if test="enName != null">
-        en_name,
-      </if>
-      <if test="email != null">
-        email,
-      </if>
-      <if test="balance != null">
-        balance,
-      </if>
-      <if test="commissionRate != null">
-        commission_rate,
-      </if>
-      <if test="rate != null">
-        rate,
-      </if>
-      <if test="studentTotal != null">
-        student_total,
-      </if>
-      <if test="courseTotal != null">
-        course_total,
-      </if>
-      <if test="remark != null">
-        remark,
-      </if>
-      <if test="recommenderId != null">
-        recommender_id,
-      </if>
-      <if test="recommender != null">
-        recommender,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="deleted != null">
-        #{deleted,jdbcType=BIT},
-      </if>
-      <if test="creator != null">
-        #{creator,jdbcType=VARCHAR},
-      </if>
-      <if test="createName != null">
-        #{createName,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updator != null">
-        #{updator,jdbcType=VARCHAR},
-      </if>
-      <if test="updateName != null">
-        #{updateName,jdbcType=VARCHAR},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="recordId != null">
-        #{recordId,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="enName != null">
-        #{enName,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null">
-        #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="balance != null">
-        #{balance,jdbcType=DECIMAL},
-      </if>
-      <if test="commissionRate != null">
-        #{commissionRate,jdbcType=DECIMAL},
-      </if>
-      <if test="rate != null">
-        #{rate,jdbcType=DECIMAL},
-      </if>
-      <if test="studentTotal != null">
-        #{studentTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="courseTotal != null">
-        #{courseTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="remark != null">
-        #{remark,jdbcType=VARCHAR},
-      </if>
-      <if test="recommenderId != null">
-        #{recommenderId,jdbcType=VARCHAR},
-      </if>
-      <if test="recommender != null">
-        #{recommender,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
+    <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.Affiliate">
+        insert into affiliate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="deleted != null">
+                deleted,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updator != null">
+                updator,
+            </if>
+            <if test="updateName != null">
+                update_name,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="recordId != null">
+                record_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="enName != null">
+                en_name,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="balance != null">
+                balance,
+            </if>
+            <if test="commissionRate != null">
+                commission_rate,
+            </if>
+            <if test="rate != null">
+                rate,
+            </if>
+            <if test="studentTotal != null">
+                student_total,
+            </if>
+            <if test="courseTotal != null">
+                course_total,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="recommenderId != null">
+                recommender_id,
+            </if>
+            <if test="recommender != null">
+                recommender,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updator != null">
+                #{updator,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordId != null">
+                #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="enName != null">
+                #{enName,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="balance != null">
+                #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="commissionRate != null">
+                #{commissionRate,jdbcType=DECIMAL},
+            </if>
+            <if test="rate != null">
+                #{rate,jdbcType=DECIMAL},
+            </if>
+            <if test="studentTotal != null">
+                #{studentTotal,jdbcType=DECIMAL},
+            </if>
+            <if test="courseTotal != null">
+                #{courseTotal,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="recommenderId != null">
+                #{recommenderId,jdbcType=VARCHAR},
+            </if>
+            <if test="recommender != null">
+                #{recommender,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
 
-  <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.Affiliate">
-    <!--
-      WARNING - @mbg.generated
-      This element is automatically generated by MyBatis Generator, do not modify.
-      This element was generated on Thu Feb 13 00:19:03 CST 2025.
-    -->
-    update affiliate
-    <set>
-      <if test="deleted != null">
-        deleted = #{deleted,jdbcType=BIT},
-      </if>
-      <if test="creator != null">
-        creator = #{creator,jdbcType=VARCHAR},
-      </if>
-      <if test="createName != null">
-        create_name = #{createName,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updator != null">
-        updator = #{updator,jdbcType=VARCHAR},
-      </if>
-      <if test="updateName != null">
-        update_name = #{updateName,jdbcType=VARCHAR},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="recordId != null">
-        record_id = #{recordId,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null">
-        name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="enName != null">
-        en_name = #{enName,jdbcType=VARCHAR},
-      </if>
-      <if test="email != null">
-        email = #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="balance != null">
-        balance = #{balance,jdbcType=DECIMAL},
-      </if>
-      <if test="commissionRate != null">
-        commission_rate = #{commissionRate,jdbcType=DECIMAL},
-      </if>
-      <if test="rate != null">
-        rate = #{rate,jdbcType=DECIMAL},
-      </if>
-      <if test="studentTotal != null">
-        student_total = #{studentTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="courseTotal != null">
-        course_total = #{courseTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="remark != null">
-        remark = #{remark,jdbcType=VARCHAR},
-      </if>
-      <if test="recommenderId != null">
-        recommender_id = #{recommenderId,jdbcType=VARCHAR},
-      </if>
-      <if test="recommender != null">
-        recommender = #{recommender,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+    <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.Affiliate">
+        <!--
+          WARNING - @mbg.generated
+          This element is automatically generated by MyBatis Generator, do not modify.
+          This element was generated on Thu Feb 13 00:19:03 CST 2025.
+        -->
+        update affiliate
+        <set>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                create_name = #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updator != null">
+                updator = #{updator,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                update_name = #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordId != null">
+                record_id = #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="enName != null">
+                en_name = #{enName,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="balance != null">
+                balance = #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="commissionRate != null">
+                commission_rate = #{commissionRate,jdbcType=DECIMAL},
+            </if>
+            <if test="rate != null">
+                rate = #{rate,jdbcType=DECIMAL},
+            </if>
+            <if test="studentTotal != null">
+                student_total = #{studentTotal,jdbcType=DECIMAL},
+            </if>
+            <if test="courseTotal != null">
+                course_total = #{courseTotal,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="recommenderId != null">
+                recommender_id = #{recommenderId,jdbcType=VARCHAR},
+            </if>
+            <if test="recommender != null">
+                recommender = #{recommender,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

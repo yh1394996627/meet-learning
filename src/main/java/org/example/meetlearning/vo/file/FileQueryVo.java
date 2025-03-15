@@ -22,4 +22,7 @@ public class FileQueryVo {
     @Schema(name = "userId", description = "用户ID 私有文件夹用")
     private String userId;
 
+    @Schema(name = "search", description = "模糊匹配")
+    private String search;
+
 }

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.StudentPcService;
 import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,13 +58,10 @@ public class StudentController implements BaseController {
         return studentPcService.studentRemarkUpdate(reqVo);
     }
 
-
-    @Operation(summary = "查询课时币记录", operationId = "studentRemarkUpdate")
-    @PostMapping(value = "v1/student/statement/record/page")
-    public RespVo<Page<StudentStatementRecordReqVo>> studentStatementRecordPage(@RequestBody StudentRecordReqVo reqVo) {
-
-        return new RespVo<>(null);
+    @Operation(summary = "查询学生详细信息", operationId = "studentInfo")
+    @PostMapping(value = "v1/student/info")
+    public RespVo<StudentInfoRespVo> studentInfo(@RequestBody RecordIdQueryVo reqVo) {
+        return studentPcService.studentInfo(reqVo);
     }
-
 
 }

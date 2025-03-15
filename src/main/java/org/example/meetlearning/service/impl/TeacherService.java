@@ -95,4 +95,11 @@ public class TeacherService {
     public BigDecimal selectSalaryTotal(Map<String, Object> params) {
         return teacherMapper.selectSalaryTotal(params);
     }
+
+    /**
+     * 查询所有老师
+     */
+    public List<Teacher> selectListByAll() {
+        return teacherMapper.selectListByAll();
+    }
 }

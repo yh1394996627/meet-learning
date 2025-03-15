@@ -31,13 +31,13 @@ public class StudentClassController implements BaseController {
 
     @Operation(summary = "学生预约记录列表", operationId = "studentClassPage")
     @PostMapping(value = "v1/student/class/page")
-    public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
+    public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(@RequestBody StudentClassQueryVo queryVo) {
         return studentClassPcService.studentClassPage(queryVo);
     }
 
     @Operation(summary = "新增学生预约", operationId = "studentClassAdd")
     @PostMapping(value = "v1/student/class/add")
-    public RespVo<String> studentClassAdd(StudentClassAddReqVo reqVo) {
+    public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) {
         return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), reqVo);
     }
 
@@ -55,7 +55,7 @@ public class StudentClassController implements BaseController {
 
     @Operation(summary = "统计接口", operationId = "classTotalList")
     @PostMapping(value = "v1/student/class/total")
-    public RespVo<StudentClassTotalRespVo> classTotalList(StudentClassQueryVo queryVo) {
+    public RespVo<StudentClassTotalRespVo> classTotalList(@RequestBody StudentClassQueryVo queryVo) {
         return studentClassPcService.classTotalList(queryVo);
     }
 

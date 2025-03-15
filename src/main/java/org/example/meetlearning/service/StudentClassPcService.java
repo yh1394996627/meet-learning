@@ -56,6 +56,7 @@ public class StudentClassPcService {
             if (student != null && StringUtils.isNotEmpty(student.getAffiliateId())) {
                 affiliate = affiliateService.findByRecordId(student.getAffiliateId());
             }
+            Assert.isTrue(reqVo.getCourseType() != null, "Teacher information not obtained");
             StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(entCode, userCode, reqVo, student, teacher, affiliate);
             studentClassService.insertEntity(studentClass);
             return new RespVo<>("New successfully added");

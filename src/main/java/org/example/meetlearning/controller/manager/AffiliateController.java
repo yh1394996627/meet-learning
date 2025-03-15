@@ -1,6 +1,7 @@
 package org.example.meetlearning.controller.manager;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,24 +55,31 @@ public class AffiliateController implements BaseController {
         return affiliatePcService.affiliateUpdateRemark(getUserCode(), getUserName(), reqVo);
     }
 
-
-    @Operation(summary = "代理商充值", operationId = "affiliateRecharge")
-    @PostMapping(value = "v1/affiliate/recharge")
-    public RespVo<String> affiliateRecharge(@RequestBody AffiliateRechargeReqVo reqVo) {
-        return new RespVo<>("代理商充值成功");
+    @Operation(summary = "代理商(生效的)选择查询 key,value", operationId = "affiliateSelect")
+    @PostMapping(value = "v1/affiliate/select")
+    public RespVo<List<SelectValueVo>> affiliateSelect() {
+        return affiliatePcService.affiliateSelect();
     }
 
-    @Operation(summary = "代理商充值记录列表", operationId = "affiliatePage")
-    @PostMapping(value = "v1/affiliate/recharge/page")
-    public RespVo<PageVo<AffiliateRechargeRecordRespVo>> affiliatePage(@RequestBody AffiliateRechargeQueryVo queryVo) {
-        AffiliateRechargeRecordRespVo respVo = new AffiliateRechargeRecordRespVo();
-        respVo.setRecordId("123123213");
-        respVo.setAmount(new BigDecimal("2"));
-        respVo.setBalanceAfter(new BigDecimal("3"));
-        respVo.setRemark("备注");
-        respVo.setCreator("123123123");
-        respVo.setCreateName("张三");
-        PageVo<AffiliateRechargeRecordRespVo> pageVo = PageVo.getNewPageVo(1, 10, 1, 1, List.of(respVo));
+
+    @Operation(summary = "代理商仪表盘", operationId = "dashboard")
+    @PostMapping(value = "v1/affiliate/dashboard")
+    public RespVo<AffiliateDashboardRespVo> dashboard() {
+        return affiliatePcService.dashboard(getUserCode());
+    }
+
+
+    @Operation(summary = "代理商佣金记录", operationId = "commission")
+    @PostMapping(value = "v1/affiliate/commission/record")
+    public RespVo<PageVo<AffiliateCommissionRecordRespVo>> commissionRecord() {
+        AffiliateCommissionRecordRespVo respVo = new AffiliateCommissionRecordRespVo();
+        respVo.setRecordId("12312312321");
+        respVo.setOperaType("提现");
+        respVo.setCommission(new BigDecimal("20"));
+        respVo.setBalance(new BigDecimal("80"));
+        Page<AffiliateCommissionRecordRespVo> page = new Page<>(0, 20, 1);
+        page.setRecords(List.of(respVo));
+        PageVo<AffiliateCommissionRecordRespVo> pageVo = PageVo.map(page, list -> list);
         return new RespVo<>(pageVo);
     }
 

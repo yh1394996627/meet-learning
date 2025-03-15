@@ -8,6 +8,8 @@ import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.entity.StudentClass;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.enums.CourseStatusEnum;
+import org.example.meetlearning.enums.CourseTypeEnum;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.classes.StudentClassAddReqVo;
 import org.example.meetlearning.vo.classes.StudentClassListRespVo;
 import org.mapstruct.Mapper;
@@ -71,7 +73,12 @@ public interface StudentClassConverter {
         studentClass.setTeacherCountry(teacher.getCountry());
         studentClass.setCourseId(reqVo.getCourseId());
         studentClass.setCourseName(reqVo.getCourseId());
-        studentClass.setCourseType(reqVo.getCourseType());
+        if (reqVo.getCourseType() != null) {
+            CourseTypeEnum courseTypeEnum = CourseTypeEnum.getByType(reqVo.getCourseType());
+            assert courseTypeEnum != null;
+            studentClass.setCourseType(courseTypeEnum.name());
+        }
+
         studentClass.setCourseLongTime(reqVo.getCourseLongTime());
         studentClass.setCourseTime(reqVo.getCourseDate());
         if (affiliate != null) {
@@ -79,9 +86,9 @@ public interface StudentClassConverter {
             studentClass.setAffiliateName(affiliate.getName());
         }
         //todo 这块还需要实现
-        studentClass.setStudentConsumption(student.getConsumption().add(reqVo.getQuantity()));
+        studentClass.setStudentConsumption(BigDecimalUtil.nullOrZero(student.getConsumption()).add(BigDecimalUtil.nullOrZero(reqVo.getQuantity())));
         studentClass.setEfficientDate(new Date());
-        studentClass.setStudentBalance(student.getBalance());
+        studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(student.getBalance()));
         return studentClass;
     }
 

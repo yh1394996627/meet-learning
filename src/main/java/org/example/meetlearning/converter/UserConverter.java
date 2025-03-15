@@ -1,5 +1,6 @@
 package org.example.meetlearning.converter;
 
+import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.util.MD5Util;
@@ -35,6 +36,26 @@ public interface UserConverter {
         return user;
     }
 
+    default User toCreateUser(String userCode, String userName, String recordId, String accountCode,
+                              String password, RoleEnum roleType, String name, String enName, String email) {
+        User user = new User();
+        user.setDeleted(false);
+        user.setIsManager(true);
+        user.setCreator(userCode);
+        user.setCreateName(userName);
+        user.setCreateTime(new Date());
+        user.setRecordId(recordId);
+        user.setAccountCode(accountCode);
+        user.setPassword(MD5Util.md5("MD5", password));
+        user.setType(roleType.name());
+        user.setName(name);
+        user.setEnName(enName);
+        user.setEmail(email);
+        user.setEnabled(true);
+        user.setRemark("");
+        return user;
+    }
+
     default UserInfoRespVo toUserInfoRespVo(User user) {
         UserInfoRespVo respVo = new UserInfoRespVo();
         respVo.setRecordId(user.getRecordId());
@@ -44,6 +65,7 @@ public interface UserConverter {
         respVo.setEmail(user.getEmail());
         RoleEnum roleEnum = RoleEnum.valueOf(user.getType());
         respVo.setMenus(roleEnum.getMenus());
+        respVo.setRole(roleEnum.name());
         return respVo;
     }
 

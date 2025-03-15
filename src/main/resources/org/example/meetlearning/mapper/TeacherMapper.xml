@@ -73,20 +73,25 @@
         select
         <include refid="Base_Column_List"/>
         from teacher
-        <where>
-            deleted = 0
-            <include refid="common_where"/>
-        </where>
+        where deleted = 0
+        <include refid="common_where"/>
     </select>
 
     <select id="selectListByParams" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from teacher
-        <where>
-            deleted = 0
-            <include refid="common_where"/>
-        </where>
+        where
+        deleted = 0
+        <include refid="common_where"/>
+    </select>
+
+    <select id="selectListByAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        where
+        deleted = 0
     </select>
 
     <select id="selectSalaryTotal" resultType="java.math.BigDecimal">
@@ -104,11 +109,10 @@
         manager_id as "value",
         manager as "label"
         from teacher
-        <where>
-            deleted = 0
-            <include refid="common_where"/>
-            and manager_id is not null and manager_id != ''
-        </where>
+        where
+        deleted = 0
+        <include refid="common_where"/>
+        and manager_id is not null and manager_id != ''
         group by manager_id
     </select>
 
@@ -117,10 +121,9 @@
         country as "value",
         country as "label"
         from teacher
-        <where>
-            deleted = 0
-            <include refid="common_where"/>
-        </where>
+        where
+        deleted = 0
+        <include refid="common_where"/>
         group by country
     </select>
 
@@ -140,8 +143,8 @@
         <if test="params.managerStatus != null">
             and manager_status = #{params.managerStatus}
         </if>
-        <if test="params.price != null">
-            and price = #{params.price}
+        <if test="params.tokenPrice != null">
+            and price = #{params.tokenPrice}
         </if>
         <if test="params.keyword != null">
             and `name` like LOWER(#{params.keyword})

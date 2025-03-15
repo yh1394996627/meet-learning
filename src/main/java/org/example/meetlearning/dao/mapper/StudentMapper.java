@@ -2,6 +2,7 @@ package org.example.meetlearning.dao.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.example.meetlearning.dao.entity.Student;
 
 import java.util.List;
@@ -16,9 +17,9 @@ public interface StudentMapper {
 
     Student selectById(Long id);
 
-    List<Student> selectByParams(Map<String, Object> params);
+    List<Student> selectByParams(@Param("params")Map<String, Object> params);
 
-    Page<Student> selectPageByParams(Map<String, Object> params, Page<Student> page);
+    Page<Student> selectPageByParams(@Param("params")Map<String, Object> params, Page<Student> page);
 
     int updateByRecordId(Student record);
 

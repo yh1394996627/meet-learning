@@ -1,5 +1,6 @@
 package org.example.meetlearning.vo.student;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class StudentListRespVo {
     private BigDecimal balance;
 
     @Schema(name = "expirationTime", description = "课时币到期")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date expirationTime;
 
     @Schema(name = "lastActivities", description = "最近活动")
@@ -37,8 +39,11 @@ public class StudentListRespVo {
     @Schema(name = "website", description = "网站")
     private String website;
 
-    @Schema(name = "recommender", description = "推荐人")
-    private String recommender;
+    @Schema(name = "affiliateId", description = "代理商ID")
+    private String affiliateId;
+
+    @Schema(name = "recommender", description = "代理商名称")
+    private String affiliateName;
 
     @Schema(name = "remark", description = "备注")
     private String remark;

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.example.meetlearning.dao.entity.StudentClass;
 
 public interface StudentClassMapper {
@@ -15,10 +16,10 @@ public interface StudentClassMapper {
 
     int updateEntity(StudentClass record);
 
-    Page<StudentClass> selectByParams(Map<String, Object> params, Page<StudentClass> page);
+    Page<StudentClass> selectByParams(@Param("params")Map<String, Object> params, Page<StudentClass> page);
 
-    Long selectCancelByParams(Map<String, Object> params);
+    Long selectCancelByParams(@Param("params")Map<String, Object> params);
 
-    Long selectCompleteByParams(Map<String, Object> params);
+    Long selectCompleteByParams(@Param("params")Map<String, Object> params);
 
 }

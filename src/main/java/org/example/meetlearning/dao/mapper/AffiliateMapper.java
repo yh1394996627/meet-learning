@@ -1,8 +1,11 @@
 package org.example.meetlearning.dao.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.example.meetlearning.dao.entity.Affiliate;
+import org.example.meetlearning.vo.common.SelectValueVo;
 
+import java.util.List;
 import java.util.Map;
 
 public interface AffiliateMapper {
@@ -11,7 +14,9 @@ public interface AffiliateMapper {
 
     Affiliate selectByRecordId(String recordId);
 
-    Page<Affiliate> selectByParams(Map<String,Object> params, Page<Affiliate> page);
+    List<SelectValueVo> selectValueAll();
+
+    Page<Affiliate> selectByParams(@Param("params")Map<String,Object> params, Page<Affiliate> page);
 
     int updateEntity(Affiliate record);
 

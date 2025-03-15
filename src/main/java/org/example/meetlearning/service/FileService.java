@@ -1,23 +1,27 @@
 package org.example.meetlearning.service;
 
 import com.aliyun.oss.common.utils.HttpHeaders;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.file.FilePageRespVo;
 import org.example.meetlearning.vo.file.FileQueryVo;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.*;
-import java.net.URLEncoder;
-import java.nio.file.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -46,7 +50,7 @@ public class FileService {
     public List<FilePageRespVo> listFiles(FileQueryVo fileQueryVo) {
         List<FilePageRespVo> fileDetails = new ArrayList<>();
         Boolean isPrivate = fileQueryVo.getIsPrivate();
-        String directoryPath = BooleanUtils.isTrue(isPrivate) ? privateFolder + "/" + fileQueryVo.getUserId() + "/" + fileQueryVo.getPath()
+        String directoryPath = BooleanUtils.isTrue(isPrivate) ? privateFolder + fileQueryVo.getUserId() + "/" + fileQueryVo.getPath()
                 : publicFolder + fileQueryVo.getPath();
 
         Path path = Paths.get(directoryPath);
@@ -67,6 +71,11 @@ public class FileService {
         }
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
             for (Path entry : stream) {
+                if (StringUtils.isNotEmpty(fileQueryVo.getSearch())) {
+                    if (!entry.getFileName().toString().contains(fileQueryVo.getSearch())) {
+                        continue;
+                    }
+                }
                 BasicFileAttributes attributes = Files.readAttributes(entry, BasicFileAttributes.class);
                 LocalDateTime lastModifiedTime = LocalDateTime.ofInstant(attributes.lastModifiedTime().toInstant(), ZoneId.systemDefault());
                 String formattedTime = lastModifiedTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -138,10 +147,22 @@ public class FileService {
         if (file.isEmpty()) {
             return new RespVo<>("null", false, "The uploaded file cannot be empty");
         }
+        destinationPath = privateFolder + destinationPath;
+        Path path = Paths.get(destinationPath);
+        // 如果目录不存在，则创建它
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path); // 递归创建目录
+                System.out.println("Directory created: " + destinationPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to create directory: " + destinationPath, e);
+            }
+        }
         // 指定上传文件的存储路径
         String filePath = destinationPath + file.getOriginalFilename();
         // 保存文件
         try {
+            log.info("--->filePath:{}", filePath);
             // 保存文件
             file.transferTo(new File(filePath));
         } catch (IOException e) {
@@ -151,4 +172,37 @@ public class FileService {
         return new RespVo<>("File saved successfully");
     }
 
+    public RespVo<String> removeDic(String destinationPath) {
+        destinationPath = privateFolder + destinationPath;
+        Path folder = Paths.get(destinationPath);
+
+        // 检查文件夹是否存在
+        if (!Files.exists(folder)) {
+            log.info("---------->folder:{}", folder);
+            return new RespVo<>("The folder does not exist", false, "The folder does not exist");
+        }
+
+        // 检查是否是文件夹
+        if (!Files.isDirectory(folder)) {
+            log.info("---------->folder:{}", folder);
+            return new RespVo<>("Path error, please refresh and try again", false, "Path error, please refresh and try again");
+        }
+        try {
+            // 使用Files.walk()递归遍历文件夹中的所有文件和子文件夹
+            Files.walk(folder)
+                    .filter(path -> !Files.isDirectory(path)) // 过滤掉文件夹，只保留文件
+                    .forEach(path -> {
+                        try {
+                            Files.delete(path); // 删除文件
+                            log.info("Clear successfully path【{}】", path);
+                        } catch (IOException e) {
+                            log.error("Clearing failed", e);
+                        }
+                    });
+            return new RespVo<>("Clear successfully");
+        } catch (IOException e) {
+            log.error("Clearing failed", e);
+            return new RespVo<>("Clearing failed", false, e.getMessage());
+        }
+    }
 }

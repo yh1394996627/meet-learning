@@ -2,6 +2,8 @@ package org.example.meetlearning.converter;
 
 import cn.hutool.core.util.BooleanUtil;
 import org.example.meetlearning.dao.entity.Teacher;
+import org.example.meetlearning.util.BigDecimalUtil;
+import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
 import org.example.meetlearning.vo.teacher.TeacherAddReqVo;
 import org.example.meetlearning.vo.teacher.TeacherLastCommentRespVo;
 import org.example.meetlearning.vo.teacher.TeacherListRespVo;
@@ -78,7 +80,22 @@ public interface TeacherConverter {
         commentVo.setCreateName(userName);
         commentVo.setComment("测试评论");
         commentVo.setCreateTime(new Date());
+        commentVo.setTeacherId(UUID.randomUUID().toString());
+        commentVo.setCourseId(UUID.randomUUID().toString());
+        commentVo.setCourseName("测试课程");
         return commentVo;
+    }
+
+    default SharedTeacherListRespVo toSharedTeacherListRespVo(Teacher teacher) {
+        SharedTeacherListRespVo respVo = new SharedTeacherListRespVo();
+        respVo.setRecordId(teacher.getRecordId());
+        respVo.setName(teacher.getName());
+        respVo.setCountry(teacher.getCountry());
+        respVo.setPrice(BigDecimalUtil.nullOrZero(teacher.getPrice()));
+        respVo.setCreditsPrice(BigDecimalUtil.nullOrZero(teacher.getCreditsPrice()));
+        respVo.setVideoUrl(teacher.getVideoUrl());
+        respVo.setAvatarUtl(teacher.getAvatarUrl());
+        return respVo;
     }
 
 }

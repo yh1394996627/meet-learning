@@ -108,7 +108,7 @@
             <if test="teacherCourseStatus != null">
                 teacher_course_status,
             </if>
-            <if test="studentCourseStatusa != null">
+            <if test="studentCourseStatus != null">
                 student_course_status,
             </if>
             <if test="courseVideoUrl != null">
@@ -200,8 +200,8 @@
             <if test="teacherCourseStatus != null">
                 #{teacherCourseStatus,jdbcType=INTEGER},
             </if>
-            <if test="studentCourseStatusa != null">
-                #{studentCourseStatusa,jdbcType=INTEGER},
+            <if test="studentCourseStatus != null">
+                #{studentCourseStatus,jdbcType=INTEGER},
             </if>
             <if test="courseVideoUrl != null">
                 #{courseVideoUrl,jdbcType=VARCHAR},
@@ -293,8 +293,8 @@
             <if test="teacherCourseStatus != null">
                 teacher_course_status = #{teacherCourseStatus,jdbcType=INTEGER},
             </if>
-            <if test="studentCourseStatusa != null">
-                student_course_status = #{studentCourseStatusa,jdbcType=INTEGER},
+            <if test="studentCourseStatus != null">
+                student_course_status = #{studentCourseStatus,jdbcType=INTEGER},
             </if>
             <if test="courseVideoUrl != null">
                 course_video_url = #{courseVideoUrl,jdbcType=VARCHAR},

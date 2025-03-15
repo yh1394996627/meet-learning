@@ -10,20 +10,20 @@ import java.util.Map;
 @Data
 public class StudentClassCommonQueryVo {
 
-    @Schema(name = "price", description = "选择的价格")
-    private BigDecimal price;
+    @Schema(name = "priceContent", description = "选择的价格")
+    private BigDecimal priceContent;
 
     //todo 塞选出有空的老师
     @Schema(name = "courseDate", description = "课程时间")
     private String courseDate;
 
+
+    @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        if (price != null) {
-            params.put("tokenPrice", price);
+        if (priceContent != null) {
+            params.put("tokenPrice", priceContent);
         }
         return params;
     }
-
-
 }

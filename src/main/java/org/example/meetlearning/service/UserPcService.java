@@ -47,4 +47,17 @@ public class UserPcService {
 
     }
 
+
+    public RespVo<UserInfoRespVo> userInfo(String userCode) {
+        try {
+            User accountUser = userService.selectByRecordId(userCode);
+            Assert.notNull(accountUser, "未获取到客户信息！");
+            UserInfoRespVo respVo = UserConverter.INSTANCE.toUserInfoRespVo(accountUser);
+            return new RespVo<>(respVo);
+        } catch (Exception ex) {
+            log.error("查询个人信息失败", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+    }
+
 }
