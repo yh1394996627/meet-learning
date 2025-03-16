@@ -1,6 +1,7 @@
 package org.example.meetlearning.converter;
 
 import cn.hutool.core.date.DateUtil;
+import org.example.meetlearning.dao.entity.TeacherSchedule;
 import org.example.meetlearning.dao.entity.TeacherScheduleSet;
 import org.example.meetlearning.enums.ScheduleTypeEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
@@ -40,12 +41,37 @@ public interface ScheduleConverter {
         return teacherScheduleSet;
     }
 
+    default TeacherScheduleSet toCreateOff(String userCode, String teacherId, String weekNum, String scheduleType, Date offDate) {
+        TeacherScheduleSet teacherScheduleSet = new TeacherScheduleSet();
+        teacherScheduleSet.setCreator(userCode);
+        teacherScheduleSet.setCreateTime(new Date());
+        teacherScheduleSet.setTeacherId(teacherId);
+        teacherScheduleSet.setBeginTime(null);
+        teacherScheduleSet.setEndTime(null);
+        teacherScheduleSet.setWeekNum(weekNum);
+        teacherScheduleSet.setScheduleType(scheduleType);
+        teacherScheduleSet.setOffDate(offDate);
+        return teacherScheduleSet;
+    }
+
 
     default ScheduleDateVo toScheduleDateVo(TeacherScheduleSet scheduleSet) {
         ScheduleDateVo scheduleDateVo = new ScheduleDateVo();
         scheduleDateVo.setBeginTime(scheduleSet.getBeginTime());
         scheduleDateVo.setEndTime(scheduleSet.getEndTime());
         return scheduleDateVo;
+    }
+
+
+    default TeacherSchedule toCreateSchedule(TeacherScheduleSet scheduleSet) {
+        TeacherSchedule schedule= new TeacherSchedule();
+        schedule.setCreator(scheduleSet.getCreator());
+        schedule.setCreateTime(DateUtil.date());
+        schedule.setTeacherId(scheduleSet.getTeacherId());
+        schedule.setBeginTime(scheduleSet.getBeginTime());
+        schedule.setEndTime(scheduleSet.getEndTime());
+        schedule.setWeekNum(scheduleSet.getWeekNum());
+        return schedule;
     }
 
 

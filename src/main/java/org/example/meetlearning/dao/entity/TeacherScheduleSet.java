@@ -22,4 +22,6 @@ public class TeacherScheduleSet {
     private String weekNum;
 
     private String scheduleType;
+
+    private Date offDate;
 }
