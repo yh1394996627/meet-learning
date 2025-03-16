@@ -11,8 +11,8 @@
         <result column="creator" jdbcType="VARCHAR" property="creator"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
-        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
-        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="begin_time" jdbcType="VARCHAR" property="beginTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
         <result column="week_num" jdbcType="VARCHAR" property="weekNum"/>
         <result column="schedule_type" jdbcType="VARCHAR" property="scheduleType"/>
     </resultMap>
@@ -39,16 +39,15 @@
           and schedule_type = #{scheduleType,jdbcType=VARCHAR}
     </delete>
 
-    <insert id="insertBatch" parameterType="org.example.meetlearning.dao.entity.TeacherScheduleSet">
-
+    <insert id="insertBatch" parameterType="list">
         insert into teacher_schedule_set (creator, create_time,
         teacher_id, begin_time, end_time,
         week_num, schedule_type)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
-            #{teacherId,jdbcType=VARCHAR}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
-            #{weekNum,jdbcType=VARCHAR}, #{scheduleType,jdbcType=VARCHAR})
+            (#{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.teacherId,jdbcType=VARCHAR}, #{item.beginTime,jdbcType=VARCHAR}, #{item.endTime,jdbcType=VARCHAR},
+            #{item.weekNum,jdbcType=VARCHAR}, #{item.scheduleType,jdbcType=VARCHAR})
         </foreach>
     </insert>
 </mapper>

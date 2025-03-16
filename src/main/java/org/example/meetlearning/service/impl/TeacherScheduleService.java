@@ -34,8 +34,8 @@ public class TeacherScheduleService {
         return teacherScheduleSetMapper.deleteByTeacherIdAndWeekNum(teacherId, weekNum, scheduleType);
     }
 
-    public int insertSetBatch(List<TeacherScheduleSet> records) {
-        return teacherScheduleSetMapper.insertBatch(records);
+    public void insertSetBatch(List<TeacherScheduleSet> records) {
+        teacherScheduleSetMapper.insertBatch(records);
     }
 
     public List<TeacherScheduleSet> selectSetByTeacherId(String teacherId, String weekNum, String scheduleType) {

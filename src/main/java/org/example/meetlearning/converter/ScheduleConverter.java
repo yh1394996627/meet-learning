@@ -33,8 +33,8 @@ public interface ScheduleConverter {
         teacherScheduleSet.setCreator(userCode);
         teacherScheduleSet.setCreateTime(new Date());
         teacherScheduleSet.setTeacherId(teacherId);
-        teacherScheduleSet.setBeginTime(DateUtil.parseTime(dateRespVo.getBeginTime()));
-        teacherScheduleSet.setEndTime(DateUtil.parseTime(dateRespVo.getEndTime()));
+        teacherScheduleSet.setBeginTime(dateRespVo.getBeginTime());
+        teacherScheduleSet.setEndTime(dateRespVo.getEndTime());
         teacherScheduleSet.setWeekNum(weekNum);
         teacherScheduleSet.setScheduleType(scheduleType);
         return teacherScheduleSet;
@@ -43,8 +43,8 @@ public interface ScheduleConverter {
 
     default ScheduleDateVo toScheduleDateVo(TeacherScheduleSet scheduleSet) {
         ScheduleDateVo scheduleDateVo = new ScheduleDateVo();
-        scheduleDateVo.setBeginTime(scheduleSet.getBeginTime().toString());
-        scheduleDateVo.setEndTime(scheduleSet.getEndTime().toString());
+        scheduleDateVo.setBeginTime(scheduleSet.getBeginTime());
+        scheduleDateVo.setEndTime(scheduleSet.getEndTime());
         return scheduleDateVo;
     }
 

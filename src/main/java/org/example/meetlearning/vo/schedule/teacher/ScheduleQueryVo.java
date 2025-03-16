@@ -20,7 +20,6 @@ public class ScheduleQueryVo {
     @Schema(name = "scheduleType", description = "时间段类型")
     private ScheduleTypeEnum scheduleType;
 
-    @Schema(hidden = true)
     public ScheduleWeekEnum getWeekNum() {
         if (weekNum == null) {
             return ScheduleWeekEnum.MONDAY;
