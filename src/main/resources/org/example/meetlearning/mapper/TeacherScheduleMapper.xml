@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.TeacherScheduleMapper">
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.TeacherSchedule">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="week_num" jdbcType="VARCHAR" property="weekNum"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , creator, create_time, teacher_id, begin_time, end_time, week_num
+    </sql>
+    <select id="selectByTeacherIdAndWeekNum" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher_schedule
+        where teacher_id = #{teacherId,jdbcType=VARCHAR} and week_num = #{weekNum,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByTeacherIdAndWeekNum">
+        delete from teacher_schedule
+        where teacher_id = #{teacherId,jdbcType=VARCHAR} and week_num = #{weekNum,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insertBatch" parameterType="org.example.meetlearning.dao.entity.TeacherSchedule">
+        insert into teacher_schedule (creator, create_time,
+        teacher_id, begin_time, end_time,
+        week_num)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+            #{teacherId,jdbcType=VARCHAR}, #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP},
+            #{weekNum,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+</mapper>

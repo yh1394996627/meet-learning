@@ -9,7 +9,7 @@ public interface TeacherScheduleSetMapper {
 
     int deleteByTeacherIdAndWeekNum(String teacherId, String weekNum, String scheduleType);
 
-    int insertBatch(TeacherScheduleSet record);
+    int insertBatch(List<TeacherScheduleSet> record);
 
     List<TeacherScheduleSet> selectByTeacherIdAndWeekNum(String teacherId, String weekNum, String scheduleType);
 
