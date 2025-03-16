@@ -1,10 +1,17 @@
 package org.example.meetlearning.service;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.UserConverter;
+import org.example.meetlearning.dao.entity.Affiliate;
+import org.example.meetlearning.dao.entity.Student;
+import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.User;
+import org.example.meetlearning.enums.RoleEnum;
+import org.example.meetlearning.service.impl.StudentService;
+import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.service.impl.UserService;
 import org.example.meetlearning.util.MD5Util;
 import org.example.meetlearning.vo.common.RespVo;
@@ -13,13 +20,21 @@ import org.example.meetlearning.vo.user.UserLoginReqVo;
 import org.example.meetlearning.vo.user.UserManageOperaReqVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URL;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class UserPcService {
+public class UserPcService extends BasePcService {
 
     private final UserService userService;
+
+    private final StudentService studentService;
+
+    private final TeacherService teacherService;
 
     public RespVo<String> manageRegister(UserManageOperaReqVo reqVo) {
         try {
@@ -51,7 +66,7 @@ public class UserPcService {
     public RespVo<UserInfoRespVo> userInfo(String userCode) {
         try {
             User accountUser = userService.selectByRecordId(userCode);
-            Assert.notNull(accountUser, "未获取到客户信息！");
+            Assert.notNull(accountUser, "User information not obtained");
             UserInfoRespVo respVo = UserConverter.INSTANCE.toUserInfoRespVo(accountUser);
             return new RespVo<>(respVo);
         } catch (Exception ex) {
@@ -60,4 +75,36 @@ public class UserPcService {
         }
     }
 
+    /**
+     * 上传头像
+     */
+    public RespVo<URL> uploadPcAvatar(String userCode, MultipartFile file) {
+        User accountUser = userService.selectByRecordId(userCode);
+        Assert.notNull(accountUser, "User information not obtained");
+        URL url = uploadAvatar(userCode, file);
+        Teacher teacher = teacherService.selectByRecordId(userCode);
+        teacher.setAvatarUrl(url.getPath());
+        teacherService.updateEntity(teacher);
+        return new RespVo<>(url);
+    }
+
+    public RespVo<URL> uploadPcVideo(String userCode, MultipartFile file) {
+        User accountUser = userService.selectByRecordId(userCode);
+        Assert.notNull(accountUser, "User information not obtained");
+        URL url = uploadVideo(userCode, file);
+        Teacher teacher = teacherService.selectByRecordId(userCode);
+        teacher.setVideoUrl(url.getPath());
+        teacherService.updateEntity(teacher);
+        return new RespVo<>(url);
+    }
+
+    public RespVo<URL> uploadPcFile(String userCode, MultipartFile file) {
+        User accountUser = userService.selectByRecordId(userCode);
+        Assert.notNull(accountUser, "User information not obtained");
+        URL url = uploadVideo(userCode, file);
+        Teacher teacher = teacherService.selectByRecordId(userCode);
+        teacher.setVideoUrl(url.getPath());
+        teacherService.updateEntity(teacher);
+        return new RespVo<>(url);
+    }
 }

@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 @Data
 public class TeacherDashboardRespVo {
 
+    @Schema(name = "rate", description = "比率")
+    private BigDecimal rate;
     @Schema(name = "confirmedQty", description = "已确认课程数量")
     private BigDecimal confirmedQty;
     @Schema(name = "cancelledQty", description = "已取消课程数量")

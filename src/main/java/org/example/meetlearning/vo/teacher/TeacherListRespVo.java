@@ -49,8 +49,6 @@ public class TeacherListRespVo {
 
     @Schema(name = "managerStatus", description = "管理员状态")
     private Boolean managerStatus;
-
-
-
+    
 
 }

@@ -9,6 +9,7 @@ import org.example.meetlearning.vo.teacher.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
@@ -139,6 +140,22 @@ public interface TeacherConverter {
         teacherRespVo.setCreateName(teacher.getCreateName());
         teacherRespVo.setCreator(teacher.getCreator());
         return teacherRespVo;
+    }
+
+    default TeacherDashboardRespVo toTeacherDashboard(Teacher teacher) {
+        TeacherDashboardRespVo respVo = new TeacherDashboardRespVo();
+        respVo.setConfirmedQty(teacher.getConfirmedQty());
+        respVo.setCancelledQty(teacher.getCanceledQty());
+        respVo.setComplaintsQty(teacher.getComplaintsQty());
+        respVo.setConfirmedClassesAmount(teacher.getSalaryAmount());
+        respVo.setCancelledDeductionsAmount(BigDecimal.ZERO);
+        respVo.setComplaintDeductionsAmount(BigDecimal.ZERO);
+        respVo.setBonus(BigDecimal.ZERO);
+        respVo.setCommission(BigDecimal.ZERO);
+        respVo.setTotalSalary(teacher.getSalaryAmount());
+        respVo.setAttendanceRate(teacher.getAttendance());
+        respVo.setRating(teacher.getRating());
+        return respVo;
     }
 
 }

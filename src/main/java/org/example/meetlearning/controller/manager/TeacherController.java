@@ -115,19 +115,7 @@ public class TeacherController implements BaseController {
     @Operation(summary = "老师仪表盘", operationId = "dashboard")
     @PostMapping(value = "v1/teacher/dashboard")
     public RespVo<TeacherDashboardRespVo> dashboard() {
-        TeacherDashboardRespVo teacherDashboardRespVo = new TeacherDashboardRespVo();
-        teacherDashboardRespVo.setConfirmedQty(new BigDecimal(12));
-        teacherDashboardRespVo.setCancelledQty(new BigDecimal(13));
-        teacherDashboardRespVo.setComplaintsQty(new BigDecimal(14));
-        teacherDashboardRespVo.setConfirmedClassesAmount(new BigDecimal(15));
-        teacherDashboardRespVo.setCancelledDeductionsAmount(new BigDecimal(16));
-        teacherDashboardRespVo.setComplaintDeductionsAmount(new BigDecimal(17));
-        teacherDashboardRespVo.setBonus(new BigDecimal(18));
-        teacherDashboardRespVo.setCommission(new BigDecimal(19));
-        teacherDashboardRespVo.setTotalSalary(new BigDecimal(20));
-        teacherDashboardRespVo.setAttendanceRate(new BigDecimal(98));
-        teacherDashboardRespVo.setRating(new BigDecimal("4.2"));
-        return new RespVo<>(teacherDashboardRespVo);
+        return teacherPcService.dashboard(getUserCode());
     }
 
     @Operation(summary = "老师详细信息查询", operationId = "teacherInfo")

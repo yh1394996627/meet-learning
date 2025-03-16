@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public class TeacherPcService extends BasePcService {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "RecordId cannot be empty");
             Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
-            Assert.notNull(teacher, "RecordId cannot be empty");
+            Assert.notNull(teacher, "Teacher cannot be empty");
             teacher = TeacherConverter.INSTANCE.toUpdateTeacher(userCode, userName, teacher, reqVo);
             teacherService.updateEntity(teacher);
 
@@ -210,6 +211,17 @@ public class TeacherPcService extends BasePcService {
         }
     }
 
+    public RespVo<TeacherDashboardRespVo> dashboard(String userCode) {
+        try {
+            Teacher teacher = teacherService.selectByRecordId(userCode);
+            Assert.notNull(teacher, "Teacher cannot be empty");
+            TeacherDashboardRespVo respVo = TeacherConverter.INSTANCE.toTeacherDashboard(teacher);
+            return new RespVo<>(respVo);
+        } catch (Exception ex) {
+            log.error("Query Error", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+    }
 
     public RespVo<List<SharedTeacherListRespVo>> sharedTeacherList() {
         List<Teacher> teacherList = teacherService.selectListByAll();
@@ -236,6 +248,10 @@ public class TeacherPcService extends BasePcService {
             String recordId = queryVo.getRecordId();
             Assert.isTrue(StringUtils.hasText(recordId), "RecordId cannot be empty");
             Teacher teacher = teacherService.selectByRecordId(recordId);
+            URL downloadAvatar = downloadAvatar(teacher.getAvatarUrl());
+            URL downloadVideo = downloadAvatar(teacher.getVideoUrl());
+            teacher.setAvatarUrl(downloadAvatar != null ? downloadAvatar.toString() : "");
+            teacher.setVideoUrl(downloadVideo != null ? downloadVideo.toString() : "");
             Assert.notNull(teacher, "Teacher information not obtained");
             return new RespVo<>(TeacherConverter.INSTANCE.toTeacherInfo(teacher));
         } catch (Exception ex) {
