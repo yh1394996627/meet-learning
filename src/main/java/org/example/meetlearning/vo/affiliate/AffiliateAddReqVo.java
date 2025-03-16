@@ -10,6 +10,9 @@ public class AffiliateAddReqVo {
     @Schema(name = "email", description = "邮箱")
     private String email;
 
+    @Schema(name = "verifyCode", description = "验证码")
+    private String verifyCode;
+
     @Schema(name = "enName", description = "英文名")
     private String enName;
 

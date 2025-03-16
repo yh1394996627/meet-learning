@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.AffiliateConverter;
 import org.example.meetlearning.dao.entity.Affiliate;
+import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
@@ -20,7 +21,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class AffiliatePcService {
+public class AffiliatePcService extends BasePcService {
 
     private final AffiliateService affiliateService;
 
@@ -37,8 +38,18 @@ public class AffiliatePcService {
 
     public RespVo<String> affiliateAdd(String userCode, String userName, AffiliateAddReqVo reqVo) {
         try {
+
+            // 验证码校验
+            emailVerify(reqVo.getEmail(), reqVo.getVerifyCode());
+
+            // 保存代理商基础信息
             Affiliate affiliate = AffiliateConverter.INSTANCE.toCreateAffiliate(userCode, userName, reqVo);
             affiliateService.insertEntity(affiliate);
+
+            // 创建登陆帐号
+            addUser(userCode, userName, affiliate.getRecordId(), affiliate.getEmail(), reqVo.getPassword(),
+                    RoleEnum.MANAGER, affiliate.getName(), affiliate.getEnName(), affiliate.getEmail());
+
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("Addition failed", ex);

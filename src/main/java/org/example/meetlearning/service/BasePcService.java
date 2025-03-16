@@ -7,7 +7,9 @@ import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.UserService;
+import org.example.meetlearning.util.RedisCommonsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -15,6 +17,8 @@ import org.springframework.util.Assert;
 @Slf4j
 public class BasePcService {
 
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private UserService userService;
@@ -31,5 +35,18 @@ public class BasePcService {
                 password, roleType, name, enName, email);
         userService.insertEntity(user);
         log.error("Login account successfully added");
+    }
+
+
+    /**
+     * 邮件验证码校验
+     *
+     * @param email 邮箱地址
+     * @param verifyCode 验证码
+     */
+    public void emailVerify(String email, String verifyCode) {
+        String key = RedisCommonsUtil.emailKeyGet(email);
+        Object redisObj = redisTemplate.opsForValue().get(key);
+        Assert.isTrue(redisObj != null && redisObj.equals(verifyCode), "Verification code error");
     }
 }

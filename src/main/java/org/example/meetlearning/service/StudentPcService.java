@@ -47,6 +47,7 @@ public class StudentPcService extends BasePcService {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getEnName()), "Email cannot be empty");
             Assert.isTrue(StringUtils.hasText(reqVo.getPassword()), "Password cannot be empty");
+
             Student student = StudentConverter.INSTANCE.toCreateStudent(userCode, userName, reqVo);
             //如果是代理商 则添加代理商信息
             User user = userService.selectByRecordId(userCode);

@@ -11,6 +11,9 @@ public class StudentAddReqVo {
     @Schema(name = "enName", description = "英文名称")
     private String enName;
 
+    @Schema(name = "email", description = "邮箱")
+    private String email;
+
     @Schema(name = "password", description = "密码")
     private String password;
 

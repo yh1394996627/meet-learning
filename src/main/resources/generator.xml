@@ -16,6 +16,9 @@
         <!--        <table tableName="affiliate" domainObjectName="Affiliate"/>-->
         <!--        <table tableName="user" domainObjectName="User"/>-->
         <!--        <table tableName="tokens_log" domainObjectName="TokensLog"/>-->
-                <table tableName="student_class" domainObjectName="StudentClass"/>
+        <!--        <table tableName="student_class" domainObjectName="StudentClass"/>-->
+        <!--        <table tableName="teacher_feature" domainObjectName="TeacherFeature"/>-->
+        <table tableName="teacher_schedule_set" domainObjectName="TeacherScheduleSet"/>
+        <table tableName="teacher_schedule" domainObjectName="TeacherSchedule"/>
     </context>
 </generatorConfiguration>

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.TeacherPcService;
 import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.teacher.*;
@@ -28,7 +29,6 @@ public class TeacherController implements BaseController {
     @PostMapping(value = "v1/teacher/page")
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(@RequestBody TeacherQueryVo queryVo) {
         return teacherPcService.teacherPage(queryVo);
-
     }
 
     @Operation(summary = "查询条件-管理人查询", operationId = "teacherManagerSearch")
@@ -40,7 +40,7 @@ public class TeacherController implements BaseController {
     @Operation(summary = "更新老师里面的管理人调用", operationId = "teacherUpdateManagerSearch")
     @PostMapping(value = "v1/teacher/update/search/manager")
     public RespVo<List<SelectValueVo>> teacherUpdateManagerSearch(@RequestBody TeacherQueryVo queryVo) {
-        return teacherPcService.teacherManagerSearch(queryVo);
+        return teacherPcService.teacherUpdateManagerSearch(queryVo);
     }
 
     @Operation(summary = "查询条件-国家查询", operationId = "countrySearch")
@@ -128,5 +128,18 @@ public class TeacherController implements BaseController {
         teacherDashboardRespVo.setAttendanceRate(new BigDecimal(98));
         teacherDashboardRespVo.setRating(new BigDecimal("4.2"));
         return new RespVo<>(teacherDashboardRespVo);
+    }
+
+    @Operation(summary = "老师详细信息查询", operationId = "teacherInfo")
+    @PostMapping(value = "v1/teacher/info")
+    public RespVo<TeacherInfoRespVo> teacherInfo(@RequestBody RecordIdQueryVo queryVo) {
+        return teacherPcService.teacherInfo(queryVo);
+    }
+
+
+    @Operation(summary = "学生端-老师列表", operationId = "teacherPage")
+    @PostMapping(value = "v1/teacher/pc/page")
+    public RespVo<PageVo<TeacherListRespVo>> studentTeacherPage(@RequestBody TeacherQueryVo queryVo) {
+        return teacherPcService.teacherPage(queryVo);
     }
 }

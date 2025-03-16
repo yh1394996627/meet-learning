@@ -13,7 +13,7 @@ class MeetLearningApplicationTests {
 
     @Test
     void contextLoads() throws Exception {
-        emailPcService.sendVerificationEmail("1394996627@qq.com");
+        emailPcService.sendVerificationEmail("", "1394996627@qq.com ");
     }
 
 }

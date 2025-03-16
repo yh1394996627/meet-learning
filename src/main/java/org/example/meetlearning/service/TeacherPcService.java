@@ -6,10 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.Teacher;
+import org.example.meetlearning.dao.entity.TeacherFeature;
 import org.example.meetlearning.enums.RoleEnum;
+import org.example.meetlearning.service.impl.TeacherFeatureService;
 import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
@@ -17,6 +20,7 @@ import org.example.meetlearning.vo.shared.teacher.SharedTeacherPriceReqVo;
 import org.example.meetlearning.vo.teacher.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -31,6 +35,8 @@ import java.util.Map;
 public class TeacherPcService extends BasePcService {
 
     private final TeacherService teacherService;
+
+    private final TeacherFeatureService teacherFeatureService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(TeacherQueryVo queryVo) {
         try {
@@ -104,13 +110,22 @@ public class TeacherPcService extends BasePcService {
 
     public RespVo<String> teacherUpdate(String userCode, String userName, TeacherUpdateReqVo reqVo) {
         try {
-            Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
+            Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "RecordId cannot be empty");
             Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
+            Assert.notNull(teacher, "RecordId cannot be empty");
             teacher = TeacherConverter.INSTANCE.toUpdateTeacher(userCode, userName, teacher, reqVo);
             teacherService.updateEntity(teacher);
-            return new RespVo<>("更新成功");
+
+            //清掉原有特点并重新写入
+            teacherFeatureService.deleteByTeacherId(teacher.getRecordId());
+            Teacher finalTeacher = teacher;
+            List<TeacherFeature> features = reqVo.getSpecialists().stream().map(feature -> TeacherConverter.INSTANCE.toTeacherFeature(userCode, finalTeacher.getRecordId(), feature)).toList();
+            if (!CollectionUtils.isEmpty(features)) {
+                teacherFeatureService.insertBatch(features);
+            }
+            return new RespVo<>("Teacher update successful");
         } catch (Exception ex) {
-            log.error("更新失败", ex);
+            log.error("Failed to update teacher", ex);
             return new RespVo<>(null, false, ex.getMessage());
         }
     }
@@ -214,6 +229,21 @@ public class TeacherPcService extends BasePcService {
             log.error("Price setting failed", ex);
             return new RespVo<>("Price setting failed", false, ex.getMessage());
         }
+    }
+
+    public RespVo<TeacherInfoRespVo> teacherInfo(RecordIdQueryVo queryVo) {
+        try {
+            String recordId = queryVo.getRecordId();
+            Assert.isTrue(StringUtils.hasText(recordId), "RecordId cannot be empty");
+            Teacher teacher = teacherService.selectByRecordId(recordId);
+            Assert.notNull(teacher, "Teacher information not obtained");
+            return new RespVo<>(TeacherConverter.INSTANCE.toTeacherInfo(teacher));
+        } catch (Exception ex) {
+            log.error("Query failed", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+
+
     }
 
 

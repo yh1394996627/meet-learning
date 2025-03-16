@@ -2,12 +2,10 @@ package org.example.meetlearning.converter;
 
 import cn.hutool.core.util.BooleanUtil;
 import org.example.meetlearning.dao.entity.Teacher;
+import org.example.meetlearning.dao.entity.TeacherFeature;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
-import org.example.meetlearning.vo.teacher.TeacherAddReqVo;
-import org.example.meetlearning.vo.teacher.TeacherLastCommentRespVo;
-import org.example.meetlearning.vo.teacher.TeacherListRespVo;
-import org.example.meetlearning.vo.teacher.TeacherUpdateReqVo;
+import org.example.meetlearning.vo.teacher.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -96,6 +94,51 @@ public interface TeacherConverter {
         respVo.setVideoUrl(teacher.getVideoUrl());
         respVo.setAvatarUtl(teacher.getAvatarUrl());
         return respVo;
+    }
+
+
+    default TeacherFeature toTeacherFeature(String userCode, String teacherId, String feature) {
+        TeacherFeature teacherFeature = new TeacherFeature();
+        teacherFeature.setTeacherId(teacherId);
+        teacherFeature.setRecordId(UUID.randomUUID().toString());
+        teacherFeature.setCreateTime(new Date());
+        teacherFeature.setCreator(userCode);
+        teacherFeature.setSpecialists(feature);
+        return teacherFeature;
+    }
+
+    default TeacherInfoRespVo toTeacherInfo(Teacher teacher) {
+        TeacherInfoRespVo teacherRespVo = new TeacherInfoRespVo();
+        teacherRespVo.setRecordId(teacher.getRecordId());
+        teacherRespVo.setName(teacher.getName());
+        teacherRespVo.setEnName(teacher.getEnName());
+        teacherRespVo.setAttendance(teacher.getAttendance());
+        teacherRespVo.setRating(teacher.getRating());
+        teacherRespVo.setPrice(teacher.getPrice());
+        teacherRespVo.setCreditsPrice(teacher.getCreditsPrice());
+        teacherRespVo.setRate(teacher.getRate());
+        teacherRespVo.setConfirmedQty(teacher.getConfirmedQty());
+        teacherRespVo.setCanceledQty(teacher.getCanceledQty());
+        teacherRespVo.setComplaintsQty(teacher.getComplaintsQty());
+        teacherRespVo.setSalaryAmount(teacher.getSalaryAmount());
+        teacherRespVo.setEmail(teacher.getEmail());
+        teacherRespVo.setCountry(teacher.getCountry());
+        teacherRespVo.setManagerId(teacher.getManagerId());
+        teacherRespVo.setManager(teacher.getManager());
+        teacherRespVo.setAvatarUrl(teacher.getAvatarUrl());
+        teacherRespVo.setLanguage(teacher.getLanguage());
+        teacherRespVo.setCurrencyCode(teacher.getCurrencyCode());
+        teacherRespVo.setCurrencyName(teacher.getCurrencyName());
+        teacherRespVo.setCurrencySymbol(teacher.getCurrencySymbol());
+        teacherRespVo.setSpecialties(teacher.getSpecialties());
+        teacherRespVo.setVideoUrl(teacher.getVideoUrl());
+        teacherRespVo.setTestStatus(teacher.getTestStatus());
+        teacherRespVo.setManagerStatus(teacher.getManagerStatus());
+        teacherRespVo.setEnabledStatus(teacher.getEnabledStatus());
+        teacherRespVo.setCreateTime(teacher.getCreateTime());
+        teacherRespVo.setCreateName(teacher.getCreateName());
+        teacherRespVo.setCreator(teacher.getCreator());
+        return teacherRespVo;
     }
 
 }

@@ -43,6 +43,7 @@ public interface StudentConverter {
         student.setCreateName(userName);
         student.setCreateTime(new Date());
         student.setRecordId(UUID.randomUUID().toString());
+        student.setEmail(reqVo.getEmail());
         student.setName(reqVo.getEnName());
         student.setEncryption("MD5");
         student.setPassword(MD5Util.md5(student.getEncryption(), reqVo.getPassword()));

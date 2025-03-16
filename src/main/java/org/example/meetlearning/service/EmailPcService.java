@@ -6,13 +6,21 @@ import com.aliyun.dm20151123.models.SingleSendMailResponse;
 import com.aliyun.teaopenapi.models.Config;
 import com.aliyun.teautil.models.RuntimeOptions;
 import lombok.extern.slf4j.Slf4j;
+import org.example.meetlearning.util.RedisCommonsUtil;
 import org.example.meetlearning.vo.common.RespVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
-public class EmailPcService {
+public class EmailPcService extends BasePcService{
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Value("${mail.accessKeyId}")
     private String accessKeyId;
@@ -29,7 +37,8 @@ public class EmailPcService {
     @Value("${mail.subject}")
     private String subject;
 
-    public RespVo<String> sendVerificationEmail(String toEmail) throws Exception {
+
+    public RespVo<String> sendVerificationEmail(String userCode, String toEmail) throws Exception {
         try {
             int verificationCode = (int) (Math.random() * 900000) + 100000;
             Config config = new Config()
@@ -41,7 +50,6 @@ public class EmailPcService {
 
             // 动态替换模板变量
             String htmlBody = "<h1>您的验证码是：</h1><p>" + verificationCode + "</p>";
-
             SingleSendMailRequest request = new SingleSendMailRequest()
                     .setAccountName(accountName)
                     .setFromAlias(fromAlias)
@@ -51,10 +59,13 @@ public class EmailPcService {
                     .setHtmlBody(htmlBody)
                     .setReplyToAddress(true);
             SingleSendMailResponse response = client.singleSendMailWithOptions(request, new RuntimeOptions());
+            redisTemplate.opsForValue().set(RedisCommonsUtil.emailKeyGet(toEmail), verificationCode, 300, TimeUnit.SECONDS);
             return new RespVo<>("发送成功");
         } catch (Exception e) {
             log.error("发送失败", e);
             return new RespVo<>("发送失败", false, e.getMessage());
         }
     }
+
+
 }
