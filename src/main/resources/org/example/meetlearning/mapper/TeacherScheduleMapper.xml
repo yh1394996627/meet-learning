@@ -20,12 +20,22 @@
         from teacher_schedule
         where teacher_id = #{teacherId,jdbcType=VARCHAR} and week_num = #{weekNum,jdbcType=VARCHAR}
     </select>
+
+    <select id="selectTeacherIdByWeekNumAndTime" resultType="java.lang.String">
+        select teacher_id
+        from teacher_schedule
+        where week_num = #{weekNum,jdbcType=VARCHAR}
+          and begin_time &lt;= #{beginTime}
+          and end_time >= #{endTime}
+    </select>
+
     <delete id="deleteByTeacherIdAndWeekNum">
         delete
         from teacher_schedule
         where teacher_id = #{teacherId,jdbcType=VARCHAR}
           and week_num = #{weekNum,jdbcType=VARCHAR}
     </delete>
+
     <insert id="insertBatch" parameterType="list">
         insert into teacher_schedule (creator, create_time,
         teacher_id, begin_time, end_time,

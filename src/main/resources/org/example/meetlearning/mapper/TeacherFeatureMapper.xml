@@ -20,6 +20,20 @@
         where teacher_id = #{teacherId,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectTeacherIdBySpecialists" resultType="java.lang.String">
+        select teacher_id
+        from teacher_feature
+        where specialists = #{specialists,jdbcType=VARCHAR}
+        <if test="teacherIds != null">
+            and teacher_id in
+            <foreach collection="teacherIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+
     <delete id="deletedByTeacherId" parameterType="java.lang.Long">
         delete
         from teacher_feature

@@ -128,6 +128,12 @@
     </select>
 
     <sql id="common_where">
+        <if test="params.recordIds != null">
+            and record_id in
+            <foreach collection="params.recordIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="params.managerId != null">
             and manager_id = #{params.managerId}
         </if>

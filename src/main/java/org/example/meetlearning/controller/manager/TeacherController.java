@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.enums.TeacherSpecialistsEnum;
 import org.example.meetlearning.service.TeacherPcService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -111,7 +112,6 @@ public class TeacherController implements BaseController {
         return teacherPcService.teacherLastCommentRespVo(getUserCode(), getUserName(), queryVo);
     }
 
-
     @Operation(summary = "老师仪表盘", operationId = "dashboard")
     @PostMapping(value = "v1/teacher/dashboard")
     public RespVo<TeacherDashboardRespVo> dashboard() {
@@ -124,10 +124,29 @@ public class TeacherController implements BaseController {
         return teacherPcService.teacherInfo(queryVo);
     }
 
-
     @Operation(summary = "学生端-老师列表", operationId = "teacherPage")
     @PostMapping(value = "v1/teacher/pc/page")
-    public RespVo<PageVo<TeacherListRespVo>> studentTeacherPage(@RequestBody TeacherQueryVo queryVo) {
-        return teacherPcService.teacherPage(queryVo);
+    public RespVo<PageVo<TeacherInfoRespVo>> studentTeacherPage(@RequestBody TeacherPcQueryVo queryVo) {
+        return teacherPcService.teacherPcPage(queryVo);
     }
+
+
+    @Operation(summary = "学生端-老师列表-国家查询", operationId = "countrySearch")
+    @PostMapping(value = "v1/teacher/pc/search/country")
+    public RespVo<List<SelectValueVo>> countrySearch() {
+        return teacherPcService.teacherPcCountrySearch();
+    }
+
+    @Operation(summary = "学生端-老师列表-擅长查询", operationId = "countrySearch")
+    @PostMapping(value = "v1/teacher/pc/search/specialists")
+    public RespVo<List<SelectValueVo>> specialistsSearch() {
+        List<SelectValueVo> selectValueVos = List.of(
+                new SelectValueVo(TeacherSpecialistsEnum.ADULTS.name(), TeacherSpecialistsEnum.ADULTS.name()),
+                new SelectValueVo(TeacherSpecialistsEnum.TEENS.name(), TeacherSpecialistsEnum.TEENS.name()),
+                new SelectValueVo(TeacherSpecialistsEnum.KIDS.name(), TeacherSpecialistsEnum.KIDS.name())
+        );
+        return new RespVo<>(selectValueVos);
+    }
+
+
 }

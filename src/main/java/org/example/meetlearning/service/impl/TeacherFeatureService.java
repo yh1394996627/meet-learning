@@ -34,5 +34,12 @@ public class TeacherFeatureService {
         return teacherFeatureMapper.selectByTeacherId(teacherId);
     }
 
+    /**
+     * 根据特点查询老师
+     */
+    public List<String> selectTeacherIdBySpecialists(String specialists, List<String> teacherIds) {
+        return teacherFeatureMapper.selectTeacherIdBySpecialists(specialists, teacherIds);
+    }
+
 
 }

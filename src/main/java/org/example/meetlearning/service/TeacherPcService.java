@@ -7,8 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherFeature;
+import org.example.meetlearning.dao.entity.TeacherSchedule;
 import org.example.meetlearning.enums.RoleEnum;
+import org.example.meetlearning.enums.ScheduleWeekEnum;
 import org.example.meetlearning.service.impl.TeacherFeatureService;
+import org.example.meetlearning.service.impl.TeacherScheduleService;
 import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +42,39 @@ public class TeacherPcService extends BasePcService {
     private final TeacherService teacherService;
 
     private final TeacherFeatureService teacherFeatureService;
+    private final TeacherScheduleService teacherScheduleService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(TeacherQueryVo queryVo) {
         try {
             Page<Teacher> teacherPage = teacherService.selectPageParams(queryVo.getParams(), queryVo.getPageRequest());
             PageVo<TeacherListRespVo> pageVo = PageVo.map(teacherPage, TeacherConverter.INSTANCE::toListVo);
+            return new RespVo<>(pageVo);
+        } catch (Exception ex) {
+            log.error("查询失败", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+    }
+
+    public RespVo<PageVo<TeacherInfoRespVo>> teacherPcPage(TeacherPcQueryVo queryVo) {
+        try {
+            List<String> teacherIds = new ArrayList<>();
+            //查询时间段有空的老师
+            ScheduleWeekEnum weekEnum = queryVo.getWeek();
+            List<String> teacher1Ids = teacherScheduleService.selectTeacherIdByWeekNumAndTime(weekEnum.name(), queryVo.getBeginTime(), queryVo.getEndTime());
+
+            //如果查询条件勾选了擅长
+            if (StringUtils.hasText(queryVo.getSpecialists())) {
+                teacher1Ids = CollectionUtils.isEmpty(teacher1Ids) ? teacher1Ids : null;
+                List<String> teacher2Ids = teacherFeatureService.selectTeacherIdBySpecialists(queryVo.getSpecialists(), teacher1Ids);
+                teacherIds.addAll(teacher2Ids);
+            } else {
+                teacherIds.addAll(teacher1Ids);
+            }
+            //查詢老師信息
+            Map<String, Object> params = queryVo.getParams();
+            params.put("recordIds", teacherIds);
+            Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
+            PageVo<TeacherInfoRespVo> pageVo = PageVo.map(teacherPage, TeacherConverter.INSTANCE::toTeacherInfo);
             return new RespVo<>(pageVo);
         } catch (Exception ex) {
             log.error("查询失败", ex);
@@ -258,8 +290,20 @@ public class TeacherPcService extends BasePcService {
             log.error("Query failed", ex);
             return new RespVo<>(null, false, ex.getMessage());
         }
+    }
 
 
+    public RespVo<List<SelectValueVo>> teacherPcCountrySearch() {
+        try {
+            List<SelectValueVo> selectValueVos = new ArrayList<>();
+            Map<String, Object> params = new HashMap<>();
+            List<SelectValueVo> searchVos = teacherService.selectGroupCountry(params);
+            selectValueVos.addAll(searchVos);
+            return new RespVo<>(selectValueVos);
+        } catch (Exception ex) {
+            log.error("查询失败", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
     }
 
 
