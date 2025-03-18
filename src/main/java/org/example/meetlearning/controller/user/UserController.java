@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.UserPcService;
+import org.example.meetlearning.vo.common.FileRecordVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.UserInfoRespVo;
 import org.example.meetlearning.vo.user.UserLoginReqVo;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
+import java.util.List;
 
 @Tag(name = "用户接口")
 @RestController
@@ -60,6 +62,18 @@ public class UserController implements BaseController {
     @PostMapping(value = "v1/user/upload/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public RespVo<URL> uploadVideo(@RequestPart("file") MultipartFile file) {
         return userPcService.uploadPcVideo(getUserCode(), file);
+    }
+
+    @Operation(summary = "上传证书", operationId = "uploadFile")
+    @PostMapping(value = "v1/user/upload/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public RespVo<List<FileRecordVo>> uploadFile(@RequestBody List<MultipartFile> file) {
+        return userPcService.uploadPcFile(getUserCode(), file);
+    }
+
+    @Operation(summary = "", operationId = "deleteFile")
+    @PostMapping(value = "v1/user/delete/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public RespVo<List<FileRecordVo>> deleteFile(@RequestBody List<FileRecordVo> file) {
+        return userPcService.deletedFile(getUserCode(), file);
     }
 
 }

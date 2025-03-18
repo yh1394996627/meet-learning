@@ -1,25 +1,27 @@
 package org.example.meetlearning.service;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.example.meetlearning.common.OssConfig;
+import org.example.meetlearning.converter.FileRecordConverter;
 import org.example.meetlearning.converter.UserConverter;
-import org.example.meetlearning.dao.entity.Student;
+import org.example.meetlearning.dao.entity.FileRecord;
 import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.enums.RoleEnum;
+import org.example.meetlearning.service.impl.FileRecordService;
 import org.example.meetlearning.service.impl.UserService;
 import org.example.meetlearning.util.RedisCommonsUtil;
+import org.example.meetlearning.vo.common.FileRecordVo;
+import org.example.meetlearning.vo.common.RespVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -30,6 +32,9 @@ public class BasePcService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FileRecordService fileRecordService;
 
     @Autowired
     private OssConfig ossConfig;
@@ -109,22 +114,44 @@ public class BasePcService {
     }
 
     /**
-     * 上传证书用于老师
-     *
-     * @param userCode
-     * @param file
-     * @return
-     *//*
-    public List<URL> uploadCertificate(String userCode, List<MultipartFile> file) {
-        String fileName = "certificate/" + userCode + "." + getLastPartOfString(Objects.requireNonNull(file.getOriginalFilename()));
+     * 批量上传证书用于老师
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public RespVo<List<FileRecordVo>> uploadCertificate(String userCode, List<MultipartFile> files) {
+        // 查询已存在的文件记录
+        // List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
         try {
-            ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, file.getInputStream());
-            return downloadAvatar(fileName);
+            List<FileRecord> newFileRecords = new ArrayList<>();
+            for (MultipartFile file : files) {
+                String fileName = "certificate/" + UUID.randomUUID() + "." + getLastPartOfString(Objects.requireNonNull(file.getOriginalFilename()));
+                ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, file.getInputStream());
+                //添加记录
+                newFileRecords.add(FileRecordConverter.INSTANCE.toCreate(userCode, file.getName(), fileName));
+            }
+            //批量保存
+            fileRecordService.insertBatch(newFileRecords);
+            List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
+            return new RespVo<>(fileRecords.stream().map(FileRecordConverter.INSTANCE::toFileRecordVo).toList());
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            log.error("File retrieval failed", e);
+            return new RespVo<>(null, false, e.getMessage());
         }
-    }*/
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public RespVo<List<FileRecordVo>> deletedFile(String userCode, List<FileRecordVo> fileRecordVos) {
+        try {
+            for (FileRecordVo fileRecordVo : fileRecordVos) {
+                fileRecordService.deleteByRecordId(fileRecordVo.getRecordId());
+            }
+            List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
+            return new RespVo<>(fileRecords.stream().map(FileRecordConverter.INSTANCE::toFileRecordVo).toList());
+        } catch (Exception e) {
+            log.error("File retrieval failed", e);
+            return new RespVo<>(null, false, e.getMessage());
+        }
+    }
 
 
     public String getLastPartOfString(String str) {

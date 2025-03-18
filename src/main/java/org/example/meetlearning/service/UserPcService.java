@@ -14,6 +14,7 @@ import org.example.meetlearning.service.impl.StudentService;
 import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.service.impl.UserService;
 import org.example.meetlearning.util.MD5Util;
+import org.example.meetlearning.vo.common.FileRecordVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.UserInfoRespVo;
 import org.example.meetlearning.vo.user.UserLoginReqVo;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -98,13 +100,18 @@ public class UserPcService extends BasePcService {
         return new RespVo<>(url);
     }
 
-    public RespVo<URL> uploadPcFile(String userCode, MultipartFile file) {
+    public RespVo<List<FileRecordVo>> uploadPcFile(String userCode, List<MultipartFile> file) {
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
-        URL url = uploadVideo(userCode, file);
-        Teacher teacher = teacherService.selectByRecordId(userCode);
-        teacher.setVideoUrl(url.getPath());
-        teacherService.updateEntity(teacher);
-        return new RespVo<>(url);
+        return uploadCertificate(userCode, file);
     }
+
+
+    public RespVo<List<FileRecordVo>> deletedPcFile(String userCode, List<FileRecordVo> fileRecordVos) {
+        User accountUser = userService.selectByRecordId(userCode);
+        Assert.notNull(accountUser, "User information not obtained");
+        return deletedFile(userCode, fileRecordVos);
+    }
+
+
 }
