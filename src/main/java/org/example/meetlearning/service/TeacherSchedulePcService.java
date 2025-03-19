@@ -58,7 +58,10 @@ public class TeacherSchedulePcService {
             Assert.notNull(reqVo.getScheduleType(), "scheduleType cannot be empty");
             String scheduleType = reqVo.getScheduleType().name();
             List<TeacherScheduleSet> teacherSchedules = teacherScheduleService.selectSetByTeacherId(teacherId, weekNum, scheduleType);
-            ScheduleInfoRespVo scheduleInfoRespVo = ScheduleConverter.INSTANCE.toScheduleInfoRespVo(teacherSchedules);
+            ScheduleInfoRespVo scheduleInfoRespVo = null;
+            if (!CollectionUtils.isEmpty(teacherSchedules)) {
+                scheduleInfoRespVo = ScheduleConverter.INSTANCE.toScheduleInfoRespVo(teacherSchedules);
+            }
             return new RespVo<>(scheduleInfoRespVo);
         } catch (Exception e) {
             log.error("Query failed", e);
