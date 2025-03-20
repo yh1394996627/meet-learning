@@ -18,7 +18,6 @@ public interface BaseConfigConverter {
         respVo.setRecordId(record.getRecordId());
         respVo.setCode(record.getCode());
         respVo.setName(record.getName());
-        respVo.setSymbol(record.getSymbol());
         respVo.setType(record.getType());
         return respVo;
     }
