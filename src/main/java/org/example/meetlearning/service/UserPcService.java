@@ -44,6 +44,7 @@ public class UserPcService extends BasePcService {
             Assert.isTrue(accountUser == null, "账号【" + reqVo.getAccountCode() + "】已存在无法注册");
             User user = UserConverter.INSTANCE.toCreateManage(reqVo);
             userService.insertEntity(user);
+            addFinance("SYSTEM", "SYSTEM", user);
         } catch (Exception ex) {
             log.error("注册失败", ex);
             return new RespVo<>("注册失败", false, ex.getMessage());
@@ -100,17 +101,17 @@ public class UserPcService extends BasePcService {
         return new RespVo<>(url);
     }
 
-    public RespVo<List<FileRecordVo>> uploadPcFile(String userCode, List<MultipartFile> file) {
+    public RespVo<FileRecordVo> uploadPcFile(String userCode, MultipartFile file) {
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
         return uploadCertificate(userCode, file);
     }
 
 
-    public RespVo<List<FileRecordVo>> deletedPcFile(String userCode, List<FileRecordVo> fileRecordVos) {
+    public RespVo<String> deletedPcFile(String userCode, FileRecordVo fileRecordVo) {
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
-        return deletedFile(userCode, fileRecordVos);
+        return deletedFile(userCode, fileRecordVo);
     }
 
 

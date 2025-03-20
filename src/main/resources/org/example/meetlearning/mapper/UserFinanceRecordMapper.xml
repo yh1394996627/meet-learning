@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.UserFinanceRecordMapper">
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.UserFinanceRecord">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="quantity" jdbcType="DECIMAL" property="quantity"/>
+        <result column="usedQty" jdbcType="DECIMAL" property="usedqty"/>
+        <result column="canQty" jdbcType="DECIMAL" property="canqty"/>
+        <result column="user_type" jdbcType="VARCHAR" property="userType"/>
+        <result column="expiration_time" jdbcType="TIMESTAMP" property="expirationTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , deleted, creator, create_name, create_time, user_id, quantity, usedQty, canQty,
+    user_type, expiration_time
+    </sql>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_finance_record
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.UserFinanceRecord">
+        insert into user_finance_record (deleted, creator,
+                                         create_name, create_time, user_id,
+                                         quantity, usedQty, canQty,
+                                         user_type, expiration_time)
+        values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
+                #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=VARCHAR},
+                #{quantity,jdbcType=DECIMAL}, #{usedqty,jdbcType=DECIMAL}, #{canqty,jdbcType=DECIMAL},
+                #{userType,jdbcType=VARCHAR}, #{expirationTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.UserFinanceRecord">
+        update user_finance_record
+        <set>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                create_name = #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity,jdbcType=DECIMAL},
+            </if>
+            <if test="usedqty != null">
+                usedQty = #{usedqty,jdbcType=DECIMAL},
+            </if>
+            <if test="canqty != null">
+                canQty = #{canqty,jdbcType=DECIMAL},
+            </if>
+            <if test="userType != null">
+                user_type = #{userType,jdbcType=VARCHAR},
+            </if>
+            <if test="expirationTime != null">
+                expiration_time = #{expirationTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>

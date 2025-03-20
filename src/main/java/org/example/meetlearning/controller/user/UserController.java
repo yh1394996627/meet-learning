@@ -37,13 +37,11 @@ public class UserController implements BaseController {
         return userPcService.manageRegister(reqVo);
     }
 
-
     @Operation(summary = "管理系统用户登录", operationId = "login")
     @PostMapping(value = "v1/user/login")
     public RespVo<UserInfoRespVo> login(@RequestBody UserLoginReqVo reqVo) {
         return userPcService.loginUser(reqVo);
     }
-
 
     @Operation(summary = "用户信息查询", operationId = "login")
     @PostMapping(value = "v1/user/info")
@@ -66,13 +64,13 @@ public class UserController implements BaseController {
 
     @Operation(summary = "上传证书", operationId = "uploadFile")
     @PostMapping(value = "v1/user/upload/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RespVo<List<FileRecordVo>> uploadFile(@RequestBody List<MultipartFile> file) {
+    public RespVo<FileRecordVo> uploadFile(@RequestPart("file") MultipartFile file) {
         return userPcService.uploadPcFile(getUserCode(), file);
     }
 
-    @Operation(summary = "", operationId = "deleteFile")
+    @Operation(summary = "删除附件", operationId = "deleteFile")
     @PostMapping(value = "v1/user/delete/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RespVo<List<FileRecordVo>> deleteFile(@RequestBody List<FileRecordVo> file) {
+    public RespVo<String> deleteFile(@RequestBody FileRecordVo file) {
         return userPcService.deletedFile(getUserCode(), file);
     }
 

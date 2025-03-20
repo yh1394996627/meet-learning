@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.AffiliateConverter;
 import org.example.meetlearning.dao.entity.Affiliate;
+import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.vo.affiliate.*;
@@ -47,9 +48,11 @@ public class AffiliatePcService extends BasePcService {
             affiliateService.insertEntity(affiliate);
 
             // 创建登陆帐号
-            addUser(userCode, userName, affiliate.getRecordId(), affiliate.getEmail(), reqVo.getPassword(),
+            User newUser = addUser(userCode, userName, affiliate.getRecordId(), affiliate.getEmail(), reqVo.getPassword(),
                     RoleEnum.MANAGER, affiliate.getName(), affiliate.getEnName(), affiliate.getEmail());
 
+            //创建用户关联的课时币
+            addFinance(userCode, userName, newUser);
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("Addition failed", ex);

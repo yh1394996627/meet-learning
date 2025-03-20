@@ -3,6 +3,7 @@ package org.example.meetlearning.converter;
 import cn.hutool.core.util.BooleanUtil;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherFeature;
+import org.example.meetlearning.enums.GenderEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
 import org.example.meetlearning.vo.teacher.*;
@@ -130,7 +131,7 @@ public interface TeacherConverter {
         teacherRespVo.setLanguage(teacher.getLanguage());
         teacherRespVo.setCurrencyCode(teacher.getCurrencyCode());
         teacherRespVo.setCurrencyName(teacher.getCurrencyName());
-        teacherRespVo.setCurrencySymbol(teacher.getCurrencySymbol());
+        teacherRespVo.setGender(GenderEnum.MALE.getEnName());
         teacherRespVo.setSpecialties(teacher.getSpecialties());
         teacherRespVo.setVideoUrl(teacher.getVideoUrl());
         teacherRespVo.setTestStatus(teacher.getTestStatus());

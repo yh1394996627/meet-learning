@@ -21,7 +21,8 @@
         <!--        <table tableName="teacher_schedule_set" domainObjectName="TeacherScheduleSet"/>-->
         <!--        <table tableName="teacher_schedule" domainObjectName="TeacherSchedule"/>-->
         <!--        <table tableName="file_record" domainObjectName="FileRecord"/>-->
-        <table tableName="base_config" domainObjectName="BaseConfig"/>
-
+        <!--        <table tableName="base_config" domainObjectName="BaseConfig"/>-->
+        <table tableName="user_finance" domainObjectName="UserFinance"/>
+        <table tableName="user_finance_record" domainObjectName="UserFinanceRecord"/>
     </context>
 </generatorConfiguration>

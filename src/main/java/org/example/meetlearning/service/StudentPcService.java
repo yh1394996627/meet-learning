@@ -31,6 +31,7 @@ public class StudentPcService extends BasePcService {
 
     private final UserService userService;
 
+
     /**
      * 学生信息分页查询
      *
@@ -50,15 +51,18 @@ public class StudentPcService extends BasePcService {
 
             Student student = StudentConverter.INSTANCE.toCreateStudent(userCode, userName, reqVo);
             //如果是代理商 则添加代理商信息
-            User user = userService.selectByRecordId(userCode);
-            if (user != null && StringUtils.pathEquals(RoleEnum.AFFILIATE.name(), user.getType())) {
+            User managerUser = userService.selectByRecordId(userCode);
+            if (managerUser != null && StringUtils.pathEquals(RoleEnum.AFFILIATE.name(), managerUser.getType())) {
                 student.setAffiliateId(userCode);
                 student.setAffiliateName(userName);
             }
             studentService.save(student);
             //创建登陆帐号
-            addUser(userCode, userName, student.getRecordId(), student.getEmail(), student.getPassword(),
+            User newUser = addUser(userCode, userName, student.getRecordId(), student.getEmail(), student.getPassword(),
                     RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail());
+
+            //创建用户关联的课时币
+            addFinance(userCode, userName, newUser);
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("Addition failed", ex);

@@ -8,6 +8,7 @@ import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherFeature;
 import org.example.meetlearning.dao.entity.TeacherSchedule;
+import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
 import org.example.meetlearning.service.impl.BaseConfigService;
@@ -133,9 +134,11 @@ public class TeacherPcService extends BasePcService {
             Teacher teacher = TeacherConverter.INSTANCE.toCreateTeacher(userCode, userName, reqVo);
             teacherService.insertEntity(teacher);
             //创建登陆帐号
-            addUser(userCode, userName, teacher.getRecordId(), teacher.getEmail(), reqVo.getPassword(),
+            User newUser = addUser(userCode, userName, teacher.getRecordId(), teacher.getEmail(), reqVo.getPassword(),
                     RoleEnum.STUDENT, teacher.getName(), teacher.getEnName(), teacher.getEmail());
 
+            //创建用户关联的课时币
+            addFinance(userCode, userName, newUser);
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("Addition failed", ex);
@@ -287,7 +290,9 @@ public class TeacherPcService extends BasePcService {
             teacher.setAvatarUrl(downloadAvatar != null ? downloadAvatar.toString() : "");
             teacher.setVideoUrl(downloadVideo != null ? downloadVideo.toString() : "");
             Assert.notNull(teacher, "Teacher information not obtained");
-            return new RespVo<>(TeacherConverter.INSTANCE.toTeacherInfo(teacher));
+            TeacherInfoRespVo respVo =TeacherConverter.INSTANCE.toTeacherInfo(teacher);
+            respVo.setFileRecordVos(getFileRecordVoList(queryVo.getRecordId()));
+            return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("Query failed", ex);
             return new RespVo<>(null, false, ex.getMessage());

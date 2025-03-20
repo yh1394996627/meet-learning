@@ -130,12 +130,12 @@ public class TeacherController implements BaseController {
         return teacherPcService.teacherPcPage(queryVo);
     }
 
-
     @Operation(summary = "学生端-老师列表-国家查询", operationId = "countrySearch")
     @PostMapping(value = "v1/teacher/pc/search/country")
     public RespVo<List<SelectValueVo>> countrySearch() {
         return teacherPcService.teacherPcCountrySearch();
     }
+
 
     @Operation(summary = "学生端-老师列表-擅长查询", operationId = "countrySearch")
     @PostMapping(value = "v1/teacher/pc/search/specialists")

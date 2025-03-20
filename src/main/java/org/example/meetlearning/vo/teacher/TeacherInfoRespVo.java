@@ -2,9 +2,11 @@ package org.example.meetlearning.vo.teacher;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.example.meetlearning.vo.common.FileRecordVo;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class TeacherInfoRespVo {
@@ -72,14 +74,14 @@ public class TeacherInfoRespVo {
     @Schema(name = "language", description = "语言")
     private String language;
 
+    @Schema(name = "gender", description = "性别")
+    private String gender;
+
     @Schema(name = "currencyCode", description = "货币")
     private String currencyCode;
 
     @Schema(name = "currencyName", description = "货币名称")
     private String currencyName;
-
-    @Schema(name = "currencySymbol", description = "货币符号")
-    private String currencySymbol;
 
     @Schema(name = "specialties", description = "专业")
     private String specialties;
@@ -95,5 +97,8 @@ public class TeacherInfoRespVo {
 
     @Schema(name = "videoUrl", description = "视频地址")
     private String videoUrl;
+
+    @Schema(name = "fileRecordVos", description = "附件")
+    private List<FileRecordVo> fileRecordVos;
 
 }
