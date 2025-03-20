@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.BaseConfigMapper">
+  <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.BaseConfig">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="record_id" jdbcType="VARCHAR" property="recordId" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="symbol" jdbcType="VARCHAR" property="symbol" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, creator, create_time, record_id, code, name, symbol, type
+  </sql>
+
+  <select id="selectByRecordId" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from base_config
+      where record_id = #{recordId}
+  </select>
+
+  <select id="selectByType" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from base_config
+      where type = #{type}
+  </select>
+
+  <select id="selectByCode" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from base_config
+      where code = #{code}
+  </select>
+
+  <select id="selectByName" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from base_config
+      where name = #{name}
+  </select>
+
+  <select id="selectBySymbol" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from base_config
+      where symbol = #{symbol}
+  </select>
+
+  <delete id="deleteByRecordId">
+      delete
+      from base_config
+      where record_id = #{recordId}
+  </delete>
+
+  <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.BaseConfig">
+      insert into base_config (creator, create_time,
+                               record_id, code, name,
+                               symbol,  type)
+      values (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+              #{recordId,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+              #{symbol,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.BaseConfig">
+    update base_config
+    set creator = #{creator,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      record_id = #{recordId,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      symbol = #{symbol,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
