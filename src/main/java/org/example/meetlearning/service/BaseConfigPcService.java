@@ -10,11 +10,13 @@ import org.example.meetlearning.enums.ConfigTypeEnum;
 import org.example.meetlearning.service.impl.BaseConfigService;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.config.BaseConfigQueryVo;
 import org.example.meetlearning.vo.config.BaseConfigReqVo;
 import org.example.meetlearning.vo.config.BaseConfigRespVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -92,5 +94,16 @@ public class BaseConfigPcService {
             log.error("Failed to delete configuration", e);
             return new RespVo<>(null, false, "Failed to delete configurationn");
         }
+    }
+
+
+    public RespVo<List<SelectValueVo>> selectConfig(BaseConfigQueryVo queryVo) {
+        try {
+            return new RespVo<>(baseConfigService.selectByType(queryVo.getConfigType().name()));
+        } catch (Exception e) {
+            log.error("Query failed", e);
+            return new RespVo<>(null, false, "Query failed");
+        }
+
     }
 }

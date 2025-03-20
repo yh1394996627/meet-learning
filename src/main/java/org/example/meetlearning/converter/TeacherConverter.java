@@ -65,8 +65,8 @@ public interface TeacherConverter {
         teacher.setManager(reqVo.getManager());
         teacher.setAvatarUrl(reqVo.getAvatarUrl());
         teacher.setLanguage(reqVo.getLanguage());
-        teacher.setCurrencyCode(reqVo.getCurrencyCode());
-        teacher.setCurrencyName(reqVo.getCurrencySymbol());
+        teacher.setCurrencyName(reqVo.getCurrencyCode());
+        teacher.setCurrencyName(reqVo.getCurrencyName());
 //        teacher.setSpecialties(reqVo.getSpecialties());
         teacher.setVideoUrl(reqVo.getVideoUrl());
         return teacher;

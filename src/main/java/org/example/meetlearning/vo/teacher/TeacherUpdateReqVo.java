@@ -32,7 +32,7 @@ public class TeacherUpdateReqVo {
     private BigDecimal price;
 
     @Schema(name = "creditsPrice", description = "积分单价")
-    private BigDecimal creditsPrice ;
+    private BigDecimal creditsPrice;
 
     @Schema(name = "currencyCode", description = "币种编码")
     private String currencyCode;

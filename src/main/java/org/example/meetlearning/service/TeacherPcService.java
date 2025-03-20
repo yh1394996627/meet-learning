@@ -10,6 +10,7 @@ import org.example.meetlearning.dao.entity.TeacherFeature;
 import org.example.meetlearning.dao.entity.TeacherSchedule;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
+import org.example.meetlearning.service.impl.BaseConfigService;
 import org.example.meetlearning.service.impl.TeacherFeatureService;
 import org.example.meetlearning.service.impl.TeacherScheduleService;
 import org.example.meetlearning.service.impl.TeacherService;
@@ -43,6 +44,7 @@ public class TeacherPcService extends BasePcService {
 
     private final TeacherFeatureService teacherFeatureService;
     private final TeacherScheduleService teacherScheduleService;
+    private final BaseConfigService baseConfigService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(TeacherQueryVo queryVo) {
         try {
@@ -292,7 +294,6 @@ public class TeacherPcService extends BasePcService {
         }
     }
 
-
     public RespVo<List<SelectValueVo>> teacherPcCountrySearch() {
         try {
             List<SelectValueVo> selectValueVos = new ArrayList<>();
@@ -305,6 +306,4 @@ public class TeacherPcService extends BasePcService {
             return new RespVo<>(null, false, ex.getMessage());
         }
     }
-
-
 }

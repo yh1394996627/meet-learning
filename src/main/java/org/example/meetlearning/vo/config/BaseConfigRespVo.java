@@ -11,8 +11,6 @@ public class BaseConfigRespVo {
 
     private String name;
 
-    private String symbol;
-
     private String type;
 
 }

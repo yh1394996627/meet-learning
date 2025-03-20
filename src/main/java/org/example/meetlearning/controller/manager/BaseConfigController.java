@@ -8,6 +8,7 @@ import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.BaseConfigPcService;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.config.BaseConfigQueryVo;
 import org.example.meetlearning.vo.config.BaseConfigReqVo;
 import org.example.meetlearning.vo.config.BaseConfigRespVo;
@@ -48,6 +49,13 @@ public class BaseConfigController implements BaseController {
     @PostMapping(value = "v1/config/deleted")
     public RespVo<String> deletedConfig(@RequestBody RecordIdQueryVo reqVo) {
         return baseConfigPcService.deletedConfig(reqVo);
+    }
+
+
+    @Operation(summary = "基础配置查询 key value", operationId = "selectConfig")
+    @PostMapping(value = "v1/config/select")
+    public RespVo<List<SelectValueVo>> selectConfig(@RequestBody BaseConfigQueryVo queryVo) {
+        return baseConfigPcService.selectConfig(queryVo);
     }
 
 }

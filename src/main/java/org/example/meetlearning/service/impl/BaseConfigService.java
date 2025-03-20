@@ -3,6 +3,7 @@ package org.example.meetlearning.service.impl;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.BaseConfig;
 import org.example.meetlearning.dao.mapper.BaseConfigMapper;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,6 +44,11 @@ public class BaseConfigService {
 
     public void insertEntity(BaseConfig record) {
         baseConfigMapper.insertEntity(record);
+    }
+
+    public List<SelectValueVo> selectByType(String type) {
+        List<BaseConfig> baseConfigs = baseConfigMapper.selectByType(type);
+        return baseConfigs.stream().map(baseConfig -> new SelectValueVo(baseConfig.getCode(), baseConfig.getName())).toList();
     }
 
 }
