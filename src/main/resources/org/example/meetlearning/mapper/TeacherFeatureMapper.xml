@@ -34,7 +34,7 @@
 
 
 
-    <delete id="deletedByTeacherId" parameterType="java.lang.Long">
+    <delete id="deletedByTeacherId">
         delete
         from teacher_feature
         where teacher_id = #{teacherId,jdbcType=VARCHAR}
@@ -45,8 +45,8 @@
                                      record_id, teacher_id, specialists)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
-            #{recordId,jdbcType=VARCHAR}, #{teacherId,jdbcType=VARCHAR}, #{specialists,jdbcType=VARCHAR})
+            (#{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.recordId,jdbcType=VARCHAR}, #{item.teacherId,jdbcType=VARCHAR}, #{item.specialists,jdbcType=VARCHAR})
         </foreach>
     </insert>
 </mapper>

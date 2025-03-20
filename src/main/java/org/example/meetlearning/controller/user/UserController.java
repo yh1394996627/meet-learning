@@ -69,7 +69,7 @@ public class UserController implements BaseController {
     }
 
     @Operation(summary = "删除附件", operationId = "deleteFile")
-    @PostMapping(value = "v1/user/delete/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "v1/user/delete/file")
     public RespVo<String> deleteFile(@RequestBody FileRecordVo file) {
         return userPcService.deletedFile(getUserCode(), file);
     }
