@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.UserFinance;
 import org.example.meetlearning.dao.mapper.UserFinanceMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -30,6 +35,16 @@ public class UserFinanceService {
      */
     public UserFinance selectByUserId(String userId) {
         return userFinanceMapper.selectByUserId(userId);
+    }
+
+    /**
+     * 根据用户id查询
+     */
+    public List<UserFinance> selectByUserIds(List<String> userIds) {
+        if(CollectionUtils.isEmpty(userIds)){
+            return new ArrayList<>();
+        }
+        return userFinanceMapper.selectByUserIds(userIds);
     }
 
     /**

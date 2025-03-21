@@ -86,9 +86,9 @@ public interface StudentClassConverter {
             studentClass.setAffiliateName(affiliate.getName());
         }
         //todo 这块还需要实现
-        studentClass.setStudentConsumption(BigDecimalUtil.nullOrZero(student.getConsumption()).add(BigDecimalUtil.nullOrZero(reqVo.getQuantity())));
-        studentClass.setEfficientDate(new Date());
-        studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(student.getBalance()));
+//        studentClass.setStudentConsumption(BigDecimalUtil.nullOrZero(student.getConsumption()).add(BigDecimalUtil.nullOrZero(reqVo.getQuantity())));
+//        studentClass.setEfficientDate(new Date());
+//        studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(student.getBalance()));
         return studentClass;
     }
 

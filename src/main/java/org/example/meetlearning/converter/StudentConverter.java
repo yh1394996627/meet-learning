@@ -27,12 +27,9 @@ public interface StudentConverter {
         respVo.setRecordId(student.getRecordId());
         respVo.setPhone(student.getPhone());
         respVo.setEmail(student.getEmail());
-        respVo.setBalance(BigDecimalUtil.nullOrZero(student.getBalance()));
-        respVo.setExpirationTime(student.getExpirationTime());
         respVo.setLastActivities(student.getLastActivities());
         respVo.setWebsite(student.getWebsite());
         respVo.setRemark(student.getRemark());
-        respVo.setIsDeleted(BigDecimalUtil.eqZero(student.getBalance()));
         return respVo;
     }
 
@@ -58,7 +55,8 @@ public interface StudentConverter {
         student.setGender(reqVo.getGender());
         student.setLearnPurpose(reqVo.getLearnPurpose());
         student.setLearnPlan(reqVo.getLearnPlan());
-        student.setRecommender(reqVo.getRecommender());
+        student.setAffiliateId(reqVo.getAffiliateId());
+        student.setAffiliateName(reqVo.getAffiliateName());
         return student;
     }
 
@@ -71,9 +69,7 @@ public interface StudentConverter {
         studentInfoRespVo.setGender(student.getGender());
         studentInfoRespVo.setPhone(student.getPhone());
         studentInfoRespVo.setEmail(student.getEmail());
-        studentInfoRespVo.setBalance(student.getBalance());
         studentInfoRespVo.setCountry(student.getCountry());
-        studentInfoRespVo.setExpirationTime(student.getExpirationTime());
         studentInfoRespVo.setLastActivities(student.getLastActivities());
         studentInfoRespVo.setWebsite(student.getWebsite());
         studentInfoRespVo.setRemark(student.getRemark());

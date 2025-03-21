@@ -8,9 +8,12 @@ import org.example.meetlearning.converter.StudentConverter;
 import org.example.meetlearning.dao.entity.Affiliate;
 import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.entity.User;
+import org.example.meetlearning.dao.entity.UserFinance;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.StudentService;
+import org.example.meetlearning.service.impl.UserFinanceService;
 import org.example.meetlearning.service.impl.UserService;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -21,6 +24,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,6 +38,8 @@ public class StudentPcService extends BasePcService {
 
     private final UserService userService;
 
+    private final UserFinanceService userFinanceService;
+
 
     /**
      * 学生信息分页查询
@@ -40,7 +49,22 @@ public class StudentPcService extends BasePcService {
      */
     public RespVo<PageVo<StudentListRespVo>> studentPage(StudentRequestQueryVo queryVo) {
         Page<Student> page = studentService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
-        PageVo<StudentListRespVo> pageVo = PageVo.map(page, StudentConverter.INSTANCE::toStudentListRespVo);
+        List<String> userIds = page.getRecords().stream().map(Student::getRecordId).toList();
+        //获取学生课时币信息
+        List<UserFinance> userFinances = userFinanceService.selectByUserIds(userIds);
+        Map<String, UserFinance> userFinanceMap = userFinances.stream().collect(Collectors.toMap(UserFinance::getUserId, Function.identity()));
+
+        //组装返回数据
+        PageVo<StudentListRespVo> pageVo = PageVo.map(page, list -> {
+            StudentListRespVo respVo = StudentConverter.INSTANCE.toStudentListRespVo(list);
+            if (userFinanceMap.containsKey(list.getRecordId())) {
+                UserFinance userFinance = userFinanceMap.get(list.getRecordId());
+                respVo.setBalance(userFinance.getBalanceQty());
+                respVo.setExpirationTime(userFinance.getExpirationTime());
+                respVo.setIsDeleted(BigDecimalUtil.eqZero(respVo.getBalance()));
+            }
+            return respVo;
+        });
         return new RespVo<>(pageVo);
     }
 
@@ -120,6 +144,10 @@ public class StudentPcService extends BasePcService {
             Student student = studentService.findByRecordId(reqVo.getRecordId());
             Assert.notNull(student, "Student information not obtained");
             StudentInfoRespVo respVo = StudentConverter.INSTANCE.toStudentInfoRespVo(student);
+            UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
+            Assert.notNull(userFinance, "Student Finance information not obtained");
+            respVo.setBalance(userFinance.getBalanceQty());
+            respVo.setExpirationTime(userFinance.getExpirationTime());
             return new RespVo<>(respVo);
         } catch (Exception e) {
             log.error("Query failed", e);

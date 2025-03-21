@@ -27,8 +27,11 @@ public class StudentUpdateReqVo {
     @Schema(name = "learnPlan", description = "学习计划")
     private String learnPlan;
 
-    @Schema(name = "recommender", description = "推荐人")
-    private String recommender;
+    @Schema(name = "affiliateId", description = "代理商Id")
+    private String affiliateId;
+
+    @Schema(name = "affiliateName", description = "代理商名称")
+    private String affiliateName;
 
 
 }

@@ -42,21 +42,11 @@ public class Student {
 
     private String email;
 
-    private BigDecimal balance;
-
-    private BigDecimal consumption;
-
     private String country;
-
-    private Date expirationTime;
 
     private String lastActivities;
 
     private String website;
-
-    private String recommender_id;
-
-    private String recommender;
 
     private String remark;
 

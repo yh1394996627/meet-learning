@@ -30,13 +30,11 @@ public class StudentController implements BaseController {
         return studentPcService.studentPage(queryVo);
     }
 
-
     @Operation(summary = "新增学生接口", operationId = "studentAdd")
     @PostMapping(value = "v1/student/add")
     public RespVo<String> studentAdd(@RequestBody StudentAddReqVo reqVo) {
         return studentPcService.studentAdd(getUserCode(), getUserName(), reqVo);
     }
-
 
     @Operation(summary = "更新学生接口", operationId = "studentUpdate")
     @PostMapping(value = "v1/student/update")
@@ -44,13 +42,11 @@ public class StudentController implements BaseController {
         return studentPcService.studentUpdate(getUserCode(), getUserName(), reqVo);
     }
 
-
     @Operation(summary = "删除学生接口", operationId = "studentDeleted")
     @PostMapping(value = "v1/student/deleted")
     public RespVo<String> studentDeleted(@RequestBody StudentRecordReqVo reqVo) {
         return studentPcService.deleteStudent(reqVo);
     }
-
 
     @Operation(summary = "更新学生备注", operationId = "studentRemarkUpdate")
     @PostMapping(value = "v1/student/remark/update")
