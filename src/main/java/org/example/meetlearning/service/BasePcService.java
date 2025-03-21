@@ -142,7 +142,7 @@ public class BasePcService {
             ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, file.getInputStream());
             //批量保存
 
-            fileRecordService.insertBatch(List.of(FileRecordConverter.INSTANCE.toCreate(userCode, file.getName(), fileName)));
+            fileRecordService.insertBatch(List.of(FileRecordConverter.INSTANCE.toCreate(userCode, file.getName(), file.getOriginalFilename())));
             List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
             return new RespVo<>(FileRecordConverter.INSTANCE.toFileRecordVo(fileRecords.get(0)));
         } catch (Exception e) {
