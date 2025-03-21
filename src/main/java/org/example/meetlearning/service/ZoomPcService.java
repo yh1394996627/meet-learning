@@ -12,7 +12,6 @@ import java.io.IOException;
 @Slf4j
 public class ZoomPcService {
 
-
     @Value("${zoom.client-id}")
     private String apiKey;
 
