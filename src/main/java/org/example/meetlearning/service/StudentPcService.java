@@ -19,6 +19,7 @@ import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,6 +69,7 @@ public class StudentPcService extends BasePcService {
         return new RespVo<>(pageVo);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> studentAdd(String userCode, String userName, StudentAddReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getEnName()), "Email cannot be empty");
@@ -82,7 +84,7 @@ public class StudentPcService extends BasePcService {
             }
             studentService.save(student);
             //创建登陆帐号
-            User newUser = addUser(userCode, userName, student.getRecordId(), student.getEmail(), student.getPassword(),
+            User newUser = addUser(userCode, userName, student.getRecordId(), student.getEmail(), reqVo.getPassword(),
                     RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail());
 
             //创建用户关联的课时币
