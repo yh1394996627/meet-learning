@@ -24,7 +24,7 @@ class MeetLearningApplicationTests {
 
     @Test
     void test2(){
-        zoomService.getZoomUserIdByEmail("1394996627@qq.com");
+        zoomService.getZoomUserIdByEmail("1394996627@qq.com","");
     }
 
 

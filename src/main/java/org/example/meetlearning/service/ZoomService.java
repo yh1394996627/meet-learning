@@ -16,11 +16,11 @@ public class ZoomService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public String getZoomUserIdByEmail(String email) {
+    public String getZoomUserIdByEmail(String email,String accessToken) {
         String url = "https://api.zoom.us/v2/users/" + email;
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + zoomOAuthService.getAccessToken());
+        headers.set("Authorization", "Bearer " + accessToken);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
