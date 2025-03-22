@@ -1,6 +1,9 @@
 package org.example.meetlearning.converter;
 
 import org.example.meetlearning.dao.entity.TokensLog;
+import org.example.meetlearning.dao.entity.User;
+import org.example.meetlearning.dao.entity.UserFinance;
+import org.example.meetlearning.dao.entity.UserFinanceRecord;
 import org.example.meetlearning.enums.CurrencyEnum;
 import org.example.meetlearning.vo.token.TokensLogAddReqVo;
 import org.example.meetlearning.vo.token.TokensLogListRespVo;
@@ -40,14 +43,23 @@ public interface TokenConverter {
         tokensLog.setQuantity(tokensLogAddReqVo.getQuantity());
         tokensLog.setBalance(new BigDecimal("0"));
         tokensLog.setAmount(tokensLogAddReqVo.getAmount());
-        CurrencyEnum currency = CurrencyEnum.getBySymbol(tokensLogAddReqVo.getCurrencySymbol());
-        assert currency != null;
-        tokensLog.setCurrencyCode(currency.name());
-        tokensLog.setCurrencyName(currency.getName());
-        tokensLog.setCurrencySymbol(currency.getSymbol());
-        tokensLog.setNote(tokensLogAddReqVo.getCurrencyName());
+        tokensLog.setNote(tokensLogAddReqVo.getRemark());
         return tokensLog;
     }
 
 
+    default TokensLog toCreateTokenByFinanceRecord(String userCode, String userName, UserFinance finance, UserFinanceRecord record) {
+        TokensLog tokensLog = new TokensLog();
+        tokensLog.setDeleted(false);
+        tokensLog.setUserId(record.getUserId());
+        tokensLog.setCreator(userCode);
+        tokensLog.setCreateName(userName);
+        tokensLog.setCreateTime(new Date());
+        tokensLog.setRecordId(UUID.randomUUID().toString());
+        tokensLog.setQuantity(record.getQuantity());
+        tokensLog.setBalance(finance.getBalanceQty());
+        tokensLog.setAmount(record.getPayAmount());
+        tokensLog.setNote(record.getRemark());
+        return tokensLog;
+    }
 }

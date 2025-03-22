@@ -5,13 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.StudentConverter;
+import org.example.meetlearning.converter.TokenConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.RoleEnum;
-import org.example.meetlearning.service.impl.StudentService;
-import org.example.meetlearning.service.impl.UserFinanceRecordService;
-import org.example.meetlearning.service.impl.UserFinanceService;
-import org.example.meetlearning.service.impl.UserService;
+import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -44,6 +42,9 @@ public class StudentPcService extends BasePcService {
     private final UserFinanceService userFinanceService;
 
     private final UserFinanceRecordService userFinanceRecordService;
+
+    private final BaseConfigService baseConfigService;
+    private final TokensLogService tokensLogService;
 
     /**
      * 学生信息分页查询
@@ -181,6 +182,15 @@ public class StudentPcService extends BasePcService {
             userFinance.setBalanceQty(balanceQty);
             userFinance.setConsumptionQty(usedQty);
             userFinanceService.updateByEntity(userFinance);
+            //添加记录课时币记录
+            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, userFinanceRecord);
+            if (org.codehaus.plexus.util.StringUtils.isNotEmpty(userFinanceRecord.getCurrencyCode())) {
+                BaseConfig baseConfig = baseConfigService.selectByCode(userFinanceRecord.getCurrencyCode());
+                Assert.notNull(baseConfig, "Configuration information not obtained record:【" + userFinanceRecord.getCurrencyCode() + "】");
+                tokensLog.setCurrencyCode(baseConfig.getCode());
+                tokensLog.setCurrencyName(baseConfig.getName());
+            }
+            tokensLogService.insertEntity(tokensLog);
             return new RespVo<>("Payment successful");
         } catch (Exception e) {
             log.error("Payment failed", e);

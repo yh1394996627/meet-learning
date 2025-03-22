@@ -18,11 +18,11 @@ public class TokensLogAddReqVo {
     @Schema(name = "paymentCode", description = "支付方式")
     private String paymentCode;
 
+    @Schema(name = "currencyCode", description = "货币Code")
+    private String currencyCode;
+
     @Schema(name = "currencyName", description = "货币名称")
     private String currencyName;
-
-    @Schema(name = "currencySymbol", description = "货币符号")
-    private String currencySymbol;
 
     @Schema(name = "amount", description = "支付金额")
     private BigDecimal amount;
