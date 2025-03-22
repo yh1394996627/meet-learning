@@ -18,7 +18,7 @@ public class StudentAddReqVo {
     private String password;
 
     @Schema(name = "language", description = "语言")
-    private LanguageEnum language;
+    private String language;
 
     @Schema(name = "website", description = "网站")
     private String website;

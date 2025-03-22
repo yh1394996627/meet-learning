@@ -23,13 +23,14 @@
         <result column="learn_plan" jdbcType="VARCHAR" property="learnPlan"/>
         <result column="affiliate_id" jdbcType="VARCHAR" property="affiliateId"/>
         <result column="affiliate_name" jdbcType="VARCHAR" property="affiliateName"/>
+        <result column="language" jdbcType="VARCHAR" property="language"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
         record_id, name, age, gender, phone, email,last_activities, website, remark, learn_purpose,
-        learn_plan, affiliate_id, affiliate_name
+        learn_plan, affiliate_id, affiliate_name , language
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -152,6 +153,9 @@
             <if test="affiliateName != null">
                 affiliate_name,
             </if>
+            <if test="language != null">
+                language,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -216,6 +220,9 @@
             </if>
             <if test="affiliateName != null">
                 #{affiliateName,jdbcType=VARCHAR},
+            </if>
+            <if test="language != null">
+                #{language,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -283,6 +290,9 @@
             </if>
             <if test="affiliateName != null">
                 affiliate_name = #{affiliateName,jdbcType=VARCHAR},
+            </if>
+            <if test="language != null">
+                language = #{language,jdbcType=VARCHAR},
             </if>
         </set>
         where record_id = #{recordId}

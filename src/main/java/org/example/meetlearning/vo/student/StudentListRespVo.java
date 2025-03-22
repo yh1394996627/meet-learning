@@ -42,7 +42,7 @@ public class StudentListRespVo {
     @Schema(name = "affiliateId", description = "代理商ID")
     private String affiliateId;
 
-    @Schema(name = "recommender", description = "代理商名称")
+    @Schema(name = "affiliateName", description = "代理商名称")
     private String affiliateName;
 
     @Schema(name = "remark", description = "备注")

@@ -45,7 +45,7 @@ public interface StudentConverter {
         student.setEncryption("MD5");
         student.setPassword(MD5Util.md5(student.getEncryption(), reqVo.getPassword()));
         student.setWebsite(reqVo.getWebsite());
-        student.setLanguage(reqVo.getLanguage().name());
+        student.setLanguage(reqVo.getLanguage());
         return student;
     }
 

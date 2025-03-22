@@ -79,8 +79,8 @@ public class StudentPcService extends BasePcService {
             //如果是代理商 则添加代理商信息
             User managerUser = userService.selectByRecordId(userCode);
             if (managerUser != null && StringUtils.pathEquals(RoleEnum.AFFILIATE.name(), managerUser.getType())) {
-                student.setAffiliateId(userCode);
-                student.setAffiliateName(userName);
+                student.setAffiliateId(managerUser.getRecordId());
+                student.setAffiliateName(managerUser.getName());
             }
             studentService.save(student);
             //创建登陆帐号
@@ -102,6 +102,12 @@ public class StudentPcService extends BasePcService {
             Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
             Student student = studentService.findByRecordId(recordId);
             student = StudentConverter.INSTANCE.toUpdateStudent(student, reqVo);
+            if (StringUtils.hasText(reqVo.getAffiliateId())) {
+                User affiliateUser = userService.selectByRecordId(userCode);
+                Assert.notNull(affiliateUser, "Affiliate user cannot be empty");
+                student.setAffiliateId(affiliateUser.getRecordId());
+                student.setAffiliateName(affiliateUser.getName());
+            }
             student.setUpdator(userCode);
             student.setUpdateName(userName);
             student.setUpdateTime(new Date());
