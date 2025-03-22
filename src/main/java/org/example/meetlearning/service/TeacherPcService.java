@@ -75,7 +75,9 @@ public class TeacherPcService extends BasePcService {
             }
             //查詢老師信息
             Map<String, Object> params = queryVo.getParams();
-            params.put("recordIds", teacherIds);
+            if (!CollectionUtils.isEmpty(teacherIds)) {
+                params.put("recordIds", teacherIds);
+            }
             Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
             PageVo<TeacherInfoRespVo> pageVo = PageVo.map(teacherPage, TeacherConverter.INSTANCE::toTeacherInfo);
             return new RespVo<>(pageVo);
@@ -290,7 +292,7 @@ public class TeacherPcService extends BasePcService {
             teacher.setAvatarUrl(downloadAvatar != null ? downloadAvatar.toString() : "");
             teacher.setVideoUrl(downloadVideo != null ? downloadVideo.toString() : "");
             Assert.notNull(teacher, "Teacher information not obtained");
-            TeacherInfoRespVo respVo =TeacherConverter.INSTANCE.toTeacherInfo(teacher);
+            TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(teacher);
             respVo.setFileRecordVos(getFileRecordVoList(queryVo.getRecordId()));
             return new RespVo<>(respVo);
         } catch (Exception ex) {
