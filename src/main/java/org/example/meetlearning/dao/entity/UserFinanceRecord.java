@@ -18,6 +18,8 @@ public class UserFinanceRecord {
 
     private Date createTime;
 
+    private String recordId;
+
     private String userId;
 
     private BigDecimal quantity;

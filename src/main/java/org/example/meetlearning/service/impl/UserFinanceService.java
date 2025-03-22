@@ -25,8 +25,8 @@ public class UserFinanceService {
     /**
      * 更新
      */
-    public int updateByEntity(UserFinance record) {
-        return userFinanceMapper.updateByEntity(record);
+    public void updateByEntity(UserFinance record) {
+        userFinanceMapper.updateByEntity(record);
     }
 
     /**

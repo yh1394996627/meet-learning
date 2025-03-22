@@ -9,8 +9,8 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="quantity" jdbcType="DECIMAL" property="quantity"/>
-        <result column="usedQty" jdbcType="DECIMAL" property="usedQty"/>
-        <result column="canQty" jdbcType="DECIMAL" property="canQty"/>
+        <result column="used_qty" jdbcType="DECIMAL" property="usedQty"/>
+        <result column="can_qty" jdbcType="DECIMAL" property="canQty"/>
         <result column="user_type" jdbcType="VARCHAR" property="userType"/>
         <result column="expiration_time" jdbcType="TIMESTAMP" property="expirationTime"/>
         <result column="currency_code" jdbcType="VARCHAR" property="currencyCode"/>
@@ -24,27 +24,46 @@
 
     <sql id="Base_Column_List">
         id
-        , deleted, creator, create_name, create_time, user_id, quantity, usedQty, canQty,
-    user_type, expiration_time,currencyCode, currencyName, payAmount, paymentId, paymentName, remark, discountRate,
+        , deleted, creator, create_name, create_time, user_id, quantity, used_qty, can_qty,
+    user_type, expiration_time,currency_code, currency_name, pay_amount, payment_id, payment_name, remark, discount_rate
     </sql>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user_finance_record
-        where user_id = #{userId}
+        where deleted = 0 and user_id = #{userId}
     </select>
+
+    <select id="selectByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_finance_record
+        where deleted = 0 and user_id = #{params.userId}
+        <if test="params.isComplete != null">
+            and can_qty > 0;
+        </if>
+    </select>
+
+
+    <select id="selectPageByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_finance_record
+        where deleted = 0 and user_id = #{userId} order by id desc
+    </select>
+
 
     <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.UserFinanceRecord">
         insert into user_finance_record (deleted, creator,
                                          create_name, create_time, user_id,
-                                         quantity, usedQty, canQty,
+                                         quantity, used_qty, can_qty,
                                          user_type, expiration_time, currency_code, currency_name,
-                                         payment_id, payment_name, remark, pay_amount, discount_rate,)
+                                         payment_id, payment_name, remark, pay_amount, discount_rate)
 
         values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
                 #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=VARCHAR},
-                #{quantity,jdbcType=DECIMAL}, #{usedqty,jdbcType=DECIMAL}, #{canqty,jdbcType=DECIMAL},
+                #{quantity,jdbcType=DECIMAL}, #{usedQty,jdbcType=DECIMAL}, #{canQty,jdbcType=DECIMAL},
                 #{userType,jdbcType=VARCHAR}, #{expirationTime,jdbcType=TIMESTAMP}, #{currencyCode,jdbcType=VARCHAR},
                 #{currencyName,jdbcType=VARCHAR}, #{paymentId,jdbcType=VARCHAR}, #{paymentName,jdbcType=VARCHAR},
                 #{remark,jdbcType=VARCHAR}, #{payAmount,jdbcType=DECIMAL}, #{discountRate,jdbcType=DECIMAL})
@@ -71,11 +90,11 @@
             <if test="quantity != null">
                 quantity = #{quantity,jdbcType=DECIMAL},
             </if>
-            <if test="usedqty != null">
-                usedQty = #{usedqty,jdbcType=DECIMAL},
+            <if test="usedQty != null">
+                used_qty = #{usedQty,jdbcType=DECIMAL},
             </if>
-            <if test="canqty != null">
-                canQty = #{canqty,jdbcType=DECIMAL},
+            <if test="canQty != null">
+                can_qty = #{canQty,jdbcType=DECIMAL},
             </if>
             <if test="userType != null">
                 user_type = #{userType,jdbcType=VARCHAR},

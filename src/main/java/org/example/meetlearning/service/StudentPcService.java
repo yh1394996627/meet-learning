@@ -5,12 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.StudentConverter;
-import org.example.meetlearning.dao.entity.Affiliate;
-import org.example.meetlearning.dao.entity.Student;
-import org.example.meetlearning.dao.entity.User;
-import org.example.meetlearning.dao.entity.UserFinance;
+import org.example.meetlearning.converter.UserFinanceConverter;
+import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.StudentService;
+import org.example.meetlearning.service.impl.UserFinanceRecordService;
 import org.example.meetlearning.service.impl.UserFinanceService;
 import org.example.meetlearning.service.impl.UserService;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -18,12 +17,15 @@ import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
+import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
+import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
+import org.example.meetlearning.vo.user.UserStudentPayReqVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,8 @@ public class StudentPcService extends BasePcService {
     private final UserService userService;
 
     private final UserFinanceService userFinanceService;
+
+    private final UserFinanceRecordService userFinanceRecordService;
 
     /**
      * 学生信息分页查询
@@ -164,20 +168,37 @@ public class StudentPcService extends BasePcService {
         }
     }
 
-    public RespVo<String> studentPay(StudentPayReqVo reqVo) {
+    public RespVo<String> studentPay(String userCode, String userName, UserStudentPayReqVo reqVo) {
         try {
             //新增用户课时币记录 userFinanceRecord
-
-
+            UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo);
+            userFinanceRecordService.insertEntity(userFinanceRecord);
             //更新 userFinance
-
-            return new RespVo<>("respVo");
+            List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(reqVo.getUserId());
+            BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+            UserFinance userFinance = userFinanceService.selectByUserId(reqVo.getUserId());
+            userFinance.setBalanceQty(balanceQty);
+            userFinance.setConsumptionQty(usedQty);
+            userFinanceService.updateByEntity(userFinance);
+            return new RespVo<>("Payment successful");
         } catch (Exception e) {
-            log.error("Query failed", e);
-            return new RespVo<>(null, false, e.getMessage());
+            log.error("Payment failed", e);
+            return new RespVo<>(null, false, "Payment failed");
         }
     }
 
+    public RespVo<PageVo<UserStudentPayRecordRespVo>> studentPayRecord(UserStudentFinanceRecordQueryVo reqVo) {
+        try {
+            //更新 userFinance
+            Page<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParams(reqVo.getParams(), reqVo.getPageRequest());
+            PageVo<UserStudentPayRecordRespVo> pageVo = PageVo.map(userFinanceRecordList, UserFinanceConverter.INSTANCE::toUserStudentPayRecordRespVo);
+            return new RespVo<>(pageVo);
+        } catch (Exception e) {
+            log.error("Query failed", e);
+            return new RespVo<>(null, false, "Query failed");
+        }
+    }
 
 
 }

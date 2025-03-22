@@ -1,16 +1,17 @@
 package org.example.meetlearning.controller.manager;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.StudentPcService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
+import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
+import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
+import org.example.meetlearning.vo.user.UserStudentPayReqVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,9 +63,14 @@ public class StudentController implements BaseController {
 
     @Operation(summary = "学生充值接口", operationId = "studentPay")
     @PostMapping(value = "v1/student/pay")
-    public RespVo<String> studentPay(@RequestBody StudentPayReqVo reqVo) {
-        return studentPcService.studentPay(reqVo);
+    public RespVo<String> studentPay(@RequestBody UserStudentPayReqVo reqVo) {
+        return studentPcService.studentPay(getUserCode(), getUserName(), reqVo);
     }
 
+    @Operation(summary = "学生课时币记录", operationId = "studentPay")
+    @PostMapping(value = "v1/student/finance/record")
+    public RespVo<PageVo<UserStudentPayRecordRespVo>> studentFinanceRecord(@RequestBody UserStudentFinanceRecordQueryVo queryVo) {
+        return studentPcService.studentPayRecord(queryVo);
+    }
 
 }

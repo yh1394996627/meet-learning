@@ -63,7 +63,7 @@
     <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.UserFinance">
         update user_finance
         <set>
-            version = version + 1
+            version = version + 1,
             <if test="deleted != null">
                 deleted = #{deleted,jdbcType=BIT},
             </if>

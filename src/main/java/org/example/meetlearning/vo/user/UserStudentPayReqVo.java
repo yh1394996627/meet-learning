@@ -1,4 +1,4 @@
-package org.example.meetlearning.vo.student;
+package org.example.meetlearning.vo.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -6,10 +6,10 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class StudentPayReqVo {
+public class UserStudentPayReqVo {
 
-    @Schema(name = "recordId", description = "用户ID 学生/老师/代理商")
-    private String recordId;
+    @Schema(name = "userId", description = "用户ID 学生/老师/代理商")
+    private String userId;
 
     @Schema(name = "discountRate", description = "折扣率 9折传0.9 以此类推")
     private BigDecimal discountRate;
@@ -20,8 +20,8 @@ public class StudentPayReqVo {
     @Schema(name = "quantity", description = "充值的课时币数量")
     private BigDecimal quantity;
 
-    @Schema(name = "expiration_time", description = "过期时间")
-    private String expiration_time;
+    @Schema(name = "expirationTime", description = "过期时间")
+    private String expirationTime;
 
     @Schema(name = "paymentId", description = "支付渠道ID")
     private String paymentId;
@@ -36,7 +36,7 @@ public class StudentPayReqVo {
     private String currencyName;
 
     @Schema(name = "payAmount", description = "支付金额")
-    private String payAmount;
+    private BigDecimal payAmount;
 
     @Schema(name = "remark", description = "备注")
     private String remark;
