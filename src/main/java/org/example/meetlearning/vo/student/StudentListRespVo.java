@@ -51,5 +51,8 @@ public class StudentListRespVo {
     @Schema(name = "isDeleted", description = "是否可以删除")
     private Boolean isDeleted;
 
+    @Schema(name = "version", description = "版本号")
+    private Long version;
+
 
 }

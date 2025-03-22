@@ -9,16 +9,23 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="quantity" jdbcType="DECIMAL" property="quantity"/>
-        <result column="usedQty" jdbcType="DECIMAL" property="usedqty"/>
-        <result column="canQty" jdbcType="DECIMAL" property="canqty"/>
+        <result column="usedQty" jdbcType="DECIMAL" property="usedQty"/>
+        <result column="canQty" jdbcType="DECIMAL" property="canQty"/>
         <result column="user_type" jdbcType="VARCHAR" property="userType"/>
         <result column="expiration_time" jdbcType="TIMESTAMP" property="expirationTime"/>
+        <result column="currency_code" jdbcType="VARCHAR" property="currencyCode"/>
+        <result column="currency_name" jdbcType="VARCHAR" property="currencyName"/>
+        <result column="payment_id" jdbcType="VARCHAR" property="paymentId"/>
+        <result column="payment_name" jdbcType="VARCHAR" property="paymentName"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="pay_amount" jdbcType="DECIMAL" property="payAmount"/>
+        <result column="discount_rate" jdbcType="DECIMAL" property="discountRate"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, user_id, quantity, usedQty, canQty,
-    user_type, expiration_time
+    user_type, expiration_time,currencyCode, currencyName, payAmount, paymentId, paymentName, remark, discountRate,
     </sql>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
@@ -32,11 +39,15 @@
         insert into user_finance_record (deleted, creator,
                                          create_name, create_time, user_id,
                                          quantity, usedQty, canQty,
-                                         user_type, expiration_time)
+                                         user_type, expiration_time, currency_code, currency_name,
+                                         payment_id, payment_name, remark, pay_amount, discount_rate,)
+
         values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
                 #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=VARCHAR},
                 #{quantity,jdbcType=DECIMAL}, #{usedqty,jdbcType=DECIMAL}, #{canqty,jdbcType=DECIMAL},
-                #{userType,jdbcType=VARCHAR}, #{expirationTime,jdbcType=TIMESTAMP})
+                #{userType,jdbcType=VARCHAR}, #{expirationTime,jdbcType=TIMESTAMP}, #{currencyCode,jdbcType=VARCHAR},
+                #{currencyName,jdbcType=VARCHAR}, #{paymentId,jdbcType=VARCHAR}, #{paymentName,jdbcType=VARCHAR},
+                #{remark,jdbcType=VARCHAR}, #{payAmount,jdbcType=DECIMAL}, #{discountRate,jdbcType=DECIMAL})
     </insert>
 
     <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.UserFinanceRecord">

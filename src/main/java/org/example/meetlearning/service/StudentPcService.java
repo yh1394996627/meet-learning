@@ -41,7 +41,6 @@ public class StudentPcService extends BasePcService {
 
     private final UserFinanceService userFinanceService;
 
-
     /**
      * 学生信息分页查询
      *
@@ -124,6 +123,8 @@ public class StudentPcService extends BasePcService {
             String recordId = reqVo.getRecordId();
             Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
             studentService.deletedByRecordId(recordId);
+            //删除登陆帐号和余额信息
+            deleteUser(recordId);
             return new RespVo<>("Student deleted successfully");
         } catch (Exception ex) {
             log.error("Failed to delete student", ex);
@@ -162,4 +163,21 @@ public class StudentPcService extends BasePcService {
             return new RespVo<>(null, false, e.getMessage());
         }
     }
+
+    public RespVo<String> studentPay(StudentPayReqVo reqVo) {
+        try {
+            //新增用户课时币记录 userFinanceRecord
+
+
+            //更新 userFinance
+
+            return new RespVo<>("respVo");
+        } catch (Exception e) {
+            log.error("Query failed", e);
+            return new RespVo<>(null, false, e.getMessage());
+        }
+    }
+
+
+
 }

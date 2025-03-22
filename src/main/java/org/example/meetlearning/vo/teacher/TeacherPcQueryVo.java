@@ -34,7 +34,7 @@ public class TeacherPcQueryVo extends PageRequestQuery<Teacher> {
     private String endTime;
 
     @Schema(name = "gender", description = "性别")
-    private GenderEnum gender;
+    private Integer gender;
 
     @Schema(name = "specialists", description = "擅长")
     private String specialists;
@@ -46,14 +46,13 @@ public class TeacherPcQueryVo extends PageRequestQuery<Teacher> {
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
         if (gender != null) {
-            params.put("gender", gender.getType());
+            params.put("gender", gender);
         }
         if (!StringUtils.isEmpty(country)) {
             params.put("country", this.country);
         }
         return params;
     }
-
 
     @Schema(hidden = true)
     public ScheduleWeekEnum getWeek() {

@@ -15,6 +15,7 @@ import org.example.meetlearning.service.impl.FileRecordService;
 import org.example.meetlearning.service.impl.UserFinanceRecordService;
 import org.example.meetlearning.service.impl.UserFinanceService;
 import org.example.meetlearning.service.impl.UserService;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.util.RedisCommonsUtil;
 import org.example.meetlearning.vo.common.FileRecordVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -56,14 +57,27 @@ public class BasePcService {
      */
     public User addUser(String userCode, String userName, String recordId, String accountCode,
                         String password, RoleEnum roleType, String name, String enName, String email) {
-        User user = userService.selectByRecordId(recordId);
+        User user = userService.selectByAccountCode(email);
         Assert.isNull(user, "The user already exists and cannot be added");
 
         user = UserConverter.INSTANCE.toCreateUser(userCode, userName, recordId, accountCode,
                 password, roleType, name, enName, email);
         userService.insertEntity(user);
-        log.info("Login account successfully added");
+        log.info("Login account successfully added recordId:{}", recordId);
         return user;
+    }
+
+
+    /**
+     * 删除登陆帐号和余额信息
+     */
+    public void deleteUser(String recordId) {
+        UserFinance userFinance = userFinanceService.selectByUserId(recordId);
+        Assert.isTrue(userFinance != null && BigDecimalUtil.eqZero(userFinance.getBalanceQty()), "The user has a balance that cannot be deleted");
+        userService.deleteByRecordId(recordId);
+        log.info("Login account delete successfully recordId:{}", recordId);
+        userFinanceService.deleteByUserId(recordId);
+        log.info("Finance balance delete successfully recordId:{}", recordId);
     }
 
     public void addFinance(String userCode, String userName, User user) {

@@ -23,7 +23,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, deleted, is_manager, creator, create_name, create_time, updator, update_name,
+        id
+        , deleted, is_manager, creator, create_name, create_time, updator, update_name,
     update_time, record_id, account_code, password, `type`, `name`, en_name, email, enabled, remark
     </sql>
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -46,6 +47,12 @@
         from user
         where deleted = 0 and account_code = #{accountCode}
     </select>
+
+    <update id="deleteByRecordId">
+        update user
+        set deleted =1
+        where record_id = #{recordId}
+    </update>
 
     <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.User">
         insert into user

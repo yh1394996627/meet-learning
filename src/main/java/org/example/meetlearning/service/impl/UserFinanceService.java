@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -50,8 +49,11 @@ public class UserFinanceService {
     /**
      * 根据用户id删除
      */
-    public int deleteByUserId(Long id) {
-        return userFinanceMapper.deleteByUserId(id);
+    public void deleteByUserId(String userId) {
+        userFinanceMapper.deleteByUserId(userId);
     }
+
+
+
 
 }

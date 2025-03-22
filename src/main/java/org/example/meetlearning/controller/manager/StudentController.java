@@ -60,4 +60,11 @@ public class StudentController implements BaseController {
         return studentPcService.studentInfo(reqVo);
     }
 
+    @Operation(summary = "学生充值接口", operationId = "studentPay")
+    @PostMapping(value = "v1/student/pay")
+    public RespVo<String> studentPay(@RequestBody StudentPayReqVo reqVo) {
+        return studentPcService.studentPay(reqVo);
+    }
+
+
 }

@@ -30,4 +30,18 @@ public class UserFinanceRecord {
 
     private Date expirationTime;
 
+    private String currencyCode;
+
+    private String currencyName;
+
+    private BigDecimal payAmount;
+
+    private String paymentId;
+
+    private String paymentName;
+
+    private String remark;
+
+    private BigDecimal discountRate;
+
 }

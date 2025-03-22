@@ -54,4 +54,14 @@ public class UserService {
         return userMapper.selectByAccountCode(accountCode);
     }
 
+
+    /**
+     * 根据recordId删除用户
+     *
+     * @return 删除条数
+     */
+    public int deleteByRecordId(String recordId) {
+        return userMapper.deleteByRecordId(recordId);
+    }
+
 }

@@ -16,11 +16,12 @@
         <result column="consumption_qty" jdbcType="DECIMAL" property="consumptionQty"/>
         <result column="user_type" jdbcType="VARCHAR" property="userType"/>
         <result column="expiration_time" jdbcType="TIMESTAMP" property="expirationTime"/>
+        <result column="version" jdbcType="BIGINT" property="version"/>
     </resultMap>
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
-    record_id, user_id, balance_qty, consumption_qty, user_type, expiration_time
+    record_id, user_id, balance_qty, consumption_qty, user_type, expiration_time, version
     </sql>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
@@ -62,6 +63,7 @@
     <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.UserFinance">
         update user_finance
         <set>
+            version = version + 1
             <if test="deleted != null">
                 deleted = #{deleted,jdbcType=BIT},
             </if>
@@ -102,6 +104,6 @@
                 expiration_time = #{expirationTime,jdbcType=TIMESTAMP},
             </if>
         </set>
-        where id = #{id,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
     </update>
 </mapper>

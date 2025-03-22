@@ -6,7 +6,7 @@ import org.example.meetlearning.dao.entity.UserFinance;
 
 public interface UserFinanceMapper {
 
-    int deleteByUserId(Long id);
+    int deleteByUserId(String userId);
 
     int insertEntity(UserFinance record);
 

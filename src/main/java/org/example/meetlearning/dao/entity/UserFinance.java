@@ -36,4 +36,5 @@ public class UserFinance {
 
     private Date expirationTime;
 
+    private Long version;
 }

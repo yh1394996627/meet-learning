@@ -14,4 +14,6 @@ public interface UserMapper {
 
     int updateEntity(User record);
 
+    int deleteByRecordId(String recordId);
+
 }
