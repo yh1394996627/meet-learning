@@ -145,17 +145,18 @@ public interface TeacherConverter {
 
     default TeacherDashboardRespVo toTeacherDashboard(Teacher teacher) {
         TeacherDashboardRespVo respVo = new TeacherDashboardRespVo();
-        respVo.setConfirmedQty(teacher.getConfirmedQty());
-        respVo.setCancelledQty(teacher.getCanceledQty());
-        respVo.setComplaintsQty(teacher.getComplaintsQty());
-        respVo.setConfirmedClassesAmount(teacher.getSalaryAmount());
+        respVo.setRate(BigDecimalUtil.nullOrZero(teacher.getRate()));
+        respVo.setConfirmedQty(BigDecimalUtil.nullOrZero(teacher.getConfirmedQty()));
+        respVo.setCancelledQty(BigDecimalUtil.nullOrZero(teacher.getCanceledQty()));
+        respVo.setComplaintsQty(BigDecimalUtil.nullOrZero(teacher.getComplaintsQty()));
+        respVo.setConfirmedClassesAmount(BigDecimalUtil.nullOrZero(teacher.getSalaryAmount()));
         respVo.setCancelledDeductionsAmount(BigDecimal.ZERO);
         respVo.setComplaintDeductionsAmount(BigDecimal.ZERO);
         respVo.setBonus(BigDecimal.ZERO);
         respVo.setCommission(BigDecimal.ZERO);
-        respVo.setTotalSalary(teacher.getSalaryAmount());
-        respVo.setAttendanceRate(teacher.getAttendance());
-        respVo.setRating(teacher.getRating());
+        respVo.setTotalSalary(BigDecimalUtil.nullOrZero(teacher.getSalaryAmount()));
+        respVo.setAttendanceRate(BigDecimalUtil.nullOrZero(teacher.getAttendance()));
+        respVo.setRating(BigDecimalUtil.nullOrZero(teacher.getRating()));
         return respVo;
     }
 
