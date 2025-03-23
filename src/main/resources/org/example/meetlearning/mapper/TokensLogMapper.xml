@@ -41,6 +41,9 @@
   </select>
 
   <sql id="common_where">
+    <if test="params.userId != null">
+      and user_id = #{params.userId}
+    </if>
     <if test="params.managerId != null">
       and manager_id = #{params.managerId}
     </if>
