@@ -11,6 +11,6 @@ public interface TeacherScheduleSetMapper {
 
     int insertBatch(List<TeacherScheduleSet> records);
 
-    List<TeacherScheduleSet> selectByTeacherIdAndWeekNum(String teacherId, String weekNum, String scheduleType);
+    List<TeacherScheduleSet> selectByTeacherIdAndWeekNum(@Param("teacherId") String teacherId,@Param("weekNum")  String weekNum,@Param("scheduleType")  String scheduleType);
 
 }

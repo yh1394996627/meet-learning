@@ -54,11 +54,10 @@ public class TeacherSchedulePcService {
         try {
             String teacherId = reqVo.getTeacherId();
             Assert.isTrue(StringUtils.hasText(teacherId), "teacherId cannot be empty");
-            Assert.isTrue(StringUtils.hasText(reqVo.getWeekNum()), "weekNum cannot be empty");
             String weekNum = reqVo.getWeekNum();
             Assert.notNull(reqVo.getScheduleType(), "scheduleType cannot be empty");
             String scheduleType = reqVo.getScheduleType().name();
-            if (reqVo.getScheduleType() == ScheduleTypeEnum.OFF) {
+            if (reqVo.getScheduleType() == ScheduleTypeEnum.OFF ||!StringUtils.hasText(weekNum)) {
                 weekNum = null;
             }
             List<TeacherScheduleSet> teacherSchedules = teacherScheduleService.selectSetByTeacherId(teacherId, weekNum, scheduleType);
