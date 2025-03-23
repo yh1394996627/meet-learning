@@ -15,16 +15,9 @@ public class ScheduleQueryVo {
     private String teacherId;
 
     @Schema(name = "weekNum", description = "周数")
-    private ScheduleWeekEnum weekNum;
+    private String weekNum;
 
     @Schema(name = "scheduleType", description = "时间段类型")
     private ScheduleTypeEnum scheduleType;
-
-    public ScheduleWeekEnum getWeekNum() {
-        if (weekNum == null) {
-            return ScheduleWeekEnum.MONDAY;
-        }
-        return weekNum;
-    }
 
 }

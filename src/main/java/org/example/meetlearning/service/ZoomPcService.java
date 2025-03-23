@@ -2,7 +2,13 @@ package org.example.meetlearning.service;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.codehaus.plexus.util.StringUtils;
+import org.example.meetlearning.util.SystemUUIDUtil;
+import org.example.meetlearning.util.ZoomDetectorUtil;
+import org.example.meetlearning.vo.common.RespVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,9 +27,12 @@ public class ZoomPcService {
     @Value("${zoom.api-url}")
     private String apiUrl;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     private OkHttpClient client = new OkHttpClient();
 
-    public String getZoomUserId(String email,String accessToken) throws IOException {
+    public String getZoomUserId(String email, String accessToken) throws IOException {
         String url = apiUrl + "/users/" + email;
         Request request = new Request.Builder()
                 .url(url)
@@ -110,6 +119,28 @@ public class ZoomPcService {
             // 解析响应体，获取 Access Token
             String responseBody = response.body().string();
             return new ObjectMapper().readTree(responseBody).get("access_token").asText();
+        }
+    }
+
+
+    public RespVo<Boolean> isZoomInstalled() {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            String redisKey = SystemUUIDUtil.getSystemUUID(os);
+//            Object zoomObj = redisTemplate.opsForValue().get(redisKey);
+//            if (zoomObj != null && StringUtils.isNotEmpty(zoomObj.toString())) {
+//                return new RespVo<>(zoomObj != null);
+//            } else {
+                if (!os.contains("win") && !os.contains("mac") && os.contains("nux")) {
+                    throw new UnsupportedOperationException("Unsupported operating system");
+                }
+                String zoom = ZoomDetectorUtil.detectZoom(os);
+//                redisTemplate.opsForValue().set(redisKey, zoom);
+                return new RespVo<>(zoom != null);
+//            }
+        } catch (Exception e) {
+            log.error("Error checking Zoom installation: " + e);
+            return new RespVo<>(false, false, e.getMessage());
         }
     }
 }

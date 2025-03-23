@@ -1,6 +1,7 @@
 package org.example.meetlearning;
 
 import org.example.meetlearning.service.EmailPcService;
+import org.example.meetlearning.service.ZoomPcService;
 import org.example.meetlearning.service.ZoomService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ class MeetLearningApplicationTests {
     @Autowired
     private ZoomService zoomService;
 
+    @Autowired
+    private ZoomPcService zoomPcService;
+
     @Test
     void test1() throws Exception {
         emailPcService.sendVerificationEmail("", "1394996627@qq.com ");
@@ -28,6 +32,10 @@ class MeetLearningApplicationTests {
     }
 
 
+    @Test
+    void test3(){
+        zoomPcService.isZoomInstalled();
+    }
 
 
 }
