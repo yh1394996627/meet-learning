@@ -12,14 +12,14 @@ import java.util.Map;
 @Data
 public class TokensLogQueryVo extends PageRequestQuery<TokensLog> {
 
-    @Schema(name = "userId", description = "用户ID")
-    private String userId;
+    @Schema(name = "recordId", description = "用户ID")
+    private String recordId;
 
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        if (StringUtils.hasText(userId)) {
-            params.put("userId", userId);
+        if (StringUtils.hasText(recordId)) {
+            params.put("userId", recordId);
         }
         return params;
     }
