@@ -9,6 +9,7 @@ import org.example.meetlearning.vo.common.RespVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -123,6 +124,7 @@ public class ZoomPcService {
     }
 
 
+    @Async
     public RespVo<Boolean> isZoomInstalled() {
         try {
             String os = System.getProperty("os.name").toLowerCase();
@@ -131,12 +133,12 @@ public class ZoomPcService {
 //            if (zoomObj != null && StringUtils.isNotEmpty(zoomObj.toString())) {
 //                return new RespVo<>(zoomObj != null);
 //            } else {
-                if (!os.contains("win") && !os.contains("mac") && os.contains("nux")) {
-                    throw new UnsupportedOperationException("Unsupported operating system");
-                }
-                String zoom = ZoomDetectorUtil.detectZoom(os);
+            if (!os.contains("win") && !os.contains("mac") && os.contains("nux")) {
+                throw new UnsupportedOperationException("Unsupported operating system");
+            }
+            String zoom = ZoomDetectorUtil.detectZoom(os);
 //                redisTemplate.opsForValue().set(redisKey, zoom);
-                return new RespVo<>(zoom != null);
+            return new RespVo<>(StringUtils.isNotEmpty(zoom));
 //            }
         } catch (Exception e) {
             log.error("Error checking Zoom installation: " + e);

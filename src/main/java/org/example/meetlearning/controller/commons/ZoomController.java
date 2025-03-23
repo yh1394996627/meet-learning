@@ -2,11 +2,14 @@ package org.example.meetlearning.controller.commons;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.service.ZoomPcService;
 import org.example.meetlearning.service.ZoomService;
+import org.example.meetlearning.vo.common.RespVo;
 import org.json.JSONObject;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -14,11 +17,11 @@ import java.io.IOException;
 @RestController
 @AllArgsConstructor
 @Slf4j
+@EnableAsync
 public class ZoomController {
 
     private final ZoomPcService zoomPcService;
     private final ZoomService zoomService;
-
 
     @GetMapping("/zoom/callback")
     public String handleCallback(@RequestParam("code") String authorizationCode) throws IOException {
@@ -36,8 +39,6 @@ public class ZoomController {
         String meetingInfo =zoomPcService.getMeetingInfo(meetObj.get("uuid").toString(), accessToken);
         log.info("meetingInfo：{}",meetingInfo);
         JSONObject meetingInfoObj = new JSONObject(meetingInfo);
-
-
         return "Authorization code: " + authorizationCode + ", Access Token: " + accessToken;
     }
 
@@ -68,6 +69,12 @@ public class ZoomController {
             e.printStackTrace();
             return "Error processing webhook";
         }
+    }
+
+    @Operation(summary = "判断本地ZOOM是否存在", operationId = "isZoomInstalled")
+    @PostMapping(value = "v1/zoom/installed")
+    public RespVo<Boolean> isZoomInstalled() {
+        return zoomPcService.isZoomInstalled();
     }
 
     private String getAccessToken(String authorizationCode) throws IOException {
