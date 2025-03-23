@@ -28,7 +28,9 @@ public interface ScheduleConverter {
             scheduleInfoRespVo.setWeekNum(ScheduleWeekEnum.valueOf(teacherScheduleSet.getWeekNum()));
         }
         List<ScheduleDateVo> dateRespVos = sets.stream().map(this::toScheduleDateVo).toList();
+        List<Date> offDates = sets.stream().filter(f -> f.getOffDate() != null).map(TeacherScheduleSet::getOffDate).toList();
         scheduleInfoRespVo.setDateRespVos(dateRespVos);
+        scheduleInfoRespVo.setOffDates(offDates);
         return scheduleInfoRespVo;
     }
 
