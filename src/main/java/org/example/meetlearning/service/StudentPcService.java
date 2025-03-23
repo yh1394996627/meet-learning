@@ -16,6 +16,7 @@ import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
 import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
+import org.example.meetlearning.vo.user.UserStudentPayInfoVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
 import org.example.meetlearning.vo.user.UserStudentPayReqVo;
 import org.springframework.stereotype.Service;
@@ -204,6 +205,24 @@ public class StudentPcService extends BasePcService {
             Page<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParams(reqVo.getParams(), reqVo.getPageRequest());
             PageVo<UserStudentPayRecordRespVo> pageVo = PageVo.map(userFinanceRecordList, UserFinanceConverter.INSTANCE::toUserStudentPayRecordRespVo);
             return new RespVo<>(pageVo);
+        } catch (Exception e) {
+            log.error("Query failed", e);
+            return new RespVo<>(null, false, "Query failed");
+        }
+    }
+
+    public RespVo<UserStudentPayInfoVo> studentPayInfo(String userCode, RecordIdQueryVo queryVo) {
+        try {
+            UserFinance manageFinance = userFinanceService.selectByUserId(userCode);
+            Assert.notNull(manageFinance, "User Finance information not obtained");
+            User user = userService.selectByRecordId(queryVo.getRecordId());
+            Assert.notNull(user, "User information not obtained");
+            UserStudentPayInfoVo respVo = new UserStudentPayInfoVo();
+            respVo.setUserId(user.getRecordId());
+            respVo.setName(user.getName());
+            respVo.setEmail(user.getEmail());
+            respVo.setBalanceQty(BigDecimalUtil.nullOrZero(manageFinance.getBalanceQty()));
+            return new RespVo<>(respVo);
         } catch (Exception e) {
             log.error("Query failed", e);
             return new RespVo<>(null, false, "Query failed");

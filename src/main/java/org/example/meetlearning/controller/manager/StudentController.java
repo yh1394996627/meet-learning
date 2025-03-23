@@ -10,6 +10,7 @@ import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
 import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
+import org.example.meetlearning.vo.user.UserStudentPayInfoVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
 import org.example.meetlearning.vo.user.UserStudentPayReqVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,12 @@ public class StudentController implements BaseController {
     @PostMapping(value = "v1/student/pay")
     public RespVo<String> studentPay(@RequestBody UserStudentPayReqVo reqVo) {
         return studentPcService.studentPay(getUserCode(), getUserName(), reqVo);
+    }
+
+    @Operation(summary = "学生充值接口详细", operationId = "studentPayInfo")
+    @PostMapping(value = "v1/student/pay/info")
+    public RespVo<UserStudentPayInfoVo> studentPayInfo(@RequestBody RecordIdQueryVo queryVo) {
+        return studentPcService.studentPayInfo(getUserCode(), queryVo);
     }
 
     @Operation(summary = "学生课时币记录", operationId = "studentPay")
