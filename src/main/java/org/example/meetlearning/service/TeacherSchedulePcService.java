@@ -58,6 +58,9 @@ public class TeacherSchedulePcService {
             String weekNum = reqVo.getWeekNum().name();
             Assert.notNull(reqVo.getScheduleType(), "scheduleType cannot be empty");
             String scheduleType = reqVo.getScheduleType().name();
+            if (reqVo.getScheduleType() == ScheduleTypeEnum.OFF) {
+                weekNum = null;
+            }
             List<TeacherScheduleSet> teacherSchedules = teacherScheduleService.selectSetByTeacherId(teacherId, weekNum, scheduleType);
             ScheduleInfoRespVo scheduleInfoRespVo = null;
             if (!CollectionUtils.isEmpty(teacherSchedules)) {
