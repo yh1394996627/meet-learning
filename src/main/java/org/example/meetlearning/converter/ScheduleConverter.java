@@ -1,6 +1,7 @@
 package org.example.meetlearning.converter;
 
 import cn.hutool.core.date.DateUtil;
+import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.dao.entity.TeacherSchedule;
 import org.example.meetlearning.dao.entity.TeacherScheduleSet;
 import org.example.meetlearning.enums.ScheduleTypeEnum;
@@ -23,7 +24,9 @@ public interface ScheduleConverter {
         TeacherScheduleSet teacherScheduleSet = sets.get(0);
         scheduleInfoRespVo.setTeacherId(teacherScheduleSet.getTeacherId());
         scheduleInfoRespVo.setScheduleType(ScheduleTypeEnum.valueOf(teacherScheduleSet.getScheduleType()));
-        scheduleInfoRespVo.setWeekNum(ScheduleWeekEnum.valueOf(teacherScheduleSet.getWeekNum()));
+        if (StringUtils.isNotEmpty(teacherScheduleSet.getWeekNum())) {
+            scheduleInfoRespVo.setWeekNum(ScheduleWeekEnum.valueOf(teacherScheduleSet.getWeekNum()));
+        }
         List<ScheduleDateVo> dateRespVos = sets.stream().map(this::toScheduleDateVo).toList();
         scheduleInfoRespVo.setDateRespVos(dateRespVos);
         return scheduleInfoRespVo;
@@ -64,7 +67,7 @@ public interface ScheduleConverter {
 
 
     default TeacherSchedule toCreateSchedule(TeacherScheduleSet scheduleSet) {
-        TeacherSchedule schedule= new TeacherSchedule();
+        TeacherSchedule schedule = new TeacherSchedule();
         schedule.setCreator(scheduleSet.getCreator());
         schedule.setCreateTime(DateUtil.date());
         schedule.setTeacherId(scheduleSet.getTeacherId());
