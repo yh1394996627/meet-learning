@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -177,8 +178,8 @@ public class StudentPcService extends BasePcService {
             userFinanceRecordService.insertEntity(userFinanceRecord);
             //更新 userFinance
             List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(reqVo.getUserId());
-            BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
             UserFinance userFinance = userFinanceService.selectByUserId(reqVo.getUserId());
             userFinance.setBalanceQty(balanceQty);
             userFinance.setConsumptionQty(usedQty);
