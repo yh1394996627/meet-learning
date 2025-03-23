@@ -64,6 +64,7 @@ public interface ScheduleConverter {
         ScheduleDateVo scheduleDateVo = new ScheduleDateVo();
         scheduleDateVo.setBeginTime(scheduleSet.getBeginTime());
         scheduleDateVo.setEndTime(scheduleSet.getEndTime());
+        scheduleDateVo.setWeekNum(scheduleSet.getWeekNum());
         return scheduleDateVo;
     }
 

@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 public class ScheduleDateVo {
 
+    @Schema(name = "weekNum", description = "周数")
+    private String weekNum;
+
     @Schema(name = "beginTime", description = "开始时间")
     private String beginTime;
 
