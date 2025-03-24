@@ -37,6 +37,7 @@ public interface TeacherConverter {
         respVo.setCountry(teacher.getCountry());
         respVo.setManager(teacher.getManager());
         respVo.setManagerId(teacher.getManagerId());
+        respVo.setRole(BooleanUtil.isTrue(teacher.getManagerStatus())?"Manager":"Teacher");
         return respVo;
     }
 
