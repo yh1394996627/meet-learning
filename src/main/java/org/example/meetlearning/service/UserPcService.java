@@ -36,8 +36,6 @@ public class UserPcService extends BasePcService {
 
     private final UserService userService;
 
-    private final StudentService studentService;
-
     private final TeacherService teacherService;
 
     public RespVo<String> manageRegister(UserManageOperaReqVo reqVo) {
@@ -118,12 +116,10 @@ public class UserPcService extends BasePcService {
         return uploadCertificate(userCode, file);
     }
 
-
     public RespVo<String> deletedPcFile(String userCode, FileRecordVo fileRecordVo) {
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
         return deletedFile(userCode, fileRecordVo);
     }
-
 
 }
