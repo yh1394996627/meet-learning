@@ -74,13 +74,6 @@ public class ZoomController {
         // 处理接收到的 Zoom 事件
         // 解析 payload 并根据事件类型执行相应操作
     }
-
-    @Operation(summary = "判断本地ZOOM是否存在", operationId = "isZoomInstalled")
-    @PostMapping(value = "v1/zoom/installed")
-    public RespVo<Boolean> isZoomInstalled() {
-        return zoomPcService.isZoomInstalled();
-    }
-
     private String getAccessToken(String authorizationCode) throws IOException {
         return zoomPcService.getAccessToken(authorizationCode);
     }

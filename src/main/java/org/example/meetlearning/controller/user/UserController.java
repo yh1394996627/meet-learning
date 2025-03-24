@@ -14,10 +14,7 @@ import org.example.meetlearning.vo.user.UserLoginReqVo;
 import org.example.meetlearning.vo.user.UserManageOperaReqVo;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
@@ -52,20 +49,20 @@ public class UserController implements BaseController {
 
     @Operation(summary = "上传头像", operationId = "uploadAvatar")
     @PostMapping(value = "v1/user/upload/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RespVo<URL> uploadAvatar(@RequestPart("file") MultipartFile file) {
-        return userPcService.uploadPcAvatar(getUserCode(), file);
+    public RespVo<URL> uploadAvatar(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
+        return userPcService.uploadPcAvatar(getUserCode(), userId, file);
     }
 
     @Operation(summary = "上传视频", operationId = "uploadVideo")
     @PostMapping(value = "v1/user/upload/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RespVo<URL> uploadVideo(@RequestPart("file") MultipartFile file) {
-        return userPcService.uploadPcVideo(getUserCode(), file);
+    public RespVo<URL> uploadVideo(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
+        return userPcService.uploadPcVideo(getUserCode(), userId, file);
     }
 
     @Operation(summary = "上传证书", operationId = "uploadFile")
     @PostMapping(value = "v1/user/upload/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RespVo<FileRecordVo> uploadFile(@RequestPart("file") MultipartFile file) {
-        return userPcService.uploadPcFile(getUserCode(), file);
+    public RespVo<FileRecordVo> uploadFile(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
+        return userPcService.uploadPcFile(getUserCode(), userId, file);
     }
 
     @Operation(summary = "删除附件", operationId = "deleteFile")

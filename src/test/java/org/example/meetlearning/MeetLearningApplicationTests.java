@@ -31,11 +31,4 @@ class MeetLearningApplicationTests {
         zoomService.getZoomUserIdByEmail("1394996627@qq.com","");
     }
 
-
-    @Test
-    void test3(){
-        zoomPcService.isZoomInstalled();
-    }
-
-
 }

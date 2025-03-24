@@ -4,6 +4,7 @@ package org.example.meetlearning.service;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.UserConverter;
 import org.example.meetlearning.dao.entity.Affiliate;
 import org.example.meetlearning.dao.entity.Student;
@@ -87,7 +88,8 @@ public class UserPcService extends BasePcService {
     /**
      * 上传头像
      */
-    public RespVo<URL> uploadPcAvatar(String userCode, MultipartFile file) {
+    public RespVo<URL> uploadPcAvatar(String userCode, String userId, MultipartFile file) {
+        userCode = StringUtils.isNotEmpty(userId) ? userId : userCode;
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
         URL url = uploadAvatar(userCode, file);
@@ -97,7 +99,8 @@ public class UserPcService extends BasePcService {
         return new RespVo<>(url);
     }
 
-    public RespVo<URL> uploadPcVideo(String userCode, MultipartFile file) {
+    public RespVo<URL> uploadPcVideo(String userCode, String userId, MultipartFile file) {
+        userCode = StringUtils.isNotEmpty(userId) ? userId : userCode;
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
         URL url = uploadVideo(userCode, file);
@@ -107,7 +110,8 @@ public class UserPcService extends BasePcService {
         return new RespVo<>(url);
     }
 
-    public RespVo<FileRecordVo> uploadPcFile(String userCode, MultipartFile file) {
+    public RespVo<FileRecordVo> uploadPcFile(String userCode, String userId, MultipartFile file) {
+        userCode = StringUtils.isNotEmpty(userId) ? userId : userCode;
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
         return uploadCertificate(userCode, file);

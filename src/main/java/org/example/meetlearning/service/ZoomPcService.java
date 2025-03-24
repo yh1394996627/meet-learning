@@ -2,6 +2,7 @@ package org.example.meetlearning.service;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.apache.ibatis.annotations.Param;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.util.SystemUUIDUtil;
 import org.example.meetlearning.util.ZoomDetectorUtil;
@@ -120,29 +121,6 @@ public class ZoomPcService {
             // 解析响应体，获取 Access Token
             String responseBody = response.body().string();
             return new ObjectMapper().readTree(responseBody).get("access_token").asText();
-        }
-    }
-
-
-    //@Async
-    public RespVo<Boolean> isZoomInstalled() {
-        try {
-            String os = System.getProperty("os.name").toLowerCase();
-            String redisKey = SystemUUIDUtil.getSystemUUID(os);
-            Object zoomObj = redisTemplate.opsForValue().get(redisKey);
-            if (zoomObj != null && StringUtils.isNotEmpty(zoomObj.toString())) {
-                return new RespVo<>(zoomObj != null);
-            } else {
-                if (!os.contains("win") && !os.contains("mac") && os.contains("nux")) {
-                    throw new UnsupportedOperationException("Unsupported operating system");
-                }
-                String zoom = ZoomDetectorUtil.detectZoom(os);
-                redisTemplate.opsForValue().set(redisKey, zoom);
-                return new RespVo<>(StringUtils.isNotEmpty(zoom));
-            }
-        } catch (Exception e) {
-            log.error("Error checking Zoom installation: " + e);
-            return new RespVo<>(false, false, e.getMessage());
         }
     }
 }
