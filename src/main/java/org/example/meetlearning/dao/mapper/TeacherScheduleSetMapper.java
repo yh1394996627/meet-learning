@@ -7,10 +7,10 @@ import org.example.meetlearning.dao.entity.TeacherScheduleSet;
 
 public interface TeacherScheduleSetMapper {
 
-    int deleteByTeacherIdAndWeekNum(String teacherId, String weekNum, String scheduleType);
+    int deleteByTeacherIdAndWeekNum(@Param("teacherId") String teacherId, @Param("weekNum") String weekNum, @Param("scheduleType") String scheduleType);
 
     int insertBatch(List<TeacherScheduleSet> records);
 
-    List<TeacherScheduleSet> selectByTeacherIdAndWeekNum(@Param("teacherId") String teacherId,@Param("weekNum")  String weekNum,@Param("scheduleType")  String scheduleType);
+    List<TeacherScheduleSet> selectByTeacherIdAndWeekNum(@Param("teacherId") String teacherId, @Param("weekNum") String weekNum, @Param("scheduleType") String scheduleType);
 
 }

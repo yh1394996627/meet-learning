@@ -38,8 +38,10 @@
         delete
         from teacher_schedule_set
         where teacher_id = #{teacherId,jdbcType=VARCHAR}
-          and week_num = #{weekNum,jdbcType=VARCHAR}
-          and schedule_type = #{scheduleType,jdbcType=VARCHAR}
+        and schedule_type = #{scheduleType,jdbcType=VARCHAR}
+        <if test="weekNum != null">
+            and week_num = #{weekNum,jdbcType=VARCHAR}
+        </if>
     </delete>
 
     <insert id="insertBatch" parameterType="list">

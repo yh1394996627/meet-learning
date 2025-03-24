@@ -29,15 +29,17 @@ public class TeacherSchedulePcService {
 
     public RespVo<String> scheduleAdd(String userCode, ScheduleAddOrUpdateReqVo reqVo) {
         try {
-            //删除记录重新保存
-            teacherScheduleService.deleteSetByTeacherId(reqVo.getTeacherId(), reqVo.getWeekNum().name(), reqVo.getScheduleType().name());
             if (reqVo.getScheduleType() != ScheduleTypeEnum.OFF) {
+                //删除记录重新保存
+                teacherScheduleService.deleteSetByTeacherId(reqVo.getTeacherId(), reqVo.getWeekNum().name(), reqVo.getScheduleType().name());
                 List<TeacherScheduleSet> teacherSchedules = reqVo.getDateRespVos().stream().map(item ->
                         ScheduleConverter.INSTANCE.toCreate(userCode, reqVo.getTeacherId(), reqVo.getWeekNum().name(), reqVo.getScheduleType().name(), item)
                 ).toList();
                 teacherScheduleService.insertSetBatch(teacherSchedules);
                 updateSchedule(reqVo.getTeacherId(), reqVo.getWeekNum().name());
             } else {
+                //删除记录重新保存
+                teacherScheduleService.deleteSetByTeacherId(reqVo.getTeacherId(), reqVo.getWeekNum().name(), reqVo.getScheduleType().name());
                 List<TeacherScheduleSet> teacherOffSchedules = reqVo.getOffDates().stream().map(item ->
                         ScheduleConverter.INSTANCE.toCreateOff(userCode, reqVo.getTeacherId(), null, reqVo.getScheduleType().name(), item)
                 ).toList();
