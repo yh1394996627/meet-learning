@@ -124,22 +124,22 @@ public class ZoomPcService {
     }
 
 
-    @Async
+    //@Async
     public RespVo<Boolean> isZoomInstalled() {
         try {
             String os = System.getProperty("os.name").toLowerCase();
             String redisKey = SystemUUIDUtil.getSystemUUID(os);
-//            Object zoomObj = redisTemplate.opsForValue().get(redisKey);
-//            if (zoomObj != null && StringUtils.isNotEmpty(zoomObj.toString())) {
-//                return new RespVo<>(zoomObj != null);
-//            } else {
-            if (!os.contains("win") && !os.contains("mac") && os.contains("nux")) {
-                throw new UnsupportedOperationException("Unsupported operating system");
+            Object zoomObj = redisTemplate.opsForValue().get(redisKey);
+            if (zoomObj != null && StringUtils.isNotEmpty(zoomObj.toString())) {
+                return new RespVo<>(zoomObj != null);
+            } else {
+                if (!os.contains("win") && !os.contains("mac") && os.contains("nux")) {
+                    throw new UnsupportedOperationException("Unsupported operating system");
+                }
+                String zoom = ZoomDetectorUtil.detectZoom(os);
+                redisTemplate.opsForValue().set(redisKey, zoom);
+                return new RespVo<>(StringUtils.isNotEmpty(zoom));
             }
-            String zoom = ZoomDetectorUtil.detectZoom(os);
-//                redisTemplate.opsForValue().set(redisKey, zoom);
-            return new RespVo<>(StringUtils.isNotEmpty(zoom));
-//            }
         } catch (Exception e) {
             log.error("Error checking Zoom installation: " + e);
             return new RespVo<>(false, false, e.getMessage());

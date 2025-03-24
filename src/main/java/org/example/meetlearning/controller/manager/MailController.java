@@ -21,7 +21,7 @@ public class MailController implements BaseController {
 
     private final EmailPcService emailPcService;
 
-    @Operation(summary = "共享老师列表", operationId = "sharedTeacherList")
+    @Operation(summary = "邮件服务", operationId = "sharedTeacherList")
     @PostMapping(value = "v1/mail/send")
     public RespVo<String> sendVerificationEmail(@RequestBody EmailSendVo emailSendVo) throws Exception {
         return emailPcService.sendVerificationEmail(getUserCode(), emailSendVo.getMail());
