@@ -1,6 +1,7 @@
 package org.example.meetlearning.service;
 
 
+import cn.hutool.core.util.BooleanUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,12 +58,12 @@ public class UserPcService extends BasePcService {
         try {
             User accountUser = userService.selectByLogin(reqVo.getAccountCode(), MD5Util.md5("MD5", reqVo.getPassword()));
             Assert.notNull(accountUser, "Account does not exist or account password is incorrect");
-            if (reqVo.isManage()) {
+            if (BooleanUtil.isTrue(reqVo.getManage())) {
                 List<String> types = List.of(RoleEnum.MANAGER.name(), RoleEnum.TEACHER.name(), RoleEnum.AFFILIATE.name());
-                Assert.notNull(types.contains(accountUser.getType()), "Account password incorrect");
+                Assert.isTrue(types.contains(accountUser.getType()), "Account password incorrect");
             } else {
                 List<String> types = List.of(RoleEnum.STUDENT.name());
-                Assert.notNull(types.contains(accountUser.getType()), "Account password incorrect");
+                Assert.isTrue(types.contains(accountUser.getType()), "Account password incorrect");
             }
             UserInfoRespVo respVo = UserConverter.INSTANCE.toUserInfoRespVo(accountUser);
             return new RespVo<>(respVo);

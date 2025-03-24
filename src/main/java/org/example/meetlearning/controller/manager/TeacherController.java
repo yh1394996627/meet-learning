@@ -29,7 +29,7 @@ public class TeacherController implements BaseController {
     @Operation(summary = "老师列表", operationId = "teacherPage")
     @PostMapping(value = "v1/teacher/page")
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(@RequestBody TeacherQueryVo queryVo) {
-        return teacherPcService.teacherPage(queryVo);
+        return teacherPcService.teacherPage(getUserCode(), queryVo);
     }
 
     @Operation(summary = "查询条件-管理人查询", operationId = "teacherManagerSearch")

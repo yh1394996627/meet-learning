@@ -134,6 +134,9 @@
                 #{item}
             </foreach>
         </if>
+        <if test="params.creator != null">
+            and creator = #{params.creator}
+        </if>
         <if test="params.managerId != null">
             and manager_id = #{params.managerId}
         </if>

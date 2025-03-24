@@ -17,5 +17,5 @@ public class UserLoginReqVo {
     private String password;
 
     @Schema(name = "manage", description = "是否是管理登录")
-    private boolean manage = false;
+    private Boolean manage = false;
 }

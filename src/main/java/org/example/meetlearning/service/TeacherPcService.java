@@ -11,10 +11,7 @@ import org.example.meetlearning.dao.entity.TeacherSchedule;
 import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
-import org.example.meetlearning.service.impl.BaseConfigService;
-import org.example.meetlearning.service.impl.TeacherFeatureService;
-import org.example.meetlearning.service.impl.TeacherScheduleService;
-import org.example.meetlearning.service.impl.TeacherService;
+import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -42,14 +39,21 @@ import java.util.Map;
 public class TeacherPcService extends BasePcService {
 
     private final TeacherService teacherService;
-
     private final TeacherFeatureService teacherFeatureService;
     private final TeacherScheduleService teacherScheduleService;
     private final BaseConfigService baseConfigService;
+    private final UserService userService;
 
-    public RespVo<PageVo<TeacherListRespVo>> teacherPage(TeacherQueryVo queryVo) {
+    public RespVo<PageVo<TeacherListRespVo>> teacherPage(String userCode, TeacherQueryVo queryVo) {
         try {
-            Page<Teacher> teacherPage = teacherService.selectPageParams(queryVo.getParams(), queryVo.getPageRequest());
+            User accountUser = userService.selectByRecordId(userCode);
+            Assert.notNull(accountUser, "User information not obtained");
+            Map<String, Object> params = queryVo.getParams();
+            //如果是老师账号查询管理的老师
+            if (StringUtils.pathEquals(accountUser.getType(), RoleEnum.TEACHER.name())) {
+                params.put("managerId", userCode);
+            }
+            Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
             PageVo<TeacherListRespVo> pageVo = PageVo.map(teacherPage, TeacherConverter.INSTANCE::toListVo);
             return new RespVo<>(pageVo);
         } catch (Exception ex) {
