@@ -10,10 +10,10 @@ import java.util.Date;
 public class StudentClassAddReqVo {
 
     @Schema(name = "studentId", description = "学生ID")
-    private Long studentId;
+    private String studentId;
 
     @Schema(name = "teacherId", description = "老师ID")
-    private Long teacherId;
+    private String teacherId;
 
     @Schema(name = "courseDate", description = "课程日期")
     private Date courseDate;
@@ -25,9 +25,9 @@ public class StudentClassAddReqVo {
     private String courseId;
 
     @Schema(name = "courseName", description = "课程名称")
-    private String courseNAme;
+    private String courseName;
 
-    @Schema(name = "studentId", description = "课时时常 分钟")
+    @Schema(name = "courseLongTime", description = "课时时常 分钟")
     private BigDecimal courseLongTime;
 
     @Schema(name = "quantity", description = "消费代币数量")

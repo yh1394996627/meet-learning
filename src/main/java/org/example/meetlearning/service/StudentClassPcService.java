@@ -46,10 +46,10 @@ public class StudentClassPcService {
     public RespVo<String> studentClassAdd(String entCode, String userCode, StudentClassAddReqVo reqVo) {
         try {
             //查询学生信息
-            Student student = reqVo.getStudentId() != null ? studentService.findById(reqVo.getStudentId()) : null;
+            Student student = reqVo.getStudentId() != null ? studentService.findByRecordId(reqVo.getStudentId()) : null;
             Assert.notNull(student, "Student information not obtained");
             //查询老师信息
-            Teacher teacher = reqVo.getTeacherId() != null ? teacherService.selectById(reqVo.getTeacherId()) : null;
+            Teacher teacher = reqVo.getTeacherId() != null ? teacherService.selectByRecordId(reqVo.getTeacherId()) : null;
             Assert.notNull(teacher, "Teacher information not obtained");
             //查询代理商信息
             Affiliate affiliate = null;
@@ -76,7 +76,7 @@ public class StudentClassPcService {
 
     public RespVo<List<SelectValueVo>> classTeacherList(StudentClassCommonQueryVo queryVo) {
         List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
-        List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getId().toString(), teacher.getName())).toList();
+        List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getRecordId().toString(), teacher.getName())).toList();
         return new RespVo<>(selectValueVos);
     }
 
