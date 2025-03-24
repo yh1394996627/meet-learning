@@ -61,7 +61,7 @@ public class UserPcService extends BasePcService {
             if (BooleanUtil.isTrue(reqVo.getManage())) {
                 List<String> types = List.of(RoleEnum.MANAGER.name(), RoleEnum.TEACHER.name(), RoleEnum.AFFILIATE.name());
                 Assert.isTrue(types.contains(accountUser.getType()), "Account password incorrect");
-            } else {
+            } else if (BooleanUtil.isFalse(reqVo.getManage())) {
                 List<String> types = List.of(RoleEnum.STUDENT.name());
                 Assert.isTrue(types.contains(accountUser.getType()), "Account password incorrect");
             }
