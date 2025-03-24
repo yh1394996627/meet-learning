@@ -49,6 +49,14 @@ public class TeacherListRespVo {
 
     @Schema(name = "managerStatus", description = "管理员状态")
     private Boolean managerStatus;
-    
+
+    @Schema(name = "country", description = "国家")
+    private String country;
+
+    @Schema(name = "manager", description = "管理者")
+    private String manager;
+
+    @Schema(name = "managerId", description = "管理者")
+    private String managerId;
 
 }

@@ -34,6 +34,9 @@ public interface TeacherConverter {
         respVo.setSalary(teacher.getSalaryAmount());
         respVo.setTestStatus(BooleanUtil.isTrue(teacher.getTestStatus()));
         respVo.setManagerStatus(BooleanUtil.isTrue(teacher.getManagerStatus()));
+        respVo.setCountry(teacher.getCountry());
+        respVo.setManager(teacher.getManager());
+        respVo.setManagerId(teacher.getManagerId());
         return respVo;
     }
 
