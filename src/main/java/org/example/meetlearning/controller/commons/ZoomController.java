@@ -44,31 +44,35 @@ public class ZoomController {
 
 
     @PostMapping("/zoom/event/callback")
-    public String handleWebhook(@RequestBody String payload) {
-        try {
-            // 解析 Webhook 数据
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(payload);
-
-            // 获取事件类型
-            String eventType = jsonNode.path("event").asText();
-
-            // 处理会议结束事件
-            if ("meeting.ended".equals(eventType)) {
-                JsonNode payloadNode = jsonNode.path("payload");
-                String meetingId = payloadNode.path("object").path("id").asText();
-                String endTime = payloadNode.path("object").path("end_time").asText();
-
-                // 处理会议结束逻辑
-                System.out.println("会议结束通知：");
-                System.out.println("会议 ID: " + meetingId);
-                System.out.println("结束时间: " + endTime);
-            }
-            return "Webhook received";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error processing webhook";
+    public String handleWebhook(@RequestHeader("x-zm-signature") String signature,
+                                @RequestHeader("x-zm-request-timestamp") String timestamp,
+                                @RequestBody String payload) {
+        // 验证签名
+        if (!verifySignature(signature, timestamp, payload)) {
+            return "Invalid signature";
         }
+
+        // 处理事件
+        processEvent(payload);
+
+        return "Event received";
+    }
+
+    @GetMapping("/zoom/event/callback")
+    public String verifyWebhook(@RequestParam("zoom_verification_token") String token) {
+        // 返回验证令牌以验证 URL
+        return token;
+    }
+
+    private boolean verifySignature(String signature, String timestamp, String payload) {
+        // 实现签名验证逻辑
+        // 使用 Zoom 提供的密钥和算法验证签名
+        return true; // 返回验证结果
+    }
+
+    private void processEvent(String payload) {
+        // 处理接收到的 Zoom 事件
+        // 解析 payload 并根据事件类型执行相应操作
     }
 
     @Operation(summary = "判断本地ZOOM是否存在", operationId = "isZoomInstalled")
