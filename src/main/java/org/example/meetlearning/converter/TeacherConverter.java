@@ -64,12 +64,10 @@ public interface TeacherConverter {
         teacher.setCountry(reqVo.getCountry());
         teacher.setManagerId(reqVo.getManagerId());
         teacher.setManager(reqVo.getManager());
-        teacher.setAvatarUrl(reqVo.getAvatarUrl());
         teacher.setLanguage(reqVo.getLanguage());
         teacher.setCurrencyName(reqVo.getCurrencyCode());
         teacher.setCurrencyName(reqVo.getCurrencyName());
 //        teacher.setSpecialties(reqVo.getSpecialties());
-        teacher.setVideoUrl(reqVo.getVideoUrl());
         return teacher;
     }
 
