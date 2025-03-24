@@ -87,7 +87,7 @@ public class UserPcService extends BasePcService {
     /**
      * 上传头像
      */
-    public RespVo<URL> uploadPcAvatar(String userCode, String userId, MultipartFile file) {
+    public RespVo<String> uploadPcAvatar(String userCode, String userId, MultipartFile file) {
         userCode = StringUtils.isNotEmpty(userId) ? userId : userCode;
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
@@ -95,10 +95,10 @@ public class UserPcService extends BasePcService {
         Teacher teacher = teacherService.selectByRecordId(userCode);
         teacher.setAvatarUrl(url.getPath());
         teacherService.updateEntity(teacher);
-        return new RespVo<>(url);
+        return new RespVo<>(url.getPath());
     }
 
-    public RespVo<URL> uploadPcVideo(String userCode, String userId, MultipartFile file) {
+    public RespVo<String> uploadPcVideo(String userCode, String userId, MultipartFile file) {
         userCode = StringUtils.isNotEmpty(userId) ? userId : userCode;
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
@@ -106,7 +106,7 @@ public class UserPcService extends BasePcService {
         Teacher teacher = teacherService.selectByRecordId(userCode);
         teacher.setVideoUrl(url.getPath());
         teacherService.updateEntity(teacher);
-        return new RespVo<>(url);
+        return new RespVo<>(url.getPath());
     }
 
     public RespVo<FileRecordVo> uploadPcFile(String userCode, String userId, MultipartFile file) {

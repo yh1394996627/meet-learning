@@ -49,13 +49,13 @@ public class UserController implements BaseController {
 
     @Operation(summary = "上传头像", operationId = "uploadAvatar")
     @PostMapping(value = "v1/user/upload/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RespVo<URL> uploadAvatar(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
+    public RespVo<String> uploadAvatar(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
         return userPcService.uploadPcAvatar(getUserCode(), userId, file);
     }
 
     @Operation(summary = "上传视频", operationId = "uploadVideo")
     @PostMapping(value = "v1/user/upload/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RespVo<URL> uploadVideo(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
+    public RespVo<String> uploadVideo(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
         return userPcService.uploadPcVideo(getUserCode(), userId, file);
     }
 
