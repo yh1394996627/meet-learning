@@ -1,5 +1,7 @@
 package org.example.meetlearning.service;
 
+import com.aliyun.oss.HttpMethod;
+import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.example.meetlearning.common.OssConfig;
@@ -103,15 +105,15 @@ public class BasePcService {
     /**
      * 下载头像
      */
-    public URL downloadAvatar(String fileName) {
+    public String downloadAvatar(String fileName) {
         try {
             if (StringUtils.isEmpty(fileName)) {
                 return null;
             }
             URL url = ossConfig.getOssClient().generatePresignedUrl(ossConfig.getBucketName(), fileName, new Date(new Date().getTime() + 3600000));
-            return url;
+            return url != null ? url.toString().replace("%2F", "/") : null;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Download failed！");
             return null;
         }
     }
@@ -120,11 +122,11 @@ public class BasePcService {
     /**
      * 上传头像
      */
-    public URL uploadAvatar(String userCode, MultipartFile file) {
+    public String uploadAvatar(String userCode, MultipartFile file) {
         String fileName = "avatar/" + userCode + "." + getLastPartOfString(Objects.requireNonNull(file.getOriginalFilename()));
         try {
             ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, file.getInputStream());
-            return downloadAvatar(fileName);
+            return fileName;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -135,11 +137,11 @@ public class BasePcService {
     /**
      * 上传个人视频
      */
-    public URL uploadVideo(String userCode, MultipartFile file) {
+    public String uploadVideo(String userCode, MultipartFile file) {
         String fileName = "video/" + userCode + "." + getLastPartOfString(Objects.requireNonNull(file.getOriginalFilename()));
         try {
             ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, file.getInputStream());
-            return downloadAvatar(fileName);
+            return fileName;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -155,10 +157,11 @@ public class BasePcService {
             String fileName = "certificate/" + UUID.randomUUID() + "." + getLastPartOfString(Objects.requireNonNull(file.getOriginalFilename()));
             ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, file.getInputStream());
             //批量保存
-
-            fileRecordService.insertBatch(List.of(FileRecordConverter.INSTANCE.toCreate(userCode, file.getName(), file.getOriginalFilename())));
-            List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
-            return new RespVo<>(FileRecordConverter.INSTANCE.toFileRecordVo(fileRecords.get(0)));
+            FileRecord record = FileRecordConverter.INSTANCE.toCreate(userCode, fileName, file.getOriginalFilename());
+            fileRecordService.insertBatch(List.of(record));
+            FileRecordVo recordVo = FileRecordConverter.INSTANCE.toFileRecordVo(record);
+            recordVo.setFileUrl(downloadAvatar(fileName));
+            return new RespVo<>(recordVo);
         } catch (Exception e) {
             log.error("File retrieval failed", e);
             return new RespVo<>(null, false, e.getMessage());
@@ -172,7 +175,7 @@ public class BasePcService {
         List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
         return fileRecords.stream().map(item -> {
             FileRecordVo fileRecordVo = FileRecordConverter.INSTANCE.toFileRecordVo(item);
-            fileRecordVo.setFileUrl(downloadAvatar(fileRecordVo.getFileUrl()).toString());
+            fileRecordVo.setFileUrl(downloadAvatar(fileRecordVo.getFileUrl()));
             return fileRecordVo;
         }).toList();
     }

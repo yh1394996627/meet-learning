@@ -28,6 +28,7 @@ public class OssConfig {
     private OSS ossClient;
 
     public OSS getOssClient() {
+
         if (ossClient == null) {
             ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         }

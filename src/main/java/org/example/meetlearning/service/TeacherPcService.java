@@ -291,10 +291,10 @@ public class TeacherPcService extends BasePcService {
             String recordId = queryVo.getRecordId();
             Assert.isTrue(StringUtils.hasText(recordId), "RecordId cannot be empty");
             Teacher teacher = teacherService.selectByRecordId(recordId);
-            URL downloadAvatar = downloadAvatar(teacher.getAvatarUrl());
-            URL downloadVideo = downloadAvatar(teacher.getVideoUrl());
-            teacher.setAvatarUrl(downloadAvatar != null ? downloadAvatar.toString() : "");
-            teacher.setVideoUrl(downloadVideo != null ? downloadVideo.toString() : "");
+            String downloadAvatar = downloadAvatar(teacher.getAvatarUrl());
+            String downloadVideo = downloadAvatar(teacher.getVideoUrl());
+            teacher.setAvatarUrl(downloadAvatar);
+            teacher.setVideoUrl(downloadVideo);
             Assert.notNull(teacher, "Teacher information not obtained");
             TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(teacher);
             respVo.setFileRecordVos(getFileRecordVoList(queryVo.getRecordId()));

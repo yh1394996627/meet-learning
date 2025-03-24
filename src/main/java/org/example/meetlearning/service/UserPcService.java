@@ -91,22 +91,22 @@ public class UserPcService extends BasePcService {
         userCode = StringUtils.isNotEmpty(userId) ? userId : userCode;
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
-        URL url = uploadAvatar(userCode, file);
+        String url = uploadAvatar(userCode, file);
         Teacher teacher = teacherService.selectByRecordId(userCode);
-        teacher.setAvatarUrl(url.getPath());
+        teacher.setAvatarUrl(url);
         teacherService.updateEntity(teacher);
-        return new RespVo<>(url.getPath());
+        return new RespVo<>(downloadAvatar(url));
     }
 
     public RespVo<String> uploadPcVideo(String userCode, String userId, MultipartFile file) {
         userCode = StringUtils.isNotEmpty(userId) ? userId : userCode;
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
-        URL url = uploadVideo(userCode, file);
+        String url = uploadVideo(userCode, file);
         Teacher teacher = teacherService.selectByRecordId(userCode);
-        teacher.setVideoUrl(url.getPath());
+        teacher.setVideoUrl(url);
         teacherService.updateEntity(teacher);
-        return new RespVo<>(url.getPath());
+        return new RespVo<>(downloadAvatar(url));
     }
 
     public RespVo<FileRecordVo> uploadPcFile(String userCode, String userId, MultipartFile file) {

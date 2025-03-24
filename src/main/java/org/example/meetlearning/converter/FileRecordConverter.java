@@ -14,7 +14,7 @@ public interface FileRecordConverter {
 
     FileRecordConverter INSTANCE = Mappers.getMapper(FileRecordConverter.class);
 
-    default FileRecord toCreate(String userCode, String fileName, String fileUrl) {
+    default FileRecord toCreate(String userCode, String fileUrl, String fileName) {
         FileRecord fileRecord = new FileRecord();
         fileRecord.setUserId(userCode);
         fileRecord.setRecordId(UUID.randomUUID().toString());
