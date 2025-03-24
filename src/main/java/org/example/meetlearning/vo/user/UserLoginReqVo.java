@@ -15,4 +15,7 @@ public class UserLoginReqVo {
     @Schema(name = "password", description = "密码")
     @NotNull(message = "密码不能为空")
     private String password;
+
+    @Schema(name = "manage", description = "是否是管理登录")
+    private boolean manage = false;
 }

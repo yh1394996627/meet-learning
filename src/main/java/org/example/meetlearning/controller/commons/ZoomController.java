@@ -43,7 +43,7 @@ public class ZoomController {
     }
 
 
-    @PostMapping("/zoom/pur")
+    @PostMapping("/zoom/event/callback")
     public String handleWebhook(@RequestBody String payload) {
         try {
             // 解析 Webhook 数据
