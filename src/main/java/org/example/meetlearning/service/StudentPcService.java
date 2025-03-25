@@ -77,143 +77,107 @@ public class StudentPcService extends BasePcService {
 
     @Transactional(rollbackFor = Exception.class)
     public RespVo<String> studentAdd(String userCode, String userName, StudentAddReqVo reqVo) {
-        try {
-            Assert.isTrue(StringUtils.hasText(reqVo.getEnName()), "Email cannot be empty");
-            Assert.isTrue(StringUtils.hasText(reqVo.getPassword()), "Password cannot be empty");
+        Assert.isTrue(StringUtils.hasText(reqVo.getEnName()), "Email cannot be empty");
+        Assert.isTrue(StringUtils.hasText(reqVo.getPassword()), "Password cannot be empty");
 
-            Student student = StudentConverter.INSTANCE.toCreateStudent(userCode, userName, reqVo);
-            //如果是代理商 则添加代理商信息
-            User managerUser = userService.selectByRecordId(userCode);
-            if (managerUser != null && StringUtils.pathEquals(RoleEnum.AFFILIATE.name(), managerUser.getType())) {
-                student.setAffiliateId(managerUser.getRecordId());
-                student.setAffiliateName(managerUser.getName());
-            }
-            studentService.save(student);
-            //创建登陆帐号
-            User newUser = addUser(userCode, userName, student.getRecordId(), student.getEmail(), reqVo.getPassword(),
-                    RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail());
-
-            //创建用户关联的课时币
-            addFinance(userCode, userName, newUser);
-            return new RespVo<>("New successfully added");
-        } catch (Exception ex) {
-            log.error("Addition failed", ex);
-            return new RespVo<>("Addition failed", false, ex.getMessage());
+        Student student = StudentConverter.INSTANCE.toCreateStudent(userCode, userName, reqVo);
+        //如果是代理商 则添加代理商信息
+        User managerUser = userService.selectByRecordId(userCode);
+        if (managerUser != null && StringUtils.pathEquals(RoleEnum.AFFILIATE.name(), managerUser.getType())) {
+            student.setAffiliateId(managerUser.getRecordId());
+            student.setAffiliateName(managerUser.getName());
         }
+        studentService.save(student);
+        //创建登陆帐号
+        User newUser = addUser(userCode, userName, student.getRecordId(), student.getEmail(), reqVo.getPassword(),
+                RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail());
+
+        //创建用户关联的课时币
+        addFinance(userCode, userName, newUser);
+        return new RespVo<>("New successfully added");
     }
 
     public RespVo<String> studentUpdate(String userCode, String userName, StudentUpdateReqVo reqVo) {
-        try {
-            String recordId = reqVo.getRecordId();
-            Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
-            Student student = studentService.findByRecordId(recordId);
-            student = StudentConverter.INSTANCE.toUpdateStudent(student, reqVo);
-            if (StringUtils.hasText(reqVo.getAffiliateId())) {
-                User affiliateUser = userService.selectByRecordId(reqVo.getAffiliateId());
-                Assert.notNull(affiliateUser, "Affiliate user cannot be empty");
-                student.setAffiliateId(affiliateUser.getRecordId());
-                student.setAffiliateName(affiliateUser.getName());
-            }
-            student.setUpdator(userCode);
-            student.setUpdateName(userName);
-            student.setUpdateTime(new Date());
-            studentService.update(student);
-            return new RespVo<>("Student update successful");
-        } catch (Exception ex) {
-            log.error("Failed to update students", ex);
-            return new RespVo<>("Failed to update students", false, ex.getMessage());
+        String recordId = reqVo.getRecordId();
+        Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
+        Student student = studentService.findByRecordId(recordId);
+        student = StudentConverter.INSTANCE.toUpdateStudent(student, reqVo);
+        if (StringUtils.hasText(reqVo.getAffiliateId())) {
+            User affiliateUser = userService.selectByRecordId(reqVo.getAffiliateId());
+            Assert.notNull(affiliateUser, "Affiliate user cannot be empty");
+            student.setAffiliateId(affiliateUser.getRecordId());
+            student.setAffiliateName(affiliateUser.getName());
         }
+        student.setUpdator(userCode);
+        student.setUpdateName(userName);
+        student.setUpdateTime(new Date());
+        studentService.update(student);
+        return new RespVo<>("Student update successful");
     }
 
     public RespVo<String> deleteStudent(StudentRecordReqVo reqVo) {
-        try {
-            String recordId = reqVo.getRecordId();
-            Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
-            studentService.deletedByRecordId(recordId);
-            //删除登陆帐号和余额信息
-            deleteUser(recordId);
-            return new RespVo<>("Student deleted successfully");
-        } catch (Exception ex) {
-            log.error("Failed to delete student", ex);
-            return new RespVo<>("Failed to delete student", false, ex.getMessage());
-        }
+        String recordId = reqVo.getRecordId();
+        Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
+        studentService.deletedByRecordId(recordId);
+        //删除登陆帐号和余额信息
+        deleteUser(recordId);
+        return new RespVo<>("Student deleted successfully");
     }
 
     public RespVo<String> studentRemarkUpdate(StudentRemarkUpdateReqVo reqVo) {
-        try {
-            String recordId = reqVo.getRecordId();
-            Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
-            Student student = studentService.findByRecordId(recordId);
-            student.setRemark(reqVo.getRemark());
-            studentService.update(student);
-            return new RespVo<>("Updated notes successfully");
-        } catch (Exception ex) {
-            log.error("Failed to update notes", ex);
-            return new RespVo<>("Failed to update notes", false, ex.getMessage());
-        }
+        String recordId = reqVo.getRecordId();
+        Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
+        Student student = studentService.findByRecordId(recordId);
+        student.setRemark(reqVo.getRemark());
+        studentService.update(student);
+        return new RespVo<>("Updated notes successfully");
     }
 
 
     public RespVo<StudentInfoRespVo> studentInfo(RecordIdQueryVo reqVo) {
-        try {
-            Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId cannot be empty");
-            Student student = studentService.findByRecordId(reqVo.getRecordId());
-            Assert.notNull(student, "Student information not obtained");
-            StudentInfoRespVo respVo = StudentConverter.INSTANCE.toStudentInfoRespVo(student);
-            UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
-            Assert.notNull(userFinance, "Student Finance information not obtained");
-            respVo.setBalance(userFinance.getBalanceQty());
-            respVo.setExpirationTime(userFinance.getExpirationTime());
-            return new RespVo<>(respVo);
-        } catch (Exception e) {
-            log.error("Query failed", e);
-            return new RespVo<>(null, false, e.getMessage());
-        }
+        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId cannot be empty");
+        Student student = studentService.findByRecordId(reqVo.getRecordId());
+        Assert.notNull(student, "Student information not obtained");
+        StudentInfoRespVo respVo = StudentConverter.INSTANCE.toStudentInfoRespVo(student);
+        UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
+        Assert.notNull(userFinance, "Student Finance information not obtained");
+        respVo.setBalance(userFinance.getBalanceQty());
+        respVo.setExpirationTime(userFinance.getExpirationTime());
+        return new RespVo<>(respVo);
     }
 
     public RespVo<String> studentPay(String userCode, String userName, UserStudentPayReqVo reqVo) {
-        try {
-            //新增用户课时币记录 userFinanceRecord
-            UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo);
-            userFinanceRecordService.insertEntity(userFinanceRecord);
-            //更新 userFinance
-            List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(reqVo.getUserId());
-            BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-            UserFinance userFinance = userFinanceService.selectByUserId(reqVo.getUserId());
-            userFinance.setBalanceQty(balanceQty);
-            userFinance.setConsumptionQty(usedQty);
-            userFinanceService.updateByEntity(userFinance);
-            //添加记录课时币记录
-            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, userFinanceRecord);
-            if (org.codehaus.plexus.util.StringUtils.isNotEmpty(userFinanceRecord.getCurrencyCode())) {
-                BaseConfig baseConfig = baseConfigService.selectByCode(userFinanceRecord.getCurrencyCode());
-                Assert.notNull(baseConfig, "Configuration information not obtained record:【" + userFinanceRecord.getCurrencyCode() + "】");
-                tokensLog.setCurrencyCode(baseConfig.getCode());
-                tokensLog.setCurrencyName(baseConfig.getName());
-            }
-            tokensLogService.insertEntity(tokensLog);
-            return new RespVo<>("Payment successful");
-        } catch (Exception e) {
-            log.error("Payment failed", e);
-            return new RespVo<>(null, false, "Payment failed");
+        //新增用户课时币记录 userFinanceRecord
+        UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo);
+        userFinanceRecordService.insertEntity(userFinanceRecord);
+        //更新 userFinance
+        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(reqVo.getUserId());
+        BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        UserFinance userFinance = userFinanceService.selectByUserId(reqVo.getUserId());
+        userFinance.setBalanceQty(balanceQty);
+        userFinance.setConsumptionQty(usedQty);
+        userFinanceService.updateByEntity(userFinance);
+        //添加记录课时币记录
+        TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, userFinanceRecord);
+        if (org.codehaus.plexus.util.StringUtils.isNotEmpty(userFinanceRecord.getCurrencyCode())) {
+            BaseConfig baseConfig = baseConfigService.selectByCode(userFinanceRecord.getCurrencyCode());
+            Assert.notNull(baseConfig, "Configuration information not obtained record:【" + userFinanceRecord.getCurrencyCode() + "】");
+            tokensLog.setCurrencyCode(baseConfig.getCode());
+            tokensLog.setCurrencyName(baseConfig.getName());
         }
+        tokensLogService.insertEntity(tokensLog);
+        return new RespVo<>("Payment successful");
     }
 
     public RespVo<PageVo<UserStudentPayRecordRespVo>> studentPayRecord(UserStudentFinanceRecordQueryVo reqVo) {
-        try {
-            //更新 userFinance
-            Page<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParams(reqVo.getParams(), reqVo.getPageRequest());
-            PageVo<UserStudentPayRecordRespVo> pageVo = PageVo.map(userFinanceRecordList, UserFinanceConverter.INSTANCE::toUserStudentPayRecordRespVo);
-            return new RespVo<>(pageVo);
-        } catch (Exception e) {
-            log.error("Query failed", e);
-            return new RespVo<>(null, false, "Query failed");
-        }
+        //更新 userFinance
+        Page<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParams(reqVo.getParams(), reqVo.getPageRequest());
+        PageVo<UserStudentPayRecordRespVo> pageVo = PageVo.map(userFinanceRecordList, UserFinanceConverter.INSTANCE::toUserStudentPayRecordRespVo);
+        return new RespVo<>(pageVo);
     }
 
     public RespVo<UserStudentPayInfoVo> studentPayInfo(String userCode, RecordIdQueryVo queryVo) {
-        try {
             UserFinance manageFinance = userFinanceService.selectByUserId(userCode);
             Assert.notNull(manageFinance, "User Finance information not obtained");
             User user = userService.selectByRecordId(queryVo.getRecordId());
@@ -224,11 +188,5 @@ public class StudentPcService extends BasePcService {
             respVo.setEmail(user.getEmail());
             respVo.setBalanceQty(BigDecimalUtil.nullOrZero(manageFinance.getBalanceQty()));
             return new RespVo<>(respVo);
-        } catch (Exception e) {
-            log.error("Query failed", e);
-            return new RespVo<>(null, false, "Query failed");
-        }
     }
-
-
 }
