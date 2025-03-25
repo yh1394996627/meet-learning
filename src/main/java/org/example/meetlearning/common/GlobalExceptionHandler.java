@@ -1,5 +1,6 @@
 package org.example.meetlearning.common;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
+@Hidden
 public class GlobalExceptionHandler {
 
     /**

@@ -19,10 +19,18 @@ public class BigDecimalUtil {
     }
 
     public static Boolean gtZero(BigDecimal v1) {
-        return  nullOrZero(v1).compareTo(BigDecimal.ZERO) > 0;
+        return nullOrZero(v1).compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    public static Boolean lteThan(BigDecimal v1, BigDecimal v2) {
+        return nullOrZero(v1).compareTo(nullOrZero(v2)) <= 0;
+    }
+
+    public static Boolean gteThan(BigDecimal v1, BigDecimal v2) {
+        return nullOrZero(v1).compareTo(nullOrZero(v2)) >= 0;
     }
 
     public static Boolean eqZero(BigDecimal v1) {
-        return  nullOrZero(v1).compareTo(BigDecimal.ZERO) == 0;
+        return nullOrZero(v1).compareTo(BigDecimal.ZERO) == 0;
     }
 }

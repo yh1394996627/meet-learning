@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
+@Transactional
 public class StudentPcService extends BasePcService {
 
     private final StudentService studentService;
@@ -147,6 +148,11 @@ public class StudentPcService extends BasePcService {
     }
 
     public RespVo<String> studentPay(String userCode, String userName, UserStudentPayReqVo reqVo) {
+        //操作折财务记录
+        UserFinance manageFinance = userFinanceService.selectByUserId(userCode);
+        Assert.notNull(manageFinance, "To obtain management financial information");
+        Assert.isTrue(BigDecimalUtil.gteThan(manageFinance.getBalanceQty(), reqVo.getQuantity()), "Insufficient balance");
+
         //新增用户课时币记录 userFinanceRecord
         UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo);
         userFinanceRecordService.insertEntity(userFinanceRecord);
@@ -167,6 +173,9 @@ public class StudentPcService extends BasePcService {
             tokensLog.setCurrencyName(baseConfig.getName());
         }
         tokensLogService.insertEntity(tokensLog);
+        //减少管理员使用的课时币
+        manageFinance.setBalanceQty(BigDecimalUtil.sub(manageFinance.getBalanceQty(), reqVo.getQuantity()));
+        userFinanceService.updateByEntity(manageFinance);
         return new RespVo<>("Payment successful");
     }
 
@@ -178,15 +187,15 @@ public class StudentPcService extends BasePcService {
     }
 
     public RespVo<UserStudentPayInfoVo> studentPayInfo(String userCode, RecordIdQueryVo queryVo) {
-            UserFinance manageFinance = userFinanceService.selectByUserId(userCode);
-            Assert.notNull(manageFinance, "User Finance information not obtained");
-            User user = userService.selectByRecordId(queryVo.getRecordId());
-            Assert.notNull(user, "User information not obtained");
-            UserStudentPayInfoVo respVo = new UserStudentPayInfoVo();
-            respVo.setUserId(user.getRecordId());
-            respVo.setName(user.getName());
-            respVo.setEmail(user.getEmail());
-            respVo.setBalanceQty(BigDecimalUtil.nullOrZero(manageFinance.getBalanceQty()));
-            return new RespVo<>(respVo);
+        UserFinance manageFinance = userFinanceService.selectByUserId(userCode);
+        Assert.notNull(manageFinance, "User Finance information not obtained");
+        User user = userService.selectByRecordId(queryVo.getRecordId());
+        Assert.notNull(user, "User information not obtained");
+        UserStudentPayInfoVo respVo = new UserStudentPayInfoVo();
+        respVo.setUserId(user.getRecordId());
+        respVo.setName(user.getName());
+        respVo.setEmail(user.getEmail());
+        respVo.setBalanceQty(BigDecimalUtil.nullOrZero(manageFinance.getBalanceQty()));
+        return new RespVo<>(respVo);
     }
 }
