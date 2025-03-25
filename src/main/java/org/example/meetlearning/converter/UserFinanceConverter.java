@@ -31,6 +31,7 @@ public interface UserFinanceConverter {
         userFinance.setConsumptionQty(BigDecimal.ZERO);
         userFinance.setUserType(user.getType());
         userFinance.setExpirationTime(null);
+        userFinance.setVersion(0L);
         return userFinance;
     }
 

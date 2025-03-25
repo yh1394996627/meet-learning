@@ -19,6 +19,7 @@ import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherPriceReqVo;
 import org.example.meetlearning.vo.teacher.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -142,6 +143,7 @@ public class TeacherPcService extends BasePcService {
     }
 
 
+    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> teacherAdd(String userCode, String userName, TeacherAddReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getEmail()), "Email cannot be empty");
@@ -161,6 +163,7 @@ public class TeacherPcService extends BasePcService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> teacherUpdate(String userCode, String userName, TeacherUpdateReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "RecordId cannot be empty");
@@ -183,6 +186,7 @@ public class TeacherPcService extends BasePcService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> managerStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
@@ -199,6 +203,7 @@ public class TeacherPcService extends BasePcService {
     }
 
 
+    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> managerAccountStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
@@ -215,6 +220,7 @@ public class TeacherPcService extends BasePcService {
     }
 
 
+    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> teacherTypeStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");

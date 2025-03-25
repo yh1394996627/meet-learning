@@ -5,20 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.StudentClassConverter;
-import org.example.meetlearning.dao.entity.Affiliate;
-import org.example.meetlearning.dao.entity.Student;
-import org.example.meetlearning.dao.entity.StudentClass;
-import org.example.meetlearning.dao.entity.Teacher;
-import org.example.meetlearning.service.impl.AffiliateService;
-import org.example.meetlearning.service.impl.StudentClassService;
-import org.example.meetlearning.service.impl.StudentService;
-import org.example.meetlearning.service.impl.TeacherService;
+import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.ScheduleWeekEnum;
+import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.vo.classes.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,6 +31,8 @@ public class StudentClassPcService {
     private final TeacherService teacherService;
 
     private final AffiliateService affiliateService;
+
+    private final TeacherScheduleService teacherScheduleService;
 
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
@@ -61,6 +59,7 @@ public class StudentClassPcService {
             studentClassService.insertEntity(studentClass);
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
+            ex.printStackTrace();
             log.error("Addition failed", ex);
             return new RespVo<>("Addition failed", false, ex.getMessage());
         }
@@ -76,8 +75,15 @@ public class StudentClassPcService {
 
     public RespVo<List<SelectValueVo>> classTeacherList(StudentClassCommonQueryVo queryVo) {
         List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
-        List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getRecordId().toString(), teacher.getName())).toList();
+        List<String> teacherIds = teachers.stream().map(Teacher::getRecordId).toList();
+        if (CollectionUtils.isEmpty(teacherIds)) {
+            return new RespVo<>(List.of());
+        }
+        ScheduleWeekEnum week = ScheduleWeekEnum.getByDate(queryVo.getCourseDate());
+        List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectByTeacherIdWeekNumGroupByTime(week.name(), teacherIds);
+        List<SelectValueVo> selectValueVos = teacherSchedules.stream().map(schedule -> new SelectValueVo(schedule.getBeginTime().toString(), schedule.getEndTime())).toList();
         return new RespVo<>(selectValueVos);
+
     }
 
     public RespVo<StudentClassTotalRespVo> classTotalList(StudentClassQueryVo queryVo) {

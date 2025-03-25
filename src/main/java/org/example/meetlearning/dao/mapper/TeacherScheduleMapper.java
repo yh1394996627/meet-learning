@@ -15,4 +15,6 @@ public interface TeacherScheduleMapper {
 
     List<String> selectTeacherIdByWeekNumAndTime(String weekNum, String beginTime, String endTime);
 
+    List<TeacherSchedule> selectByTeacherIdWeekNumGroupByTime(String weekNum, List<String> teacherIds);
+
 }

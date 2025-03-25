@@ -29,6 +29,21 @@
           and end_time >= #{endTime}
     </select>
 
+    <select id="selectByTeacherIdWeekNumGroupByTime" resultMap="BaseResultMap">
+        select
+        begin_time,end_time
+        from teacher_schedule
+        where week_num = #{weekNum,jdbcType=VARCHAR}
+        <if test="teacherIds != null">
+            and teacher_id in
+            <foreach collection="teacherIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        and begin_time is not null and end_time is not null
+        group by begin_time,end_time
+    </select>
+
     <delete id="deleteByTeacherIdAndWeekNum">
         delete
         from teacher_schedule

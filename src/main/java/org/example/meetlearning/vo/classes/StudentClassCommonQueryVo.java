@@ -13,10 +13,8 @@ public class StudentClassCommonQueryVo {
     @Schema(name = "priceContent", description = "选择的价格")
     private BigDecimal priceContent;
 
-    //todo 塞选出有空的老师
     @Schema(name = "courseDate", description = "课程时间")
     private String courseDate;
-
 
     @Schema(hidden = true)
     public Map<String, Object> getParams() {

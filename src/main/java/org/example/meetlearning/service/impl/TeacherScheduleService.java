@@ -30,8 +30,12 @@ public class TeacherScheduleService {
         return teacherScheduleMapper.selectByTeacherIdAndWeekNum(teacherId, weekNum);
     }
 
-    public List<String> selectTeacherIdByWeekNumAndTime(String weekNum ,String beginTime, String endTime) {
-        return teacherScheduleMapper.selectTeacherIdByWeekNumAndTime(weekNum, beginTime,endTime);
+    public List<String> selectTeacherIdByWeekNumAndTime(String weekNum, String beginTime, String endTime) {
+        return teacherScheduleMapper.selectTeacherIdByWeekNumAndTime(weekNum, beginTime, endTime);
+    }
+
+    public List<TeacherSchedule> selectByTeacherIdWeekNumGroupByTime(String weekNum, List<String> teacherIds) {
+        return teacherScheduleMapper.selectByTeacherIdWeekNumGroupByTime(weekNum, teacherIds);
     }
 
     public int deleteSetByTeacherId(String teacherId, String weekNum, String scheduleType) {
@@ -45,7 +49,6 @@ public class TeacherScheduleService {
     public List<TeacherScheduleSet> selectSetByTeacherId(String teacherId, String weekNum, String scheduleType) {
         return teacherScheduleSetMapper.selectByTeacherIdAndWeekNum(teacherId, weekNum, scheduleType);
     }
-
 
 
 }
