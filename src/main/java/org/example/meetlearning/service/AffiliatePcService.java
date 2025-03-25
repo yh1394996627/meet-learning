@@ -56,7 +56,7 @@ public class AffiliatePcService extends BasePcService {
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("Addition failed", ex);
-            return new RespVo<>(null, false, "Addition failed,未知错误!");
+            return new RespVo<>(null, false, ex.getMessage());
         }
     }
 

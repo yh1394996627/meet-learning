@@ -98,7 +98,9 @@ public class BasePcService {
      */
     public void emailVerify(String email, String verifyCode) {
         String key = RedisCommonsUtil.emailKeyGet(email);
+        log.info("Redis email:{}", email);
         Object redisObj = redisTemplate.opsForValue().get(key);
+        log.info("Redis key:{}", key);
         Assert.isTrue(redisObj != null && redisObj.equals(verifyCode), "Verification code error");
     }
 

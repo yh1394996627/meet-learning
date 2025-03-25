@@ -60,6 +60,7 @@ public class EmailPcService extends BasePcService{
                     .setReplyToAddress(true);
             SingleSendMailResponse response = client.singleSendMailWithOptions(request, new RuntimeOptions());
             redisTemplate.opsForValue().set(RedisCommonsUtil.emailKeyGet(toEmail), verificationCode, 300, TimeUnit.SECONDS);
+            log.info("发送成功-code:{}",redisTemplate.opsForValue().get(RedisCommonsUtil.emailKeyGet(toEmail)));
             return new RespVo<>("发送成功");
         } catch (Exception e) {
             log.error("发送失败", e);
