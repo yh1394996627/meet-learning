@@ -5,10 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.TeacherConverter;
-import org.example.meetlearning.dao.entity.Teacher;
-import org.example.meetlearning.dao.entity.TeacherFeature;
-import org.example.meetlearning.dao.entity.TeacherSchedule;
-import org.example.meetlearning.dao.entity.User;
+import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.ConfigTypeEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
 import org.example.meetlearning.service.impl.*;
@@ -32,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -53,10 +52,20 @@ public class TeacherPcService extends BasePcService {
             if (StringUtils.pathEquals(accountUser.getType(), RoleEnum.TEACHER.name())) {
                 params.put("managerId", userCode);
             }
+
+            List<SelectValueVo> baseConfigs = baseConfigService.selectByType(ConfigTypeEnum.COUNTRY.name());
+            Map<String, String> countryMap = baseConfigs.stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
             Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
-            PageVo<TeacherListRespVo> pageVo = PageVo.map(teacherPage, TeacherConverter.INSTANCE::toListVo);
+            PageVo<TeacherListRespVo> pageVo = PageVo.map(teacherPage, list -> {
+                TeacherListRespVo respVo = TeacherConverter.INSTANCE.toListVo(list);
+                if (countryMap.containsKey(list.getCountry())) {
+                    respVo.setCountry(countryMap.get(list.getCountry()));
+                }
+                return respVo;
+            });
             return new RespVo<>(pageVo);
-        } catch (Exception ex) {
+        } catch (
+                Exception ex) {
             log.error("查询失败", ex);
             return new RespVo<>(null, false, ex.getMessage());
         }
