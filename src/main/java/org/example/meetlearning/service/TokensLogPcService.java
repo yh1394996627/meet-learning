@@ -42,7 +42,6 @@ public class TokensLogPcService {
 
     public RespVo<String> addTokensLog(String userCode, String userName, TokensLogAddReqVo tokensLogAddReqVo) {
         try {
-            Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getUserId()), "user is not null");
             TokensLog tokensLog = TokenConverter.INSTANCE.toCreateToken(userCode, userName, tokensLogAddReqVo);
             if (StringUtils.isNotEmpty(tokensLogAddReqVo.getCurrencyCode())) {
                 BaseConfig baseConfig = baseConfigService.selectByCode(tokensLogAddReqVo.getCurrencyCode());
