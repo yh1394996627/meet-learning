@@ -24,7 +24,7 @@ public class TokensLogController implements BaseController {
 
     @Operation(summary = "课时币记录", operationId = "tokensLogPage")
     @PostMapping(value = "v1/token/page")
-    public RespVo<PageVo<TokensLogListRespVo>> tokensLogPage(TokensLogQueryVo queryVo) {
+    public RespVo<PageVo<TokensLogListRespVo>> tokensLogPage(@RequestBody TokensLogQueryVo queryVo) {
         return tokensLogPcService.tokensLogPage(getUserCode(), getUserName(), queryVo);
     }
 
