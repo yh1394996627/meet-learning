@@ -16,6 +16,9 @@ public class StudentClassCommonQueryVo {
     @Schema(name = "courseDate", description = "课程时间")
     private String courseDate;
 
+    @Schema(name = "courseTime", description = "时间段")
+    private String courseTime;
+
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
