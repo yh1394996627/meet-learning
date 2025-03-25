@@ -1,4 +1,5 @@
 package org.example.meetlearning.service;
+
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -42,9 +43,9 @@ public class BaseConfigPcService {
         try {
             BaseConfig codeBaseConfig = baseConfigService.selectByCode(queryVo.getCode());
             Assert.isTrue(codeBaseConfig == null, "Configuration already exists code:【" + queryVo.getCode() + "】");
-            BaseConfig nameBaseConfig = baseConfigService.selectByName(queryVo.getCode());
+            BaseConfig nameBaseConfig = baseConfigService.selectByName(queryVo.getName());
             Assert.isTrue(nameBaseConfig == null, "Configuration already exists name:【" + queryVo.getName() + "】");
-            BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getCode());
+            BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getSymbol());
             Assert.isTrue(symbolBaseConfig == null, "Configuration already exists symbol:【" + queryVo.getSymbol() + "】");
             BaseConfig config = BaseConfigConverter.INSTANCE.toCreate(userCode, queryVo.getCode(), queryVo.getName(), queryVo.getSymbol(), queryVo.getConfigType().name());
             baseConfigService.insertEntity(config);
@@ -57,32 +58,27 @@ public class BaseConfigPcService {
 
 
     public RespVo<String> updateConfig(String userCode, BaseConfigReqVo queryVo) {
-        try {
-            BaseConfig baseConfig = baseConfigService.selectByRecordId(queryVo.getRecordId());
-            Assert.notNull(baseConfig, "Configuration information not obtained record:【" + queryVo.getRecordId() + "】");
+        BaseConfig baseConfig = baseConfigService.selectByRecordId(queryVo.getRecordId());
+        Assert.notNull(baseConfig, "Configuration information not obtained record:【" + queryVo.getRecordId() + "】");
 
-            BaseConfig codeBaseConfig = baseConfigService.selectByCode(queryVo.getCode());
-            if (codeBaseConfig != null) {
-                Assert.isTrue(!StringUtils.equals(codeBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists code:【" + queryVo.getCode() + "】");
-            }
-            BaseConfig nameBaseConfig = baseConfigService.selectByName(queryVo.getCode());
-            if (nameBaseConfig != null) {
-                Assert.isTrue(!StringUtils.equals(nameBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists name:【" + queryVo.getName() + "】");
-            }
-            BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getCode());
-            if (symbolBaseConfig != null) {
-                Assert.isTrue(!StringUtils.equals(symbolBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists symbol:【" + queryVo.getSymbol() + "】");
-            }
-            baseConfig.setCode(queryVo.getCode());
-            baseConfig.setName(queryVo.getName());
-            baseConfig.setSymbol(queryVo.getSymbol());
-            baseConfig.setType(queryVo.getConfigType().name());
-            baseConfigService.updateEntity(baseConfig);
-            return new RespVo<>("New configuration successfully update");
-        } catch (Exception e) {
-            log.error("Failed to update configuration", e);
-            return new RespVo<>(null, false, "Failed to update configuration");
+        BaseConfig codeBaseConfig = baseConfigService.selectByCode(queryVo.getCode());
+        if (codeBaseConfig != null) {
+            Assert.isTrue(StringUtils.equals(codeBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists code:【" + queryVo.getCode() + "】");
         }
+        BaseConfig nameBaseConfig = baseConfigService.selectByName(queryVo.getName());
+        if (nameBaseConfig != null) {
+            Assert.isTrue(StringUtils.equals(nameBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists name:【" + queryVo.getName() + "】");
+        }
+        BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getSymbol());
+        if (symbolBaseConfig != null) {
+            Assert.isTrue(StringUtils.equals(symbolBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists symbol:【" + queryVo.getSymbol() + "】");
+        }
+        baseConfig.setCode(queryVo.getCode());
+        baseConfig.setName(queryVo.getName());
+        baseConfig.setSymbol(queryVo.getSymbol());
+        baseConfig.setType(queryVo.getConfigType().name());
+        baseConfigService.updateEntity(baseConfig);
+        return new RespVo<>("New configuration successfully update");
     }
 
 
