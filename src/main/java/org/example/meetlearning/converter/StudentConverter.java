@@ -30,6 +30,8 @@ public interface StudentConverter {
         respVo.setLastActivities(student.getLastActivities());
         respVo.setWebsite(student.getWebsite());
         respVo.setRemark(student.getRemark());
+        respVo.setAffiliateId(student.getAffiliateId());
+        respVo.setAffiliateName(student.getAffiliateName());
         return respVo;
     }
 
