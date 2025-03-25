@@ -14,6 +14,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="record_id" jdbcType="VARCHAR" property="recordId" />
     <result column="quantity" jdbcType="DECIMAL" property="quantity" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
     <result column="amount" jdbcType="DECIMAL" property="amount" />
     <result column="currency_code" jdbcType="VARCHAR" property="currencyCode" />
     <result column="currency_name" jdbcType="VARCHAR" property="currencyName" />
@@ -22,7 +23,7 @@
   <sql id="Base_Column_List">
     id
     , deleted, user_id,creator, create_name, note, create_time, updator, update_name, update_time,
-    record_id, quantity, amount, currency_code, currency_name, currency_symbol
+    record_id, quantity, amount, currency_code, currency_name, currency_symbol, balance
   </sql>
 
   <select id="selectByUserId" resultMap="BaseResultMap">
@@ -116,6 +117,9 @@
       <if test="currencySymbol != null">
         currency_symbol,
       </if>
+      <if test="balance != null">
+        balance,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -165,6 +169,9 @@
       </if>
       <if test="currencySymbol != null">
         #{currencySymbol,jdbcType=VARCHAR},
+      </if>
+      <if test="balance != null">
+        #{balance,jdbcType=DECIMAL},
       </if>
     </trim>
   </insert>
