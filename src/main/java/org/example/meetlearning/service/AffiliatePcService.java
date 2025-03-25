@@ -17,9 +17,11 @@ import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,14 +42,19 @@ public class AffiliatePcService extends BasePcService {
             Page<Affiliate> page = affiliateService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
             //获取代理商的学生数量
             List<String> recordIds = page.getRecords().stream().map(Affiliate::getRecordId).distinct().collect(Collectors.toList());
-            Map<String, Object> params = Map.of("affiliateIds", recordIds);
-            List<SelectValueVo> selectValueVos = studentService.selectAffCountByParams(params);
-            Map<String, BigDecimal> countStuMap = selectValueVos.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getValue())));
-
-            //课程数量
-            List<SelectValueVo> courseSelectList = studentClassService.selectAffCountByParams(params);
-            Map<String, BigDecimal> countCourseMap = courseSelectList.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getValue())));
-
+            Map<String, BigDecimal> countStuMap;
+            Map<String, BigDecimal> countCourseMap;
+            if (!CollectionUtils.isEmpty(recordIds)) {
+                Map<String, Object> params = Map.of("affiliateIds", recordIds);
+                List<SelectValueVo> selectValueVos = studentService.selectAffCountByParams(params);
+                countStuMap = selectValueVos.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getLabel())));
+                //课程数量
+                List<SelectValueVo> courseSelectList = studentClassService.selectAffCountByParams(params);
+                countCourseMap = courseSelectList.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getLabel())));
+            } else {
+                countCourseMap = new HashMap<>();
+                countStuMap = new HashMap<>();
+            }
             PageVo<AffiliateListPageRespVo> pageVo = PageVo.map(page, list -> {
                 AffiliateListPageRespVo respVo = AffiliateConverter.INSTANCE.toListResp(list);
                 if (countStuMap.containsKey(list.getRecordId())) {
@@ -61,7 +68,7 @@ public class AffiliatePcService extends BasePcService {
             return new RespVo<>(pageVo);
         } catch (Exception ex) {
             log.error("查询失败", ex);
-            return new RespVo<>(null, false, "查询失败,未知错误!");
+            return new RespVo<>(null, false, ex.getMessage());
         }
     }
 
