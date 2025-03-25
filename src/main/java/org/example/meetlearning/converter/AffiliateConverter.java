@@ -2,9 +2,11 @@ package org.example.meetlearning.converter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 
 import org.example.meetlearning.dao.entity.Affiliate;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.affiliate.AffiliateAddReqVo;
 import org.example.meetlearning.vo.affiliate.AffiliateListPageRespVo;
 import org.example.meetlearning.vo.affiliate.AffiliateUpdateReqVo;
@@ -21,18 +23,18 @@ public interface AffiliateConverter {
         respVo.setRecordId(affiliate.getRecordId());
         respVo.setName(affiliate.getName());
         respVo.setEmail(affiliate.getEmail());
-        respVo.setBalance(affiliate.getBalance());
-        respVo.setCommissionRate(affiliate.getCommissionRate());
-        respVo.setRate(affiliate.getRate());
-        respVo.setStudentTotal(affiliate.getStudentTotal());
-        respVo.setCourseTotal(affiliate.getCourseTotal());
+        respVo.setBalance(BigDecimalUtil.nullOrZero(affiliate.getBalance()));
+        respVo.setCommissionRate(BigDecimalUtil.nullOrZero(affiliate.getCommissionRate()));
+        respVo.setRate(BigDecimalUtil.nullOrZero(affiliate.getRate()));
+        respVo.setStudentTotal(BigDecimalUtil.nullOrZero(affiliate.getStudentTotal()));
+        respVo.setCourseTotal(BigDecimalUtil.nullOrZero(affiliate.getCourseTotal()));
         respVo.setRemark(affiliate.getRemark());
         return respVo;
     }
 
-
     default Affiliate toCreateAffiliate(String userCode, String userName, AffiliateAddReqVo reqVo) {
         Affiliate affiliate = new Affiliate();
+        affiliate.setRecordId(UUID.randomUUID().toString());
         affiliate.setCreator(userCode);
         affiliate.setCreateName(userName);
         affiliate.setCreateTime(new Date());

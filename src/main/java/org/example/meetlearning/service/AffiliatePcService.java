@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.AffiliateConverter;
 import org.example.meetlearning.dao.entity.Affiliate;
+import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.AffiliateService;
+import org.example.meetlearning.service.impl.StudentClassService;
+import org.example.meetlearning.service.impl.StudentService;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -18,6 +21,8 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -26,10 +31,33 @@ public class AffiliatePcService extends BasePcService {
 
     private final AffiliateService affiliateService;
 
+    private final StudentService studentService;
+
+    private final StudentClassService studentClassService;
+
     public RespVo<PageVo<AffiliateListPageRespVo>> affiliatePage(AffiliateQueryVo queryVo) {
         try {
             Page<Affiliate> page = affiliateService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
-            PageVo<AffiliateListPageRespVo> pageVo = PageVo.map(page, AffiliateConverter.INSTANCE::toListResp);
+            //获取代理商的学生数量
+            List<String> recordIds = page.getRecords().stream().map(Affiliate::getRecordId).distinct().collect(Collectors.toList());
+            Map<String, Object> params = Map.of("affiliateIds", recordIds);
+            List<SelectValueVo> selectValueVos = studentService.selectAffCountByParams(params);
+            Map<String, BigDecimal> countStuMap = selectValueVos.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getValue())));
+
+            //课程数量
+            List<SelectValueVo> courseSelectList = studentClassService.selectAffCountByParams(params);
+            Map<String, BigDecimal> countCourseMap = courseSelectList.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getValue())));
+
+            PageVo<AffiliateListPageRespVo> pageVo = PageVo.map(page, list -> {
+                AffiliateListPageRespVo respVo = AffiliateConverter.INSTANCE.toListResp(list);
+                if (countStuMap.containsKey(list.getRecordId())) {
+                    respVo.setStudentTotal(countStuMap.get(list.getRecordId()));
+                }
+                if (countCourseMap.containsKey(list.getRecordId())) {
+                    respVo.setCourseTotal(countCourseMap.get(list.getRecordId()));
+                }
+                return respVo;
+            });
             return new RespVo<>(pageVo);
         } catch (Exception ex) {
             log.error("查询失败", ex);

@@ -74,6 +74,17 @@
         <include refid="common_where"/>
     </select>
 
+    <select id="selectAffCountByParams" resultType="org.example.meetlearning.vo.common.SelectValueVo">
+        select
+        affiliate_id as `value`, CONCAT(count(record_id),"") as label
+        from student_class
+        <where>
+            deleted = 0 and affiliate_id is not null
+            <include refid="common_where"/>
+        </where>
+        group by affiliate_id
+    </select>
+
     <sql id="common_where">
         <if test="params.teacherKeyword != null">
             and teacher_name like #{params.teacherKeyword}
@@ -86,6 +97,12 @@
         </if>
         <if test="params.endDate != null">
             and create_time &lt;= #{params.endDate}
+        </if>
+        <if test="params.affiliateIds != null">
+            and affiliate_id in
+            <foreach collection="params.affiliateIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
         </if>
     </sql>
 

@@ -7,6 +7,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.example.meetlearning.dao.entity.StudentClass;
+import org.example.meetlearning.vo.common.SelectValueVo;
 
 public interface StudentClassMapper {
 
@@ -22,4 +23,5 @@ public interface StudentClassMapper {
 
     Long selectCompleteByParams(@Param("params")Map<String, Object> params);
 
+    List<SelectValueVo> selectAffCountByParams(@Param("params")Map<String, Object> params);
 }

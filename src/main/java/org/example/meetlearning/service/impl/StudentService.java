@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.mapper.StudentMapper;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +57,13 @@ public class StudentService {
      */
     public Page<Student> findPageByParams(Map<String, Object> params, Page<Student> page) {
         return studentMapper.selectPageByParams(params, page);
+    }
+
+    /**
+     * 查询代理商下的学生数量
+     */
+    public List<SelectValueVo> selectAffCountByParams(Map<String, Object> params) {
+        return studentMapper.selectAffCountByParams(params);
     }
 
 

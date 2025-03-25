@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.StudentClass;
 import org.example.meetlearning.dao.mapper.StudentClassMapper;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -55,5 +57,12 @@ public class StudentClassService {
      */
     public Long selectCompleteByParams(Map<String, Object> params) {
         return studentClassMapper.selectCompleteByParams(params);
+    }
+
+    /**
+     * 根据条件查询
+     */
+    public List<SelectValueVo> selectAffCountByParams(Map<String,Object> params) {
+        return studentClassMapper.selectAffCountByParams(params);
     }
 }

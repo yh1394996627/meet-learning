@@ -53,19 +53,39 @@
         from student
         <where>
             deleted = 0
-            <if test="params.keyword != null">
-                and (
-                name like LOWER(#{params.keyword})
-                or phone like LOWER(#{params.keyword})
-                or email like LOWER(#{params.keyword})
-                or website like LOWER(#{params.keyword})
-                or affiliate_name like LOWER(#{params.keyword})
-                or remark like LOWER(#{params.keyword})
-                )
-            </if>
+            <include refid="where_common"/>
         </where>
     </select>
 
+    <select id="selectAffCountByParams" resultType="org.example.meetlearning.vo.common.SelectValueVo">
+        select
+        affiliate_id as `value`, CONCAT(count(record_id),"") as label
+        from student
+        <where>
+            deleted = 0 and affiliate_id is not null
+            <include refid="where_common"/>
+        </where>
+        group by affiliate_id
+    </select>
+
+    <sql id="where_common">
+        <if test="params.keyword != null">
+            and (
+            name like LOWER(#{params.keyword})
+            or phone like LOWER(#{params.keyword})
+            or email like LOWER(#{params.keyword})
+            or website like LOWER(#{params.keyword})
+            or affiliate_name like LOWER(#{params.keyword})
+            or remark like LOWER(#{params.keyword})
+            )
+        </if>
+        <if test="params.affiliateIds != null">
+            and affiliate_id in
+            <foreach collection="params.affiliateIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
 
     <select id="selectPageByParams" resultMap="BaseResultMap">
         select
@@ -73,16 +93,7 @@
         from student
         <where>
             deleted = 0
-            <if test="params.keyword != null">
-                and (
-                `name` like LOWER(#{params.keyword})
-                or phone like LOWER(#{params.keyword})
-                or email like LOWER(#{params.keyword})
-                or website like LOWER(#{params.keyword})
-                or affiliate_name like LOWER(#{params.keyword})
-                or remark like LOWER(#{params.keyword})
-                )
-            </if>
+            <include refid="where_common"/>
         </where>
     </select>
 
