@@ -2,7 +2,6 @@ package org.example.meetlearning.common;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import okhttp3.internal.http2.ErrorCode;
 
 /**
  * 基础异常类

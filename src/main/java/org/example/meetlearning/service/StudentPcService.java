@@ -153,14 +153,16 @@ public class StudentPcService extends BasePcService {
         Assert.notNull(manageFinance, "To obtain management financial information");
         Assert.isTrue(BigDecimalUtil.gteThan(manageFinance.getBalanceQty(), reqVo.getQuantity()), "Insufficient balance");
 
+        UserFinance userFinance = userFinanceService.selectByUserId(reqVo.getUserId());
         //新增用户课时币记录 userFinanceRecord
         UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo);
+        userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(reqVo.getQuantity()));
         userFinanceRecordService.insertEntity(userFinanceRecord);
         //更新 userFinance
         List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(reqVo.getUserId());
         BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        UserFinance userFinance = userFinanceService.selectByUserId(reqVo.getUserId());
+
         userFinance.setBalanceQty(balanceQty);
         userFinance.setConsumptionQty(usedQty);
         userFinanceService.updateByEntity(userFinance);

@@ -28,6 +28,8 @@ public class UserFinanceRecord {
 
     private BigDecimal canQty;
 
+    private BigDecimal balanceQty;
+
     private String userType;
 
     private Date expirationTime;
