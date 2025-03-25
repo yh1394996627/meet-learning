@@ -1,6 +1,7 @@
 package org.example.meetlearning.vo.token;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -26,6 +27,7 @@ public class TokensLogListRespVo {
     private BigDecimal currencyCode;
 
     @Schema(name = "createTime", description = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     @Schema(name = "creator", description = "创建人")
