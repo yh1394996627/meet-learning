@@ -22,11 +22,11 @@
         <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
         <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
         <result column="teacher_country" jdbcType="VARCHAR" property="teacherCountry"/>
-        <result column="course_id" jdbcType="VARCHAR" property="courseId"/>
         <result column="course_name" jdbcType="VARCHAR" property="courseName"/>
         <result column="course_type" jdbcType="VARCHAR" property="courseType"/>
-        <result column="course_long_time" jdbcType="DECIMAL" property="courseLongTime"/>
-        <result column="course_time" jdbcType="TIMESTAMP" property="courseTime"/>
+        <result column="begin_time" jdbcType="VARCHAR" property="beginTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
+        <result column="course_time" jdbcType="DATE" property="courseTime"/>
         <result column="affiliate_id" jdbcType="VARCHAR" property="affiliateId"/>
         <result column="affiliate_name" jdbcType="VARCHAR" property="affiliateName"/>
         <result column="student_consumption" jdbcType="DECIMAL" property="studentConsumption"/>
@@ -34,13 +34,12 @@
         <result column="student_balance" jdbcType="DECIMAL" property="studentBalance"/>
         <result column="class_status" jdbcType="DECIMAL" property="classStatus"/>
     </resultMap>
-
     <sql id="Base_Column_List">
         id
         , deleted, is_course_video_expired, creator, teacher_course_status, student_course_status,
     course_video_url, zoom_id, create_name, create_time, updator, update_name, update_time, 
     record_id, student_id, student_name, student_country, teacher_id, teacher_name, teacher_country, 
-    course_id, course_name, course_type, course_long_time, course_time, affiliate_id, 
+    course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
     affiliate_name, student_consumption, efficient_date, student_balance
     </sql>
 
@@ -153,17 +152,11 @@
             <if test="teacherCountry != null">
                 teacher_country,
             </if>
-            <if test="courseId != null">
-                course_id,
-            </if>
             <if test="courseName != null">
                 course_name,
             </if>
             <if test="courseType != null">
                 course_type,
-            </if>
-            <if test="courseLongTime != null">
-                course_long_time,
             </if>
             <if test="courseTime != null">
                 course_time,
@@ -182,6 +175,12 @@
             </if>
             <if test="studentBalance != null">
                 student_balance,
+            </if>
+            <if test="beginTime != null">
+                begin_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -245,20 +244,14 @@
             <if test="teacherCountry != null">
                 #{teacherCountry,jdbcType=VARCHAR},
             </if>
-            <if test="courseId != null">
-                #{courseId,jdbcType=VARCHAR},
-            </if>
             <if test="courseName != null">
                 #{courseName,jdbcType=VARCHAR},
             </if>
             <if test="courseType != null">
                 #{courseType,jdbcType=VARCHAR},
             </if>
-            <if test="courseLongTime != null">
-                #{courseLongTime,jdbcType=DECIMAL},
-            </if>
             <if test="courseTime != null">
-                #{courseTime,jdbcType=TIMESTAMP},
+                #{courseTime,jdbcType=DATE},
             </if>
             <if test="affiliateId != null">
                 #{affiliateId,jdbcType=VARCHAR},
@@ -274,6 +267,12 @@
             </if>
             <if test="studentBalance != null">
                 #{studentBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="beginTime != null">
+                #{beginTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -338,17 +337,11 @@
             <if test="teacherCountry != null">
                 teacher_country = #{teacherCountry,jdbcType=VARCHAR},
             </if>
-            <if test="courseId != null">
-                course_id = #{courseId,jdbcType=VARCHAR},
-            </if>
             <if test="courseName != null">
                 course_name = #{courseName,jdbcType=VARCHAR},
             </if>
             <if test="courseType != null">
                 course_type = #{courseType,jdbcType=VARCHAR},
-            </if>
-            <if test="courseLongTime != null">
-                course_long_time = #{courseLongTime,jdbcType=DECIMAL},
             </if>
             <if test="courseTime != null">
                 course_time = #{courseTime,jdbcType=TIMESTAMP},

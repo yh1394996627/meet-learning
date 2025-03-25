@@ -1,4 +1,5 @@
 package org.example.meetlearning.converter;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -38,13 +39,14 @@ public interface AffiliateConverter {
         affiliate.setDeleted(false);
         affiliate.setEmail(reqVo.getEmail());
         affiliate.setEnName(reqVo.getEnName());
+        affiliate.setName(reqVo.getEnName());
         affiliate.setRemark(reqVo.getRemark());
         affiliate.setRecommenderId(reqVo.getRecommenderId());
         affiliate.setRecommender(reqVo.getRecommender());
         return affiliate;
     }
 
-    default Affiliate toUpdateAffiliate(String userCode, String userName, Affiliate affiliate, AffiliateUpdateReqVo reqVo){
+    default Affiliate toUpdateAffiliate(String userCode, String userName, Affiliate affiliate, AffiliateUpdateReqVo reqVo) {
         affiliate.setUpdator(userCode);
         affiliate.setUpdateName(userName);
         affiliate.setUpdateTime(new Date());
@@ -53,7 +55,6 @@ public interface AffiliateConverter {
         affiliate.setRecommender(reqVo.getRecommender());
         return affiliate;
     }
-
 
 
 }

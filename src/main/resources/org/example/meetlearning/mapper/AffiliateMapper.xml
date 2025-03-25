@@ -38,8 +38,7 @@
     </select>
 
     <select id="selectValueAll" resultType="org.example.meetlearning.vo.common.SelectValueVo">
-        select record_id as value,
-    `name` as label
+        select record_id as value,`name` as label
         from affiliate
         where deleted = 0 and name is not null
         order by name asc;

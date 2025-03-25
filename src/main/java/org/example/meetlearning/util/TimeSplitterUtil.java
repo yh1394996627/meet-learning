@@ -54,7 +54,7 @@ public class TimeSplitterUtil {
 
     public static void main(String[] args) {
         // 测试示例
-        List<String> slots = splitByHalfHour("10:11", "20:12");
+        List<String> slots = splitByHalfHour("09:11", "20:12");
         System.out.println("10:30 - 20:30 拆分结果:");
         slots.forEach(System.out::println);
 

@@ -18,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -65,16 +66,25 @@ public class StudentClassPcService {
         }
     }
 
-
     public RespVo<List<SelectValueVo>> classCoinList() {
         List<BigDecimal> priceList = teacherService.priceGroupList();
         List<SelectValueVo> selectValueVos = priceList.stream().map(price -> new SelectValueVo(price.toString(), "Any teacher with " + price + " tokens")).toList();
         return new RespVo<>(selectValueVos);
     }
 
-
     public RespVo<List<SelectValueVo>> classTeacherList(StudentClassCommonQueryVo queryVo) {
-        List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
+        Map<String, Object> params = queryVo.getParams();
+        if (StringUtils.isNotEmpty(queryVo.getCourseTime())) {
+            String[] arr = StringUtils.split(queryVo.getCourseTime(), "-");
+            ScheduleWeekEnum week = ScheduleWeekEnum.getByDate(queryVo.getCourseDate());
+            List<String> teacherIds = teacherScheduleService.selectTeacherIdByWeekNumAndTime(week.name(), arr[0], arr[1]);
+            teacherIds = teacherIds.stream().distinct().toList();
+            if(CollectionUtils.isEmpty(teacherIds)){
+                return new RespVo<>(List.of());
+            }
+            params.put("recordIds", teacherIds);
+        }
+        List<Teacher> teachers = teacherService.selectListParams(params);
         List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getRecordId().toString(), teacher.getName())).toList();
         return new RespVo<>(selectValueVos);
     }

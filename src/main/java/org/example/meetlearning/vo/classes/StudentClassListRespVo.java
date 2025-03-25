@@ -38,10 +38,9 @@ public class StudentClassListRespVo {
     private String courseName;
 
     @Schema(name = "courseTime", description = "上课时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date courseTime;
+    private String courseTime;
 
-    @Schema(name = "courseType", description = "课型 SINGLE:单人  GROUP:团体  EXPERIENCE_TEST:团体测试")
+    @Schema(name = "courseType", description = "课型 SINGLE:单人  GROUP:团体  EXPERIENCE_TEST:测试")
     private String courseType;
 
     @Schema(name = "courseLongTime", description = "课程时常 分钟")

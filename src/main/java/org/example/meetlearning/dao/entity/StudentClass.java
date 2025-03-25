@@ -49,15 +49,15 @@ public class StudentClass {
 
     private String teacherCountry;
 
-    private String courseId;
-
     private String courseName;
 
     private String courseType;
 
-    private BigDecimal courseLongTime;
-
     private Date courseTime;
+
+    private String beginTime;
+
+    private String endTime;
 
     private String affiliateId;
 

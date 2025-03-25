@@ -109,7 +109,7 @@ public class StudentPcService extends BasePcService {
             Student student = studentService.findByRecordId(recordId);
             student = StudentConverter.INSTANCE.toUpdateStudent(student, reqVo);
             if (StringUtils.hasText(reqVo.getAffiliateId())) {
-                User affiliateUser = userService.selectByRecordId(userCode);
+                User affiliateUser = userService.selectByRecordId(reqVo.getAffiliateId());
                 Assert.notNull(affiliateUser, "Affiliate user cannot be empty");
                 student.setAffiliateId(affiliateUser.getRecordId());
                 student.setAffiliateName(affiliateUser.getName());

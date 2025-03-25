@@ -3,6 +3,7 @@ package org.example.meetlearning.converter;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.dao.entity.Affiliate;
 import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.entity.StudentClass;
@@ -32,11 +33,9 @@ public interface StudentClassConverter {
         respVo.setTeacherId(studentClass.getTeacherId());
         respVo.setTeacherName(studentClass.getTeacherName());
         respVo.setTeacherLanguage(studentClass.getTeacherCountry());
-        respVo.setCourseId(studentClass.getCourseId());
         respVo.setCourseName(studentClass.getCourseName());
-        respVo.setCourseTime(studentClass.getCourseTime());
+        respVo.setCourseTime(studentClass.getCourseTime().toString() + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime());
         respVo.setCourseType(studentClass.getCourseType());
-        respVo.setCourseLongTime(studentClass.getCourseLongTime());
         if (studentClass.getStudentCourseStatus() != null) {
             respVo.setStudentCourseStatusContent(Objects.requireNonNull(CourseStatusEnum.getCourseStatusByType(studentClass.getStudentCourseStatus())).name());
         }
@@ -71,16 +70,19 @@ public interface StudentClassConverter {
         studentClass.setTeacherId(teacher.getId());
         studentClass.setTeacherName(teacher.getName());
         studentClass.setTeacherCountry(teacher.getCountry());
-        studentClass.setCourseId(reqVo.getCourseId());
+        studentClass.setCourseName(reqVo.getCourseId());
         studentClass.setCourseName(reqVo.getCourseId());
         if (reqVo.getCourseType() != null) {
             CourseTypeEnum courseTypeEnum = CourseTypeEnum.getByType(reqVo.getCourseType());
             assert courseTypeEnum != null;
             studentClass.setCourseType(courseTypeEnum.name());
         }
-
-        studentClass.setCourseLongTime(reqVo.getCourseLongTime());
         studentClass.setCourseTime(reqVo.getCourseDate());
+        if(StringUtils.isNotEmpty(reqVo.getCourseTime())){
+            String [] arr = StringUtils.split(reqVo.getCourseTime(), "-");
+            studentClass.setBeginTime(arr[0]);
+            studentClass.setEndTime(arr[1]);
+        }
         if (affiliate != null) {
             studentClass.setAffiliateId(affiliate.getRecordId());
             studentClass.setAffiliateName(affiliate.getName());

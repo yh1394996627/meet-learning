@@ -27,8 +27,8 @@ public class StudentClassAddReqVo {
     @Schema(name = "courseName", description = "课程名称")
     private String courseName;
 
-    @Schema(name = "courseLongTime", description = "课时时常 分钟")
-    private BigDecimal courseLongTime;
+    @Schema(name = "courseTime", description = "课程时长")
+    private String courseTime;
 
     @Schema(name = "quantity", description = "消费代币数量")
     private BigDecimal quantity;
