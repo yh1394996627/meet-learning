@@ -75,15 +75,20 @@ public class StudentClassPcService {
 
     public RespVo<List<SelectValueVo>> classTeacherList(StudentClassCommonQueryVo queryVo) {
         List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
+        List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getRecordId().toString(), teacher.getName())).toList();
+        return new RespVo<>(selectValueVos);
+    }
+
+    public RespVo<List<String>> classTimeList(StudentClassCommonQueryVo queryVo) {
+        List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
         List<String> teacherIds = teachers.stream().map(Teacher::getRecordId).toList();
         if (CollectionUtils.isEmpty(teacherIds)) {
             return new RespVo<>(List.of());
         }
         ScheduleWeekEnum week = ScheduleWeekEnum.getByDate(queryVo.getCourseDate());
         List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectByTeacherIdWeekNumGroupByTime(week.name(), teacherIds);
-        List<SelectValueVo> selectValueVos = teacherSchedules.stream().map(schedule -> new SelectValueVo(schedule.getBeginTime().toString(), schedule.getEndTime())).toList();
-        return new RespVo<>(selectValueVos);
-
+        List<String> resultList = teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
+        return new RespVo<>(resultList);
     }
 
     public RespVo<StudentClassTotalRespVo> classTotalList(StudentClassQueryVo queryVo) {

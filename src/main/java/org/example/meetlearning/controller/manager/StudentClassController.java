@@ -50,8 +50,8 @@ public class StudentClassController implements BaseController {
 
     @Operation(summary = "选择时间段接口", operationId = "classTimeList")
     @PostMapping(value = "v1/student/class/time/list")
-    public RespVo<List<SelectValueVo>> classTimeList(@RequestBody StudentClassCommonQueryVo queryVo) {
-        return studentClassPcService.classTeacherList(queryVo);
+    public RespVo<List<String>> classTimeList(@RequestBody StudentClassCommonQueryVo queryVo) {
+        return studentClassPcService.classTimeList(queryVo);
     }
 
     @Operation(summary = "选择老师接口", operationId = "classTeacherList")
@@ -65,6 +65,5 @@ public class StudentClassController implements BaseController {
     public RespVo<StudentClassTotalRespVo> classTotalList(@RequestBody StudentClassQueryVo queryVo) {
         return studentClassPcService.classTotalList(queryVo);
     }
-
 
 }
