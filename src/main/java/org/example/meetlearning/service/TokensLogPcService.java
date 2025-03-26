@@ -9,8 +9,10 @@ import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.TokenConverter;
 import org.example.meetlearning.dao.entity.BaseConfig;
 import org.example.meetlearning.dao.entity.TokensLog;
+import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.service.impl.BaseConfigService;
 import org.example.meetlearning.service.impl.TokensLogService;
+import org.example.meetlearning.service.impl.UserService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.token.TokensLogAddReqVo;
@@ -32,6 +34,8 @@ public class TokensLogPcService {
 
     private final BaseConfigService baseConfigService;
 
+    private final UserService userService;
+
     public RespVo<PageVo<TokensLogListRespVo>> tokensLogPage(String userCode, String userName, TokensLogQueryVo queryVo) {
         Page<TokensLog> page = tokensLogService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
         PageVo<TokensLogListRespVo> pageVO = PageVo.map(page, list -> TokenConverter.INSTANCE.toListVo(userCode, userName, list));
@@ -41,8 +45,9 @@ public class TokensLogPcService {
 
     public RespVo<String> addTokensLog(String userCode, String userName, TokensLogAddReqVo tokensLogAddReqVo) {
         try {
+            User user = userService.selectByRecordId(userCode);
             Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getUserId()), "user is not null");
-            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateToken(userCode, userName, tokensLogAddReqVo);
+            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateToken(userCode, userName, user, tokensLogAddReqVo);
             if (StringUtils.isNotEmpty(tokensLogAddReqVo.getCurrencyCode())) {
                 BaseConfig baseConfig = baseConfigService.selectByCode(tokensLogAddReqVo.getCurrencyCode());
                 Assert.notNull(baseConfig, "Configuration information not obtained record:【" + tokensLogAddReqVo.getCurrencyCode() + "】");

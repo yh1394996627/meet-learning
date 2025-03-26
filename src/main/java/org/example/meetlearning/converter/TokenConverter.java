@@ -32,10 +32,12 @@ public interface TokenConverter {
     }
 
 
-    default TokensLog toCreateToken(String userCode, String userName, TokensLogAddReqVo tokensLogAddReqVo) {
+    default TokensLog toCreateToken(String userCode, String userName, User user, TokensLogAddReqVo tokensLogAddReqVo) {
         TokensLog tokensLog = new TokensLog();
         tokensLog.setDeleted(false);
         tokensLog.setUserId(tokensLogAddReqVo.getUserId());
+        tokensLog.setUserName(tokensLogAddReqVo.getUserId());
+        tokensLog.setUserEmail(tokensLogAddReqVo.getUserId());
         tokensLog.setCreator(userCode);
         tokensLog.setCreateName(userName);
         tokensLog.setCreateTime(new Date());
@@ -63,10 +65,12 @@ public interface TokenConverter {
         return tokensLog;
     }
 
-    default TokensLog toCreateTokenByFinanceRecord(String userCode, String userName, UserFinance finance, BigDecimal quantity, BigDecimal payAmount, String remark) {
+    default TokensLog toCreateTokenByFinanceRecord(String userCode, String userName, UserFinance finance,User user, BigDecimal quantity, BigDecimal payAmount, String remark) {
         TokensLog tokensLog = new TokensLog();
         tokensLog.setDeleted(false);
         tokensLog.setUserId(finance.getUserId());
+        tokensLog.setUserName(user.getName());
+        tokensLog.setUserEmail(user.getEmail());
         tokensLog.setCreator(userCode);
         tokensLog.setCreateName(userName);
         tokensLog.setCreateTime(new Date());

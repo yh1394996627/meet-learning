@@ -5,6 +5,8 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="deleted" jdbcType="BIT" property="deleted" />
     <result column="user_id" jdbcType="BIT" property="userId" />
+    <result column="user_name" jdbcType="BIT" property="userName" />
+    <result column="user_email" jdbcType="BIT" property="userEmail" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="create_name" jdbcType="VARCHAR" property="createName" />
     <result column="note" jdbcType="VARCHAR" property="note" />
@@ -23,7 +25,7 @@
   <sql id="Base_Column_List">
     id
     , deleted, user_id,creator, create_name, note, create_time, updator, update_name, update_time,
-    record_id, quantity, amount, currency_code, currency_name, currency_symbol, balance
+    record_id, quantity, amount, currency_code, currency_name, currency_symbol, balance, user_name, user_email
   </sql>
 
   <select id="selectByUserId" resultMap="BaseResultMap">
@@ -42,27 +44,12 @@
   </select>
 
   <sql id="common_where">
-    <if test="params.userId != null">
-      and user_id = #{params.userId}
-    </if>
-    <if test="params.managerId != null">
-      and manager_id = #{params.managerId}
-    </if>
-    <if test="params.country != null">
-      and country = #{params.country}
-    </if>
-    <if test="params.testStatus != null">
-      and test_status = #{params.testStatus}
-    </if>
-    <if test="params.enabledStatus != null">
-      and enabled_status = #{params.enabledStatus}
-    </if>
-    <if test="params.managerStatus != null">
-      and manager_status = #{params.managerStatus}
-    </if>
-    <if test="params.keyword != null">
-      and name like LOWER(#{params.keyword})
-    </if>
+      <if test="params.userId != null">
+          and user_id = #{params.userId}
+      </if>
+      <if test="params.keyword != null">
+          and (user_name like LOWER(#{params.keyword}) or user_email like LOWER(#{params.keyword}))
+      </if>
   </sql>
 
 
@@ -77,6 +64,12 @@
       </if>
       <if test="userId != null">
         user_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="userEmail != null">
+        user_email,
       </if>
       <if test="creator != null">
         creator,
@@ -130,6 +123,12 @@
       </if>
       <if test="userId != null">
         #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userEmail != null">
+        #{userEmail,jdbcType=VARCHAR},
       </if>
       <if test="creator != null">
         #{creator,jdbcType=VARCHAR},

@@ -231,7 +231,7 @@ public class BasePcService {
                 userFinanceRecordService.insertEntity(userFinanceRecord);
             }
             //添加记录课时币记录
-            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, quantity, reqVo.getPayAmount(), reqVo.getRemark());
+            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, user, quantity, reqVo.getPayAmount(), reqVo.getRemark());
             if (!StringUtils.isEmpty(reqVo.getCurrencyCode())) {
                 BaseConfig baseConfig = baseConfigService.selectByCode(reqVo.getCurrencyCode());
                 Assert.notNull(baseConfig, "Configuration information not obtained record:【" + reqVo.getCurrencyCode() + "】");
@@ -258,7 +258,7 @@ public class BasePcService {
                 }
             }
 
-            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, quantity, reqVo.getPayAmount(), reqVo.getRemark());
+            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, user, quantity, reqVo.getPayAmount(), reqVo.getRemark());
             if (!StringUtils.isEmpty(reqVo.getCurrencyCode())) {
                 BaseConfig baseConfig = baseConfigService.selectByCode(reqVo.getCurrencyCode());
                 Assert.notNull(baseConfig, "Configuration information not obtained record:【" + reqVo.getCurrencyCode() + "】");

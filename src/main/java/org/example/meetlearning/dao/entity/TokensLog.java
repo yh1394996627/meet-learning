@@ -14,6 +14,10 @@ public class TokensLog {
 
     private String userId;
 
+    private String userName;
+
+    private String userEmail;
+
     private String creator;
 
     private String createName;
