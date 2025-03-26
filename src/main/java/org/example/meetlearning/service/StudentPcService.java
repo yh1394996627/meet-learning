@@ -168,7 +168,7 @@ public class StudentPcService extends BasePcService {
         userFinanceService.updateByEntity(userFinance);
         //添加记录课时币记录
         TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, userFinanceRecord);
-        if (org.codehaus.plexus.util.StringUtils.isNotEmpty(userFinanceRecord.getCurrencyCode())) {
+        if (!StringUtils.isEmpty(userFinanceRecord.getCurrencyCode())) {
             BaseConfig baseConfig = baseConfigService.selectByCode(userFinanceRecord.getCurrencyCode());
             Assert.notNull(baseConfig, "Configuration information not obtained record:【" + userFinanceRecord.getCurrencyCode() + "】");
             tokensLog.setCurrencyCode(baseConfig.getCode());

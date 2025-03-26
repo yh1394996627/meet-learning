@@ -33,7 +33,6 @@ public class TokensLogPcService {
     private final BaseConfigService baseConfigService;
 
     public RespVo<PageVo<TokensLogListRespVo>> tokensLogPage(String userCode, String userName, TokensLogQueryVo queryVo) {
-        Assert.isTrue(StringUtils.isNotEmpty(queryVo.getRecordId()), "User ID cannot be empty");
         Page<TokensLog> page = tokensLogService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
         PageVo<TokensLogListRespVo> pageVO = PageVo.map(page, list -> TokenConverter.INSTANCE.toListVo(userCode, userName, list));
         return new RespVo<>(pageVO);
@@ -42,6 +41,7 @@ public class TokensLogPcService {
 
     public RespVo<String> addTokensLog(String userCode, String userName, TokensLogAddReqVo tokensLogAddReqVo) {
         try {
+            Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getUserId()), "user is not null");
             TokensLog tokensLog = TokenConverter.INSTANCE.toCreateToken(userCode, userName, tokensLogAddReqVo);
             if (StringUtils.isNotEmpty(tokensLogAddReqVo.getCurrencyCode())) {
                 BaseConfig baseConfig = baseConfigService.selectByCode(tokensLogAddReqVo.getCurrencyCode());
