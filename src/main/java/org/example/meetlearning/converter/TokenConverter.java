@@ -22,6 +22,9 @@ public interface TokenConverter {
     default TokensLogListRespVo toListVo(String userCode, String userName, TokensLog tokensLog) {
         TokensLogListRespVo respVo = new TokensLogListRespVo();
         respVo.setRecordId(tokensLog.getRecordId());
+        respVo.setUserId(tokensLog.getUserId());
+        respVo.setUserName(tokensLog.getUserName());
+        respVo.setUserEmail(tokensLog.getUserEmail());
         respVo.setQuantity(tokensLog.getQuantity());
         respVo.setRemark(tokensLog.getNote());
         respVo.setBalance(tokensLog.getBalance());

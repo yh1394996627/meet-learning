@@ -14,6 +14,15 @@ public class TokensLogListRespVo {
     @Schema(name = "recordId", description = "业务ID")
     private String recordId;
 
+    @Schema(name = "userId", description = "用户ID")
+    private String userId;
+
+    @Schema(name = "userName", description = "用户名称")
+    private String userName;
+
+    @Schema(name = "userEmail", description = "用户邮箱")
+    private String userEmail;
+
     @Schema(name = "quantity", description = "数量")
     private BigDecimal quantity;
 
