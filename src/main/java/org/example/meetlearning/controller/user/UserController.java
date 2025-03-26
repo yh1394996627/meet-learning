@@ -72,19 +72,19 @@ public class UserController implements BaseController {
     }
 
     @Operation(summary = "充值接口", operationId = "studentPay")
-    @PostMapping(value = "v1/student/pay")
+    @PostMapping(value = "v1/user/pay")
     public RespVo<String> studentPay(@RequestBody UserPayReqVo reqVo) {
         return userPcService.studentPay(getUserCode(), getUserName(), reqVo);
     }
 
     @Operation(summary = "充值接口详细", operationId = "studentPayInfo")
-    @PostMapping(value = "v1/student/pay/info")
+    @PostMapping(value = "v1/user/pay/info")
     public RespVo<UserStudentPayInfoVo> studentPayInfo(@RequestBody RecordIdQueryVo queryVo) {
         return userPcService.studentPayInfo(getUserCode(), queryVo);
     }
 
     @Operation(summary = "用户课时币记录", operationId = "studentPay")
-    @PostMapping(value = "v1/student/finance/record")
+    @PostMapping(value = "v1/user/finance/record")
     public RespVo<PageVo<UserStudentPayRecordRespVo>> studentFinanceRecord(@RequestBody UserStudentFinanceRecordQueryVo queryVo) {
         return userPcService.studentPayRecord(queryVo);
     }
