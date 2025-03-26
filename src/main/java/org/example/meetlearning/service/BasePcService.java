@@ -211,9 +211,10 @@ public class BasePcService {
 
     //充值消费接口
     public void financeTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, UserPayReqVo reqVo) {
+        reqVo.setUserId(userId);
         User user = userService.selectByRecordId(userId);
         Assert.notNull(user, "user does not exist userId:" + userId);
-        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(reqVo.getUserId());
+        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
         BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal balance = BigDecimalUtil.add(balanceQty, quantity);
