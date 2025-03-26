@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public RespVo<?> handleBusinessException(BusinessException e, HttpServletRequest request) {
-        log.error("业务异常: {}, 请求路径: {}", e.getMessage(), request.getRequestURI());
+        log.error("业务异常: {}, 请求路径: {}", e, request.getRequestURI());
         return new RespVo<>(null, false, e.getMessage());
     }
 
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public RespVo<?> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-        log.error("参数校验异常: {}, 请求路径: {}", e.getMessage(), request.getRequestURI());
+        log.error("参数校验异常: {}, 请求路径: {}", e, request.getRequestURI());
         return new RespVo<>(null, false, e.getMessage());
     }
 
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public RespVo<?> handleException(Exception e, HttpServletRequest request) {
-        log.error("系统异常: {}, 请求路径: {}", e.getMessage(), request.getRequestURI(), e);
+        log.error("系统异常: {}, 请求路径: {}", e, request.getRequestURI(), e);
         return new RespVo<>(null, false, "System abnormality");
     }
 }

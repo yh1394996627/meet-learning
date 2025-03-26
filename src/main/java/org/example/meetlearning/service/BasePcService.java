@@ -214,13 +214,15 @@ public class BasePcService {
         reqVo.setUserId(userId);
         User user = userService.selectByRecordId(userId);
         Assert.notNull(user, "user does not exist userId:" + userId);
+        UserFinance userFinance = userFinanceService.selectByUserId(userId);
+        Assert.notNull(userFinance, "To obtain management financial information");
         List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
-        BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal balanceQty = userFinance.getBalanceQty();
         BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal balance = BigDecimalUtil.add(balanceQty, quantity);
         Assert.isTrue(BigDecimalUtil.gteZero(balance), "Insufficient balance");
-        UserFinance userFinance = userFinanceService.selectByUserId(userId);
-        Assert.notNull(userFinance, "To obtain management financial information");
+
+
         //更新 userFinance
         userFinance.setBalanceQty(balance);
         if (BigDecimalUtil.gtZero(quantity)) {
