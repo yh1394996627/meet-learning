@@ -3,7 +3,6 @@ package org.example.meetlearning.service;
 
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
@@ -21,10 +20,8 @@ import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URL;
 import java.util.List;
 
 @Service
@@ -94,7 +91,7 @@ public class UserPcService extends BasePcService {
         Teacher teacher = teacherService.selectByRecordId(userCode);
         teacher.setAvatarUrl(url);
         teacherService.updateEntity(teacher);
-        return new RespVo<>(downloadAvatar(url));
+        return new RespVo<>(downloadFile(url));
     }
 
     public RespVo<String> uploadPcVideo(String userCode, String userId, MultipartFile file) {
@@ -105,7 +102,7 @@ public class UserPcService extends BasePcService {
         Teacher teacher = teacherService.selectByRecordId(userCode);
         teacher.setVideoUrl(url);
         teacherService.updateEntity(teacher);
-        return new RespVo<>(downloadAvatar(url));
+        return new RespVo<>(downloadFile(url));
     }
 
     public RespVo<FileRecordVo> uploadPcFile(String userCode, String userId, MultipartFile file) {

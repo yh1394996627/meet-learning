@@ -23,10 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +79,7 @@ public class TeacherPcService extends BasePcService {
 
             //如果查询条件勾选了擅长
             if (StringUtils.hasText(queryVo.getSpecialists())) {
-                teacher1Ids = CollectionUtils.isEmpty(teacher1Ids) ? teacher1Ids : null;
+                teacher1Ids = !CollectionUtils.isEmpty(teacher1Ids) ? teacher1Ids : null;
                 List<String> teacher2Ids = teacherFeatureService.selectTeacherIdBySpecialists(queryVo.getSpecialists(), teacher1Ids);
                 teacherIds.addAll(teacher2Ids);
             } else {
@@ -93,7 +91,12 @@ public class TeacherPcService extends BasePcService {
                 params.put("recordIds", teacherIds);
             }
             Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
-            PageVo<TeacherInfoRespVo> pageVo = PageVo.map(teacherPage, TeacherConverter.INSTANCE::toTeacherInfo);
+            PageVo<TeacherInfoRespVo> pageVo = PageVo.map(teacherPage, list -> {
+                TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(list);
+                respVo.setAvatarUrl(downloadFile(list.getAvatarUrl()));
+                respVo.setVideoUrl(downloadFile(list.getVideoUrl()));
+                return respVo;
+            });
             return new RespVo<>(pageVo);
         } catch (Exception ex) {
             log.error("查询失败", ex);
@@ -283,10 +286,10 @@ public class TeacherPcService extends BasePcService {
 
     public RespVo<List<SharedTeacherListRespVo>> sharedTeacherList() {
         List<Teacher> teacherList = teacherService.selectListByAll();
-        List<SharedTeacherListRespVo> respVos = teacherList.stream().map(item->{
-            SharedTeacherListRespVo sharedTeacherListRespVo =  TeacherConverter.INSTANCE.toSharedTeacherListRespVo(item);
-            sharedTeacherListRespVo.setAvatarUtl(downloadAvatar(item.getAvatarUrl()));
-            sharedTeacherListRespVo.setVideoUrl(downloadAvatar(item.getAvatarUrl()));
+        List<SharedTeacherListRespVo> respVos = teacherList.stream().map(item -> {
+            SharedTeacherListRespVo sharedTeacherListRespVo = TeacherConverter.INSTANCE.toSharedTeacherListRespVo(item);
+            sharedTeacherListRespVo.setAvatarUtl(downloadFile(item.getAvatarUrl()));
+            sharedTeacherListRespVo.setVideoUrl(downloadFile(item.getAvatarUrl()));
             return sharedTeacherListRespVo;
         }).toList();
         return new RespVo<>(respVos);
@@ -311,8 +314,8 @@ public class TeacherPcService extends BasePcService {
             String recordId = queryVo.getRecordId();
             Assert.isTrue(StringUtils.hasText(recordId), "RecordId cannot be empty");
             Teacher teacher = teacherService.selectByRecordId(recordId);
-            String downloadAvatar = downloadAvatar(teacher.getAvatarUrl());
-            String downloadVideo = downloadAvatar(teacher.getVideoUrl());
+            String downloadAvatar = downloadFile(teacher.getAvatarUrl());
+            String downloadVideo = downloadFile(teacher.getVideoUrl());
             teacher.setAvatarUrl(downloadAvatar);
             teacher.setVideoUrl(downloadVideo);
             Assert.notNull(teacher, "Teacher information not obtained");

@@ -112,7 +112,7 @@ public class BasePcService {
     /**
      * 下载头像
      */
-    public String downloadAvatar(String fileName) {
+    public String downloadFile(String fileName) {
         try {
             if (StringUtils.isEmpty(fileName)) {
                 return null;
@@ -167,7 +167,7 @@ public class BasePcService {
             FileRecord record = FileRecordConverter.INSTANCE.toCreate(userCode, fileName, file.getOriginalFilename());
             fileRecordService.insertBatch(List.of(record));
             FileRecordVo recordVo = FileRecordConverter.INSTANCE.toFileRecordVo(record);
-            recordVo.setFileUrl(downloadAvatar(fileName));
+            recordVo.setFileUrl(downloadFile(fileName));
             return new RespVo<>(recordVo);
         } catch (Exception e) {
             log.error("File retrieval failed", e);
@@ -182,7 +182,7 @@ public class BasePcService {
         List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
         return fileRecords.stream().map(item -> {
             FileRecordVo fileRecordVo = FileRecordConverter.INSTANCE.toFileRecordVo(item);
-            fileRecordVo.setFileUrl(downloadAvatar(fileRecordVo.getFileUrl()));
+            fileRecordVo.setFileUrl(downloadFile(fileRecordVo.getFileUrl()));
             return fileRecordVo;
         }).toList();
     }
@@ -221,7 +221,6 @@ public class BasePcService {
         BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal balance = BigDecimalUtil.add(balanceQty, quantity);
         Assert.isTrue(BigDecimalUtil.gteZero(balance), "Insufficient balance");
-
 
         //更新 userFinance
         userFinance.setBalanceQty(balance);

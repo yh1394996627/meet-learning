@@ -28,7 +28,7 @@ public interface TokenConverter {
         respVo.setQuantity(tokensLog.getQuantity());
         respVo.setRemark(tokensLog.getNote());
         respVo.setBalance(tokensLog.getBalance());
-        respVo.setCreateTime(new Date());
+        respVo.setCreateTime(tokensLog.getCreateTime());
         respVo.setCreator(userCode);
         respVo.setCreateName(userName);
         return respVo;
@@ -68,7 +68,7 @@ public interface TokenConverter {
         return tokensLog;
     }
 
-    default TokensLog toCreateTokenByFinanceRecord(String userCode, String userName, UserFinance finance,User user, BigDecimal quantity, BigDecimal payAmount, String remark) {
+    default TokensLog toCreateTokenByFinanceRecord(String userCode, String userName, UserFinance finance, User user, BigDecimal quantity, BigDecimal payAmount, String remark) {
         TokensLog tokensLog = new TokensLog();
         tokensLog.setDeleted(false);
         tokensLog.setUserId(finance.getUserId());

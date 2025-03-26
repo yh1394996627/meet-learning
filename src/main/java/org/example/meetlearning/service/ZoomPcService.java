@@ -103,7 +103,7 @@ public class ZoomPcService {
         RequestBody body = new FormBody.Builder()
                 .add("grant_type", "authorization_code")
                 .add("code", authorizationCode)
-                .add("redirect_uri", "http://localhost:5001/zoom/callback")
+                .add("redirect_uri", "https://localhost:5001/zoom/callback")
                 .build();
 
         // 构建请求

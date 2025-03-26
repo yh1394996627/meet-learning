@@ -9,10 +9,12 @@ import org.example.meetlearning.service.ZoomPcService;
 import org.example.meetlearning.service.ZoomService;
 import org.example.meetlearning.vo.common.RespVo;
 import org.json.JSONObject;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @RestController
 @AllArgsConstructor
@@ -22,24 +24,30 @@ public class ZoomController {
 
     private final ZoomPcService zoomPcService;
     private final ZoomService zoomService;
+    private final RedisTemplate redisTemplate;
 
     @GetMapping("/zoom/callback")
-    public String handleCallback(@RequestParam("code") String authorizationCode) throws IOException {
+    public void handleCallback(@RequestParam("code") String authorizationCode) throws IOException {
+        meeting(authorizationCode);
+    }
+
+    private void meeting(String authorizationCode) throws IOException {
         // 使用授权码获取 Access Token
-        String accessToken = getAccessToken(authorizationCode);
-        // 货取ZOOM用户ID
+        String accessToken = zoomPcService.getAccessToken(authorizationCode);
+        redisTemplate.opsForValue().set("zoom_access_token", accessToken);
+
+        // 获取ZOOM用户ID
         String user = zoomService.getZoomUserIdByEmail("1394996627@qq.com", accessToken);
-        log.info("user：{}",user);
+        log.info("user：{}", user);
         JSONObject userObj = new JSONObject(user);
         // 创建会议
-        String meet = zoomPcService.createMeeting(userObj.get("id").toString(), "test", "2025-03-23T10:00:00", accessToken);
-        log.info("meet：{}",meet);
+        String meet = zoomPcService.createMeeting(userObj.get("id").toString(), "test", "2025-03-29T10:00:00", accessToken);
+        log.info("meet：{}", meet);
         // 查看会议信息
         JSONObject meetObj = new JSONObject(meet);
-        String meetingInfo =zoomPcService.getMeetingInfo(meetObj.get("uuid").toString(), accessToken);
-        log.info("meetingInfo：{}",meetingInfo);
+        String meetingInfo = zoomPcService.getMeetingInfo(meetObj.get("id").toString(), accessToken);
+        log.info("meetingInfo：{}", meetingInfo);
         JSONObject meetingInfoObj = new JSONObject(meetingInfo);
-        return "Authorization code: " + authorizationCode + ", Access Token: " + accessToken;
     }
 
 
@@ -47,14 +55,6 @@ public class ZoomController {
     public String handleWebhook(@RequestHeader("x-zm-signature") String signature,
                                 @RequestHeader("x-zm-request-timestamp") String timestamp,
                                 @RequestBody String payload) {
-        // 验证签名
-        if (!verifySignature(signature, timestamp, payload)) {
-            return "Invalid signature";
-        }
-
-        // 处理事件
-        processEvent(payload);
-
         return "Event received";
     }
 
@@ -63,19 +63,4 @@ public class ZoomController {
         // 返回验证令牌以验证 URL
         return token;
     }
-
-    private boolean verifySignature(String signature, String timestamp, String payload) {
-        // 实现签名验证逻辑
-        // 使用 Zoom 提供的密钥和算法验证签名
-        return true; // 返回验证结果
-    }
-
-    private void processEvent(String payload) {
-        // 处理接收到的 Zoom 事件
-        // 解析 payload 并根据事件类型执行相应操作
-    }
-    private String getAccessToken(String authorizationCode) throws IOException {
-        return zoomPcService.getAccessToken(authorizationCode);
-    }
-
 }
