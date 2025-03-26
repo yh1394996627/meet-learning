@@ -2,25 +2,23 @@ package org.example.meetlearning.service;
 
 
 import cn.hutool.core.util.BooleanUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.UserConverter;
-import org.example.meetlearning.dao.entity.Affiliate;
-import org.example.meetlearning.dao.entity.Student;
-import org.example.meetlearning.dao.entity.Teacher;
-import org.example.meetlearning.dao.entity.User;
+import org.example.meetlearning.converter.UserFinanceConverter;
+import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.RoleEnum;
-import org.example.meetlearning.service.impl.StudentService;
-import org.example.meetlearning.service.impl.TeacherService;
-import org.example.meetlearning.service.impl.UserService;
+import org.example.meetlearning.service.impl.*;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.util.MD5Util;
 import org.example.meetlearning.vo.common.FileRecordVo;
+import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
-import org.example.meetlearning.vo.user.UserInfoRespVo;
-import org.example.meetlearning.vo.user.UserLoginReqVo;
-import org.example.meetlearning.vo.user.UserManageOperaReqVo;
+import org.example.meetlearning.vo.user.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,8 +33,9 @@ import java.util.List;
 public class UserPcService extends BasePcService {
 
     private final UserService userService;
-
     private final TeacherService teacherService;
+    private final UserFinanceService userFinanceService;
+    private final UserFinanceRecordService userFinanceRecordService;
 
     public RespVo<String> manageRegister(UserManageOperaReqVo reqVo) {
         try {
@@ -120,6 +119,35 @@ public class UserPcService extends BasePcService {
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
         return deletedFile(userCode, fileRecordVo);
+    }
+
+
+    public RespVo<String> studentPay(String userCode, String userName, UserPayReqVo reqVo) {
+        //支付用戶减掉课时币
+        financeTokenLogs(userCode, userName, userCode, reqVo.getQuantity().negate(), reqVo);
+        //接收用戶加课时币
+        financeTokenLogs(userCode, userName, reqVo.getUserId(), reqVo.getQuantity(), reqVo);
+        return new RespVo<>("Payment successful");
+    }
+
+    public RespVo<PageVo<UserStudentPayRecordRespVo>> studentPayRecord(UserStudentFinanceRecordQueryVo reqVo) {
+        //更新 userFinance
+        Page<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParams(reqVo.getParams(), reqVo.getPageRequest());
+        PageVo<UserStudentPayRecordRespVo> pageVo = PageVo.map(userFinanceRecordList, UserFinanceConverter.INSTANCE::toUserStudentPayRecordRespVo);
+        return new RespVo<>(pageVo);
+    }
+
+    public RespVo<UserStudentPayInfoVo> studentPayInfo(String userCode, RecordIdQueryVo queryVo) {
+        UserFinance manageFinance = userFinanceService.selectByUserId(userCode);
+        Assert.notNull(manageFinance, "User Finance information not obtained");
+        User user = userService.selectByRecordId(queryVo.getRecordId());
+        Assert.notNull(user, "User information not obtained");
+        UserStudentPayInfoVo respVo = new UserStudentPayInfoVo();
+        respVo.setUserId(user.getRecordId());
+        respVo.setName(user.getName());
+        respVo.setEmail(user.getEmail());
+        respVo.setBalanceQty(BigDecimalUtil.nullOrZero(manageFinance.getBalanceQty()));
+        return new RespVo<>(respVo);
     }
 
 }

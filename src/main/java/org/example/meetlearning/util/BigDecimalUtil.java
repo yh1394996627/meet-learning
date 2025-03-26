@@ -22,6 +22,10 @@ public class BigDecimalUtil {
         return nullOrZero(v1).compareTo(BigDecimal.ZERO) > 0;
     }
 
+    public static Boolean gteZero(BigDecimal v1) {
+        return nullOrZero(v1).compareTo(BigDecimal.ZERO) >= 0;
+    }
+
     public static Boolean lteThan(BigDecimal v1, BigDecimal v2) {
         return nullOrZero(v1).compareTo(nullOrZero(v2)) <= 0;
     }

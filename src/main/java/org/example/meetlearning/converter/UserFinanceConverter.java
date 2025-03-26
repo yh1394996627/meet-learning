@@ -6,7 +6,7 @@ import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.dao.entity.UserFinance;
 import org.example.meetlearning.dao.entity.UserFinanceRecord;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
-import org.example.meetlearning.vo.user.UserStudentPayReqVo;
+import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -36,7 +36,7 @@ public interface UserFinanceConverter {
     }
 
 
-    default UserFinanceRecord toCreateRecord(String userCode, String userName, UserStudentPayReqVo reqVo) {
+    default UserFinanceRecord toCreateRecord(String userCode, String userName, UserPayReqVo reqVo) {
         UserFinanceRecord userFinanceRecord = new UserFinanceRecord();
         userFinanceRecord.setDeleted(false);
         userFinanceRecord.setCreator(userCode);

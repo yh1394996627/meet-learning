@@ -8,10 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.UserPcService;
 import org.example.meetlearning.vo.common.FileRecordVo;
+import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
-import org.example.meetlearning.vo.user.UserInfoRespVo;
-import org.example.meetlearning.vo.user.UserLoginReqVo;
-import org.example.meetlearning.vo.user.UserManageOperaReqVo;
+import org.example.meetlearning.vo.user.*;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -69,6 +69,24 @@ public class UserController implements BaseController {
     @PostMapping(value = "v1/user/delete/file")
     public RespVo<String> deleteFile(@RequestBody FileRecordVo file) {
         return userPcService.deletedFile(getUserCode(), file);
+    }
+
+    @Operation(summary = "充值接口", operationId = "studentPay")
+    @PostMapping(value = "v1/student/pay")
+    public RespVo<String> studentPay(@RequestBody UserPayReqVo reqVo) {
+        return userPcService.studentPay(getUserCode(), getUserName(), reqVo);
+    }
+
+    @Operation(summary = "充值接口详细", operationId = "studentPayInfo")
+    @PostMapping(value = "v1/student/pay/info")
+    public RespVo<UserStudentPayInfoVo> studentPayInfo(@RequestBody RecordIdQueryVo queryVo) {
+        return userPcService.studentPayInfo(getUserCode(), queryVo);
+    }
+
+    @Operation(summary = "用户课时币记录", operationId = "studentPay")
+    @PostMapping(value = "v1/student/finance/record")
+    public RespVo<PageVo<UserStudentPayRecordRespVo>> studentFinanceRecord(@RequestBody UserStudentFinanceRecordQueryVo queryVo) {
+        return userPcService.studentPayRecord(queryVo);
     }
 
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class UserStudentPayReqVo {
+public class UserPayReqVo {
 
     @Schema(name = "userId", description = "用户ID 学生/老师/代理商")
     private String userId;

@@ -12,7 +12,7 @@ import org.example.meetlearning.vo.student.*;
 import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
 import org.example.meetlearning.vo.user.UserStudentPayInfoVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
-import org.example.meetlearning.vo.user.UserStudentPayReqVo;
+import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,24 +60,6 @@ public class StudentController implements BaseController {
     @PostMapping(value = "v1/student/info")
     public RespVo<StudentInfoRespVo> studentInfo(@RequestBody RecordIdQueryVo reqVo) {
         return studentPcService.studentInfo(reqVo);
-    }
-
-    @Operation(summary = "学生充值接口", operationId = "studentPay")
-    @PostMapping(value = "v1/student/pay")
-    public RespVo<String> studentPay(@RequestBody UserStudentPayReqVo reqVo) {
-        return studentPcService.studentPay(getUserCode(), getUserName(), reqVo);
-    }
-
-    @Operation(summary = "学生充值接口详细", operationId = "studentPayInfo")
-    @PostMapping(value = "v1/student/pay/info")
-    public RespVo<UserStudentPayInfoVo> studentPayInfo(@RequestBody RecordIdQueryVo queryVo) {
-        return studentPcService.studentPayInfo(getUserCode(), queryVo);
-    }
-
-    @Operation(summary = "学生课时币记录", operationId = "studentPay")
-    @PostMapping(value = "v1/student/finance/record")
-    public RespVo<PageVo<UserStudentPayRecordRespVo>> studentFinanceRecord(@RequestBody UserStudentFinanceRecordQueryVo queryVo) {
-        return studentPcService.studentPayRecord(queryVo);
     }
 
 }

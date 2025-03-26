@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.StudentConverter;
-import org.example.meetlearning.converter.TokenConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.RoleEnum;
@@ -18,17 +17,15 @@ import org.example.meetlearning.vo.student.*;
 import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
 import org.example.meetlearning.vo.user.UserStudentPayInfoVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
-import org.example.meetlearning.vo.user.UserStudentPayReqVo;
+import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -147,57 +144,4 @@ public class StudentPcService extends BasePcService {
         return new RespVo<>(respVo);
     }
 
-    public RespVo<String> studentPay(String userCode, String userName, UserStudentPayReqVo reqVo) {
-        //操作折财务记录
-        UserFinance manageFinance = userFinanceService.selectByUserId(userCode);
-        Assert.notNull(manageFinance, "To obtain management financial information");
-        Assert.isTrue(BigDecimalUtil.gteThan(manageFinance.getBalanceQty(), reqVo.getQuantity()), "Insufficient balance");
-
-        UserFinance userFinance = userFinanceService.selectByUserId(reqVo.getUserId());
-        //新增用户课时币记录 userFinanceRecord
-        UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo);
-        userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(reqVo.getQuantity()));
-        userFinanceRecordService.insertEntity(userFinanceRecord);
-        //更新 userFinance
-        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(reqVo.getUserId());
-        BigDecimal balanceQty = userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        userFinance.setBalanceQty(balanceQty);
-        userFinance.setConsumptionQty(usedQty);
-        userFinanceService.updateByEntity(userFinance);
-        //添加记录课时币记录
-        TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, userFinanceRecord);
-        if (!StringUtils.isEmpty(userFinanceRecord.getCurrencyCode())) {
-            BaseConfig baseConfig = baseConfigService.selectByCode(userFinanceRecord.getCurrencyCode());
-            Assert.notNull(baseConfig, "Configuration information not obtained record:【" + userFinanceRecord.getCurrencyCode() + "】");
-            tokensLog.setCurrencyCode(baseConfig.getCode());
-            tokensLog.setCurrencyName(baseConfig.getName());
-        }
-        tokensLogService.insertEntity(tokensLog);
-        //减少管理员使用的课时币
-        manageFinance.setBalanceQty(BigDecimalUtil.sub(manageFinance.getBalanceQty(), reqVo.getQuantity()));
-        userFinanceService.updateByEntity(manageFinance);
-        return new RespVo<>("Payment successful");
-    }
-
-    public RespVo<PageVo<UserStudentPayRecordRespVo>> studentPayRecord(UserStudentFinanceRecordQueryVo reqVo) {
-        //更新 userFinance
-        Page<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParams(reqVo.getParams(), reqVo.getPageRequest());
-        PageVo<UserStudentPayRecordRespVo> pageVo = PageVo.map(userFinanceRecordList, UserFinanceConverter.INSTANCE::toUserStudentPayRecordRespVo);
-        return new RespVo<>(pageVo);
-    }
-
-    public RespVo<UserStudentPayInfoVo> studentPayInfo(String userCode, RecordIdQueryVo queryVo) {
-        UserFinance manageFinance = userFinanceService.selectByUserId(userCode);
-        Assert.notNull(manageFinance, "User Finance information not obtained");
-        User user = userService.selectByRecordId(queryVo.getRecordId());
-        Assert.notNull(user, "User information not obtained");
-        UserStudentPayInfoVo respVo = new UserStudentPayInfoVo();
-        respVo.setUserId(user.getRecordId());
-        respVo.setName(user.getName());
-        respVo.setEmail(user.getEmail());
-        respVo.setBalanceQty(BigDecimalUtil.nullOrZero(manageFinance.getBalanceQty()));
-        return new RespVo<>(respVo);
-    }
 }
