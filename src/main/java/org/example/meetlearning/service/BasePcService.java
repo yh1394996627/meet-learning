@@ -57,6 +57,9 @@ public class BasePcService {
     @Autowired
     private TokensLogService tokensLogService;
 
+    @Autowired
+    private StudentService studentService;
+
 
     /**
      * 创建登陆帐号。学生 老师 代理商来源
@@ -226,8 +229,13 @@ public class BasePcService {
         userFinance.setBalanceQty(balance);
         if (BigDecimalUtil.gtZero(quantity)) {
             if (StringUtils.equals(user.getType(), RoleEnum.STUDENT.name()) || StringUtils.equals(user.getType(), RoleEnum.AFFILIATE.name())) {
+                String affiliateId = "";
+                if (StringUtils.equals(user.getType(), RoleEnum.STUDENT.name())) {
+                    Student student = studentService.findByRecordId(userId);
+                    affiliateId = student != null ? student.getAffiliateId() : "";
+                }
                 //新增用户课时币记录 userFinanceRecord
-                UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo);
+                UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo, user, affiliateId);
                 userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(reqVo.getQuantity()));
                 userFinanceRecordService.insertEntity(userFinanceRecord);
             }

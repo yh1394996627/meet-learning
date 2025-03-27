@@ -2,6 +2,7 @@ package org.example.meetlearning.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.example.meetlearning.dao.entity.UserFinanceRecord;
 import org.example.meetlearning.dao.mapper.UserFinanceRecordMapper;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,18 @@ public class UserFinanceRecordService {
      */
     public Page<UserFinanceRecord> selectByParams(Map<String, Object> params, Page<UserFinanceRecord> page) {
         return userFinanceRecordMapper.selectByParams(params, page);
+    }
+
+    /**
+     * 币种分组查询
+     */
+    public List<UserFinanceRecord> selectByParamsGroup(@Param("params") Map<String, Object> params) {
+        return userFinanceRecordMapper.selectByParamsCurrencyGroup(params);
+    }
+
+
+    public List<UserFinanceRecord> selectDaByParams(@Param("params") Map<String, Object> params) {
+        return userFinanceRecordMapper.selectDaByParams(params);
     }
 
 }

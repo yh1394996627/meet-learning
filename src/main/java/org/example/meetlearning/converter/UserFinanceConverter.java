@@ -5,6 +5,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.dao.entity.UserFinance;
 import org.example.meetlearning.dao.entity.UserFinanceRecord;
+import org.example.meetlearning.vo.manager.ManagerFinanceStudentRecordRespVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
 import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.mapstruct.Mapper;
@@ -36,7 +37,7 @@ public interface UserFinanceConverter {
     }
 
 
-    default UserFinanceRecord toCreateRecord(String userCode, String userName, UserPayReqVo reqVo) {
+    default UserFinanceRecord toCreateRecord(String userCode, String userName, UserPayReqVo reqVo, User user, String affiliateId) {
         UserFinanceRecord userFinanceRecord = new UserFinanceRecord();
         userFinanceRecord.setDeleted(false);
         userFinanceRecord.setCreator(userCode);
@@ -46,7 +47,9 @@ public interface UserFinanceConverter {
         userFinanceRecord.setQuantity(reqVo.getQuantity());
         userFinanceRecord.setUsedQty(BigDecimal.ZERO);
         userFinanceRecord.setCanQty(reqVo.getQuantity());
-        userFinanceRecord.setUserType("");
+        userFinanceRecord.setUserType(user.getType());
+        userFinanceRecord.setUserName(user.getName());
+        userFinanceRecord.setUserEmail(user.getEmail());
         if (StringUtils.isNotEmpty(reqVo.getExpirationTime())) {
             userFinanceRecord.setExpirationTime(DateUtil.parse(reqVo.getExpirationTime(), "yyyy-MM-dd"));
         }
@@ -57,6 +60,7 @@ public interface UserFinanceConverter {
         userFinanceRecord.setPaymentName(reqVo.getPaymentName());
         userFinanceRecord.setRemark(reqVo.getRemark());
         userFinanceRecord.setDiscountRate(reqVo.getDiscountRate());
+        userFinanceRecord.setAffiliateId(affiliateId);
         return userFinanceRecord;
     }
 
@@ -69,6 +73,22 @@ public interface UserFinanceConverter {
         respVo.setUsedQty(record.getUsedQty());
         respVo.setCanQty(record.getCanQty());
         respVo.setExpirationTime(record.getExpirationTime());
+        return respVo;
+    }
+
+    default ManagerFinanceStudentRecordRespVo toManagerFinanceStudentRecordRespVo(UserFinanceRecord record) {
+        ManagerFinanceStudentRecordRespVo respVo = new ManagerFinanceStudentRecordRespVo();
+        respVo.setRecordId(UUID.randomUUID().toString());
+        respVo.setUserEmail(record.getUserEmail());
+        respVo.setUserName(record.getUserName());
+        respVo.setCurrencyCode(record.getCurrencyCode());
+        respVo.setCurrencyName(record.getCurrencyName());
+        respVo.setPaymentId(record.getPaymentId());
+        respVo.setPaymentName(record.getPaymentName());
+        respVo.setNote(record.getRemark());
+        respVo.setCreator(record.getCreator());
+        respVo.setCreateName(record.getCreateName());
+        respVo.setCreateTime(record.getCreateTime());
         return respVo;
     }
 

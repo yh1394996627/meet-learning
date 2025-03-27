@@ -30,6 +30,8 @@ public class UserFinance {
 
     private BigDecimal balanceQty;
 
+    private BigDecimal creditsBalance;
+
     private BigDecimal consumptionQty;
 
     private String userType;

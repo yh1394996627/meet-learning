@@ -13,6 +13,7 @@
         <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="balance_qty" jdbcType="DECIMAL" property="balanceQty"/>
+        <result column="credits_balance" jdbcType="DECIMAL" property="creditsBalance"/>
         <result column="consumption_qty" jdbcType="DECIMAL" property="consumptionQty"/>
         <result column="user_type" jdbcType="VARCHAR" property="userType"/>
         <result column="expiration_time" jdbcType="TIMESTAMP" property="expirationTime"/>
@@ -21,7 +22,7 @@
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
-    record_id, user_id, balance_qty, consumption_qty, user_type, expiration_time, version
+    record_id, user_id, balance_qty, consumption_qty, user_type, expiration_time, version, credits_balance
     </sql>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
@@ -52,12 +53,12 @@
                                   create_name, create_time, updator,
                                   update_name, update_time, record_id,
                                   user_id, balance_qty, consumption_qty,
-                                  user_type, expiration_time)
+                                  user_type, expiration_time, credits_balance)
         values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
                 #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updator,jdbcType=VARCHAR},
                 #{updateName,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{recordId,jdbcType=VARCHAR},
                 #{userId,jdbcType=VARCHAR}, #{balanceQty,jdbcType=DECIMAL}, #{consumptionQty,jdbcType=DECIMAL},
-                #{userType,jdbcType=VARCHAR}, #{expirationTime,jdbcType=TIMESTAMP})
+                #{userType,jdbcType=VARCHAR}, #{expirationTime,jdbcType=TIMESTAMP}, #{creditsBalance,jdbcType=DECIMAL})
     </insert>
 
     <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.UserFinance">
@@ -102,6 +103,9 @@
             </if>
             <if test="expirationTime != null">
                 expiration_time = #{expirationTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creditsBalance != null">
+                credits_balance = #{creditsBalance,jdbcType=TIMESTAMP},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}

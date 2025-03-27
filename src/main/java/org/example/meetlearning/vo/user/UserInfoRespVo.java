@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.example.meetlearning.enums.RoleEnum;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -31,4 +32,9 @@ public class UserInfoRespVo {
     @Schema(name = "role", description = "角色")
     private String role;
 
+    @Schema(name = "creditsBalance", description = "积分金额")
+    private BigDecimal creditsBalance;
+
+    @Schema(name = "balanceQty", description = "代币余额")
+    private BigDecimal balanceQty;
 }

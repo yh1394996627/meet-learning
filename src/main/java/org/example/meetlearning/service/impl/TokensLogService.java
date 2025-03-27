@@ -17,7 +17,6 @@ public class TokensLogService {
 
     private final TokensLogMapper tokensLogMapper;
 
-
     /**
      * 插入
      */

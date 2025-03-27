@@ -10,12 +10,20 @@ public class BigDecimalUtil {
         return nullOrZero(v1).add(nullOrZero(v2));
     }
 
+    public static BigDecimal divide(BigDecimal v1, BigDecimal v2, Integer scale) {
+        return nullOrZero(v1).divide(nullOrZero(v2), scale, BigDecimal.ROUND_HALF_UP);
+    }
+
     public static BigDecimal sub(BigDecimal v1, BigDecimal v2) {
         return nullOrZero(v1).subtract(nullOrZero(v2));
     }
 
     public static BigDecimal nullOrZero(BigDecimal v1) {
         return v1 == null ? BigDecimal.ZERO : v1;
+    }
+
+    public static BigDecimal nullOrOne(BigDecimal v1) {
+        return v1 == null ? BigDecimal.ONE : v1;
     }
 
     public static Boolean gtZero(BigDecimal v1) {

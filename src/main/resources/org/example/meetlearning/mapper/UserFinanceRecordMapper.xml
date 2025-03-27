@@ -8,6 +8,8 @@
         <result column="create_name" jdbcType="VARCHAR" property="createName"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_email" jdbcType="VARCHAR" property="userEmail"/>
         <result column="quantity" jdbcType="DECIMAL" property="quantity"/>
         <result column="used_qty" jdbcType="DECIMAL" property="usedQty"/>
         <result column="can_qty" jdbcType="DECIMAL" property="canQty"/>
@@ -21,12 +23,14 @@
         <result column="pay_amount" jdbcType="DECIMAL" property="payAmount"/>
         <result column="discount_rate" jdbcType="DECIMAL" property="discountRate"/>
         <result column="balance_qty" jdbcType="DECIMAL" property="balanceQty"/>
+        <result column="affiliate_id" jdbcType="DECIMAL" property="affiliateId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, user_id, quantity, used_qty, can_qty,
-    user_type, expiration_time,currency_code, currency_name, pay_amount, payment_id, payment_name, remark, discount_rate, balance_qty
+        user_type, expiration_time,currency_code, currency_name, pay_amount, payment_id, payment_name,
+        remark, discount_rate, balance_qty,affiliate_id, user_name, user_email
     </sql>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
@@ -40,12 +44,17 @@
         select
         <include refid="Base_Column_List"/>
         from user_finance_record
-        where deleted = 0 and user_id = #{params.userId}
-        <if test="params.isComplete != null">
-            and can_qty > 0;
-        </if>
+        where deleted = 0
     </select>
 
+    <select id="selectByParamsCurrencyGroup" resultMap="BaseResultMap">
+        select
+        currency_code,currency_name, sum(pay_amount) as pay_amount
+        from user_finance_record
+        where deleted = 0
+        <include refid="common_where"/>
+        group by currency_code
+    </select>
 
     <select id="selectPageByUserId" resultMap="BaseResultMap">
         select
@@ -54,20 +63,65 @@
         where deleted = 0 and user_id = #{userId} order by id desc
     </select>
 
+    <sql id="common_where">
+        <if test="params.userId != null">
+            and user_id = #{params.userId}
+        </if>
+        <if test="params.isComplete != null">
+            and can_qty > 0;
+        </if>
+        <if test="params.canCurrency != null">
+            and currency_code is not null
+        </if>
+        <if test="params.currencyCode != null">
+            and currency_code = #{params.currencyCode}
+        </if>
+        <if test="params.paymentId != null">
+            and payment_id = #{params.paymentId}
+        </if>
+        <if test="params.affiliateId != null">
+            and affiliate_id = #{params.affiliateId}
+        </if>
+        <if test="params.creator != null">
+            and creator = #{params.creator}
+        </if>
+        <if test="params.income != null">
+            <choose>
+                <when test="params.income == 1">
+                    and DATE_FORMAT(create_time, '%Y-%m-%d') = #{params.incomeDate}
+                </when>
+                <when test="params.income == 2">
+                    and DATE_FORMAT(create_time, '%Y-%m') = #{params.incomeDate}
+                </when>
+            </choose>
+        </if>
+    </sql>
+
+
+    <select id="selectDaByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_finance_record
+        where deleted = 0
+        <include refid="common_where"/>
+    </select>
+
 
     <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.UserFinanceRecord">
         insert into user_finance_record (deleted, creator,
                                          create_name, create_time, user_id,
                                          quantity, used_qty, can_qty,
                                          user_type, expiration_time, currency_code, currency_name,
-                                         payment_id, payment_name, remark, pay_amount, discount_rate,balance_qty)
+                                         payment_id, payment_name, remark, pay_amount, discount_rate, balance_qty,
+                                         affiliate_id, user_name, user_email)
 
         values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
                 #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=VARCHAR},
                 #{quantity,jdbcType=DECIMAL}, #{usedQty,jdbcType=DECIMAL}, #{canQty,jdbcType=DECIMAL},
                 #{userType,jdbcType=VARCHAR}, #{expirationTime,jdbcType=TIMESTAMP}, #{currencyCode,jdbcType=VARCHAR},
                 #{currencyName,jdbcType=VARCHAR}, #{paymentId,jdbcType=VARCHAR}, #{paymentName,jdbcType=VARCHAR},
-                #{remark,jdbcType=VARCHAR}, #{payAmount,jdbcType=DECIMAL}, #{discountRate,jdbcType=DECIMAL}, #{balanceQty,jdbcType=DECIMAL})
+                #{remark,jdbcType=VARCHAR}, #{payAmount,jdbcType=DECIMAL}, #{discountRate,jdbcType=DECIMAL},
+                #{balanceQty,jdbcType=DECIMAL}, #{affiliateId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{userEmail,jdbcType=VARCHAR})
     </insert>
 
     <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.UserFinanceRecord">

@@ -22,6 +22,10 @@ public class UserFinanceRecord {
 
     private String userId;
 
+    private String userName;
+
+    private String userEmail;
+
     private BigDecimal quantity;
 
     private BigDecimal usedQty;
@@ -47,5 +51,7 @@ public class UserFinanceRecord {
     private String remark;
 
     private BigDecimal discountRate;
+
+    private String affiliateId;
 
 }

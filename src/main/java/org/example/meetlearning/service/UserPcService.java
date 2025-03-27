@@ -60,6 +60,10 @@ public class UserPcService extends BasePcService {
                 Assert.isTrue(types.contains(accountUser.getType()), "Account password incorrect");
             }
             UserInfoRespVo respVo = UserConverter.INSTANCE.toUserInfoRespVo(accountUser);
+            UserFinance userFinance = userFinanceService.selectByUserId(accountUser.getRecordId());
+            Assert.notNull(userFinance, "User Finance information not obtained");
+            respVo.setBalanceQty(userFinance.getBalanceQty());
+            respVo.setCreditsBalance(userFinance.getCreditsBalance());
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("登陆失败", ex);
@@ -73,6 +77,10 @@ public class UserPcService extends BasePcService {
             User accountUser = userService.selectByRecordId(userCode);
             Assert.notNull(accountUser, "User information not obtained");
             UserInfoRespVo respVo = UserConverter.INSTANCE.toUserInfoRespVo(accountUser);
+            UserFinance userFinance = userFinanceService.selectByUserId(accountUser.getRecordId());
+            Assert.notNull(userFinance, "User Finance information not obtained");
+            respVo.setBalanceQty(userFinance.getBalanceQty());
+            respVo.setCreditsBalance(userFinance.getCreditsBalance());
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("查询个人信息失败", ex);
