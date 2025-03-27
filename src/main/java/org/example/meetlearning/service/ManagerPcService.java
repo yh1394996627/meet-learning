@@ -53,7 +53,7 @@ public class ManagerPcService {
                 amountRespVo.setRate(BigDecimalUtil.divide(record.getPayAmount(), lastAmount, 4).multiply(new BigDecimal(100)));
             }
             return amountRespVo;
-        }).toList();
+        }).collect(Collectors.toList());
         respVo.setAmountList(amountList);
 
         Map<String, Object> params = queryVo.getParams(userCode);
@@ -72,19 +72,16 @@ public class ManagerPcService {
             amountRespVo.setCurrencyName(record.getCurrencyName());
             amountRespVo.setAmount(record.getPayAmount());
             return amountRespVo;
-        }).toList();
+        }).collect(Collectors.toList());
         respVo.setStudentAmountList(studentAmountList);
         return respVo;
     }
 
 
     public PageVo<ManagerFinanceStudentRecordRespVo> financeList(String userCode, ManagerIncomeStatisticsQueryVo queryVo) {
-        Page<UserFinanceRecord> recordList =userFinanceRecordService.selectByParams(queryVo.getParams(userCode), queryVo.getPageRequest());
-        PageVo<ManagerFinanceStudentRecordRespVo> recordRespVoPageVo = PageVo.map(recordList, UserFinanceConverter.INSTANCE::toManagerFinanceStudentRecordRespVo);
-        return recordRespVoPageVo;
+        Page<UserFinanceRecord> recordList = userFinanceRecordService.selectByParams(queryVo.getParams(userCode), queryVo.getPageRequest());
+        return PageVo.map(recordList, UserFinanceConverter.INSTANCE::toManagerFinanceStudentRecordRespVo);
     }
-
-
 
 
 }

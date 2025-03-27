@@ -72,6 +72,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public RespVo<?> handleException(Exception e, HttpServletRequest request) {
         log.error("系统异常: {}, 请求路径: {}", e, request.getRequestURI(), e);
-        return new RespVo<>(null, false, "System abnormality");
+        return new RespVo<>(null, false, e.getMessage());
     }
 }
