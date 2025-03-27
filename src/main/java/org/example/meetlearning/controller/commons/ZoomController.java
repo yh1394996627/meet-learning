@@ -10,6 +10,7 @@ import org.example.meetlearning.service.ZoomService;
 import org.example.meetlearning.vo.common.RespVo;
 import org.json.JSONObject;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,10 +53,11 @@ public class ZoomController {
 
 
     @PostMapping("/api/zoom/event/callback")
-    public String handleWebhook(@RequestHeader("x-zm-signature") String signature,
-                                @RequestHeader("x-zm-request-timestamp") String timestamp,
-                                @RequestBody String payload) {
-        return "Event received";
+    public ResponseEntity<String> handleZoomEvent(
+            @RequestHeader(value = "authorization", required = false) String authToken,
+            @RequestBody String payload) {
+        log.info("authorization: {}", authToken);
+        return null;
     }
 
     @Operation(summary = "判断本地ZOOM是否存在", operationId = "isZoomInstalled")
@@ -68,6 +70,7 @@ public class ZoomController {
     @GetMapping("/api/zoom/event/callback")
     public String verifyWebhook(@RequestParam("zoom_verification_token") String token) {
         // 返回验证令牌以验证 URL
+        log.info("token:{}", token);
         return token;
     }
 }
