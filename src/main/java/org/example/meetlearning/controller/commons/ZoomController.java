@@ -51,7 +51,7 @@ public class ZoomController {
     }
 
 
-    @PostMapping("/zoom/event/callback")
+    @PostMapping("/api/zoom/event/callback")
     public String handleWebhook(@RequestHeader("x-zm-signature") String signature,
                                 @RequestHeader("x-zm-request-timestamp") String timestamp,
                                 @RequestBody String payload) {
