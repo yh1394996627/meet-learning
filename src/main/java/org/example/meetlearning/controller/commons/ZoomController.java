@@ -56,8 +56,19 @@ public class ZoomController {
     public ResponseEntity<String> handleZoomEvent(
             @RequestHeader(value = "authorization", required = false) String authToken,
             @RequestBody String payload) {
-        log.info("authorization: {}", authToken);
-        return null;
+        log.info("payload: {}", payload);
+        log.info("authToken: {}", authToken);
+        return ResponseEntity.ok("Event received");
+    }
+
+    private String bytesToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 
     @Operation(summary = "判断本地ZOOM是否存在", operationId = "isZoomInstalled")
