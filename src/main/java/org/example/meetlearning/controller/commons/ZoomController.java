@@ -65,7 +65,7 @@ public class ZoomController {
     }
 
 
-    @GetMapping("/zoom/event/callback")
+    @GetMapping("/api/zoom/event/callback")
     public String verifyWebhook(@RequestParam("zoom_verification_token") String token) {
         // 返回验证令牌以验证 URL
         return token;
