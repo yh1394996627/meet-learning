@@ -59,7 +59,7 @@ public class ZoomController {
     }
 
     @Operation(summary = "判断本地ZOOM是否存在", operationId = "isZoomInstalled")
-    @PostMapping(value = "v1/zoom/installed")
+    @PostMapping(value = "/v1/zoom/installed")
     public RespVo<Boolean> isZoomInstalled() {
         return new RespVo(true);
     }
