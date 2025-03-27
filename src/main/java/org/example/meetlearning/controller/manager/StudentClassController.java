@@ -38,7 +38,7 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "新增学生预约", operationId = "studentClassAdd")
     @PostMapping(value = "v1/student/class/add")
     public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) {
-        return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), reqVo);
+        return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), getUserName(), reqVo);
     }
 
     @Operation(summary = "选择课时币接口", operationId = "classCoinList")

@@ -253,7 +253,7 @@ public class BasePcService {
                 if (!CollectionUtils.isEmpty(userFinanceRecordList)) {
                     UserFinanceRecord userFinanceRecord = userFinanceRecordList.get(0);
                     userFinanceRecord.setCanQty(BigDecimalUtil.sub(userFinanceRecord.getCanQty(), quantity.abs()));
-                    userFinanceRecord.setUsedQty(BigDecimalUtil.add(userFinanceRecord.getCanQty(), quantity.abs()));
+                    userFinanceRecord.setUsedQty(BigDecimalUtil.add(userFinanceRecord.getUsedQty(), quantity.abs()));
                     userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(reqVo.getQuantity()));
                     userFinanceRecordService.updateByEntity(userFinanceRecord);
                 }
@@ -271,5 +271,43 @@ public class BasePcService {
         userFinanceService.updateByEntity(userFinance);
     }
 
+    public void operaTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, String remark) {
+        User user = userService.selectByRecordId(userId);
+        Assert.notNull(user, "user does not exist userId:" + userId);
+        UserFinance userFinance = userFinanceService.selectByUserId(userId);
+        Assert.notNull(userFinance, "To obtain management financial information");
+        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
+        BigDecimal balanceQty = userFinance.getBalanceQty();
+        BigDecimal usedQty = userFinance.getConsumptionQty();
+        BigDecimal balance = BigDecimalUtil.add(balanceQty, quantity);
+        Assert.isTrue(BigDecimalUtil.gteZero(balance), "Insufficient balance");
+        //更新 userFinance
+        userFinance.setBalanceQty(balance);
+        if (BigDecimalUtil.gtZero(quantity)) {
+            //暂时没有有场景
+        } else {
+            //已消费金额更新
+            userFinance.setConsumptionQty(BigDecimalUtil.add(usedQty, quantity.abs()));
+            if (StringUtils.equals(user.getType(), RoleEnum.STUDENT.name())) {
+                userFinanceRecordList.forEach(f -> {
+                    if (f.getExpirationTime() == null) {
+                        f.setExpirationTime(DateUtil.parse("2099-12-31", "yyyy-MM-dd"));
+                    }
+                });
+                userFinanceRecordList = userFinanceRecordList.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime)).toList();
+                if (!CollectionUtils.isEmpty(userFinanceRecordList)) {
+                    UserFinanceRecord userFinanceRecord = userFinanceRecordList.get(0);
+                    userFinanceRecord.setCanQty(BigDecimalUtil.sub(userFinanceRecord.getCanQty(), quantity.abs()));
+                    userFinanceRecord.setUsedQty(BigDecimalUtil.add(userFinanceRecord.getUsedQty(), quantity.abs()));
+                    userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(quantity));
+                    userFinanceRecordService.updateByEntity(userFinanceRecord);
+                }
+            }
+
+            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, user, balance, quantity, remark);
+            tokensLogService.insertEntity(tokensLog);
+        }
+        userFinanceService.updateByEntity(userFinance);
+    }
 
 }

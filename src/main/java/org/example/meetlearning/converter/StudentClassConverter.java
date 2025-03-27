@@ -4,10 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.codehaus.plexus.util.StringUtils;
-import org.example.meetlearning.dao.entity.Affiliate;
-import org.example.meetlearning.dao.entity.Student;
-import org.example.meetlearning.dao.entity.StudentClass;
-import org.example.meetlearning.dao.entity.Teacher;
+import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseStatusEnum;
 import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -43,6 +40,8 @@ public interface StudentClassConverter {
             respVo.setTeacherCourseStatusContent(Objects.requireNonNull(CourseStatusEnum.getCourseStatusByType(studentClass.getTeacherCourseStatus())).name());
         }
         respVo.setCourseVideoUrl(studentClass.getCourseVideoUrl());
+        //默认25分钟
+        respVo.setCourseLongTime(new BigDecimal(25));
         respVo.setIsCourseVideoExpired(studentClass.getIsCourseVideoExpired());
         respVo.setAffiliateId(studentClass.getAffiliateId());
         respVo.setAffiliateName(studentClass.getAffiliateName());
@@ -52,7 +51,7 @@ public interface StudentClassConverter {
         return respVo;
     }
 
-    default StudentClass toCreate(String userCode, String userName, StudentClassAddReqVo reqVo, Student student, Teacher teacher, Affiliate affiliate) {
+    default StudentClass toCreate(String userCode, String userName, StudentClassAddReqVo reqVo, Student student, Teacher teacher, Affiliate affiliate, UserFinance studentFinance) {
         StudentClass studentClass = new StudentClass();
         studentClass.setDeleted(false);
         studentClass.setCreator(userCode);
@@ -70,16 +69,14 @@ public interface StudentClassConverter {
         studentClass.setTeacherId(teacher.getId());
         studentClass.setTeacherName(teacher.getName());
         studentClass.setTeacherCountry(teacher.getCountry());
-        studentClass.setCourseName(reqVo.getCourseId());
-        studentClass.setCourseName(reqVo.getCourseId());
         if (reqVo.getCourseType() != null) {
             CourseTypeEnum courseTypeEnum = CourseTypeEnum.getByType(reqVo.getCourseType());
             assert courseTypeEnum != null;
             studentClass.setCourseType(courseTypeEnum.name());
         }
         studentClass.setCourseTime(reqVo.getCourseDate());
-        if(StringUtils.isNotEmpty(reqVo.getCourseTime())){
-            String [] arr = StringUtils.split(reqVo.getCourseTime(), "-");
+        if (StringUtils.isNotEmpty(reqVo.getCourseTime())) {
+            String[] arr = StringUtils.split(reqVo.getCourseTime(), "-");
             studentClass.setBeginTime(arr[0]);
             studentClass.setEndTime(arr[1]);
         }
@@ -87,10 +84,9 @@ public interface StudentClassConverter {
             studentClass.setAffiliateId(affiliate.getRecordId());
             studentClass.setAffiliateName(affiliate.getName());
         }
-        //todo 这块还需要实现
-//        studentClass.setStudentConsumption(BigDecimalUtil.nullOrZero(student.getConsumption()).add(BigDecimalUtil.nullOrZero(reqVo.getQuantity())));
-//        studentClass.setEfficientDate(new Date());
-//        studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(student.getBalance()));
+        studentClass.setStudentConsumption(BigDecimalUtil.nullOrZero(studentFinance.getConsumptionQty()));
+        studentClass.setEfficientDate(studentFinance.getExpirationTime());
+        studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(studentFinance.getBalanceQty()));
         return studentClass;
     }
 

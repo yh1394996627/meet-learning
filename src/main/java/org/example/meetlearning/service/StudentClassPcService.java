@@ -7,12 +7,14 @@ import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
+import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.vo.classes.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -23,7 +25,8 @@ import java.util.Map;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class StudentClassPcService {
+@Transactional
+public class StudentClassPcService extends BasePcService {
 
     private final StudentClassService studentClassService;
 
@@ -35,6 +38,8 @@ public class StudentClassPcService {
 
     private final TeacherScheduleService teacherScheduleService;
 
+    private final UserFinanceService userFinanceService;
+
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
         Page<StudentClass> page = studentClassService.selectByParams(queryVo.getParams(), queryVo.getPageRequest());
@@ -42,28 +47,35 @@ public class StudentClassPcService {
         return new RespVo<>(pageVo);
     }
 
-    public RespVo<String> studentClassAdd(String entCode, String userCode, StudentClassAddReqVo reqVo) {
-        try {
-            //查询学生信息
-            Student student = reqVo.getStudentId() != null ? studentService.findByRecordId(reqVo.getStudentId()) : null;
-            Assert.notNull(student, "Student information not obtained");
-            //查询老师信息
-            Teacher teacher = reqVo.getTeacherId() != null ? teacherService.selectByRecordId(reqVo.getTeacherId()) : null;
-            Assert.notNull(teacher, "Teacher information not obtained");
-            //查询代理商信息
-            Affiliate affiliate = null;
-            if (student != null && StringUtils.isNotEmpty(student.getAffiliateId())) {
-                affiliate = affiliateService.findByRecordId(student.getAffiliateId());
-            }
-            Assert.isTrue(reqVo.getCourseType() != null, "Teacher information not obtained");
-            StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(entCode, userCode, reqVo, student, teacher, affiliate);
-            studentClassService.insertEntity(studentClass);
-            return new RespVo<>("New successfully added");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            log.error("Addition failed", ex);
-            return new RespVo<>("Addition failed", false, ex.getMessage());
+
+    /**
+     * 新增预约课程
+     * 1.校验
+     * 2.拉取老师学生信息组装数据
+     * 3.学生扣掉课时币，添加扣除记录
+     * 4.创建会议,生产会议链接
+     */
+    public RespVo<String> studentClassAdd(String entCode, String userCode, String userName, StudentClassAddReqVo reqVo) {
+        //1.校验 2.拉取老师学生信息组装数据
+        //查询学生信息
+        Student student = reqVo.getStudentId() != null ? studentService.findByRecordId(reqVo.getStudentId()) : null;
+        Assert.notNull(student, "Student information not obtained");
+        //查询老师信息
+        Teacher teacher = reqVo.getTeacherId() != null ? teacherService.selectByRecordId(reqVo.getTeacherId()) : null;
+        Assert.notNull(teacher, "Teacher information not obtained");
+        //查询代理商信息
+        Affiliate affiliate = null;
+        if (student != null && StringUtils.isNotEmpty(student.getAffiliateId())) {
+            affiliate = affiliateService.findByRecordId(student.getAffiliateId());
         }
+        Assert.isTrue(reqVo.getCourseType() != null, "Course type cannot be empty");
+        //3.新增课时币学生扣减记录
+        operaTokenLogs(userCode, userName, student.getRecordId(), reqVo.getQuantity(), TokenContentEnum.COURSE_CLASS.getEnContent());
+        UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
+        StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(entCode, userCode, reqVo, student, teacher, affiliate, userFinance);
+        //todo 生成会议链接
+        studentClassService.insertEntity(studentClass);
+        return new RespVo<>("New successfully added");
     }
 
     public RespVo<List<SelectValueVo>> classCoinList() {
@@ -79,7 +91,7 @@ public class StudentClassPcService {
             ScheduleWeekEnum week = ScheduleWeekEnum.getByDate(queryVo.getCourseDate());
             List<String> teacherIds = teacherScheduleService.selectTeacherIdByWeekNumAndTime(week.name(), arr[0], arr[1]);
             teacherIds = teacherIds.stream().distinct().toList();
-            if(CollectionUtils.isEmpty(teacherIds)){
+            if (CollectionUtils.isEmpty(teacherIds)) {
                 return new RespVo<>(List.of());
             }
             params.put("recordIds", teacherIds);
