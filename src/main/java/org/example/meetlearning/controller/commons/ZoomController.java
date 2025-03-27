@@ -58,6 +58,13 @@ public class ZoomController {
         return "Event received";
     }
 
+    @Operation(summary = "判断本地ZOOM是否存在", operationId = "isZoomInstalled")
+    @PostMapping(value = "v1/zoom/installed")
+    public RespVo<Boolean> isZoomInstalled() {
+        return new RespVo(true);
+    }
+
+
     @GetMapping("/zoom/event/callback")
     public String verifyWebhook(@RequestParam("zoom_verification_token") String token) {
         // 返回验证令牌以验证 URL
