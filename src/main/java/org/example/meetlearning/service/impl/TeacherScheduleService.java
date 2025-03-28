@@ -9,6 +9,7 @@ import org.example.meetlearning.dao.mapper.TeacherScheduleSetMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -36,6 +37,10 @@ public class TeacherScheduleService {
 
     public List<TeacherSchedule> selectByTeacherIdWeekNumGroupByTime(String weekNum, List<String> teacherIds) {
         return teacherScheduleMapper.selectByTeacherIdWeekNumGroupByTime(weekNum, teacherIds);
+    }
+
+    public List<TeacherSchedule> selectGroupTimeByParams(Map<String, Object> params) {
+        return teacherScheduleMapper.selectGroupTimeByParams(params);
     }
 
     public int deleteSetByTeacherId(String teacherId, String weekNum, String scheduleType) {

@@ -12,8 +12,12 @@ import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.StudentClassPcService;
 import org.example.meetlearning.vo.classes.*;
 import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
+import org.example.meetlearning.vo.evaluation.TeacherComplaintReqVo;
+import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
+import org.example.meetlearning.vo.student.StudentInfoRespVo;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,6 +68,40 @@ public class StudentClassController implements BaseController {
     @PostMapping(value = "v1/student/class/total")
     public RespVo<StudentClassTotalRespVo> classTotalList(@RequestBody StudentClassQueryVo queryVo) {
         return studentClassPcService.classTotalList(queryVo);
+    }
+
+    @Operation(summary = "取消课程罚款提示 ,false提示", operationId = "studentClassCancelVerify")
+    @PostMapping(value = "v1/student/class/cancel/verify")
+    public RespVo<Boolean> studentClassCancelVerify(@RequestBody RecordIdQueryVo reqVo) {
+        return new RespVo<>(studentClassPcService.studentClassCancelOrUpdateVerify(getUserCode(), reqVo));
+    }
+
+    @Operation(summary = "取消预约课程", operationId = "studentClassCancel")
+    @PostMapping(value = "v1/student/class/cancel")
+    public RespVo<String> studentClassCancel(@RequestBody RecordIdQueryVo reqVo) {
+        studentClassPcService.studentClassCancel(getUserCode(), reqVo);
+        return new RespVo<>("Course cancelled successfully");
+    }
+
+    @Operation(summary = "学生更改课程时间", operationId = "studentClassUpdateTime")
+    @PostMapping(value = "v1/student/class/update/time")
+    public RespVo<String> studentClassUpdateTime(@RequestBody StudentClassUpdateTimeReqVo reqVo) {
+        studentClassPcService.studentClassUpdateTime(getUserCode(), getUserName(), reqVo);
+        return new RespVo<>("Course time changed successfully");
+    }
+
+    @Operation(summary = "学生评价", operationId = "studentClassEvaluate")
+    @PostMapping(value = "v1/student/class/evaluate")
+    public RespVo<String> studentClassEvaluate(@RequestBody TeacherEvaluationReqVo reqVo) {
+        studentClassPcService.studentClassEvaluate(getUserCode(), reqVo);
+        return new RespVo<>("Successfully added comment");
+    }
+
+    @Operation(summary = "学生投诉", operationId = "studentClassComplaint")
+    @PostMapping(value = "v1/student/class/complaint")
+    public RespVo<String> studentClassComplaint(@RequestBody TeacherComplaintReqVo reqVo) {
+        studentClassPcService.studentClassComplaint(getUserCode(), reqVo);
+        return new RespVo<>("New complaint successfully added");
     }
 
 }

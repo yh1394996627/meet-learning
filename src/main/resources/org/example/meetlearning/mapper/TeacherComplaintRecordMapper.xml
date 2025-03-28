@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.TeacherComplaintRecordMapper">
+  <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.TeacherComplaintRecord">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="record_id" jdbcType="VARCHAR" property="recordId" />
+    <result column="teacher_id" jdbcType="VARCHAR" property="teacherId" />
+    <result column="teacher_name" jdbcType="VARCHAR" property="teacherName" />
+    <result column="teacher_email" jdbcType="VARCHAR" property="teacherEmail" />
+    <result column="student_id" jdbcType="VARCHAR" property="studentId" />
+    <result column="student_name" jdbcType="VARCHAR" property="studentName" />
+    <result column="student_email" jdbcType="VARCHAR" property="studentEmail" />
+    <result column="student_class_id" jdbcType="VARCHAR" property="studentClassId" />
+    <result column="student_class_date" jdbcType="DATE" property="studentClassDate" />
+    <result column="student_class_begin_time" jdbcType="VARCHAR" property="studentClassBeginTime" />
+    <result column="student_class_end_time" jdbcType="VARCHAR" property="studentClassEndTime" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="used_amount" jdbcType="DECIMAL" property="usedAmount" />
+    <result column="is_cancel" jdbcType="BIT" property="isCancel" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, creator, create_time, record_id, teacher_id, teacher_name, teacher_email, student_id,
+    student_name, student_email, student_class_id, student_class_date, student_class_begin_time, 
+    student_class_end_time, amount, used_amount, is_cancel, remark
+  </sql>
+
+  <select id="selectByTeacherId" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from teacher_complaint_record
+      where teacher_id = #{teacherId}
+  </select>
+
+  <select id="selectByTeacherIdLimit10" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from teacher_complaint_record
+      where teacher_id = #{teacherId} order by id desc limit 10
+  </select>
+
+  <insert id="insert" parameterType="org.example.meetlearning.dao.entity.TeacherComplaintRecord">
+    insert into teacher_complaint_record (creator, create_time,
+      record_id, teacher_id, teacher_name, 
+      teacher_email, student_id, student_name, 
+      student_email, student_class_id, student_class_date, 
+      student_class_begin_time, student_class_end_time, 
+      amount, used_amount, is_cancel, 
+      remark)
+    values (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{recordId,jdbcType=VARCHAR}, #{teacherId,jdbcType=VARCHAR}, #{teacherName,jdbcType=VARCHAR}, 
+      #{teacherEmail,jdbcType=VARCHAR}, #{studentId,jdbcType=VARCHAR}, #{studentName,jdbcType=VARCHAR}, 
+      #{studentEmail,jdbcType=VARCHAR}, #{studentClassId,jdbcType=VARCHAR}, #{studentClassDate,jdbcType=DATE}, 
+      #{studentClassBeginTime,jdbcType=VARCHAR}, #{studentClassEndTime,jdbcType=VARCHAR}, 
+      #{amount,jdbcType=DECIMAL}, #{usedAmount,jdbcType=DECIMAL}, #{isCancel,jdbcType=BIT}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.TeacherComplaintRecord">
+    update teacher_complaint_record
+    <set>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recordId != null">
+        record_id = #{recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherId != null">
+        teacher_id = #{teacherId,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherName != null">
+        teacher_name = #{teacherName,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherEmail != null">
+        teacher_email = #{teacherEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="studentId != null">
+        student_id = #{studentId,jdbcType=VARCHAR},
+      </if>
+      <if test="studentName != null">
+        student_name = #{studentName,jdbcType=VARCHAR},
+      </if>
+      <if test="studentEmail != null">
+        student_email = #{studentEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="studentClassId != null">
+        student_class_id = #{studentClassId,jdbcType=VARCHAR},
+      </if>
+      <if test="studentClassDate != null">
+        student_class_date = #{studentClassDate,jdbcType=DATE},
+      </if>
+      <if test="studentClassBeginTime != null">
+        student_class_begin_time = #{studentClassBeginTime,jdbcType=VARCHAR},
+      </if>
+      <if test="studentClassEndTime != null">
+        student_class_end_time = #{studentClassEndTime,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="usedAmount != null">
+        used_amount = #{usedAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="isCancel != null">
+        is_cancel = #{isCancel,jdbcType=BIT},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

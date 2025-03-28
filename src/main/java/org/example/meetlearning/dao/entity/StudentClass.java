@@ -37,15 +37,19 @@ public class StudentClass {
 
     private Boolean isCourseVideoExpired;
 
-    private Long studentId;
+    private String studentId;
 
     private String studentName;
 
+    private String studentEmail;
+
     private String studentCountry;
 
-    private Long teacherId;
+    private String teacherId;
 
     private String teacherName;
+
+    private String teacherEmail;
 
     private String teacherCountry;
 
@@ -70,5 +74,9 @@ public class StudentClass {
     private BigDecimal studentBalance;
 
     private Integer classStatus;
+
+    private String cancelId;
+
+    private Date cancelTime;
 
 }

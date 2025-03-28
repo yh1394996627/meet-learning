@@ -63,10 +63,10 @@ public interface StudentClassConverter {
         studentClass.setCourseVideoUrl(null);
         studentClass.setZoomId(null);
         studentClass.setIsCourseVideoExpired(false);
-        studentClass.setStudentId(student.getId());
+        studentClass.setStudentId(student.getRecordId());
         studentClass.setStudentName(student.getName());
         studentClass.setStudentCountry(student.getCountry());
-        studentClass.setTeacherId(teacher.getId());
+        studentClass.setTeacherId(teacher.getRecordId());
         studentClass.setTeacherName(teacher.getName());
         studentClass.setTeacherCountry(teacher.getCountry());
         if (reqVo.getCourseType() != null) {
@@ -90,5 +90,47 @@ public interface StudentClassConverter {
         return studentClass;
     }
 
+    default TeacherEvaluationRecord toCreateTeacherEvaluationRecord(String userCode, BigDecimal rating, String remark, StudentClass studentClass) {
+        TeacherEvaluationRecord teacherEvaluationRecord = new TeacherEvaluationRecord();
+        teacherEvaluationRecord.setCreator(userCode);
+        teacherEvaluationRecord.setCreateTime(new Date());
+        teacherEvaluationRecord.setRecordId(UUID.randomUUID().toString());
+        teacherEvaluationRecord.setTeacherId(studentClass.getTeacherId());
+        teacherEvaluationRecord.setTeacherName(studentClass.getTeacherName());
+        teacherEvaluationRecord.setTeacherEmail(studentClass.getTeacherEmail());
+        teacherEvaluationRecord.setStudentId(studentClass.getStudentId());
+        teacherEvaluationRecord.setStudentName(studentClass.getStudentName());
+        teacherEvaluationRecord.setStudentEmail(studentClass.getStudentEmail());
+        teacherEvaluationRecord.setStudentClassId(studentClass.getRecordId());
+        teacherEvaluationRecord.setStudentClassDate(studentClass.getCourseTime());
+        teacherEvaluationRecord.setStudentCourse(studentClass.getCourseName());
+        teacherEvaluationRecord.setStudentClassBeginTime(studentClass.getBeginTime());
+        teacherEvaluationRecord.setStudentClassEndTime(studentClass.getEndTime());
+        teacherEvaluationRecord.setRating(rating);
+        teacherEvaluationRecord.setRemark(remark);
+        return teacherEvaluationRecord;
+    }
+
+    default TeacherComplaintRecord toCreateTeacherComplaintRecord(String userCode, BigDecimal amount, String remark, StudentClass studentClass) {
+        TeacherComplaintRecord teacherComplaintRecord = new TeacherComplaintRecord();
+        teacherComplaintRecord.setCreator(userCode);
+        teacherComplaintRecord.setCreateTime(new Date());
+        teacherComplaintRecord.setRecordId(UUID.randomUUID().toString());
+        teacherComplaintRecord.setTeacherId(studentClass.getTeacherId());
+        teacherComplaintRecord.setTeacherName(studentClass.getTeacherName());
+        teacherComplaintRecord.setTeacherEmail(studentClass.getTeacherEmail());
+        teacherComplaintRecord.setStudentId(studentClass.getStudentId());
+        teacherComplaintRecord.setStudentName(studentClass.getStudentName());
+        teacherComplaintRecord.setStudentEmail(studentClass.getStudentEmail());
+        teacherComplaintRecord.setStudentClassId(studentClass.getRecordId());
+        teacherComplaintRecord.setStudentClassDate(studentClass.getCourseTime());
+        teacherComplaintRecord.setStudentClassBeginTime(studentClass.getBeginTime());
+        teacherComplaintRecord.setStudentClassEndTime(studentClass.getEndTime());
+        teacherComplaintRecord.setAmount(amount);
+        teacherComplaintRecord.setUsedAmount(amount);
+        teacherComplaintRecord.setIsCancel(false);
+        teacherComplaintRecord.setRemark(remark);
+        return teacherComplaintRecord;
+    }
 
 }

@@ -26,6 +26,9 @@ public class TeacherLastCommentRespVo {
     @Schema(name = "courseName", description = "课程名称")
     private String courseName;
 
+    @Schema(name = "courseTime", description = "课程时间")
+    private String courseTime;
+
     @Schema(name = "createTime", description = "创建时间")
     private Date createTime;
 

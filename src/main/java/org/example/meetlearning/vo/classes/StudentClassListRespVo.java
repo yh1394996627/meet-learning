@@ -14,7 +14,7 @@ public class StudentClassListRespVo {
     private String recordId;
 
     @Schema(name = "studentId", description = "学生ID")
-    private Long studentId;
+    private String studentId;
 
     @Schema(name = "studentName", description = "学生")
     private String studentName;
@@ -23,7 +23,7 @@ public class StudentClassListRespVo {
     private String studentLanguage;
 
     @Schema(name = "teacherId", description = "老师ID")
-    private Long teacherId;
+    private String teacherId;
 
     @Schema(name = "teacherName", description = "老师")
     private String teacherName;

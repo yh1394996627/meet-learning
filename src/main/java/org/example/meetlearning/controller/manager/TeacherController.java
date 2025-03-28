@@ -108,8 +108,8 @@ public class TeacherController implements BaseController {
 
     @Operation(summary = "老师最新评论", operationId = "teacherLastComment")
     @PostMapping(value = "v1/teacher/last/comment")
-    public RespVo<PageVo<TeacherLastCommentRespVo>> teacherLastComment(@RequestBody TeacherCommentQueryVo queryVo) {
-        return teacherPcService.teacherLastCommentRespVo(getUserCode(), getUserName(), queryVo);
+    public RespVo<List<TeacherLastCommentRespVo>> teacherLastComment(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>(teacherPcService.teacherLastCommentRespVo(queryVo));
     }
 
     @Operation(summary = "老师仪表盘", operationId = "dashboard")

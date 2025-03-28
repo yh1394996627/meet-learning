@@ -6,6 +6,6 @@ import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.vo.common.PageRequestQuery;
 
 @Data
-public class TeacherCommentQueryVo extends PageRequestQuery<Teacher> {
+public class TeacherCommentQueryVo {
 
 }

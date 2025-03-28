@@ -41,6 +41,7 @@ public class TeacherPcService extends BasePcService {
     private final TeacherScheduleService teacherScheduleService;
     private final BaseConfigService baseConfigService;
     private final UserService userService;
+    private final TeacherEvaluationService teacherEvaluationService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(String userCode, TeacherQueryVo queryVo) {
         try {
@@ -259,17 +260,10 @@ public class TeacherPcService extends BasePcService {
     }
 
 
-    public RespVo<PageVo<TeacherLastCommentRespVo>> teacherLastCommentRespVo(String userCode, String userName, TeacherCommentQueryVo queryVo) {
-        try {
-            TeacherLastCommentRespVo vo = TeacherConverter.INSTANCE.toCommentVo(userCode, userName);
-            Page<TeacherLastCommentRespVo> page = new Page<>(queryVo.getCurrent(), queryVo.getPageSize(), 1);
-            page.setRecords(List.of(vo));
-            PageVo<TeacherLastCommentRespVo> pageVo = PageVo.map(page, list -> TeacherConverter.INSTANCE.toCommentVo(userCode, userName));
-            return new RespVo<>(pageVo);
-        } catch (Exception ex) {
-            log.error("Query Error", ex);
-            return new RespVo<>(null, false, ex.getMessage());
-        }
+    public List<TeacherLastCommentRespVo> teacherLastCommentRespVo(RecordIdQueryVo queryVo) {
+        List<TeacherEvaluationRecord> list = teacherEvaluationService.selectByTeacherIdLimit10(queryVo.getRecordId());
+        List<TeacherLastCommentRespVo> respVos = list.stream().map(item -> TeacherConverter.INSTANCE.toCommentVo(item)).toList();
+        return respVos;
     }
 
     public RespVo<TeacherDashboardRespVo> dashboard(String userCode) {

@@ -44,6 +44,31 @@
         group by begin_time,end_time
     </select>
 
+    <select id="selectGroupTimeByParams" resultMap="BaseResultMap">
+        select
+        begin_time,end_time
+        from teacher_schedule
+        where week_num = #{weekNum,jdbcType=VARCHAR}
+        <include refid="Base_Column_List"/>
+        and begin_time is not null and end_time is not null
+        group by begin_time,end_time
+    </select>
+
+    <sql id="where_common">
+        <if test="params.teacherIds != null">
+            and teacher_id in
+            <foreach collection="params.teacherIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.startTime != null">
+            and begin_time &lt;= #{params.startTime}
+        </if>
+        <if test="params.stopTime != null">
+            and end_time >= #{params.stopTime}
+        </if>
+    </sql>
+
     <delete id="deleteByTeacherIdAndWeekNum">
         delete
         from teacher_schedule

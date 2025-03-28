@@ -1,26 +1,38 @@
 package org.example.meetlearning.service;
 
+import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
 import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.service.impl.*;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.classes.*;
 import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
+import org.example.meetlearning.vo.evaluation.TeacherComplaintReqVo;
+import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
+import org.example.meetlearning.vo.student.StudentInfoRespVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @AllArgsConstructor
@@ -38,7 +50,15 @@ public class StudentClassPcService extends BasePcService {
 
     private final TeacherScheduleService teacherScheduleService;
 
+    private final TeacherFeatureService teacherFeatureService;
+
     private final UserFinanceService userFinanceService;
+
+    private final UserService userService;
+
+    private final TeacherEvaluationService teacherEvaluationService;
+
+    private final TeacherComplaintService teacherComplaintService;
 
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
@@ -73,6 +93,11 @@ public class StudentClassPcService extends BasePcService {
         operaTokenLogs(userCode, userName, student.getRecordId(), reqVo.getQuantity(), TokenContentEnum.COURSE_CLASS.getEnContent());
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(entCode, userCode, reqVo, student, teacher, affiliate, userFinance);
+        List<TeacherFeature> features = teacherFeatureService.selectByTeacherId(teacher.getRecordId());
+        if (!CollectionUtils.isEmpty(features)) {
+            List<String> courseList = features.stream().map(TeacherFeature::getSpecialists).toList();
+            studentClass.setCourseName(StringUtils.join(courseList.toArray(), ","));
+        }
         //todo 生成会议链接
         studentClassService.insertEntity(studentClass);
         return new RespVo<>("New successfully added");
@@ -107,8 +132,7 @@ public class StudentClassPcService extends BasePcService {
         if (CollectionUtils.isEmpty(teacherIds)) {
             return new RespVo<>(List.of());
         }
-        ScheduleWeekEnum week = ScheduleWeekEnum.getByDate(queryVo.getCourseDate());
-        List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectByTeacherIdWeekNumGroupByTime(week.name(), teacherIds);
+        List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
         List<String> resultList = teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
         return new RespVo<>(resultList);
     }
@@ -119,4 +143,90 @@ public class StudentClassPcService extends BasePcService {
         return new RespVo<>(new StudentClassTotalRespVo(new BigDecimal(completeTotal), new BigDecimal(cancelTotal)));
     }
 
+    /**
+     * 老师或者管理员取消预约课程提醒
+     * 学生变更时间提醒
+     */
+    public Boolean studentClassCancelOrUpdateVerify(String userCode, RecordIdQueryVo reqVo) {
+        User user = userService.selectByRecordId(userCode);
+        Assert.notNull(user, "User information not obtained userCode:" + userCode);
+        StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(studentClass, "Course information not obtained");
+        if (StringUtils.equals(RoleEnum.TEACHER.name(), user.getType())) {
+            Date classDate = studentClass.getCourseTime();
+            long diffInMillie = Math.abs(classDate.getTime() - new Date().getTime());
+            long dayNum = TimeUnit.DAYS.convert(diffInMillie, TimeUnit.MILLISECONDS);
+            return BooleanUtil.isTrue(dayNum >= 3);
+        } else if (StringUtils.equals(RoleEnum.STUDENT.name(), user.getType())) {
+            Date classDate = studentClass.getCourseTime();
+            long diffInMillie = Math.abs(classDate.getTime() - new Date().getTime());
+            long dayNum = TimeUnit.HOURS.convert(diffInMillie, TimeUnit.MILLISECONDS);
+            return BooleanUtil.isTrue(dayNum >= 3);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 老师或者管理员取消预约课程
+     * 1.提前三天才能取消，三天内取消罚50%
+     * 2.记录取消时间，取消人，和取消状态
+     */
+    public void studentClassCancel(String userCode, RecordIdQueryVo reqVo) {
+        StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(studentClass, "Course information not obtained");
+        //todo 提前三天才能取消，三天内取消罚50%
+        StudentClass newStudentClass = new StudentClass();
+        newStudentClass.setId(studentClass.getId());
+        newStudentClass.setCancelId(userCode);
+        newStudentClass.setCancelTime(new Date());
+        studentClassService.updateEntity(newStudentClass);
+    }
+
+    public void studentClassUpdateTime(String userCode, String userName, StudentClassUpdateTimeReqVo reqVo) {
+        StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(studentClass, "Course information not obtained");
+        Date classDate = studentClass.getCourseTime();
+        long diffInMillie = Math.abs(classDate.getTime() - new Date().getTime());
+        long dayNum = TimeUnit.HOURS.convert(diffInMillie, TimeUnit.MILLISECONDS);
+        Assert.notNull(BooleanUtil.isTrue(dayNum >= 3), "There are still 3 hours left until the start of the course and the time cannot be changed");
+        StudentClass newStudentClass = new StudentClass();
+        newStudentClass.setId(studentClass.getId());
+        newStudentClass.setCourseTime(reqVo.getCourseDate());
+        newStudentClass.setBeginTime(reqVo.getBeginTime());
+        newStudentClass.setEndTime(reqVo.getEndTime());
+        newStudentClass.setUpdateTime(new Date());
+        newStudentClass.setUpdator(userCode);
+        newStudentClass.setUpdateName(userName);
+        studentClassService.updateEntity(newStudentClass);
+    }
+
+
+    public void studentClassEvaluate(String userCode, TeacherEvaluationReqVo reqVo) {
+        //新增评论
+        StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(studentClass, "Course information not obtained");
+        TeacherEvaluationRecord teacherEvaluationRecord = StudentClassConverter.INSTANCE.toCreateTeacherEvaluationRecord(userCode, reqVo.getRating(), reqVo.getRemark(), studentClass);
+        teacherEvaluationService.insert(teacherEvaluationRecord);
+
+        //更新老师星级
+        BigDecimal rating = teacherEvaluationService.selectRatingByTeacherId(studentClass.getTeacherId());
+        Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
+        Assert.notNull(teacher, "Teacher information not obtained");
+        teacher.setRating(BigDecimalUtil.nullOrZero(rating));
+        Teacher newTeacher = new Teacher();
+        newTeacher.setId(teacher.getId());
+        newTeacher.setRating(BigDecimalUtil.nullOrZero(rating));
+        teacherService.updateEntity(newTeacher);
+    }
+
+    public void studentClassComplaint(String userCode, TeacherComplaintReqVo reqVo) {
+        //新增评论
+        StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(studentClass, "Course information not obtained");
+        Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
+        Assert.notNull(teacher, "Teacher information not obtained");
+        TeacherComplaintRecord teacherEvaluationRecord = StudentClassConverter.INSTANCE.toCreateTeacherComplaintRecord(userCode, teacher.getPrice(), reqVo.getRemark(), studentClass);
+        teacherComplaintService.insert(teacherEvaluationRecord);
+    }
 }

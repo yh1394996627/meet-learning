@@ -61,5 +61,4 @@ public class StudentController implements BaseController {
     public RespVo<StudentInfoRespVo> studentInfo(@RequestBody RecordIdQueryVo reqVo) {
         return studentPcService.studentInfo(reqVo);
     }
-
 }

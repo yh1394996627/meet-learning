@@ -22,7 +22,9 @@
         <!--        <table tableName="teacher_schedule" domainObjectName="TeacherSchedule"/>-->
         <!--        <table tableName="file_record" domainObjectName="FileRecord"/>-->
         <!--        <table tableName="base_config" domainObjectName="BaseConfig"/>-->
-        <table tableName="user_finance" domainObjectName="UserFinance"/>
-        <table tableName="user_finance_record" domainObjectName="UserFinanceRecord"/>
+        <!--        <table tableName="user_finance" domainObjectName="UserFinance"/>-->
+        <!--        <table tableName="user_finance_record" domainObjectName="UserFinanceRecord"/>-->
+        <table tableName="teacher_evaluation_record" domainObjectName="TeacherEvaluationRecord"/>
+        <table tableName="teacher_complaint_record" domainObjectName="TeacherComplaintRecord"/>
     </context>
 </generatorConfiguration>

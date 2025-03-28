@@ -2,6 +2,7 @@ package org.example.meetlearning.converter;
 
 import cn.hutool.core.util.BooleanUtil;
 import org.example.meetlearning.dao.entity.Teacher;
+import org.example.meetlearning.dao.entity.TeacherEvaluationRecord;
 import org.example.meetlearning.dao.entity.TeacherFeature;
 import org.example.meetlearning.enums.GenderEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -76,14 +77,14 @@ public interface TeacherConverter {
         return teacher;
     }
 
-    default TeacherLastCommentRespVo toCommentVo(String userCode, String userName) {
+    default TeacherLastCommentRespVo toCommentVo(TeacherEvaluationRecord evaluationRecord) {
         TeacherLastCommentRespVo commentVo = new TeacherLastCommentRespVo();
-        commentVo.setRecordId(UUID.randomUUID().toString());
-        commentVo.setCreator(userCode);
-        commentVo.setCreateName(userName);
-        commentVo.setComment("测试评论");
-        commentVo.setCreateTime(new Date());
-        commentVo.setTeacherId(UUID.randomUUID().toString());
+        commentVo.setRecordId(evaluationRecord.getRecordId());
+        commentVo.setCreator(evaluationRecord.getCreator());
+        commentVo.setCreateName(evaluationRecord.getStudentName());
+        commentVo.setComment(evaluationRecord.getRemark());
+        commentVo.setCreateTime(evaluationRecord.getCreateTime());
+        commentVo.setTeacherId(evaluationRecord.getTeacherId());
         commentVo.setCourseId(UUID.randomUUID().toString());
         commentVo.setCourseName("测试课程");
         return commentVo;
