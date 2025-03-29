@@ -23,7 +23,7 @@ public class StudentClassCommonQueryVo {
     @Schema(name = "startTime", description = "时间段 - 开始")
     private String startTime;
 
-    @Schema(name = "courseTime", description = "时间段 - 结束")
+    @Schema(name = "stopTime", description = "时间段 - 结束")
     private String stopTime;
 
     @Schema(hidden = true)
