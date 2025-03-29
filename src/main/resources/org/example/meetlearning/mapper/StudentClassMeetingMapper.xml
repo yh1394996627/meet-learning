@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.StudentClassMeetingMapper">
+  <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.StudentClassMeeting">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="meet_email" jdbcType="VARCHAR" property="meetEmail" />
+    <result column="meet_uuid" jdbcType="VARCHAR" property="meetUuid" />
+    <result column="meet_id" jdbcType="VARCHAR" property="meetId" />
+    <result column="meet_join_url" jdbcType="VARCHAR" property="meetJoinUrl" />
+    <result column="create_meet_zoom_user_id" jdbcType="VARCHAR" property="createMeetZoomUserId" />
+    <result column="meet_status" jdbcType="VARCHAR" property="meetStatus" />
+    <result column="meet_start_time" jdbcType="TIMESTAMP" property="meetStartTime" />
+    <result column="meet_type" jdbcType="INTEGER" property="meetType" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, deleted, creator, create_name, create_time, meet_email, meet_uuid, meet_id, meet_join_url,
+    create_meet_zoom_user_id, meet_status, meet_start_time, meet_type
+  </sql>
+
+  <select id="selectByRecordIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from student_class_meeting
+    where deleted = 0 and record_id in
+    <foreach collection="recordIds" item="item" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </select>
+
+  <delete id="deleteByPrimaryKey">
+    update student_class_meeting
+      set delete = 1
+    where record_id = #{recordId}
+  </delete>
+
+  <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.StudentClassMeeting">
+    insert into student_class_meeting (deleted, creator,
+      create_name, create_time, meet_email, 
+      meet_uuid, meet_id, meet_join_url, 
+      create_meet_zoom_user_id, meet_status, meet_start_time, 
+      meet_type)
+    values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
+      #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{meetEmail,jdbcType=VARCHAR}, 
+      #{meetUuid,jdbcType=VARCHAR}, #{meetId,jdbcType=VARCHAR}, #{meetJoinUrl,jdbcType=VARCHAR}, 
+      #{createMeetZoomUserId,jdbcType=VARCHAR}, #{meetStatus,jdbcType=VARCHAR}, #{meetStartTime,jdbcType=TIMESTAMP}, 
+      #{meetType,jdbcType=INTEGER})
+  </insert>
+
+  <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.StudentClassMeeting">
+    update student_class_meeting
+    <set>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createName != null">
+        create_name = #{createName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="meetEmail != null">
+        meet_email = #{meetEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="meetUuid != null">
+        meet_uuid = #{meetUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="meetId != null">
+        meet_id = #{meetId,jdbcType=VARCHAR},
+      </if>
+      <if test="meetJoinUrl != null">
+        meet_join_url = #{meetJoinUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="createMeetZoomUserId != null">
+        create_meet_zoom_user_id = #{createMeetZoomUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="meetStatus != null">
+        meet_status = #{meetStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="meetStartTime != null">
+        meet_start_time = #{meetStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="meetType != null">
+        meet_type = #{meetType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

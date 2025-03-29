@@ -1,7 +1,9 @@
 package org.example.meetlearning;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.example.meetlearning.service.EmailPcService;
+import org.example.meetlearning.service.ZoomOAuthServiceTest;
 import org.example.meetlearning.service.ZoomPcService;
 import org.example.meetlearning.service.ZoomService;
 import org.json.JSONException;
@@ -30,6 +32,9 @@ class MeetLearningApplicationTests {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private ZoomOAuthServiceTest zoomOAuthServiceTest;
+
     @Test
     void test1() throws Exception {
         emailPcService.sendVerificationEmail("", "1394996627@qq.com ");
@@ -38,7 +43,10 @@ class MeetLearningApplicationTests {
 
     @Test
     void test2() throws JSONException, IOException {
-        String accessToken = Objects.requireNonNull(redisTemplate.opsForValue().get("zoom_access_token")).toString();
+        String accessToken = zoomOAuthServiceTest.getValidAccessToken();
+        if(StringUtils.isEmpty(accessToken)) {
+            accessToken = zoomPcService.getAccessToken();
+        }
         // 获取ZOOM用户ID
         String user = zoomService.getZoomUserIdByEmail("1394996627@qq.com", accessToken);
         JSONObject userObj = new JSONObject(user);

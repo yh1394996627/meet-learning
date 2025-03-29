@@ -24,7 +24,9 @@
         <!--        <table tableName="base_config" domainObjectName="BaseConfig"/>-->
         <!--        <table tableName="user_finance" domainObjectName="UserFinance"/>-->
         <!--        <table tableName="user_finance_record" domainObjectName="UserFinanceRecord"/>-->
-        <table tableName="teacher_evaluation_record" domainObjectName="TeacherEvaluationRecord"/>
-        <table tableName="teacher_complaint_record" domainObjectName="TeacherComplaintRecord"/>
+        <!--        <table tableName="teacher_evaluation_record" domainObjectName="TeacherEvaluationRecord"/>-->
+        <!--        <table tableName="teacher_complaint_record" domainObjectName="TeacherComplaintRecord"/>-->
+        <!--        <table tableName="student_class_meeting" domainObjectName="StudentClassMeeting"/>-->
+        <table tableName="zoom_account_set" domainObjectName="ZoomAccountSet"/>
     </context>
 </generatorConfiguration>

@@ -90,7 +90,7 @@ public class StudentClassPcService extends BasePcService {
         }
         Assert.isTrue(reqVo.getCourseType() != null, "Course type cannot be empty");
         //3.新增课时币学生扣减记录
-        operaTokenLogs(userCode, userName, student.getRecordId(), reqVo.getQuantity(), TokenContentEnum.COURSE_CLASS.getEnContent());
+        operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice(), TokenContentEnum.COURSE_CLASS.getEnContent());
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(entCode, userCode, reqVo, student, teacher, affiliate, userFinance);
         List<TeacherFeature> features = teacherFeatureService.selectByTeacherId(teacher.getRecordId());
@@ -114,15 +114,20 @@ public class StudentClassPcService extends BasePcService {
         if (StringUtils.isNotEmpty(queryVo.getCourseTime())) {
             String[] arr = StringUtils.split(queryVo.getCourseTime(), "-");
             ScheduleWeekEnum week = ScheduleWeekEnum.getByDate(queryVo.getCourseDate());
-            List<String> teacherIds = teacherScheduleService.selectTeacherIdByWeekNumAndTime(week.name(), arr[0], arr[1]);
-            teacherIds = teacherIds.stream().distinct().toList();
+            List<String> teacherIds = null;
+            if (week != null) {
+                teacherIds = teacherScheduleService.selectTeacherIdByWeekNumAndTime(week.name(), arr[0], arr[1]);
+            }
+            if (teacherIds != null) {
+                teacherIds = teacherIds.stream().distinct().toList();
+            }
             if (CollectionUtils.isEmpty(teacherIds)) {
                 return new RespVo<>(List.of());
             }
             params.put("recordIds", teacherIds);
         }
         List<Teacher> teachers = teacherService.selectListParams(params);
-        List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getRecordId().toString(), teacher.getName())).toList();
+        List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getRecordId(), teacher.getName())).toList();
         return new RespVo<>(selectValueVos);
     }
 

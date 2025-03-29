@@ -78,7 +78,7 @@ public class ZoomPcService {
         }
     }
 
-    private String getAccessToken() throws IOException {
+    public String getAccessToken() throws IOException {
         String url = "https://zoom.us/oauth/token";
         String credentials = Credentials.basic(apiKey, apiSecret);
         RequestBody body = RequestBody.create("grant_type=client_credentials", MediaType.parse("application/x-www-form-urlencoded"));
