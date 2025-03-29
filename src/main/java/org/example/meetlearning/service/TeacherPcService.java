@@ -71,38 +71,37 @@ public class TeacherPcService extends BasePcService {
         }
     }
 
-    public RespVo<PageVo<TeacherInfoRespVo>> teacherPcPage(TeacherPcQueryVo queryVo) {
-        try {
-            List<String> teacherIds = new ArrayList<>();
-            //查询时间段有空的老师
-            ScheduleWeekEnum weekEnum = queryVo.getWeek();
-            List<String> teacher1Ids = teacherScheduleService.selectTeacherIdByWeekNumAndTime(weekEnum.name(), queryVo.getBeginTime(), queryVo.getEndTime());
-
-            //如果查询条件勾选了擅长
-            if (StringUtils.hasText(queryVo.getSpecialists())) {
-                teacher1Ids = !CollectionUtils.isEmpty(teacher1Ids) ? teacher1Ids : null;
-                List<String> teacher2Ids = teacherFeatureService.selectTeacherIdBySpecialists(queryVo.getSpecialists(), teacher1Ids);
-                teacherIds.addAll(teacher2Ids);
-            } else {
-                teacherIds.addAll(teacher1Ids);
-            }
-            //查詢老師信息
-            Map<String, Object> params = queryVo.getParams();
-            if (!CollectionUtils.isEmpty(teacherIds)) {
-                params.put("recordIds", teacherIds);
-            }
-            Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
-            PageVo<TeacherInfoRespVo> pageVo = PageVo.map(teacherPage, list -> {
-                TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(list);
-                respVo.setAvatarUrl(downloadFile(list.getAvatarUrl()));
-                respVo.setVideoUrl(downloadFile(list.getVideoUrl()));
-                return respVo;
-            });
-            return new RespVo<>(pageVo);
-        } catch (Exception ex) {
-            log.error("查询失败", ex);
-            return new RespVo<>(null, false, ex.getMessage());
+    public PageVo<TeacherInfoRespVo> teacherPcPage(TeacherPcQueryVo queryVo) {
+        List<String> teacherIds = new ArrayList<>();
+        //查询时间段有空的老师
+        ScheduleWeekEnum weekEnum = queryVo.getWeek();
+        List<String> teacher1Ids = teacherScheduleService.selectTeacherIdByWeekNumAndTime(weekEnum.name(), queryVo.getBeginTime(), queryVo.getEndTime());
+        if (CollectionUtils.isEmpty(teacher1Ids)) {
+            return null;
         }
+        //如果查询条件勾选了擅长
+        if (StringUtils.hasText(queryVo.getSpecialists())) {
+            teacher1Ids = !CollectionUtils.isEmpty(teacher1Ids) ? teacher1Ids : null;
+            List<String> teacher2Ids = teacherFeatureService.selectTeacherIdBySpecialists(queryVo.getSpecialists(), teacher1Ids);
+            teacherIds.addAll(teacher2Ids);
+        } else {
+            teacherIds.addAll(teacher1Ids);
+        }
+        //查詢老師信息
+        Map<String, Object> params = queryVo.getParams();
+        if (!CollectionUtils.isEmpty(teacherIds)) {
+            params.put("recordIds", teacherIds);
+        } else {
+            return null;
+        }
+        Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
+        PageVo<TeacherInfoRespVo> pageVo = PageVo.map(teacherPage, list -> {
+            TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(list);
+            respVo.setAvatarUrl(downloadFile(list.getAvatarUrl()));
+            respVo.setVideoUrl(downloadFile(list.getVideoUrl()));
+            return respVo;
+        });
+        return pageVo;
     }
 
     public RespVo<List<SelectValueVo>> teacherManagerSearch(TeacherQueryVo queryVo) {

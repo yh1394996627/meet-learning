@@ -127,7 +127,7 @@ public class TeacherController implements BaseController {
     @Operation(summary = "学生端-老师列表", operationId = "teacherPage")
     @PostMapping(value = "v1/teacher/pc/page")
     public RespVo<PageVo<TeacherInfoRespVo>> studentTeacherPage(@RequestBody TeacherPcQueryVo queryVo) {
-        return teacherPcService.teacherPcPage(queryVo);
+        return new RespVo<>(teacherPcService.teacherPcPage(queryVo));
     }
 
     @Operation(summary = "学生端-老师列表-国家查询", operationId = "countrySearch")
