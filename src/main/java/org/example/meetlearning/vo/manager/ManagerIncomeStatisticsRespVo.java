@@ -15,7 +15,7 @@ public class ManagerIncomeStatisticsRespVo {
     @Schema(name = "amountList", description = "总交易金额 按币种分组")
     private List<ManagerAmountRespVo> amountList;
 
-    @Schema(name = "amountList", description = "学生交易金额 按币种分组")
+    @Schema(name = "studentAmountList", description = "学生交易金额 按币种分组")
     private List<ManagerAmountRespVo> studentAmountList;
 
 

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.util.RedisCommonsUtil;
 import org.example.meetlearning.vo.zoom.ZoomAccountInfoVo;
 import org.example.meetlearning.vo.zoom.ZoomBaseVerifyRespVo;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
@@ -26,8 +28,6 @@ public class ZoomOAuthService {
 
     private String accessToken;
 
-    private Instant tokenExpiry;
-
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
@@ -35,7 +35,7 @@ public class ZoomOAuthService {
 
     public String getValidAccessToken(String clientId, String clientSecret, String accountId) {
         Object redis = redisTemplate.opsForValue().get(clientId + clientSecret + accountId);
-        if (redis == null || Instant.now().isAfter(tokenExpiry.minusSeconds(300))) {
+        if (redis == null) {
             refreshToken(clientId, clientSecret, accountId);
         } else {
             accessToken = redis.toString();
@@ -64,8 +64,7 @@ public class ZoomOAuthService {
 
             this.accessToken = (String) Objects.requireNonNull(response.getBody()).get("access_token");
             int expiresIn = (Integer) response.getBody().get("expires_in");
-            this.tokenExpiry = Instant.now().plusSeconds(expiresIn);
-            redisTemplate.opsForValue().set(clientId + clientSecret + accountId, accessToken, 3500, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(clientId + clientSecret + accountId, accessToken, 3590, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException("Failed to refresh Zoom access token", e);
         }
@@ -100,7 +99,9 @@ public class ZoomOAuthService {
         headers.set("Authorization", "Bearer " + accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        return response.getBody();
+        log.info("user：{}",  response.getBody());
+        JSONObject userObj = new JSONObject( response.getBody());
+        return userObj.getString("id");
     }
 
 
@@ -110,13 +111,14 @@ public class ZoomOAuthService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
 
-        ResponseEntity<ZoomAccountInfoVo> response = restTemplate.exchange(
+        ResponseEntity<Object> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                ZoomAccountInfoVo.class
+                Object.class
         );
 
-        return Objects.requireNonNull(response.getBody()).getPlan_type();
+
+        return Objects.requireNonNull(response.getBody()).toString();
     }
 }
