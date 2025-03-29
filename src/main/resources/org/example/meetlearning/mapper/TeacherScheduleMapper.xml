@@ -49,7 +49,7 @@
         begin_time,end_time
         from teacher_schedule
         where week_num = #{weekNum,jdbcType=VARCHAR}
-        <include refid="Base_Column_List"/>
+        <include refid="where_common"/>
         and begin_time is not null and end_time is not null
         group by begin_time,end_time
     </select>

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
+
     @Bean
     public OpenApiCustomizer globalHeaderOpenApiCustomiser() {
         return openApi -> {
@@ -28,4 +29,5 @@ public class OpenApiConfig {
                         .version("1.0")
                         .description("项目API文档"));
     }
+
 }
