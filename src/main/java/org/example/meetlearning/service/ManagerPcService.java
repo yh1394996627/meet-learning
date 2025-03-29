@@ -33,8 +33,6 @@ public class ManagerPcService {
 
     public ManagerIncomeStatisticsRespVo dashboard(String userCode, ManagerIncomeStatisticsQueryVo queryVo) {
         ManagerIncomeStatisticsRespVo respVo = new ManagerIncomeStatisticsRespVo();
-        String day = queryVo.getDay();
-        Assert.isTrue(StringUtils.isNotEmpty(day), "The day condition cannot be empty");
         List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParamsGroup(queryVo.getParams(userCode));
         List<UserFinanceRecord> lastUserFinanceRecordList = userFinanceRecordService.selectByParamsGroup(queryVo.getLastParams(userCode));
         Map<String, UserFinanceRecord> lastMap = lastUserFinanceRecordList.stream().collect(Collectors.toMap(UserFinanceRecord::getCurrencyCode, Function.identity()));
