@@ -1,16 +1,19 @@
 package org.example.meetlearning.vo.manager;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.example.meetlearning.dao.entity.UserFinanceRecord;
 import org.example.meetlearning.enums.RoleEnum;
+import org.example.meetlearning.vo.common.PageRequestQuery;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class ManagerFinanceRecordQueryVo {
+public class ManagerFinanceRecordQueryVo extends PageRequestQuery<UserFinanceRecord> {
 
     @Schema(name = "currencyCode", description = "币种")
     private String currencyCode;

@@ -8,6 +8,7 @@ import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.ManagerPcService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.manager.ManagerFinanceRecordQueryVo;
 import org.example.meetlearning.vo.manager.ManagerFinanceStudentRecordRespVo;
 import org.example.meetlearning.vo.manager.ManagerIncomeStatisticsQueryVo;
 import org.example.meetlearning.vo.manager.ManagerIncomeStatisticsRespVo;
@@ -32,7 +33,7 @@ public class ManagerController implements BaseController {
 
     @Operation(summary = "学生充值记录查询", operationId = "financeList")
     @PostMapping(value = "v1/manager/finance/list")
-    public RespVo<PageVo<ManagerFinanceStudentRecordRespVo>> financeList(@RequestBody ManagerIncomeStatisticsQueryVo queryVo) {
+    public RespVo<PageVo<ManagerFinanceStudentRecordRespVo>> financeList(@RequestBody ManagerFinanceRecordQueryVo queryVo) {
         return new RespVo<>(managerPcService.financeList(getUserCode(), queryVo));
     }
 

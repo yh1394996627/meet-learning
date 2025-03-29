@@ -8,16 +8,13 @@ import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
-import org.example.meetlearning.vo.manager.ManagerAmountRespVo;
+import org.example.meetlearning.vo.manager.*;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.UserFinanceRecord;
 import org.example.meetlearning.service.impl.TokensLogService;
 import org.example.meetlearning.service.impl.UserFinanceRecordService;
-import org.example.meetlearning.vo.manager.ManagerFinanceStudentRecordRespVo;
-import org.example.meetlearning.vo.manager.ManagerIncomeStatisticsQueryVo;
-import org.example.meetlearning.vo.manager.ManagerIncomeStatisticsRespVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -78,7 +75,7 @@ public class ManagerPcService {
     }
 
 
-    public PageVo<ManagerFinanceStudentRecordRespVo> financeList(String userCode, ManagerIncomeStatisticsQueryVo queryVo) {
+    public PageVo<ManagerFinanceStudentRecordRespVo> financeList(String userCode, ManagerFinanceRecordQueryVo queryVo) {
         Page<UserFinanceRecord> recordList = userFinanceRecordService.selectByParams(queryVo.getParams(userCode), queryVo.getPageRequest());
         return PageVo.map(recordList, UserFinanceConverter.INSTANCE::toManagerFinanceStudentRecordRespVo);
     }

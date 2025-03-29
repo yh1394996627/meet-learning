@@ -27,6 +27,7 @@ public class ZoomOAuthServiceTest {
     private String accountId;
 
     private String accessToken;
+
     private Instant tokenExpiry;
 
     public String getValidAccessToken() {
@@ -63,38 +64,4 @@ public class ZoomOAuthServiceTest {
             throw new RuntimeException("Failed to refresh Zoom access token", e);
         }
     }
-
-
-//    public User getUser(String email) {
-//        String url = "https://api.zoom.us/v2/users/" + email;
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setBearerAuth(getValidAccessToken());
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//
-//        try {
-//            ResponseEntity<User> response = restTemplate.exchange(
-//                    url,
-//                    HttpMethod.GET,
-//                    new HttpEntity<>(headers),
-//                    User.class);
-//
-//            return response.getBody();
-//        } catch (HttpClientErrorException e) {
-//            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-//                // 令牌可能已过期，强制刷新并重试一次
-//                zoomOAuthService.refreshToken();
-//                headers.setBearerAuth(zoomOAuthService.getValidAccessToken());
-//
-//                ResponseEntity<User> retryResponse = restTemplate.exchange(
-//                        url,
-//                        HttpMethod.GET,
-//                        new HttpEntity<>(headers),
-//                        User.class);
-//
-//                return retryResponse.getBody();
-//            }
-//            throw e;
-//        }
-//    }
 }

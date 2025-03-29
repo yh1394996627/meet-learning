@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.ZoomAccountSetMapper">
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.ZoomAccountSet">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updator" jdbcType="VARCHAR" property="updator"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
+        <result column="zoom_email" jdbcType="VARCHAR" property="zoomEmail"/>
+        <result column="zoom_account_id" jdbcType="VARCHAR" property="zoomAccountId"/>
+        <result column="zoom_client_id" jdbcType="VARCHAR" property="zoomClientId"/>
+        <result column="zoom_client_secret" jdbcType="VARCHAR" property="zoomClientSecret"/>
+        <result column="zoom_user_id" jdbcType="VARCHAR" property="zoomUserId"/>
+        <result column="cb_token" jdbcType="VARCHAR" property="cbToken"/>
+        <result column="zoom_status_msg" jdbcType="VARCHAR" property="zoomStatusMsg"/>
+        <result column="total_used_qty" jdbcType="INTEGER" property="totalUsedQty"/>
+        <result column="used_qty" jdbcType="INTEGER" property="usedQty"/>
+        <result column="zoom_type" jdbcType="INTEGER" property="zoomType"/>
+        <result column="is_exception" jdbcType="BIT" property="isException"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , deleted, creator, create_name, create_time, updator, update_name, update_time,
+    zoom_email, zoom_account_id, zoom_client_id, zoom_client_secret, zoom_user_id, zoom_status_msg, 
+    total_used_qty, used_qty, zoom_type, is_exception, record_id, cb_token
+    </sql>
+
+    <select id="selectByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zoom_account_set
+        where deleted = 0
+        <include refid="where_commons"/>
+    </select>
+
+    <select id="selectByRecordId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zoom_account_set
+        where record_id = #{recordId,jdbcType=VARCHAR}
+    </select>
+
+
+    <update id="deletedByRecordId">
+        update zoom_account_set
+        set deleted = 1
+        where record_id = #{recordId,jdbcType=VARCHAR}
+    </update>
+
+    <sql id="where_commons">
+        <if test="params.zoomType !=null">
+            and zoom_type = #{params.type,jdbcType=INTEGER}
+        </if>
+        <if test="params.emailKeyword !=null">
+            and zoom_email like #{params.emailKeyword,jdbcType=VARCHAR}
+        </if>
+        <if test="params.zoomStatusMsg !=null">
+            and zoom_status_msg = #{params.zoomStatusMsg,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <insert id="insert" parameterType="org.example.meetlearning.dao.entity.ZoomAccountSet">
+        insert into zoom_account_set (deleted, creator,
+                                      create_name, create_time, updator,
+                                      update_name, update_time, zoom_email,
+                                      zoom_account_id, zoom_client_id, zoom_client_secret,
+                                      zoom_user_id, zoom_status_msg, total_used_qty,
+                                      used_qty, zoom_type, is_exception, record_id, cb_token)
+        values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
+                #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updator,jdbcType=VARCHAR},
+                #{updateName,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{zoomEmail,jdbcType=VARCHAR},
+                #{zoomAccountId,jdbcType=VARCHAR}, #{zoomClientId,jdbcType=VARCHAR},
+                #{zoomClientSecret,jdbcType=VARCHAR}, #{zoomUserId,jdbcType=VARCHAR}, #{zoomStatusMsg,jdbcType=VARCHAR},
+                #{totalUsedQty,jdbcType=INTEGER}, #{usedQty,jdbcType=INTEGER}, #{zoomType,jdbcType=INTEGER},
+                #{isException,jdbcType=BIT}, #{recordId,jdbcType=VARCHAR}, #{cbToken,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.ZoomAccountSet">
+        update zoom_account_set
+            set deleted = 1
+        where
+    </update>
+
+    <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.ZoomAccountSet">
+        update zoom_account_set
+        <set>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                create_name = #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updator != null">
+                updator = #{updator,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                update_name = #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="zoomEmail != null">
+                zoom_email = #{zoomEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="zoomAccountId != null">
+                zoom_account_id = #{zoomAccountId,jdbcType=VARCHAR},
+            </if>
+            <if test="zoomClientId != null">
+                zoom_client_id = #{zoomClientId,jdbcType=VARCHAR},
+            </if>
+            <if test="zoomClientSecret != null">
+                zoom_client_secret = #{zoomClientSecret,jdbcType=VARCHAR},
+            </if>
+            <if test="zoomUserId != null">
+                zoom_user_id = #{zoomUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="cbToken != null">
+                cb_token = #{cbToken,jdbcType=VARCHAR},
+            </if>
+            <if test="zoomStatusMsg != null">
+                zoom_status_msg = #{zoomStatusMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="isException != null">
+                is_exception = #{isException,jdbcType=BIT},
+            </if>
+            <if test="totalUsedQty != null">
+                total_used_qty = #{totalUsedQty,jdbcType=INTEGER},
+            </if>
+            <if test="usedQty != null">
+                used_qty = #{usedQty,jdbcType=INTEGER},
+            </if>
+            <if test="zoomType != null">
+                zoom_type = #{zoomType,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

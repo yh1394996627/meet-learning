@@ -1,5 +1,6 @@
 package org.example.meetlearning.service;
 
+import org.example.meetlearning.service.impl.ZoomOAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
