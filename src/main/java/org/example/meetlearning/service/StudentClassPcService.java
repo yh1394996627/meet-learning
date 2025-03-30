@@ -108,7 +108,7 @@ public class StudentClassPcService extends BasePcService {
             List<String> courseList = features.stream().map(TeacherFeature::getSpecialists).toList();
             studentClass.setCourseName(StringUtils.join(courseList.toArray(), ","));
         }
-        Date meetingDate = DateUtil.parse(studentClass.getCancelTime() + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+        Date meetingDate = DateUtil.parse(studentClass.getCourseTime() + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         //创建会议
         String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
         JSONObject meetObj = new JSONObject(meeting);
