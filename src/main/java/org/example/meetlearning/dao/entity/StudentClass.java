@@ -79,4 +79,6 @@ public class StudentClass {
 
     private Date cancelTime;
 
+    private String meetingRecordId;
+
 }

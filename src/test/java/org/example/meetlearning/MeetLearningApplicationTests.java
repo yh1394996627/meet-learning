@@ -2,6 +2,7 @@ package org.example.meetlearning;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.service.EmailPcService;
 import org.example.meetlearning.service.ZoomPcService;
 import org.example.meetlearning.service.ZoomService;
@@ -47,12 +48,12 @@ class MeetLearningApplicationTests {
         String clientSecret = "QhWr3zrnirGRutMgwfgPLDxpZWlnO12k";
         String zoomUserId = "QlKYLPwLRgWFOtghx31u8A";
         String accessToken = zoomOAuthService.getValidAccessToken(clientId, clientSecret, accountId);
-        String meet = zoomOAuthService.createMeeting(zoomUserId, "test001", "2025-03-30T10:00:00", accessToken);
+        String meet = zoomOAuthService.createMeeting("test001", "2025-03-30T10:00:00", CourseTypeEnum.GROUP);
         // 查看会议信息
         JSONObject meetObj = new JSONObject(meet);
         log.info("meetObj：{}", meetObj);
         //添加会议邮箱自动审批
-        zoomOAuthService.addAndApproveParticipants(meetObj.get("id").toString(), List.of("1394996627@qq.com","yuh9527@aliyun.com"), accessToken);
+        zoomOAuthService.addAndApproveParticipants(meetObj.get("id").toString(), List.of("1394996627@qq.com", "yuh9527@aliyun.com"), accessToken);
 
         log.info("123123123");
     }

@@ -26,10 +26,17 @@
     select
     <include refid="Base_Column_List" />
     from student_class_meeting
-    where deleted = 0 and record_id in
+    where deleted = 0 and meet_uuid in
     <foreach collection="recordIds" item="item" separator="," open="(" close=")">
       #{item}
     </foreach>
+  </select>
+
+  <select id="selectByMeetingId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from student_class_meeting
+    where deleted = 0 and meet_uuid = #{meetingId}
   </select>
 
   <delete id="deleteByPrimaryKey">

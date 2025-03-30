@@ -1,5 +1,6 @@
 package org.example.meetlearning.controller.manager;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -41,7 +42,7 @@ public class StudentClassController implements BaseController {
 
     @Operation(summary = "新增学生预约", operationId = "studentClassAdd")
     @PostMapping(value = "v1/student/class/add")
-    public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) {
+    public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) throws IOException {
         return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), getUserName(), reqVo);
     }
 
@@ -109,6 +110,12 @@ public class StudentClassController implements BaseController {
     @PostMapping(value = "v1/student/class/regular")
     public RespVo<String> studentClassRegular(@RequestBody StudentClassRegularReqVo reqVo) {
         return new RespVo<>("New complaint successfully added");
+    }
+
+    @Operation(summary = "返回会议加入链接", operationId = "studentClassMeeting")
+    @PostMapping(value = "v1/student/class/meeting")
+    public RespVo<String> studentClassMeeting(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>(studentClassPcService.meetingJoinUrl(queryVo.getRecordId()));
     }
 
 }

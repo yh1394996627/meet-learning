@@ -35,10 +35,9 @@ public class ZoomBasePcService {
 
     public void zoomAdd(String userCode, String userName, ZoomBaseReqVo reqVo) {
         ZoomAccountSet zoomAccountSet = ZoomBaseConverter.INSTANCE.toCreateZoomAccountSet(userCode, userName, reqVo);
-        zoomAccountSet.setZoomUserId(reqVo.getUserZoomId());
-        zoomAccountSet.setZoomType(reqVo.getType() == null ? 1 : reqVo.getType());
-        zoomAccountSet.setZoomStatusMsg(reqVo.getZoomStatusMsg());
-        zoomAccountSet.setIsException(BooleanUtils.isTrue(reqVo.getIsException()));
+        zoomAccountSet.setZoomType(1);
+        zoomAccountSet.setZoomStatusMsg("Unverified");
+        zoomAccountSet.setIsException(true);
         zoomBaseService.insert(zoomAccountSet);
     }
 
@@ -47,10 +46,9 @@ public class ZoomBasePcService {
         ZoomAccountSet zoomAccountSet = zoomBaseService.selectByRecordId(reqVo.getRecordId());
         Assert.notNull(zoomAccountSet, "Zoom config cannot be empty");
         ZoomAccountSet newZoomAccountSet = ZoomBaseConverter.INSTANCE.toUpdateZoomAccountSet(userCode, userName, zoomAccountSet.getId(), reqVo);
-        zoomAccountSet.setZoomUserId(reqVo.getUserZoomId());
-        zoomAccountSet.setZoomType(reqVo.getType() == null ? 1 : reqVo.getType());
-        zoomAccountSet.setZoomStatusMsg(reqVo.getZoomStatusMsg());
-        zoomAccountSet.setIsException(BooleanUtils.isTrue(reqVo.getIsException()));
+        zoomAccountSet.setZoomType(1);
+        zoomAccountSet.setZoomStatusMsg("Unverified");
+        zoomAccountSet.setIsException(false);
         zoomBaseService.update(newZoomAccountSet);
     }
 
@@ -83,5 +81,4 @@ public class ZoomBasePcService {
             return new ZoomBaseVerifyRespVo(false, 500, ex.getMessage(), null);
         }
     }
-
 }

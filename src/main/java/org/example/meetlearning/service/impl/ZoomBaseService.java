@@ -1,6 +1,7 @@
 package org.example.meetlearning.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.example.meetlearning.dao.entity.ZoomAccountSet;
 import org.example.meetlearning.dao.mapper.ZoomAccountSetMapper;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,11 @@ public class ZoomBaseService {
 
     private final ZoomAccountSetMapper zoomAccountSetMapper;
 
-    public List<ZoomAccountSet> selectByParams(Map<String, Object> params) {
+    public List<ZoomAccountSet> selectByParams(@Param("params") Map<String, Object> params) {
         return zoomAccountSetMapper.selectByParams(params);
+    }
+    public List<ZoomAccountSet> selectActivation() {
+        return zoomAccountSetMapper.selectActivation();
     }
 
     public ZoomAccountSet selectByRecordId(String recordId) {
@@ -34,6 +38,6 @@ public class ZoomBaseService {
     }
 
     public void deletedByRecordId(String recordId) {
-        zoomAccountSetMapper.deletedEntity(recordId);
+        zoomAccountSetMapper.deletedByRecordId(recordId);
     }
 }

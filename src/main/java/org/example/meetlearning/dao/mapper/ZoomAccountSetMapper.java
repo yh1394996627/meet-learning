@@ -10,13 +10,15 @@ public interface ZoomAccountSetMapper {
 
     int insert(ZoomAccountSet record);
 
-    List<ZoomAccountSet> selectByParams(Map<String,Object> params);
+    List<ZoomAccountSet> selectByParams(Map<String, Object> params);
+
+    List<ZoomAccountSet> selectActivation();
 
     ZoomAccountSet selectByRecordId(String recordId);
 
     ZoomAccountSet selectByAccountId(String recordId);
 
-    int deletedEntity(String recordId);
+    int deletedByRecordId(String recordId);
 
     int updateEntity(ZoomAccountSet record);
 

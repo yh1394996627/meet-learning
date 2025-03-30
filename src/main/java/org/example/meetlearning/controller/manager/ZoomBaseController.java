@@ -35,7 +35,6 @@ public class ZoomBaseController implements BaseController {
         return new RespVo<>("New successfully added");
     }
 
-
     @Operation(summary = "ZOOM配置更新", operationId = "zoomUpdate")
     @PostMapping(value = "v1/zoom/base/update")
     public RespVo<String> zoomUpdate(@RequestBody ZoomBaseReqVo reqVo) {

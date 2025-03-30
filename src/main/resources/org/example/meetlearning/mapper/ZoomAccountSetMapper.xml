@@ -59,15 +59,25 @@
         where record_id = #{recordId,jdbcType=VARCHAR}
     </update>
 
+    <select id="selectActivation" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zoom_account_set
+        where deleted = 0 and is_exception = 0;
+    </select>
+
     <sql id="where_commons">
-        <if test="params.zoomType !=null">
+        <if test="params.zoomType != null">
             and zoom_type = #{params.type,jdbcType=INTEGER}
         </if>
-        <if test="params.emailKeyword !=null">
+        <if test="params.emailKeyword != null">
             and zoom_email like #{params.emailKeyword,jdbcType=VARCHAR}
         </if>
-        <if test="params.zoomStatusMsg !=null">
+        <if test="params.zoomStatusMsg != null">
             and zoom_status_msg = #{params.zoomStatusMsg,jdbcType=INTEGER}
+        </if>
+        <if test="params.isException != null">
+            and is_exception = #{params.isException,jdbcType=BIT}
         </if>
     </sql>
 
@@ -86,12 +96,6 @@
                 #{totalUsedQty,jdbcType=INTEGER}, #{usedQty,jdbcType=INTEGER}, #{zoomType,jdbcType=INTEGER},
                 #{isException,jdbcType=BIT}, #{recordId,jdbcType=VARCHAR}, #{cbToken,jdbcType=VARCHAR})
     </insert>
-
-    <update id="deletedEntity" parameterType="org.example.meetlearning.dao.entity.ZoomAccountSet">
-        update zoom_account_set
-            set deleted = 1
-        where
-    </update>
 
     <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.ZoomAccountSet">
         update zoom_account_set

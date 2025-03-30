@@ -1,13 +1,16 @@
 package org.example.meetlearning.service;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
+import org.example.meetlearning.converter.MeetingConverter;
 import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
 import org.example.meetlearning.enums.TokenContentEnum;
@@ -21,6 +24,7 @@ import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.evaluation.TeacherComplaintReqVo;
 import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
 import org.example.meetlearning.vo.student.StudentInfoRespVo;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -28,7 +32,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +66,10 @@ public class StudentClassPcService extends BasePcService {
 
     private final TeacherComplaintService teacherComplaintService;
 
+    private final ZoomOAuthService zoomOAuthService;
+
+    private final StudentClassMeetingService studentClassMeetingService;
+
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
         Page<StudentClass> page = studentClassService.selectByParams(queryVo.getParams(), queryVo.getPageRequest());
@@ -75,7 +85,7 @@ public class StudentClassPcService extends BasePcService {
      * 3.学生扣掉课时币，添加扣除记录
      * 4.创建会议,生产会议链接
      */
-    public RespVo<String> studentClassAdd(String entCode, String userCode, String userName, StudentClassAddReqVo reqVo) {
+    public RespVo<String> studentClassAdd(String entCode, String userCode, String userName, StudentClassAddReqVo reqVo) throws IOException {
         //1.校验 2.拉取老师学生信息组装数据
         //查询学生信息
         Student student = reqVo.getStudentId() != null ? studentService.findByRecordId(reqVo.getStudentId()) : null;
@@ -98,7 +108,13 @@ public class StudentClassPcService extends BasePcService {
             List<String> courseList = features.stream().map(TeacherFeature::getSpecialists).toList();
             studentClass.setCourseName(StringUtils.join(courseList.toArray(), ","));
         }
-        //todo 生成会议链接
+        Date meetingDate = DateUtil.parse(studentClass.getCancelTime() + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+        //创建会议
+        String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+        JSONObject meetObj = new JSONObject(meeting);
+        StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(entCode, userCode, meetObj);
+
+        studentClass.setMeetingRecordId(meetingEntity.getMeetUuid());
         studentClassService.insertEntity(studentClass);
         return new RespVo<>("New successfully added");
     }
@@ -233,5 +249,25 @@ public class StudentClassPcService extends BasePcService {
         Assert.notNull(teacher, "Teacher information not obtained");
         TeacherComplaintRecord teacherEvaluationRecord = StudentClassConverter.INSTANCE.toCreateTeacherComplaintRecord(userCode, teacher.getPrice(), reqVo.getRemark(), studentClass);
         teacherComplaintService.insert(teacherEvaluationRecord);
+    }
+
+
+    public String meetingJoinUrl(String classId) {
+        StudentClass studentClass = studentClassService.selectByRecordId(classId);
+        Assert.notNull(studentClass, "Course information not obtained");
+        String meetingRecordId = studentClass.getMeetingRecordId();
+        Assert.notNull(studentClass, "Meeting information not obtained");
+        String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
+        Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
+        Date date1 = new Date();
+
+        long diffInMillis = Math.abs(beginDate.getTime() - date1.getTime());
+        long fiveMinutesInMillis = 5 * 60 * 1000; // 5分钟的毫秒数
+        boolean isLessThan5Minutes = diffInMillis < fiveMinutesInMillis;
+        Assert.isTrue(isLessThan5Minutes, "You can only enter the meeting five minutes in advance");
+        StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
+        Assert.notNull(studentClassMeeting, "Meeting information not obtained");
+        Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
+        return studentClassMeeting.getMeetJoinUrl();
     }
 }

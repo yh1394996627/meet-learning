@@ -34,7 +34,6 @@ public class ZoomController {
     public void handleCallback(@RequestParam("code") String authorizationCode) throws IOException {
         meeting(authorizationCode);
     }
-
     private void meeting(String authorizationCode) throws IOException {
         // 使用授权码获取 Access Token
         String accessToken = zoomPcService.getAccessToken(authorizationCode);

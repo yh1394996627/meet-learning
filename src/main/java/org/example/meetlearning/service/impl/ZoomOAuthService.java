@@ -1,13 +1,16 @@
 package org.example.meetlearning.service.impl;
 
+import io.lettuce.core.internal.LettuceLists;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.lang3.BooleanUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.common.ZoomUseRedisSetCommon;
 import org.example.meetlearning.dao.entity.ZoomAccountSet;
+import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.util.RedisCommonsUtil;
 import org.example.meetlearning.vo.zoom.Registrant;
 import org.example.meetlearning.vo.zoom.ZoomAccount;
@@ -20,11 +23,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -56,26 +61,48 @@ public class ZoomOAuthService {
 
     private OkHttpClient client = new OkHttpClient();
 
-//    private Map<String, List<ZoomAccount>> accountPools = new ConcurrentHashMap<>();
-//
-//
-//    @PostConstruct
-//    public void init() {
-//        // 初始化账户池，可以从数据库或配置文件中加载
-//        accountPools.put("FREE", initFreeAccounts());
-//        accountPools.put("PRO", initProAccounts());
-//        accountPools.put("BUSINESS", initBusinessAccounts());
-//        accountPools.put("ENTERPRISE", initEnterpriseAccounts());
-//    }
-//
-//    private List<ZoomAccount> initFreeAccounts() {
-//        // 初始化免费账户
-//        return Arrays.asList(
-//                new ZoomAccount("free1", "FREE", "key1", "secret1", 0, true),
-//                new ZoomAccount("free2", "FREE", "key2", "secret2", 0, true)
-//        );
-//    }
+    private Map<Integer, List<ZoomAccount>> accountPools = new ConcurrentHashMap<>();
 
+
+    /**
+     * 初始化连接池
+     **/
+    @PostConstruct
+    public void init() {
+        List<ZoomAccountSet> zoomAccountSets = zoomBaseService.selectActivation();
+        zoomAccountSets.forEach(zoomAccountSet -> {
+            ZoomAccount zoomAccount = new ZoomAccount(zoomAccountSet.getZoomUserId(), zoomAccountSet.getZoomAccountId(), zoomAccountSet.getZoomType(), zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), 0);
+            Object obj = redisTemplate.opsForValue().get(zoomAccountSet.getZoomAccountId() + ":" + zoomAccountSet.getZoomType());
+            if (obj != null) {
+                zoomAccount.setApiCallCount(Integer.parseInt(obj.toString()));
+            }
+            List<ZoomAccount> zoomAccounts = accountPools.get(zoomAccount.getZoomType());
+            if (CollectionUtils.isEmpty(zoomAccounts)) {
+                zoomAccounts = new ArrayList<>();
+            }
+            zoomAccounts.add(zoomAccount);
+            accountPools.put(zoomAccount.getZoomType(), zoomAccounts);
+        });
+    }
+
+    private ZoomAccount getZoomAccount(Integer zoomType) {
+        List<ZoomAccount> zoomAccounts = accountPools.get(zoomType);
+        if (CollectionUtils.isEmpty(zoomAccounts)) {
+            List<ZoomAccount> zoom1Accounts = new ArrayList<>();
+            //查詢付費版
+            zoom1Accounts.addAll(accountPools.get(2));
+            zoom1Accounts.addAll(accountPools.get(3));
+            zoom1Accounts.addAll(accountPools.get(4));
+            if (CollectionUtils.isEmpty(zoomAccounts)) {
+                return null;
+            }
+            zoom1Accounts = zoom1Accounts.stream().sorted(Comparator.comparing(ZoomAccount::getApiCallCount)).toList();
+            return zoom1Accounts.get(0);
+
+        }
+        zoomAccounts = zoomAccounts.stream().sorted(Comparator.comparing(ZoomAccount::getApiCallCount)).toList();
+        return zoomAccounts.get(0);
+    }
 
     /**
      * 獲取生效的token
@@ -179,8 +206,14 @@ public class ZoomOAuthService {
     /**
      * 创建会议
      */
-    public String createMeeting(String userId, String topic, String startTime, String accessToken) throws IOException {
-        String url = zoomApiUrl + "/users/" + userId + "/meetings";
+    public String createMeeting(String topic, String startTime, CourseTypeEnum courseType) throws IOException {
+        //获取ZOOM生效的账号
+        Integer zoomType = courseType == CourseTypeEnum.GROUP ? 2 : 1;
+        ZoomAccount zoomAccount = getZoomAccount(zoomType);
+        Assert.notNull(zoomAccount, "Zoom account not found");
+        Assert.isTrue(StringUtils.isNotEmpty(zoomAccount.getZoomUserId()), "Zoom userId not found");
+        String accessToken = getValidAccessToken(zoomAccount.getClientId(), zoomAccount.getClientSecret(), zoomAccount.getAccountId());
+        String url = zoomApiUrl + "/users/" + zoomAccount.getZoomUserId() + "/meetings";
         String json = "{\"topic\":\"" + topic + "\",\"start_time\":\"" + startTime + "\"}";
         RequestBody body = RequestBody.create(json, okhttp3.MediaType.parse("application/json"));
         Request request = new Request.Builder()
@@ -188,13 +221,11 @@ public class ZoomOAuthService {
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .post(body)
                 .build();
-
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            return response.body().string(); // Parse the response to get the meeting details
+            return response.body().string();
         }
     }
-
 
     /**
      * 添加参会者自动审批

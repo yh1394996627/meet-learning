@@ -13,6 +13,8 @@ public interface StudentClassMeetingMapper {
 
     List<StudentClassMeeting> selectByRecordIds(List<String> recordIds);
 
+    StudentClassMeeting selectByMeetingId(String meetingId);
+
     int updateEntity(StudentClassMeeting record);
 
 }

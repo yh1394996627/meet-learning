@@ -8,6 +8,8 @@ import org.example.meetlearning.dao.mapper.StudentClassMeetingMapper;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class StudentClassMeetingService {
@@ -17,13 +19,21 @@ public class StudentClassMeetingService {
     /**
      * 新增会议信息
      */
-    private StudentClassMeeting insertMeeting(String userCode, String userName, JSONObject meetingObj) {
+    public StudentClassMeeting insertMeeting(String userCode, String userName, JSONObject meetingObj) {
         StudentClassMeeting meeting = MeetingConverter.INSTANCE.toCreateMeeting(userCode, userName, meetingObj);
         studentClassMeetingMapper.insertEntity(meeting);
         return meeting;
     }
 
 
+    public StudentClassMeeting selectByMeetingId(String meetId) {
+        return studentClassMeetingMapper.selectByMeetingId(meetId);
+    }
+
+
+    public List<StudentClassMeeting> selectByMeetingIds(List<String> meetIds) {
+        return studentClassMeetingMapper.selectByRecordIds(meetIds);
+    }
 
 
 }

@@ -64,6 +64,9 @@ public class StudentClassListRespVo {
     @Schema(name = "affiliateName", description = "代理商名称")
     private String affiliateName;
 
+    @Schema(name = "meetRecordId", description = "会议ID")
+    private String meetRecordId;
+
     @Schema(name = "studentConsumption", description = "学生消费课时币")
     private BigDecimal studentConsumption;
 
@@ -73,5 +76,6 @@ public class StudentClassListRespVo {
     @Schema(name = "efficientDate", description = "产品最新有效期")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date efficientDate;
+
 
 }
