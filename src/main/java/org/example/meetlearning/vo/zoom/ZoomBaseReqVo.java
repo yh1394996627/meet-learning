@@ -26,7 +26,7 @@ public class ZoomBaseReqVo {
     @Schema(name = "token", description = "token")
     private String token;
 
-    @Schema(name = "type", description = "账号类型 0:免费版 1:PRO 2:商业版 3:企业版")
+    @Schema(name = "type", description = "账号类型 1:免费版 2:PRO 3:商业版 4:企业版")
     private Integer type;
 
     @Schema(name = "userZoomId", description = "zoom 用户ID")

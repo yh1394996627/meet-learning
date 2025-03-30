@@ -104,4 +104,11 @@ public class StudentClassController implements BaseController {
         return new RespVo<>("New complaint successfully added");
     }
 
+
+    @Operation(summary = "学生申请固定上课", operationId = "studentClassRegular")
+    @PostMapping(value = "v1/student/class/regular")
+    public RespVo<String> studentClassRegular(@RequestBody StudentClassRegularReqVo reqVo) {
+        return new RespVo<>("New complaint successfully added");
+    }
+
 }

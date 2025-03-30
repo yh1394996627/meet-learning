@@ -10,6 +10,7 @@ import org.example.meetlearning.common.ZoomUseRedisSetCommon;
 import org.example.meetlearning.dao.entity.ZoomAccountSet;
 import org.example.meetlearning.util.RedisCommonsUtil;
 import org.example.meetlearning.vo.zoom.Registrant;
+import org.example.meetlearning.vo.zoom.ZoomAccount;
 import org.example.meetlearning.vo.zoom.ZoomAccountInfoVo;
 import org.example.meetlearning.vo.zoom.ZoomBaseVerifyRespVo;
 import org.json.JSONObject;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,27 @@ public class ZoomOAuthService {
 
 
     private OkHttpClient client = new OkHttpClient();
+
+//    private Map<String, List<ZoomAccount>> accountPools = new ConcurrentHashMap<>();
+//
+//
+//    @PostConstruct
+//    public void init() {
+//        // 初始化账户池，可以从数据库或配置文件中加载
+//        accountPools.put("FREE", initFreeAccounts());
+//        accountPools.put("PRO", initProAccounts());
+//        accountPools.put("BUSINESS", initBusinessAccounts());
+//        accountPools.put("ENTERPRISE", initEnterpriseAccounts());
+//    }
+//
+//    private List<ZoomAccount> initFreeAccounts() {
+//        // 初始化免费账户
+//        return Arrays.asList(
+//                new ZoomAccount("free1", "FREE", "key1", "secret1", 0, true),
+//                new ZoomAccount("free2", "FREE", "key2", "secret2", 0, true)
+//        );
+//    }
+
 
     /**
      * 獲取生效的token
