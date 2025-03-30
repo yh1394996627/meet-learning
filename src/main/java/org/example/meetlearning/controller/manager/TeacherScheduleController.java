@@ -52,7 +52,7 @@ public class TeacherScheduleController implements BaseController {
     }
 
     @Operation(summary = "老师端日程-同意、不同意操作", operationId = "studentScheduleRegular")
-    @PostMapping(value = "v1/schedule/class/regular")
+    @PostMapping(value = "v1/schedule/class/regular/opera")
     public RespVo<String> studentScheduleRegular(@RequestBody ScheduleOperaVo ScheduleOperaVo) {
         return new RespVo<>("Operation successful");
     }
