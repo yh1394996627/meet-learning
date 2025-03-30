@@ -31,6 +31,7 @@ public class UserPcService extends BasePcService {
 
     private final UserService userService;
     private final TeacherService teacherService;
+    private final StudentService studentService;
     private final UserFinanceService userFinanceService;
     private final UserFinanceRecordService userFinanceRecordService;
 
@@ -96,9 +97,15 @@ public class UserPcService extends BasePcService {
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
         String url = uploadAvatar(userCode, file);
-        Teacher teacher = teacherService.selectByRecordId(userCode);
-        teacher.setAvatarUrl(url);
-        teacherService.updateEntity(teacher);
+        if (StringUtils.equals(accountUser.getType(), RoleEnum.TEACHER.name())) {
+            Teacher teacher = teacherService.selectByRecordId(userCode);
+            teacher.setAvatarUrl(url);
+            teacherService.updateEntity(teacher);
+        } else if (StringUtils.equals(accountUser.getType(), RoleEnum.STUDENT.name())) {
+            Student student = studentService.findByRecordId(userCode);
+            student.setAvatarUrl(url);
+            studentService.update(student);
+        }
         return new RespVo<>(downloadFile(url));
     }
 

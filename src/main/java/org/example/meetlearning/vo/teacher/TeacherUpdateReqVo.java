@@ -61,5 +61,8 @@ public class TeacherUpdateReqVo {
     @Schema(name = "about", description = "关于")
     private String about;
 
+    @Schema(name = "gender", description = "性别 1男 2女 3其他")
+    private Integer gender;
+
 
 }

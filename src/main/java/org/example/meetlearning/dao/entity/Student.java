@@ -56,6 +56,8 @@ public class Student {
 
     private String language;
 
+    private String avatarUrl;
+
     private String affiliateId;
 
     private String affiliateName;

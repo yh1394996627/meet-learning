@@ -35,6 +35,7 @@
         <result column="test_status" jdbcType="BIT" property="testStatus"/>
         <result column="enabled_status" jdbcType="BIT" property="enabledStatus"/>
         <result column="video_url" jdbcType="VARCHAR" property="videoUrl"/>
+        <result column="gender" jdbcType="INTEGER" property="gender"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -43,7 +44,7 @@
     record_id, name, en_name, attendance, rating, price, credits_price, rate, confirmed_qty,
     canceled_qty, complaints_qty, salary_amount, email, country, manager_id, manager,
     avatar_url, language, currency_code, currency_name, specialties, manager_status, 
-    test_status, enabled_status, video_url
+    test_status, enabled_status, video_url, gender
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -262,6 +263,9 @@
             <if test="videoUrl != null">
                 video_url,
             </if>
+            <if test="gender != null">
+                gender,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -362,6 +366,9 @@
             </if>
             <if test="videoUrl != null">
                 #{videoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                #{genderl,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -464,6 +471,9 @@
             </if>
             <if test="videoUrl != null">
                 video_url = #{videoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

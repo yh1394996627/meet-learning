@@ -73,6 +73,7 @@ public interface TeacherConverter {
         teacher.setLanguage(reqVo.getLanguage());
         teacher.setCurrencyName(reqVo.getCurrencyCode());
         teacher.setCurrencyName(reqVo.getCurrencyName());
+        teacher.setGender(reqVo.getGender());
 //        teacher.setSpecialties(reqVo.getSpecialties());
         return teacher;
     }

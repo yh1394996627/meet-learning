@@ -24,13 +24,14 @@
         <result column="affiliate_id" jdbcType="VARCHAR" property="affiliateId"/>
         <result column="affiliate_name" jdbcType="VARCHAR" property="affiliateName"/>
         <result column="language" jdbcType="VARCHAR" property="language"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
         record_id, name, age, gender, phone, email,last_activities, website, remark, learn_purpose,
-        learn_plan, affiliate_id, affiliate_name , language
+        learn_plan, affiliate_id, affiliate_name , language, avatar_url
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -167,6 +168,9 @@
             <if test="language != null">
                 language,
             </if>
+            <if test="avatarUrl != null">
+                avatar_url,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -234,6 +238,9 @@
             </if>
             <if test="language != null">
                 #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarUrl != null">
+                #{avatarUrl,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -304,6 +311,9 @@
             </if>
             <if test="language != null">
                 language = #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarUrl != null">
+                avatar_url = #{avatarUrl,jdbcType=VARCHAR},
             </if>
         </set>
         where record_id = #{recordId}

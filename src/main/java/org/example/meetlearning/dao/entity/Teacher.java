@@ -30,6 +30,8 @@ public class Teacher {
 
     private String enName;
 
+    private Integer gender;
+
     private BigDecimal attendance;
 
     private BigDecimal rating;
