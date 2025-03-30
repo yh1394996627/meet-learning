@@ -252,11 +252,21 @@ public class StudentClassPcService extends BasePcService {
     }
 
 
-    public String meetingJoinUrl(String classId) {
+    public String meetingJoinUrl(String classId) throws IOException {
         StudentClass studentClass = studentClassService.selectByRecordId(classId);
         Assert.notNull(studentClass, "Course information not obtained");
         String meetingRecordId = studentClass.getMeetingRecordId();
-        Assert.isTrue(StringUtils.isNotEmpty(meetingRecordId), "Meeting information not obtained");
+        //如果没有会议信息则新建一个
+        if(StringUtils.isEmpty(meetingRecordId)){
+            Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(),"yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+            //创建会议
+            String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+            JSONObject meetObj = new JSONObject(meeting);
+            StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(studentClass.getCreator(), studentClass.getCreateName(), meetObj);
+            studentClass.setMeetingRecordId(meetingEntity.getMeetUuid());
+            studentClassService.updateEntity(studentClass);
+            meetingRecordId = meetingEntity.getMeetUuid();
+        }
         String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
         Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
         Date date1 = new Date();

@@ -35,9 +35,9 @@
         <result column="class_status" jdbcType="DECIMAL" property="classStatus"/>
         <result column="cancel_id" jdbcType="VARCHAR" property="cancelId"/>
         <result column="cancel_time" jdbcType="TIMESTAMP" property="cancelTime"/>
-        <result column="meeting_record_id" jdbcType="TIMESTAMP" property="meetingRecordId"/>
-        <result column="is_complaint" jdbcType="TIMESTAMP" property="isComplaint"/>
-        <result column="is_evaluation" jdbcType="TIMESTAMP" property="isEvaluation"/>
+        <result column="meeting_record_id" jdbcType="VARCHAR" property="meetingRecordId"/>
+        <result column="is_complaint" jdbcType="VARCHAR" property="isComplaint"/>
+        <result column="is_evaluation" jdbcType="VARCHAR" property="isEvaluation"/>
     </resultMap>
     <sql id="Base_Column_List">
         id

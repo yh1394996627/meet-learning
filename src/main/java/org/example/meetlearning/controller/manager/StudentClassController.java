@@ -114,7 +114,7 @@ public class StudentClassController implements BaseController {
 
     @Operation(summary = "返回会议加入链接", operationId = "studentClassMeeting")
     @PostMapping(value = "v1/student/class/meeting")
-    public RespVo<String> studentClassMeeting(@RequestBody RecordIdQueryVo queryVo) {
+    public RespVo<String> studentClassMeeting(@RequestBody RecordIdQueryVo queryVo) throws IOException {
         return new RespVo<>(studentClassPcService.meetingJoinUrl(queryVo.getRecordId()));
     }
 
