@@ -35,6 +35,9 @@
         <result column="class_status" jdbcType="DECIMAL" property="classStatus"/>
         <result column="cancel_id" jdbcType="VARCHAR" property="cancelId"/>
         <result column="cancel_time" jdbcType="TIMESTAMP" property="cancelTime"/>
+        <result column="meeting_record_id" jdbcType="TIMESTAMP" property="meetingRecordId"/>
+        <result column="is_complaint" jdbcType="TIMESTAMP" property="isComplaint"/>
+        <result column="is_evaluation" jdbcType="TIMESTAMP" property="isEvaluation"/>
     </resultMap>
     <sql id="Base_Column_List">
         id
@@ -42,7 +45,8 @@
     course_video_url, zoom_id, create_name, create_time, updator, update_name, update_time, 
     record_id, student_id, student_name, student_country, teacher_id, teacher_name, teacher_country, 
     course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
-    affiliate_name, student_consumption, efficient_date, student_balance, cancel_id, cancel_time
+    affiliate_name, student_consumption, efficient_date, student_balance, cancel_id, cancel_time,
+        meeting_record_id, is_complaint, is_evaluation
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -201,6 +205,9 @@
             <if test="endTime != null">
                 end_time,
             </if>
+            <if test="meetingrecordId != null">
+                meeting_record_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -292,6 +299,9 @@
             </if>
             <if test="endTime != null">
                 #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="meetingrecordId != null">
+                #{meetingrecordId,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -385,6 +395,15 @@
             </if>
             <if test="cancelTime != null">
                 cancel_time = #{cancelTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="meetingRecordId != null">
+                meeting_record_id = #{meetingRecordId,jdbcType=VARCHAR},
+            </if>
+            <if test="isComplaint != null">
+                is_complaint = #{isComplaint,jdbcType=VARCHAR},
+            </if>
+            <if test="isEvaluation != null">
+                is_evaluation = #{isEvaluation,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

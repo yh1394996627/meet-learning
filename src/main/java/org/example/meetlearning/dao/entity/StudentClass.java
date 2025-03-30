@@ -81,4 +81,9 @@ public class StudentClass {
 
     private String meetingRecordId;
 
+    private Boolean isComplaint;
+
+    private Boolean isEvaluation;
+
+
 }

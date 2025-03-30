@@ -69,6 +69,11 @@ public class ZoomOAuthService {
      **/
     @PostConstruct
     public void init() {
+        accountPools.put(1, new ArrayList<>());
+        accountPools.put(2, new ArrayList<>());
+        accountPools.put(3, new ArrayList<>());
+        accountPools.put(4, new ArrayList<>());
+
         List<ZoomAccountSet> zoomAccountSets = zoomBaseService.selectActivation();
         zoomAccountSets.forEach(zoomAccountSet -> {
             ZoomAccount zoomAccount = new ZoomAccount(zoomAccountSet.getZoomUserId(), zoomAccountSet.getZoomAccountId(), zoomAccountSet.getZoomType(), zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), 0);
@@ -93,7 +98,7 @@ public class ZoomOAuthService {
             zoom1Accounts.addAll(accountPools.get(2));
             zoom1Accounts.addAll(accountPools.get(3));
             zoom1Accounts.addAll(accountPools.get(4));
-            if (CollectionUtils.isEmpty(zoomAccounts)) {
+            if (CollectionUtils.isEmpty(zoom1Accounts)) {
                 return null;
             }
             zoom1Accounts = zoom1Accounts.stream().sorted(Comparator.comparing(ZoomAccount::getApiCallCount)).toList();

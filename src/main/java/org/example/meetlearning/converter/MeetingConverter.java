@@ -1,5 +1,6 @@
 package org.example.meetlearning.converter;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import cn.hutool.core.date.DateUtil;
@@ -26,7 +27,9 @@ public interface MeetingConverter {
         studentClassMeeting.setCreateMeetZoomUserId(meetingObj.get("host_id").toString());
         studentClassMeeting.setMeetStatus(meetingObj.get("status").toString());
         if (meetingObj.get("start_time") != null) {
-            studentClassMeeting.setMeetStartTime(DateUtil.parse(meetingObj.get("start_time").toString(), "yyyy-MM-dd HH:mm:ss"));
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(meetingObj.get("start_time").toString());
+            Date date2 = Date.from(zonedDateTime.toInstant());
+            studentClassMeeting.setMeetStartTime(date2);
         }
         studentClassMeeting.setMeetType(Integer.valueOf(meetingObj.get("type").toString()));
         return studentClassMeeting;

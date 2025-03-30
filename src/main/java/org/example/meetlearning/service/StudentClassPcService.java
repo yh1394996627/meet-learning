@@ -256,7 +256,7 @@ public class StudentClassPcService extends BasePcService {
         StudentClass studentClass = studentClassService.selectByRecordId(classId);
         Assert.notNull(studentClass, "Course information not obtained");
         String meetingRecordId = studentClass.getMeetingRecordId();
-        Assert.notNull(studentClass, "Meeting information not obtained");
+        Assert.isTrue(StringUtils.isNotEmpty(meetingRecordId), "Meeting information not obtained");
         String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
         Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
         Date date1 = new Date();

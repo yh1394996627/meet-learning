@@ -87,6 +87,8 @@ public interface StudentClassConverter {
         studentClass.setStudentConsumption(BigDecimalUtil.nullOrZero(studentFinance.getConsumptionQty()));
         studentClass.setEfficientDate(studentFinance.getExpirationTime());
         studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(studentFinance.getBalanceQty()));
+        studentClass.setIsEvaluation(false);
+        studentClass.setIsComplaint(false);
         return studentClass;
     }
 
