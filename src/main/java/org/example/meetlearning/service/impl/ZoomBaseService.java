@@ -34,6 +34,6 @@ public class ZoomBaseService {
     }
 
     public void deletedByRecordId(String recordId) {
-        zoomAccountSetMapper.deletedByRecordId(recordId);
+        zoomAccountSetMapper.deletedEntity(recordId);
     }
 }

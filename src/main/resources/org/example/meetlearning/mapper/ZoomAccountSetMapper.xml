@@ -87,7 +87,7 @@
                 #{isException,jdbcType=BIT}, #{recordId,jdbcType=VARCHAR}, #{cbToken,jdbcType=VARCHAR})
     </insert>
 
-    <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.ZoomAccountSet">
+    <update id="deletedEntity" parameterType="org.example.meetlearning.dao.entity.ZoomAccountSet">
         update zoom_account_set
             set deleted = 1
         where
