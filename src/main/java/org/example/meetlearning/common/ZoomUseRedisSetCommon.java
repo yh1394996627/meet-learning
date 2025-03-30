@@ -17,8 +17,7 @@ public class ZoomUseRedisSetCommon {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    public Long dailyIncrement(String key) {
-        String dailyKey = "counter:" + LocalDateTime.now().toLocalDate().toString();
+    public Long dailyIncrement(String dailyKey) {
 
         // 原子性增加并获取新值
         Long newValue = redisTemplate.opsForValue().increment(dailyKey);

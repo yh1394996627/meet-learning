@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 public enum RoleEnum {
 
-    MANAGER("管理员", List.of("studentList", "studentClasses", "affiliateList", "teachersList", "sharedTeachers", "materials", "tokensLog", "config")),
+    MANAGER("管理员", List.of("studentList", "studentClasses", "affiliateList", "teachersList", "sharedTeachers", "materials", "tokensLog", "config","zoomConfig")),
     AFFILIATE("代理商", List.of("studentList", "studentClasses", "materials", "tokensLog")),
     TEACHER("老师", List.of("bookedClasses", "schedule", "materials", "teachersList")),
     STUDENT("学生", List.of("myBook", "bookCourse", "materials", "tokensLog"));

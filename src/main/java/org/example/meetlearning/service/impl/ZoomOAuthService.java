@@ -5,7 +5,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.apache.commons.lang3.BooleanUtils;
 import org.example.meetlearning.common.ZoomUseRedisSetCommon;
+import org.example.meetlearning.dao.entity.ZoomAccountSet;
 import org.example.meetlearning.util.RedisCommonsUtil;
 import org.example.meetlearning.vo.zoom.Registrant;
 import org.example.meetlearning.vo.zoom.ZoomAccountInfoVo;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -45,13 +48,17 @@ public class ZoomOAuthService {
     @Autowired
     private ZoomUseRedisSetCommon zoomUseRedisSetCommon;
 
+    @Autowired
+    private ZoomBaseService zoomBaseService;
+
+
     private OkHttpClient client = new OkHttpClient();
 
     /**
      * 獲取生效的token
      */
     public String getValidAccessToken(String clientId, String clientSecret, String accountId) {
-        Object redis = redisTemplate.opsForValue().get(clientId + clientSecret + accountId);
+        Object redis = redisTemplate.opsForValue().get(accountId);
         if (redis == null) {
             refreshToken(clientId, clientSecret, accountId);
         } else {
@@ -83,7 +90,6 @@ public class ZoomOAuthService {
                     Map.class);
             zoomUseRedisSetCommon.dailyIncrement(clientId);
             this.accessToken = (String) Objects.requireNonNull(response.getBody()).get("access_token");
-            int expiresIn = (Integer) response.getBody().get("expires_in");
             redisTemplate.opsForValue().set(clientId + clientSecret + accountId, accessToken, 3590, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException("Failed to refresh Zoom access token", e);
@@ -104,7 +110,7 @@ public class ZoomOAuthService {
                     new HttpEntity<>(headers),
                     String.class
             );
-            zoomUseRedisSetCommon.dailyIncrement(accountId);
+            dailyIncrement(accountId);
             return new ZoomBaseVerifyRespVo(response.getStatusCode() == HttpStatus.OK, response.getStatusCode().value(), response.getBody(), null);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) { // 401 表示无效
@@ -124,7 +130,7 @@ public class ZoomOAuthService {
         headers.set("Authorization", "Bearer " + accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        zoomUseRedisSetCommon.dailyIncrement(accountId);
+        dailyIncrement(accountId);
         log.info("user：{}", response.getBody());
         JSONObject userObj = new JSONObject(response.getBody());
         return userObj.getString("id");
@@ -143,7 +149,7 @@ public class ZoomOAuthService {
                 new HttpEntity<>(headers),
                 Object.class
         );
-        zoomUseRedisSetCommon.dailyIncrement(accountId);
+        dailyIncrement(accountId);
         return Objects.requireNonNull(response.getBody()).toString();
     }
 
@@ -170,7 +176,7 @@ public class ZoomOAuthService {
     /**
      * 添加参会者自动审批
      */
-    private void addAndApproveParticipants(String meetingId, List<String> emails, String accessToken) {
+    public void addAndApproveParticipants(String meetingId, List<String> emails, String accessToken) {
         // 1. 添加参会者
         List<Registrant> registrants = addRegistrants(meetingId, emails, accessToken);
 
@@ -185,6 +191,8 @@ public class ZoomOAuthService {
                 .map(email -> {
                     Map<String, String> r = new HashMap<>();
                     r.put("email", email);
+                    r.put("firstName ", email.split("@")[0]);
+                    r.put("lastName", email.split("@")[1]);
                     // 可以添加更多信息如姓名等
                     return r;
                 })
@@ -235,5 +243,25 @@ public class ZoomOAuthService {
                 HttpMethod.PUT,
                 new HttpEntity<>(body, headers),
                 Void.class);
+    }
+
+    private void dailyIncrement(String accountId) {
+        log.info("accountId: {}", accountId);
+        ZoomAccountSet zoomAccountSet = zoomBaseService.selectByAccountId(accountId);
+        Assert.isTrue(!BooleanUtils.isTrue(zoomAccountSet.getIsException()), "AccountId exception");
+        zoomUseRedisSetCommon.dailyIncrement(accountId + ":" + zoomAccountSet.getZoomType());
+    }
+
+
+    public void initZoomRedisSet() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("isException", false);
+        List<ZoomAccountSet> zoomAccountSets = zoomBaseService.selectByParams(params);
+        zoomAccountSets.forEach(zoomAccountSet -> {
+            Object obj = redisTemplate.opsForValue().get(zoomAccountSet.getZoomAccountId() + ":" + zoomAccountSet.getZoomType());
+            if (obj == null) {
+                zoomUseRedisSetCommon.dailyIncrement(zoomAccountSet.getZoomAccountId() + ":" + zoomAccountSet.getZoomType());
+            }
+        });
     }
 }

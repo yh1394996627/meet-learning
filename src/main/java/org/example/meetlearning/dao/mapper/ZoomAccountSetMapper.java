@@ -14,6 +14,8 @@ public interface ZoomAccountSetMapper {
 
     ZoomAccountSet selectByRecordId(String recordId);
 
+    ZoomAccountSet selectByAccountId(String recordId);
+
     int deletedByRecordId(String recordId);
 
     int updateEntity(ZoomAccountSet record);

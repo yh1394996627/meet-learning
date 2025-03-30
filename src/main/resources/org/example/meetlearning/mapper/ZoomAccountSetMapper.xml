@@ -46,6 +46,12 @@
         where record_id = #{recordId,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectByAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zoom_account_set
+        where deleted = 0 and account_id = #{accountId,jdbcType=VARCHAR}
+    </select>
 
     <update id="deletedByRecordId">
         update zoom_account_set
