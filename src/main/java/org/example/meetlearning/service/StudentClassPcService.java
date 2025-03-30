@@ -274,10 +274,10 @@ public class StudentClassPcService extends BasePcService {
         long diffInMillis = Math.abs(beginDate.getTime() - date1.getTime());
         long fiveMinutesInMillis = 5 * 60 * 1000; // 5分钟的毫秒数
         boolean isLessThan5Minutes = diffInMillis < fiveMinutesInMillis;
-        Assert.isTrue(isLessThan5Minutes, "You can only enter the meeting five minutes in advance");
+        //Assert.isTrue(isLessThan5Minutes, "You can only enter the meeting five minutes in advance");
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
-        Assert.notNull(studentClassMeeting, "Meeting information not obtained");
-        Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
+        //Assert.notNull(studentClassMeeting, "Meeting information not obtained");
+        //Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
         return studentClassMeeting.getMeetJoinUrl();
     }
 }
