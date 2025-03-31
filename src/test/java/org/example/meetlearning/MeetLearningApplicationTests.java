@@ -60,6 +60,17 @@ class MeetLearningApplicationTests {
 
         log.info("123123123");
     }
+    @Test
+    void test3() throws JSONException, IOException {
+        String accountId = "E3Ker_gzTQC5z7cOj9goQg";
+        String clientId = "136G0saSOqZ5RlwPAT2Vg";
+        String clientSecret = "QhWr3zrnirGRutMgwfgPLDxpZWlnO12k";
+        String email = "1394996627@qq.com";
+        String accessToken = zoomOAuthService.getValidAccessToken(clientId, clientSecret, accountId);
+        String url = zoomOAuthService.createZoomUserAndGetActivationLink(email,"yu","hang",accessToken);
+        log.info("url:{}",url);
+
+    }
 
 
 

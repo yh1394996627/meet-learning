@@ -334,15 +334,46 @@ public class ZoomOAuthService {
     }
 
 
-    public void initZoomRedisSet() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("isException", false);
-        List<ZoomAccountSet> zoomAccountSets = zoomBaseService.selectByParams(params);
-        zoomAccountSets.forEach(zoomAccountSet -> {
-            Object obj = redisTemplate.opsForValue().get(zoomAccountSet.getZoomAccountId() + ":" + zoomAccountSet.getZoomType());
-            if (obj == null) {
-                zoomUseRedisSetCommon.dailyIncrement(zoomAccountSet.getZoomAccountId() + ":" + zoomAccountSet.getZoomType());
+
+    /**
+     * 创建 Zoom 用户并获取激活链接
+     * @param email 用户邮箱
+     * @param firstName 名
+     * @param lastName 姓
+     * @return 激活链接（如果用户需激活）
+     */
+    public String createZoomUserAndGetActivationLink(String email, String firstName, String lastName, String zoomApiToken) {
+        String url = zoomApiUrl + "/users";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(zoomApiToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Zoom API 请求体
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("action", "create"); // 创建用户
+        requestBody.put("user_info", Map.of(
+                "email", email,
+                "first_name", firstName,
+                "last_name", lastName,
+                "type", 1 // 1=基本用户，2=授权用户
+        ));
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
+            Map<String, Object> responseBody = response.getBody();
+
+            // 检查是否需要激活（新用户会返回激活链接）
+            if (responseBody.containsKey("activation_url")) {
+                return (String) responseBody.get("activation_url");
+            } else {
+                throw new RuntimeException("用户已存在或无需激活");
             }
-        });
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Zoom API 调用失败: " + e.getResponseBodyAsString());
+        }
     }
 }

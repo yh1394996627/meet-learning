@@ -14,9 +14,11 @@ import org.example.meetlearning.service.impl.StudentClassService;
 import org.example.meetlearning.service.impl.StudentService;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Slf4j
+@Transactional
 public class AffiliatePcService extends BasePcService {
 
     private final AffiliateService affiliateService;
@@ -128,9 +131,13 @@ public class AffiliatePcService extends BasePcService {
     }
 
 
-    public RespVo<List<SelectValueVo>> affiliateSelect() {
+    public RespVo<List<SelectValueVo>> affiliateSelect(RecordIdQueryVo queryVo) {
         try {
             List<SelectValueVo> selectValueVos = affiliateService.affiliateSelect();
+            if (StringUtils.hasText(queryVo.getRecordId())) {
+                selectValueVos = selectValueVos.stream().filter(v -> !v.getValue().equals(queryVo.getRecordId())).toList();
+            }
+
             return new RespVo<>(selectValueVos);
         } catch (Exception ex) {
             log.error("查询失败", ex);

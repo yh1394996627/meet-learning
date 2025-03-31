@@ -59,8 +59,8 @@ public class AffiliateController implements BaseController {
 
     @Operation(summary = "代理商(生效的)选择查询 key,value", operationId = "affiliateSelect")
     @PostMapping(value = "v1/affiliate/select")
-    public RespVo<List<SelectValueVo>> affiliateSelect() {
-        return affiliatePcService.affiliateSelect();
+    public RespVo<List<SelectValueVo>> affiliateSelect(@RequestBody RecordIdQueryVo reqVo) {
+        return affiliatePcService.affiliateSelect(reqVo);
     }
 
 
