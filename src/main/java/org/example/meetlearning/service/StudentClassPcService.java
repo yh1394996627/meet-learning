@@ -36,9 +36,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -60,6 +63,8 @@ public class StudentClassPcService extends BasePcService {
 
     private final UserFinanceService userFinanceService;
 
+    private final UserFinanceRecordService userFinanceRecordService;
+
     private final UserService userService;
 
     private final TeacherEvaluationService teacherEvaluationService;
@@ -73,7 +78,34 @@ public class StudentClassPcService extends BasePcService {
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
         Page<StudentClass> page = studentClassService.selectByParams(queryVo.getParams(), queryVo.getPageRequest());
-        PageVo<StudentClassListRespVo> pageVo = PageVo.map(page, StudentClassConverter.INSTANCE::toStudentClassListRespVo);
+        List<String> userIds = page.getRecords().stream().map(StudentClass::getStudentId).toList();
+        Map<String, UserFinance> userFinanceMap;
+        Map<String, UserFinanceRecord> userFinanceRecordHashMap;
+        if (!CollectionUtils.isEmpty(userIds)) {
+            //获取学生课时币信息
+            List<UserFinance> userFinances = userFinanceService.selectByUserIds(userIds);
+            userFinanceMap = userFinances.stream().collect(Collectors.toMap(UserFinance::getUserId, Function.identity()));
+
+            List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectDateGroupByUserIds(userIds);
+            userFinanceRecordHashMap = userFinanceRecordList.stream().collect(Collectors.toMap(UserFinanceRecord::getUserId, Function.identity()));
+        } else {
+            userFinanceRecordHashMap = new HashMap<>();
+            userFinanceMap = new HashMap<>();
+        }
+
+        PageVo<StudentClassListRespVo> pageVo = PageVo.map(page, list -> {
+            StudentClassListRespVo respVo = StudentClassConverter.INSTANCE.toStudentClassListRespVo(list);
+            if (userFinanceMap.containsKey(list.getRecordId())) {
+                UserFinance userFinance = userFinanceMap.get(list.getRecordId());
+                respVo.setStudentConsumption(userFinance.getConsumptionQty());
+                respVo.setStudentBalance(userFinance.getBalanceQty());
+            }
+            if (userFinanceRecordHashMap.containsKey(list.getRecordId())) {
+                UserFinanceRecord userFinanceRecord = userFinanceRecordHashMap.get(list.getRecordId());
+                respVo.setEfficientDate(userFinanceRecord.getExpirationTime());
+            }
+            return respVo;
+        });
         return new RespVo<>(pageVo);
     }
 
@@ -108,7 +140,7 @@ public class StudentClassPcService extends BasePcService {
             List<String> courseList = features.stream().map(TeacherFeature::getSpecialists).toList();
             studentClass.setCourseName(StringUtils.join(courseList.toArray(), ","));
         }
-        Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(),"yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+        Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         //创建会议
         String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
         JSONObject meetObj = new JSONObject(meeting);

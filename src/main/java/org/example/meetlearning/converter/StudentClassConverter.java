@@ -34,10 +34,10 @@ public interface StudentClassConverter {
         respVo.setCourseTime(studentClass.getCourseTime().toString() + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime());
         respVo.setCourseType(studentClass.getCourseType());
         if (studentClass.getStudentCourseStatus() != null) {
-            respVo.setStudentCourseStatusContent(Objects.requireNonNull(CourseStatusEnum.getCourseStatusByType(studentClass.getStudentCourseStatus())).name());
+            respVo.setStudentCourseStatusContent(Objects.requireNonNull(CourseStatusEnum.getCourseStatusByType(studentClass.getStudentCourseStatus())).getEntRemark());
         }
         if (studentClass.getTeacherCourseStatus() != null) {
-            respVo.setTeacherCourseStatusContent(Objects.requireNonNull(CourseStatusEnum.getCourseStatusByType(studentClass.getTeacherCourseStatus())).name());
+            respVo.setTeacherCourseStatusContent(Objects.requireNonNull(CourseStatusEnum.getCourseStatusByType(studentClass.getTeacherCourseStatus())).getEntRemark());
         }
         respVo.setCourseVideoUrl(studentClass.getCourseVideoUrl());
         //默认25分钟
@@ -45,9 +45,6 @@ public interface StudentClassConverter {
         respVo.setIsCourseVideoExpired(studentClass.getIsCourseVideoExpired());
         respVo.setAffiliateId(studentClass.getAffiliateId());
         respVo.setAffiliateName(studentClass.getAffiliateName());
-        respVo.setStudentConsumption(studentClass.getStudentConsumption());
-        respVo.setStudentBalance(studentClass.getStudentBalance());
-        respVo.setEfficientDate(studentClass.getEfficientDate());
         return respVo;
     }
 

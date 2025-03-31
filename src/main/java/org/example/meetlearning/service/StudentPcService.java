@@ -71,7 +71,6 @@ public class StudentPcService extends BasePcService {
             userFinanceMap = new HashMap<>();
         }
 
-
         //组装返回数据
         PageVo<StudentListRespVo> pageVo = PageVo.map(page, list -> {
             StudentListRespVo respVo = StudentConverter.INSTANCE.toStudentListRespVo(list);
