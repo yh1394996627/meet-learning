@@ -105,6 +105,12 @@ public class StudentClassController implements BaseController {
         return new RespVo<>("New complaint successfully added");
     }
 
+    @Operation(summary = "取消课程投诉", operationId = "studentClassCancelComplaint")
+    @PostMapping(value = "v1/student/class/cancel/complaint")
+    public RespVo<String> studentClassCancelComplaint(@RequestBody RecordIdQueryVo reqVo) {
+        //studentClassPcService.studentClassCancel(getUserCode(), reqVo);
+        return new RespVo<>("Course cancelled successfully");
+    }
 
     @Operation(summary = "学生申请固定上课", operationId = "studentClassRegular")
     @PostMapping(value = "v1/student/class/regular")
