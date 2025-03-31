@@ -96,7 +96,7 @@
             and teacher_name like #{params.teacherKeyword}
         </if>
         <if test="params.studentKeyword != null">
-            and student_name = #{params.studentKeyword}
+            and student_name like #{params.studentKeyword}
         </if>
         <if test="params.beginDate != null">
             and create_time >= #{params.beginDate}
