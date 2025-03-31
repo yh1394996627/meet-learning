@@ -179,7 +179,7 @@ public class BasePcService {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-        String qrUrl = String.format("https://www.12talk.com/register?recordId=%s", content);
+        String qrUrl = String.format("https://www.12talk.com/#/register?recordId=%s", content);
         BitMatrix bitMatrix = qrCodeWriter.encode(qrUrl, BarcodeFormat.QR_CODE, 300, 300, hints);
         BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

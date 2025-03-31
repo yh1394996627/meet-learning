@@ -1,5 +1,6 @@
 package org.example.meetlearning.service.impl;
 
+import com.aliyun.teautil.models.RuntimeOptions;
 import io.lettuce.core.internal.LettuceLists;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -191,7 +193,6 @@ public class ZoomOAuthService {
         return userObj.getString("id");
     }
 
-
     public String getAccountPlanType(String accountId, String accessToken) {
         String url = "https://api.zoom.us/v2/users/accounts/" + accountId;
 
@@ -219,6 +220,27 @@ public class ZoomOAuthService {
         Assert.isTrue(StringUtils.isNotEmpty(zoomAccount.getZoomUserId()), "Zoom userId not found");
         String accessToken = getValidAccessToken(zoomAccount.getClientId(), zoomAccount.getClientSecret(), zoomAccount.getAccountId());
         String url = zoomApiUrl + "/users/" + zoomAccount.getZoomUserId() + "/meetings";
+        String json = "{\"topic\":\"" + topic + "\",\"start_time\":\"" + startTime + "\"}";
+        RequestBody body = RequestBody.create(json, okhttp3.MediaType.parse("application/json"));
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .post(body)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            return response.body().string();
+        }
+    }
+
+    public String createMeeting11(String userId, String topic, String startTime, CourseTypeEnum courseType) throws IOException {
+        //获取ZOOM生效的账号
+        Integer zoomType = courseType == CourseTypeEnum.GROUP ? 2 : 1;
+        ZoomAccount zoomAccount = getZoomAccount(zoomType);
+        Assert.notNull(zoomAccount, "Zoom account not found");
+        Assert.isTrue(StringUtils.isNotEmpty(zoomAccount.getZoomUserId()), "Zoom userId not found");
+        String accessToken = getValidAccessToken(zoomAccount.getClientId(), zoomAccount.getClientSecret(), zoomAccount.getAccountId());
+        String url = zoomApiUrl + "/users/" + userId + "/meetings";
         String json = "{\"topic\":\"" + topic + "\",\"start_time\":\"" + startTime + "\"}";
         RequestBody body = RequestBody.create(json, okhttp3.MediaType.parse("application/json"));
         Request request = new Request.Builder()
