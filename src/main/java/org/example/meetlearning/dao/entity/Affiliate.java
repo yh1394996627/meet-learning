@@ -48,4 +48,6 @@ public class Affiliate {
 
     private String recommender;
 
+    private String qrCode;
+
 }

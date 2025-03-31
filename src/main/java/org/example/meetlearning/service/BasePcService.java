@@ -1,6 +1,13 @@
 package org.example.meetlearning.service;
 
 import cn.hutool.core.date.DateUtil;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.example.meetlearning.common.OssConfig;
@@ -24,8 +31,16 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -156,6 +171,23 @@ public class BasePcService {
             e.printStackTrace();
             return null;
         }
+    }
+
+
+    public String generateAndUploadQrCode(String content) throws WriterException, IOException {
+        String fileName = "qrcode/" + content + ".png";
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        Map<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        String qrUrl = String.format("https://www.12talk.com/register?recordId=%s", content);
+        BitMatrix bitMatrix = qrCodeWriter.encode(qrUrl, BarcodeFormat.QR_CODE, 300, 300, hints);
+        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+        byte[] qrCodeBytes = byteArrayOutputStream.toByteArray();
+        InputStream inputStream = new ByteArrayInputStream(qrCodeBytes);
+        ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, inputStream);
+        return fileName;
     }
 
     /**

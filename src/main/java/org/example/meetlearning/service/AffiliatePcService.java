@@ -1,6 +1,7 @@
 package org.example.meetlearning.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.zxing.WriterException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.AffiliateConverter;
@@ -20,6 +21,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -145,5 +147,16 @@ public class AffiliatePcService extends BasePcService {
             return new RespVo<>(null, false, ex.getMessage());
         }
     }
+
+    public String affiliateQrcode(String recordId) throws IOException, WriterException {
+        Affiliate affiliate = affiliateService.findByRecordId(recordId);
+        String qrCode = affiliate.getQrCode();
+        if (!StringUtils.hasText(qrCode)) {
+            qrCode = generateAndUploadQrCode(recordId);
+            affiliate.setQrCode(qrCode);
+        }
+        return downloadFile(qrCode);
+    }
+
 
 }

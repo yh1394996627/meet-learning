@@ -22,12 +22,13 @@
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="recommender_id" jdbcType="VARCHAR" property="recommenderId"/>
         <result column="recommender" jdbcType="VARCHAR" property="recommender"/>
+        <result column="qr_code" jdbcType="VARCHAR" property="qrCode"/>
     </resultMap>
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
     record_id, name, en_name, email, balance, commission_rate, rate, student_total, course_total, 
-    remark, recommender_id, recommender
+    remark, recommender_id, recommender, qr_code
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -258,6 +259,9 @@
             </if>
             <if test="recommender != null">
                 recommender = #{recommender,jdbcType=VARCHAR},
+            </if>
+            <if test="qr_code != null">
+                qr_code = #{qrCode,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

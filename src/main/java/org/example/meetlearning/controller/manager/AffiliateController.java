@@ -2,6 +2,7 @@ package org.example.meetlearning.controller.manager;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -11,12 +12,14 @@ import org.example.meetlearning.service.AffiliatePcService;
 import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +44,6 @@ public class AffiliateController implements BaseController {
     public RespVo<String> affiliateAdd(@RequestBody AffiliateAddReqVo reqVo) {
         return affiliatePcService.affiliateAdd(getUserCode(), getUserName(), reqVo);
     }
-
 
     @Operation(summary = "修改代理商", operationId = "affiliateUpdate")
     @PostMapping(value = "v1/affiliate/update")
@@ -82,5 +84,12 @@ public class AffiliateController implements BaseController {
         PageVo<AffiliateCommissionRecordRespVo> pageVo = PageVo.map(page, list -> list);
         return new RespVo<>(pageVo);
     }
+
+    @Operation(summary = "代理商二維碼返回", operationId = "affiliateQrcode")
+    @PostMapping(value = "v1/affiliate/qrcode")
+    public RespVo<String> affiliateQrcode(@RequestBody RecordIdQueryVo reqVo) throws IOException, WriterException {
+        return new RespVo<>(affiliatePcService.affiliateQrcode(reqVo.getRecordId()));
+    }
+
 
 }
