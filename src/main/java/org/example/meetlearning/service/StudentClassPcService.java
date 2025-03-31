@@ -257,8 +257,8 @@ public class StudentClassPcService extends BasePcService {
         Assert.notNull(studentClass, "Course information not obtained");
         String meetingRecordId = studentClass.getMeetingRecordId();
         //如果没有会议信息则新建一个
-        if(StringUtils.isEmpty(meetingRecordId)){
-            Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(),"yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+        if (StringUtils.isEmpty(meetingRecordId)) {
+            Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
             //创建会议
             String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
             JSONObject meetObj = new JSONObject(meeting);
@@ -274,10 +274,12 @@ public class StudentClassPcService extends BasePcService {
         long diffInMillis = Math.abs(beginDate.getTime() - date1.getTime());
         long fiveMinutesInMillis = 5 * 60 * 1000; // 5分钟的毫秒数
         boolean isLessThan5Minutes = diffInMillis < fiveMinutesInMillis;
+        //todo 先去掉校验，上线后开启
         //Assert.isTrue(isLessThan5Minutes, "You can only enter the meeting five minutes in advance");
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
-        //Assert.notNull(studentClassMeeting, "Meeting information not obtained");
-        //Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
+
+        Assert.notNull(studentClassMeeting, "Meeting information not obtained");
+        Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
         return studentClassMeeting.getMeetJoinUrl();
     }
 }
