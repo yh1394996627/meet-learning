@@ -65,6 +65,11 @@ public class UserPcService extends BasePcService {
                 List<String> types = List.of(RoleEnum.STUDENT.name());
                 Assert.isTrue(types.contains(accountUser.getType()), "Account password incorrect");
             }
+            if (StringUtils.equals(accountUser.getType(), RoleEnum.TEACHER.name())) {
+                Teacher teacher = teacherService.selectByRecordId(accountUser.getRecordId());
+                Assert.notNull(BooleanUtil.isTrue(teacher.getEnabledStatus()), "Teacher account has been disabled");
+            }
+
             UserInfoRespVo respVo = UserConverter.INSTANCE.toUserInfoRespVo(accountUser);
             UserFinance userFinance = userFinanceService.selectByUserId(accountUser.getRecordId());
             Assert.notNull(userFinance, "User Finance information not obtained");
