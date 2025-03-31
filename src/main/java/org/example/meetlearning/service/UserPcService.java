@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
+import org.example.meetlearning.converter.StudentConverter;
 import org.example.meetlearning.converter.UserConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.dao.entity.*;
@@ -19,7 +20,9 @@ import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -27,6 +30,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
+@Transactional
 public class UserPcService extends BasePcService {
 
     private final UserService userService;
@@ -34,6 +38,7 @@ public class UserPcService extends BasePcService {
     private final StudentService studentService;
     private final UserFinanceService userFinanceService;
     private final UserFinanceRecordService userFinanceRecordService;
+    private final AffiliateService affiliateService;
 
     public RespVo<String> manageRegister(UserManageOperaReqVo reqVo) {
         try {
@@ -162,4 +167,30 @@ public class UserPcService extends BasePcService {
         return new RespVo<>(respVo);
     }
 
+
+    public void studentRegister(UserRegisterReqVo reqVo) {
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getEmail()), "email cannot be empty");
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getPassword()), "password cannot be empty");
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getRole()), "role cannot be empty");
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getEnName()), "enName cannot be empty");
+        if(StringUtils.equals(RoleEnum.STUDENT.name(), reqVo.getRole())){
+            Student student = StudentConverter.INSTANCE.toCreateStudent(reqVo);
+            if(reqVo.getAffiliateId()!=null){
+                Affiliate affiliate = affiliateService.findByRecordId(reqVo.getAffiliateId());
+                if(affiliate!=null){
+                    student.setAffiliateId(affiliate.getRecordId());
+                    student.setAffiliateName(affiliate.getName());
+                }
+            }
+            studentService.save(student);
+            //创建登陆帐号
+            User newUser = addUser(student.getCreator(), student.getCreateName(), student.getRecordId(), student.getEmail(), reqVo.getPassword(),
+                    RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail());
+
+            //创建用户关联的课时币
+            addFinance(student.getCreator(), student.getCreateName(), newUser);
+        }else{
+            Assert.isTrue(false, " Registration is currently not supported");
+        }
+    }
 }

@@ -10,6 +10,7 @@ import org.example.meetlearning.vo.student.StudentAddReqVo;
 import org.example.meetlearning.vo.student.StudentInfoRespVo;
 import org.example.meetlearning.vo.student.StudentListRespVo;
 import org.example.meetlearning.vo.student.StudentUpdateReqVo;
+import org.example.meetlearning.vo.user.UserRegisterReqVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -48,6 +49,21 @@ public interface StudentConverter {
         student.setPassword(MD5Util.md5(student.getEncryption(), reqVo.getPassword()));
         student.setWebsite(reqVo.getWebsite());
         student.setLanguage(reqVo.getLanguage());
+        return student;
+    }
+
+    default Student toCreateStudent( UserRegisterReqVo reqVo) {
+        Student student = new Student();
+        student.setDeleted(false);
+        student.setRecordId(UUID.randomUUID().toString());
+        student.setCreator(student.getRecordId());
+        student.setCreateName(reqVo.getEnName());
+        student.setCreateTime(new Date());
+        student.setRecordId(UUID.randomUUID().toString());
+        student.setEmail(reqVo.getEmail());
+        student.setName(reqVo.getEnName());
+        student.setEncryption("MD5");
+        student.setPassword(MD5Util.md5(student.getEncryption(), reqVo.getPassword()));
         return student;
     }
 

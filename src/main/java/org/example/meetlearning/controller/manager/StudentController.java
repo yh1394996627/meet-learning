@@ -9,10 +9,7 @@ import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
-import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
-import org.example.meetlearning.vo.user.UserStudentPayInfoVo;
-import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
-import org.example.meetlearning.vo.user.UserPayReqVo;
+import org.example.meetlearning.vo.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,4 +58,8 @@ public class StudentController implements BaseController {
     public RespVo<StudentInfoRespVo> studentInfo(@RequestBody RecordIdQueryVo reqVo) {
         return studentPcService.studentInfo(reqVo);
     }
+
+
+
+
 }

@@ -89,4 +89,11 @@ public class UserController implements BaseController {
         return userPcService.studentPayRecord(queryVo);
     }
 
+    @Operation(summary = "学生信息注册接口", operationId = "studentRegister")
+    @PostMapping(value = "v1/user/register")
+    public RespVo<String> studentRegister(@RequestBody UserRegisterReqVo reqVo) {
+        userPcService.studentRegister(reqVo);
+        return new RespVo<>("Registered successfully");
+    }
+
 }

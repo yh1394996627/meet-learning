@@ -37,6 +37,13 @@
         where record_id = #{recordId,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from affiliate
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
     <select id="selectValueAll" resultType="org.example.meetlearning.vo.common.SelectValueVo">
         select record_id as value,`name` as label
         from affiliate

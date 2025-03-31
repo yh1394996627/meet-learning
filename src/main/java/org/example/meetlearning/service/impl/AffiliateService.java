@@ -40,6 +40,13 @@ public class AffiliateService {
     }
 
     /**
+     * 根据ID查询
+     */
+    public Affiliate findById(Integer id) {
+        return affiliateMapper.selectById(id);
+    }
+
+    /**
      * 根据条件查询
      * @return 代理商分页
      * @param params 条件
