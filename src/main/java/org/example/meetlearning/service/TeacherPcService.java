@@ -213,7 +213,7 @@ public class TeacherPcService extends BasePcService {
             Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
             teacher.setUpdator(userCode);
             teacher.setUpdateName(userName);
-            teacher.setManagerStatus(BooleanUtil.isTrue(reqVo.getStatus()));
+            teacher.setEnabledStatus(BooleanUtil.isTrue(reqVo.getStatus()));
             teacherService.updateEntity(teacher);
             return new RespVo<>("更新状态成功");
         } catch (Exception ex) {
