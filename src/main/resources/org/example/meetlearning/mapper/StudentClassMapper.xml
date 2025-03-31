@@ -99,10 +99,10 @@
             and student_name like #{params.studentKeyword}
         </if>
         <if test="params.beginDate != null">
-            and create_time >= #{params.beginDate}
+            and course_time >= #{params.beginDate}
         </if>
         <if test="params.endDate != null">
-            and create_time &lt;= #{params.endDate}
+            and course_time &lt;= #{params.endDate}
         </if>
         <if test="params.affiliateIds != null">
             and affiliate_id in

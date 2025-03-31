@@ -76,8 +76,7 @@ public class StudentPcService extends BasePcService {
             StudentListRespVo respVo = StudentConverter.INSTANCE.toStudentListRespVo(list);
             if (userFinanceMap.containsKey(list.getRecordId())) {
                 UserFinance userFinance = userFinanceMap.get(list.getRecordId());
-                respVo.setBalance(userFinance.getBalanceQty());
-                respVo.setExpirationTime(userFinance.getExpirationTime());
+                respVo.setBalance(BigDecimalUtil.nullOrZero(userFinance.getBalanceQty()));
                 respVo.setIsDeleted(BigDecimalUtil.eqZero(respVo.getBalance()));
             }
             if (userFinanceRecordHashMap.containsKey(list.getRecordId())) {

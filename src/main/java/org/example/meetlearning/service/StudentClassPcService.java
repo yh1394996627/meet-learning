@@ -95,13 +95,13 @@ public class StudentClassPcService extends BasePcService {
 
         PageVo<StudentClassListRespVo> pageVo = PageVo.map(page, list -> {
             StudentClassListRespVo respVo = StudentClassConverter.INSTANCE.toStudentClassListRespVo(list);
-            if (userFinanceMap.containsKey(list.getRecordId())) {
-                UserFinance userFinance = userFinanceMap.get(list.getRecordId());
-                respVo.setStudentConsumption(userFinance.getConsumptionQty());
-                respVo.setStudentBalance(userFinance.getBalanceQty());
+            if (userFinanceMap.containsKey(list.getStudentId())) {
+                UserFinance userFinance = userFinanceMap.get(list.getStudentId());
+                respVo.setStudentConsumption(BigDecimalUtil.nullOrZero(userFinance.getConsumptionQty()));
+                respVo.setStudentBalance(BigDecimalUtil.nullOrZero(userFinance.getBalanceQty()));
             }
-            if (userFinanceRecordHashMap.containsKey(list.getRecordId())) {
-                UserFinanceRecord userFinanceRecord = userFinanceRecordHashMap.get(list.getRecordId());
+            if (userFinanceRecordHashMap.containsKey(list.getStudentId())) {
+                UserFinanceRecord userFinanceRecord = userFinanceRecordHashMap.get(list.getStudentId());
                 respVo.setEfficientDate(userFinanceRecord.getExpirationTime());
             }
             return respVo;
