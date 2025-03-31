@@ -21,9 +21,11 @@ import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -55,9 +57,20 @@ public class StudentPcService extends BasePcService {
     public RespVo<PageVo<StudentListRespVo>> studentPage(StudentRequestQueryVo queryVo) {
         Page<Student> page = studentService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
         List<String> userIds = page.getRecords().stream().map(Student::getRecordId).toList();
-        //获取学生课时币信息
-        List<UserFinance> userFinances = userFinanceService.selectByUserIds(userIds);
-        Map<String, UserFinance> userFinanceMap = userFinances.stream().collect(Collectors.toMap(UserFinance::getUserId, Function.identity()));
+        Map<String, UserFinance> userFinanceMap;
+        Map<String, UserFinanceRecord> userFinanceRecordHashMap;
+        if (!CollectionUtils.isEmpty(userIds)) {
+            //获取学生课时币信息
+            List<UserFinance> userFinances = userFinanceService.selectByUserIds(userIds);
+            userFinanceMap = userFinances.stream().collect(Collectors.toMap(UserFinance::getUserId, Function.identity()));
+
+            List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectDateGroupByUserIds(userIds);
+            userFinanceRecordHashMap = userFinanceRecordList.stream().collect(Collectors.toMap(UserFinanceRecord::getUserId, Function.identity()));
+        } else {
+            userFinanceRecordHashMap = new HashMap<>();
+            userFinanceMap = new HashMap<>();
+        }
+
 
         //组装返回数据
         PageVo<StudentListRespVo> pageVo = PageVo.map(page, list -> {
@@ -67,6 +80,10 @@ public class StudentPcService extends BasePcService {
                 respVo.setBalance(userFinance.getBalanceQty());
                 respVo.setExpirationTime(userFinance.getExpirationTime());
                 respVo.setIsDeleted(BigDecimalUtil.eqZero(respVo.getBalance()));
+            }
+            if (userFinanceRecordHashMap.containsKey(list.getRecordId())) {
+                UserFinanceRecord userFinanceRecord = userFinanceRecordHashMap.get(list.getRecordId());
+                respVo.setExpirationTime(userFinanceRecord.getExpirationTime());
             }
             return respVo;
         });

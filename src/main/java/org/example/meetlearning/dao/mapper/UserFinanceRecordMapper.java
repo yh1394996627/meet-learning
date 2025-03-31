@@ -19,6 +19,8 @@ public interface UserFinanceRecordMapper {
 
     List<UserFinanceRecord> selectDaByParams(Map<String, Object> params);
 
+    List<UserFinanceRecord> selectDateGroupByUserIds(List<String> userIds);
+
     int updateByEntity(UserFinanceRecord record);
 
 }

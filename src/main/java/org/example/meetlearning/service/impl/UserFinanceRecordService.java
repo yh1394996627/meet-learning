@@ -48,13 +48,17 @@ public class UserFinanceRecordService {
     /**
      * 币种分组查询
      */
-    public List<UserFinanceRecord> selectByParamsGroup(@Param("params") Map<String, Object> params) {
+    public List<UserFinanceRecord> selectByParamsGroup(Map<String, Object> params) {
         return userFinanceRecordMapper.selectByParamsCurrencyGroup(params);
     }
 
 
-    public List<UserFinanceRecord> selectDaByParams(@Param("params") Map<String, Object> params) {
+    public List<UserFinanceRecord> selectDaByParams(Map<String, Object> params) {
         return userFinanceRecordMapper.selectDaByParams(params);
+    }
+
+    public List<UserFinanceRecord> selectDateGroupByUserIds(List<String> userIds) {
+        return userFinanceRecordMapper.selectDateGroupByUserIds(userIds);
     }
 
 }
