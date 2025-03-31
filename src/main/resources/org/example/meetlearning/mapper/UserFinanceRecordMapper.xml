@@ -45,6 +45,7 @@
         <include refid="Base_Column_List"/>
         from user_finance_record
         where deleted = 0
+        <include refid="common_where"/>
     </select>
 
     <select id="selectByParamsCurrencyGroup" resultMap="BaseResultMap">
@@ -121,7 +122,8 @@
                 #{userType,jdbcType=VARCHAR}, #{expirationTime,jdbcType=TIMESTAMP}, #{currencyCode,jdbcType=VARCHAR},
                 #{currencyName,jdbcType=VARCHAR}, #{paymentId,jdbcType=VARCHAR}, #{paymentName,jdbcType=VARCHAR},
                 #{remark,jdbcType=VARCHAR}, #{payAmount,jdbcType=DECIMAL}, #{discountRate,jdbcType=DECIMAL},
-                #{balanceQty,jdbcType=DECIMAL}, #{affiliateId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{userEmail,jdbcType=VARCHAR})
+                #{balanceQty,jdbcType=DECIMAL}, #{affiliateId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR},
+                #{userEmail,jdbcType=VARCHAR})
     </insert>
 
     <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.UserFinanceRecord">
@@ -163,5 +165,4 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-
 </mapper>

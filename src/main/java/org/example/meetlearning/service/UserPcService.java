@@ -140,10 +140,11 @@ public class UserPcService extends BasePcService {
 
 
     public RespVo<String> studentPay(String userCode, String userName, UserPayReqVo reqVo) {
+        String userId = reqVo.getUserId();
         //支付用戶减掉课时币
         financeTokenLogs(userCode, userName, userCode, reqVo.getQuantity().negate(), reqVo);
         //接收用戶加课时币
-        financeTokenLogs(userCode, userName, reqVo.getUserId(), reqVo.getQuantity(), reqVo);
+        financeTokenLogs(userCode, userName, userId, reqVo.getQuantity(), reqVo);
         return new RespVo<>("Payment successful");
     }
 
@@ -173,11 +174,11 @@ public class UserPcService extends BasePcService {
         Assert.isTrue(StringUtils.isNotEmpty(reqVo.getPassword()), "password cannot be empty");
         Assert.isTrue(StringUtils.isNotEmpty(reqVo.getRole()), "role cannot be empty");
         Assert.isTrue(StringUtils.isNotEmpty(reqVo.getEnName()), "enName cannot be empty");
-        if(StringUtils.equals(RoleEnum.STUDENT.name(), reqVo.getRole())){
+        if (StringUtils.equals(RoleEnum.STUDENT.name(), reqVo.getRole())) {
             Student student = StudentConverter.INSTANCE.toCreateStudent(reqVo);
-            if(reqVo.getAffiliateId()!=null){
+            if (reqVo.getAffiliateId() != null) {
                 Affiliate affiliate = affiliateService.findByRecordId(reqVo.getAffiliateId());
-                if(affiliate!=null){
+                if (affiliate != null) {
                     student.setAffiliateId(affiliate.getRecordId());
                     student.setAffiliateName(affiliate.getName());
                 }
@@ -189,7 +190,7 @@ public class UserPcService extends BasePcService {
 
             //创建用户关联的课时币
             addFinance(student.getCreator(), student.getCreateName(), newUser);
-        }else{
+        } else {
             Assert.isTrue(false, " Registration is currently not supported");
         }
     }

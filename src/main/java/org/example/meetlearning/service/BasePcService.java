@@ -246,14 +246,13 @@ public class BasePcService {
 
     //充值消费接口
     public void financeTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, UserPayReqVo reqVo) {
-        reqVo.setUserId(userId);
         User user = userService.selectByRecordId(userId);
         Assert.notNull(user, "user does not exist userId:" + userId);
         UserFinance userFinance = userFinanceService.selectByUserId(userId);
         Assert.notNull(userFinance, "To obtain management financial information");
         List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
         BigDecimal balanceQty = userFinance.getBalanceQty();
-        BigDecimal usedQty = userFinanceRecordList.stream().map(UserFinanceRecord::getUsedQty).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal usedQty = userFinance.getConsumptionQty();
         BigDecimal balance = BigDecimalUtil.add(balanceQty, quantity);
         Assert.isTrue(BigDecimalUtil.gteZero(balance), "Insufficient balance");
 
@@ -268,11 +267,13 @@ public class BasePcService {
                 }
                 //新增用户课时币记录 userFinanceRecord
                 UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toCreateRecord(userCode, userName, reqVo, user, affiliateId);
+                userFinanceRecord.setUserId(userId);
                 userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(reqVo.getQuantity()));
                 userFinanceRecordService.insertEntity(userFinanceRecord);
             }
             //添加记录课时币记录
             TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, user, quantity, reqVo.getPayAmount(), reqVo.getRemark());
+            tokensLog.setUserId(userId);
             if (!StringUtils.isEmpty(reqVo.getCurrencyCode())) {
                 BaseConfig baseConfig = baseConfigService.selectByCode(reqVo.getCurrencyCode());
                 Assert.notNull(baseConfig, "Configuration information not obtained record:【" + reqVo.getCurrencyCode() + "】");
@@ -300,6 +301,7 @@ public class BasePcService {
             }
 
             TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, user, quantity, reqVo.getPayAmount(), reqVo.getRemark());
+            tokensLog.setUserId(userId);
             if (!StringUtils.isEmpty(reqVo.getCurrencyCode())) {
                 BaseConfig baseConfig = baseConfigService.selectByCode(reqVo.getCurrencyCode());
                 Assert.notNull(baseConfig, "Configuration information not obtained record:【" + reqVo.getCurrencyCode() + "】");
