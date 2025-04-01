@@ -260,7 +260,7 @@
             <if test="recommender != null">
                 recommender = #{recommender,jdbcType=VARCHAR},
             </if>
-            <if test="qr_code != null">
+            <if test="qrCode != null">
                 qr_code = #{qrCode,jdbcType=VARCHAR},
             </if>
         </set>

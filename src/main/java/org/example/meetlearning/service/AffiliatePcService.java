@@ -107,7 +107,7 @@ public class AffiliatePcService extends BasePcService {
             Affiliate affiliate = affiliateService.findByRecordId(reqVo.getRecordId());
             Assert.notNull(affiliate, "为获取到对象信息 recordId" + reqVo.getRecordId());
             affiliate = AffiliateConverter.INSTANCE.toUpdateAffiliate(userCode, userName, affiliate, reqVo);
-            affiliateService.insertEntity(affiliate);
+            affiliateService.updateEntity(affiliate);
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("Addition failed", ex);
