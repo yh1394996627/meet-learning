@@ -1,9 +1,21 @@
 package org.example.meetlearning.service;
 
+import cn.hutool.core.util.BooleanUtil;
+import com.google.gson.JsonObject;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.ibatis.annotations.Param;
 import org.codehaus.plexus.util.StringUtils;
+import org.example.meetlearning.dao.entity.Teacher;
+import org.example.meetlearning.dao.entity.User;
+import org.example.meetlearning.dao.entity.ZoomAccountSet;
+import org.example.meetlearning.enums.RoleEnum;
+import org.example.meetlearning.service.impl.TeacherService;
+import org.example.meetlearning.service.impl.UserService;
+import org.example.meetlearning.service.impl.ZoomBaseService;
+import org.example.meetlearning.service.impl.ZoomOAuthService;
 import org.example.meetlearning.util.SystemUUIDUtil;
 import org.example.meetlearning.util.ZoomDetectorUtil;
 import org.example.meetlearning.vo.common.RespVo;
@@ -13,114 +25,83 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Service
 @Slf4j
 public class ZoomPcService {
 
-    @Value("${zoom.client-id}")
-    private String apiKey;
-
-    @Value("${zoom.client-secret}")
-    private String apiSecret;
-
     @Value("${zoom.api-url}")
     private String apiUrl;
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private ZoomOAuthService zoomOAuthService;
 
-    private OkHttpClient client = new OkHttpClient();
+    @Autowired
+    private UserService userService;
 
-    public String getZoomUserId(String email, String accessToken) throws IOException {
-        String url = apiUrl + "/users/" + email;
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + accessToken)
-                .build();
+    @Autowired
+    private ZoomBaseService zoomBaseService;
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            return response.body().string(); // Parse the response to get the userId
-        }
-    }
+    @Autowired
+    private TeacherService teacherService;
 
-    public String createMeeting(String userId, String topic, String startTime, String accessToken) throws IOException {
-        String url = apiUrl + "/users/" + userId + "/meetings";
-        String json = "{\"topic\":\"" + topic + "\",\"start_time\":\"" + startTime + "\"}";
-        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + accessToken)
-                .post(body)
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            return response.body().string(); // Parse the response to get the meeting details
-        }
-    }
-
-    public String getMeetingInfo(String meetingId, String accessToken) throws IOException {
-        String url = apiUrl + "/meetings/" + meetingId;
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + accessToken)
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response + ", body: " + response.body().string());
+    public Boolean isZoomInstalled(String userCode) {
+        try {
+            User user = userService.selectByRecordId(userCode);
+            if (StringUtils.equals(user.getType(), RoleEnum.TEACHER.name())) {
+                Teacher teacher = teacherService.selectByRecordId(userCode);
+                if (BooleanUtil.isTrue(teacher.getZoomActivationStatus())) {
+                    return true;
+                }
+                //判断zoomUserID 和accountId是否为空
+                if (StringUtils.isNotEmpty(teacher.getZoomUserId()) && StringUtils.isNotEmpty(teacher.getZoomAccountId())) {
+                    ZoomAccountSet zoomAccountSet = zoomBaseService.selectByAccountId(teacher.getZoomAccountId());
+                    Assert.notNull(zoomAccountSet, "Zoom account not found");
+                    zoomOAuthService.getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
+                    JsonObject jsonObject = zoomOAuthService.getConsistentUserId(teacher.getEmail());
+                    Teacher newTeacher = new Teacher();
+                    if (jsonObject != null) {
+                        newTeacher.setId(teacher.getId());
+                        newTeacher.setZoomUserId(jsonObjReplace(jsonObject.get("id").toString()));
+                        newTeacher.setZoomAccountId(zoomAccountSet.getZoomAccountId());
+                        newTeacher.setZoomActivationStatus(StringUtils.equals("active", jsonObjReplace(jsonObject.get("status").toString())));
+                        teacherService.updateEntity(newTeacher);
+                    }
+                    return newTeacher.getZoomActivationStatus();
+                } else {
+                    ZoomAccountSet zoomAccountSet = zoomBaseService.selectOneOrderByQty();
+                    Assert.notNull(zoomAccountSet, "Zoom account not found");
+                    zoomOAuthService.getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
+                    //创建用户绑定用户组，发送群组邮件
+                    JsonObject jsonObject = zoomOAuthService.checkUserAndGetActivationLink(teacher.getEmail());
+                    Teacher newTeacher = new Teacher();
+                    newTeacher.setId(teacher.getId());
+                    newTeacher.setZoomUserId(jsonObjReplace(jsonObject.get("id").toString()));
+                    newTeacher.setZoomAccountId(zoomAccountSet.getZoomAccountId());
+                    //有延时 默认false
+                    newTeacher.setZoomActivationStatus(false);
+                    teacherService.updateEntity(newTeacher);
+                    return false;
+                }
+            } else {
+                return false;
             }
-            return response.body().string();
-        }
-    }
-
-    public String getAccessToken() throws IOException {
-        String url = "https://zoom.us/oauth/token";
-        String credentials = Credentials.basic(apiKey, apiSecret);
-        RequestBody body = RequestBody.create("grant_type=client_credentials", MediaType.parse("application/x-www-form-urlencoded"));
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", credentials)
-                .post(body)
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            return response.body().string(); // Parse the response to get the access token
+        } catch (Exception ex) {
+            log.error("Failed to verify zoom", ex);
+            return false;
         }
     }
 
 
-    public String getAccessToken(String authorizationCode) throws IOException {
-        String url = "https://zoom.us/oauth/token";
-        String credentials = Credentials.basic(apiKey, apiSecret);
-
-        // 构建请求体
-        RequestBody body = new FormBody.Builder()
-                .add("grant_type", "authorization_code")
-                .add("code", authorizationCode)
-                .add("redirect_uri", "https://localhost:5001/zoom/callback")
-                .build();
-
-        // 构建请求
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", credentials)
-                .post(body)
-                .build();
-
-        // 发送请求
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response + ", body: " + response.body().string());
-            }
-            // 解析响应体，获取 Access Token
-            String responseBody = response.body().string();
-            return new ObjectMapper().readTree(responseBody).get("access_token").asText();
+    public String jsonObjReplace(String json) {
+        if (StringUtils.isNotEmpty(json)) {
+            return json.replace("\"", "");
         }
+        return null;
     }
 }

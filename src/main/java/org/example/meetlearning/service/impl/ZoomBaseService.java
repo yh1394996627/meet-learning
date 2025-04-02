@@ -28,6 +28,9 @@ public class ZoomBaseService {
     public ZoomAccountSet selectByAccountId(String accountId) {
         return zoomAccountSetMapper.selectByAccountId(accountId);
     }
+    public ZoomAccountSet selectOneOrderByQty() {
+        return zoomAccountSetMapper.selectOneOrderByQty();
+    }
 
     public void insert(ZoomAccountSet record) {
         zoomAccountSetMapper.insert(record);

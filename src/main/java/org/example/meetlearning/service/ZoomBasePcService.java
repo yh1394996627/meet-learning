@@ -2,6 +2,7 @@ package org.example.meetlearning.service;
 
 
 import cn.hutool.core.util.BooleanUtil;
+import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -64,7 +65,8 @@ public class ZoomBasePcService {
             Assert.isTrue(StringUtils.hasText(reqVo.getClientSecret()), "clientSecret cannot be empty");
             String accessToken = zoomOAuthService.getValidAccessToken(reqVo.getClientId(), reqVo.getClientSecret(), reqVo.getAccountId());
             ZoomBaseVerifyRespVo respVo = zoomOAuthService.isTokenValid(reqVo.getAccountId(), accessToken);
-            String zoomUserId = zoomOAuthService.getZoomUserIdByEmail(reqVo.getAccountId(), reqVo.getEmail(), accessToken);
+            JsonObject obj = zoomOAuthService.getUserInfo(reqVo.getEmail());
+            String zoomUserId = obj.get("id").getAsString();
             if (BooleanUtil.isTrue(respVo.getStatus()) && StringUtils.hasText(reqVo.getRecordId())) {
                 Assert.isTrue(StringUtils.hasText(reqVo.getEmail()), "email cannot be empty");
                 ZoomAccountSet zoomAccountSet = zoomBaseService.selectByRecordId(reqVo.getRecordId());

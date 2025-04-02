@@ -1,28 +1,32 @@
 package org.example.meetlearning.service.impl;
 
-import com.aliyun.teautil.models.RuntimeOptions;
-import io.lettuce.core.internal.LettuceLists;
+import cn.hutool.core.util.BooleanUtil;
+import com.google.gson.*;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.common.ZoomUseRedisSetCommon;
+import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.ZoomAccountSet;
 import org.example.meetlearning.enums.CourseTypeEnum;
-import org.example.meetlearning.util.RedisCommonsUtil;
 import org.example.meetlearning.vo.zoom.Registrant;
 import org.example.meetlearning.vo.zoom.ZoomAccount;
-import org.example.meetlearning.vo.zoom.ZoomAccountInfoVo;
 import org.example.meetlearning.vo.zoom.ZoomBaseVerifyRespVo;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -33,8 +37,8 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -60,56 +64,16 @@ public class ZoomOAuthService {
     @Autowired
     private ZoomBaseService zoomBaseService;
 
+    @Autowired
+    private TeacherService teacherService;
+
 
     private OkHttpClient client = new OkHttpClient();
 
-    private Map<Integer, List<ZoomAccount>> accountPools = new ConcurrentHashMap<>();
 
+    private final Gson gson = new Gson();
 
-    /**
-     * 初始化连接池
-     **/
-    @PostConstruct
-    public void init() {
-        accountPools.put(1, new ArrayList<>());
-        accountPools.put(2, new ArrayList<>());
-        accountPools.put(3, new ArrayList<>());
-        accountPools.put(4, new ArrayList<>());
-
-        List<ZoomAccountSet> zoomAccountSets = zoomBaseService.selectActivation();
-        zoomAccountSets.forEach(zoomAccountSet -> {
-            ZoomAccount zoomAccount = new ZoomAccount(zoomAccountSet.getZoomUserId(), zoomAccountSet.getZoomAccountId(), zoomAccountSet.getZoomType(), zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), 0);
-            Object obj = redisTemplate.opsForValue().get(zoomAccountSet.getZoomAccountId() + ":" + zoomAccountSet.getZoomType());
-            if (obj != null) {
-                zoomAccount.setApiCallCount(Integer.parseInt(obj.toString()));
-            }
-            List<ZoomAccount> zoomAccounts = accountPools.get(zoomAccount.getZoomType());
-            if (CollectionUtils.isEmpty(zoomAccounts)) {
-                zoomAccounts = new ArrayList<>();
-            }
-            zoomAccounts.add(zoomAccount);
-            accountPools.put(zoomAccount.getZoomType(), zoomAccounts);
-        });
-    }
-
-    private ZoomAccount getZoomAccount(Integer zoomType) {
-        List<ZoomAccount> zoomAccounts = accountPools.get(zoomType);
-        if (CollectionUtils.isEmpty(zoomAccounts)) {
-            List<ZoomAccount> zoom1Accounts = new ArrayList<>();
-            //查詢付費版
-            zoom1Accounts.addAll(accountPools.get(2));
-            zoom1Accounts.addAll(accountPools.get(3));
-            zoom1Accounts.addAll(accountPools.get(4));
-            if (CollectionUtils.isEmpty(zoom1Accounts)) {
-                return null;
-            }
-            zoom1Accounts = zoom1Accounts.stream().sorted(Comparator.comparing(ZoomAccount::getApiCallCount)).toList();
-            return zoom1Accounts.get(0);
-
-        }
-        zoomAccounts = zoomAccounts.stream().sorted(Comparator.comparing(ZoomAccount::getApiCallCount)).toList();
-        return zoomAccounts.get(0);
-    }
+    private static final okhttp3.MediaType JSON = okhttp3.MediaType.get("application/json; charset=utf-8");
 
     /**
      * 獲取生效的token
@@ -147,7 +111,7 @@ public class ZoomOAuthService {
                     Map.class);
             zoomUseRedisSetCommon.dailyIncrement(clientId);
             this.accessToken = (String) Objects.requireNonNull(response.getBody()).get("access_token");
-            redisTemplate.opsForValue().set(clientId + clientSecret + accountId, accessToken, 3590, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(accountId, accessToken, 3590, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException("Failed to refresh Zoom access token", e);
         }
@@ -168,7 +132,7 @@ public class ZoomOAuthService {
                     String.class
             );
             dailyIncrement(accountId);
-            return new ZoomBaseVerifyRespVo(response.getStatusCode() == HttpStatus.OK, response.getStatusCode().value(), response.getBody(), null);
+            return new ZoomBaseVerifyRespVo(response.getStatusCode() == HttpStatus.OK, response.getStatusCode().value(), "Verification passed", null);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) { // 401 表示无效
                 new ZoomBaseVerifyRespVo(false, HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), null);
@@ -212,35 +176,15 @@ public class ZoomOAuthService {
     /**
      * 创建会议
      */
-    public String createMeeting(String topic, String startTime, CourseTypeEnum courseType) throws IOException {
+    public String createMeeting(Teacher teacher, String topic, String startTime, CourseTypeEnum courseType) throws IOException {
         //获取ZOOM生效的账号
         Integer zoomType = courseType == CourseTypeEnum.GROUP ? 2 : 1;
-        ZoomAccount zoomAccount = getZoomAccount(zoomType);
-        Assert.notNull(zoomAccount, "Zoom account not found");
-        Assert.isTrue(StringUtils.isNotEmpty(zoomAccount.getZoomUserId()), "Zoom userId not found");
-        String accessToken = getValidAccessToken(zoomAccount.getClientId(), zoomAccount.getClientSecret(), zoomAccount.getAccountId());
-        String url = zoomApiUrl + "/users/" + zoomAccount.getZoomUserId() + "/meetings";
-        String json = "{\"topic\":\"" + topic + "\",\"start_time\":\"" + startTime + "\"}";
-        RequestBody body = RequestBody.create(json, okhttp3.MediaType.parse("application/json"));
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + accessToken)
-                .post(body)
-                .build();
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            return response.body().string();
-        }
-    }
-
-    public String createMeeting11(String userId, String topic, String startTime, CourseTypeEnum courseType) throws IOException {
-        //获取ZOOM生效的账号
-        Integer zoomType = courseType == CourseTypeEnum.GROUP ? 2 : 1;
-        ZoomAccount zoomAccount = getZoomAccount(zoomType);
-        Assert.notNull(zoomAccount, "Zoom account not found");
-        Assert.isTrue(StringUtils.isNotEmpty(zoomAccount.getZoomUserId()), "Zoom userId not found");
-        String accessToken = getValidAccessToken(zoomAccount.getClientId(), zoomAccount.getClientSecret(), zoomAccount.getAccountId());
-        String url = zoomApiUrl + "/users/" + userId + "/meetings";
+        Assert.isTrue(StringUtils.isNotEmpty(teacher.getZoomUserId()) && StringUtils.isNotEmpty(teacher.getZoomAccountId()), "Zoom userId not found");
+        ZoomAccountSet zoomAccountSet = zoomBaseService.selectByAccountId(teacher.getZoomAccountId());
+        Assert.isTrue(!BooleanUtil.isTrue(zoomAccountSet.getIsException()), "Zoom account is exception");
+        // 获取token
+        getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
+        String url = zoomApiUrl + "/users/" + teacher.getZoomUserId() + "/meetings";
         String json = "{\"topic\":\"" + topic + "\",\"start_time\":\"" + startTime + "\"}";
         RequestBody body = RequestBody.create(json, okhttp3.MediaType.parse("application/json"));
         Request request = new Request.Builder()
@@ -333,47 +277,166 @@ public class ZoomOAuthService {
         zoomUseRedisSetCommon.dailyIncrement(accountId + ":" + zoomAccountSet.getZoomType());
     }
 
+    // 1. 检查用户是否存在并获取激活链接
+    public JsonObject checkUserAndGetActivationLink(String userEmail) throws IOException {
+        // 首先检查用户是否已存在
+        boolean userExists = checkUserExists(userEmail);
+        if (!userExists) {
+            // 用户不存在，创建用户并获取激活链接
+            createUserAndGetActivationLink(userEmail);
+        }
+        JsonObject userObj = getUserInfo(userEmail);
+        resendInvitationToPendingUser(userObj.get("id").toString().replace("\"", ""));
+        return getUserInfo(userEmail);
+    }
 
+
+    public String resendInvitationToPendingUser(String userId) {
+        try {
+            String url = "https://api.zoom.us/v2/users/" + userId + "/status";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(accessToken);
+
+            // 构建请求体
+            JSONObject requestBody = new JSONObject();
+            requestBody.put("action", "resendInvitation");
+
+            HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url, HttpMethod.PUT, entity, String.class);
+
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                return "User is already active or doesn't require activation";
+            }
+            return "Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+
+    // 检查用户是否存在
+    private boolean checkUserExists(String email) throws IOException {
+        Request request = new Request.Builder()
+                .url(zoomApiUrl + "/users/" + email)
+                .header("Authorization", "Bearer " + accessToken)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            return response.isSuccessful();
+        }
+    }
+
+    // 创建用
+    private JsonObject createUserAndGetActivationLink(String email) throws IOException {
+        JSONObject userInfo = new JSONObject();
+        userInfo.put("email", email);
+        userInfo.put("type", 1); // 2 表示普通用户
+        userInfo.put("first_name", "New");
+        userInfo.put("last_name", "User");
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("action", "create");
+        requestBody.put("user_info", userInfo);
+
+        RequestBody body = RequestBody.create(requestBody.toString(), JSON);
+        Request request = new Request.Builder()
+                .url(zoomApiUrl + "/users")
+                .header("Authorization", "Bearer " + accessToken)
+                .post(body)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Failed to create user: " + response.body().string());
+            }
+            return gson.fromJson(response.body().string(), JsonObject.class);
+        }
+    }
 
     /**
-     * 创建 Zoom 用户并获取激活链接
-     * @param email 用户邮箱
-     * @param firstName 名
-     * @param lastName 姓
-     * @return 激活链接（如果用户需激活）
+     * 发送新用户邀请邮件
      */
-    public String createZoomUserAndGetActivationLink(String email, String firstName, String lastName, String zoomApiToken) {
-        String url = zoomApiUrl + "/users";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(zoomApiToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Zoom API 请求体
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("action", "create"); // 创建用户
-        requestBody.put("user_info", Map.of(
-                "email", email,
-                "first_name", firstName,
-                "last_name", lastName,
-                "type", 1 // 1=基本用户，2=授权用户
-        ));
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+    public void sendUserInvitation(String userId) {
         RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url = zoomApiUrl + "/users/" + userId + "/invite";
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                String.class
+        );
 
-        try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
-            Map<String, Object> responseBody = response.getBody();
+        if (response.getStatusCode() == HttpStatus.OK) {
+            System.out.println("邀请发送成功");
+        } else {
+            System.out.println("邀请发送失败: " + response.getBody());
+        }
+    }
 
-            // 检查是否需要激活（新用户会返回激活链接）
-            if (responseBody.containsKey("activation_url")) {
-                return (String) responseBody.get("activation_url");
-            } else {
-                throw new RuntimeException("用户已存在或无需激活");
+    // 获取用户ID
+    public String getUserIdByEmail(String email, String zoomApiToken) throws IOException {
+        Request request = new Request.Builder()
+                .url(zoomApiUrl + "/users/" + email)
+                .header("Authorization", "Bearer " + zoomApiToken)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                return null;
             }
-        } catch (HttpClientErrorException e) {
-            throw new RuntimeException("Zoom API 调用失败: " + e.getResponseBodyAsString());
+            JsonObject responseJson = gson.fromJson(response.body().string(), JsonObject.class);
+
+            String id = responseJson.get("id").getAsString();
+            return id;
+        }
+    }
+
+
+    public JsonObject getConsistentUserId(String email) throws IOException {
+        // 第一步：从列表API获取所有用户
+        String endpoint = zoomApiUrl + "/users?status=all"; // 包含所有状态用户
+        Request request = new Request.Builder()
+                .url(endpoint)
+                .header("Authorization", "Bearer " + accessToken)
+                .get()
+                .build();
+
+        // 第二步：遍历匹配邮箱
+        try (Response response = client.newCall(request).execute()) {
+            JsonObject result = JsonParser.parseString(response.body().string()).getAsJsonObject();
+            JsonArray users = result.getAsJsonArray("users");
+
+            for (JsonElement user : users) {
+                JsonObject userObj = user.getAsJsonObject();
+                if (email.equalsIgnoreCase(userObj.get("email").getAsString())) {
+                    return userObj; // 返回列表API中的ID
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public JsonObject getUserInfo(String email) throws IOException {
+        Request request = new Request.Builder()
+                .url(zoomApiUrl + "/users/" + email)
+                .header("Authorization", "Bearer " + accessToken)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Failed to get user info: " + response.body().string());
+            }
+            return gson.fromJson(response.body().string(), JsonObject.class);
         }
     }
 }

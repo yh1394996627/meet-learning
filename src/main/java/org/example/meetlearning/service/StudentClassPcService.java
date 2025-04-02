@@ -142,7 +142,7 @@ public class StudentClassPcService extends BasePcService {
         }
         Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         //创建会议
-        String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+        String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
         JSONObject meetObj = new JSONObject(meeting);
         StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(entCode, userCode, meetObj);
 
@@ -292,7 +292,8 @@ public class StudentClassPcService extends BasePcService {
         if (StringUtils.isEmpty(meetingRecordId)) {
             Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
             //创建会议
-            String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+            Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
+            String meeting = zoomOAuthService.createMeeting(teacher,studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
             JSONObject meetObj = new JSONObject(meeting);
             StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(studentClass.getCreator(), studentClass.getCreateName(), meetObj);
             studentClass.setMeetingRecordId(meetingEntity.getMeetUuid());

@@ -50,7 +50,14 @@
         select
         <include refid="Base_Column_List"/>
         from zoom_account_set
-        where deleted = 0 and account_id = #{accountId,jdbcType=VARCHAR}
+        where deleted = 0 and zoom_account_id = #{accountId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectOneOrderByQty" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zoom_account_set
+        where deleted = 0 and is_exception = false and zoom_type > 1 order by total_used_qty asc limit 1;
     </select>
 
     <update id="deletedByRecordId">
