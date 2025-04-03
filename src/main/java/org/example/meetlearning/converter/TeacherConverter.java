@@ -4,6 +4,7 @@ import cn.hutool.core.util.BooleanUtil;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherEvaluationRecord;
 import org.example.meetlearning.dao.entity.TeacherFeature;
+import org.example.meetlearning.enums.CurrencyEnum;
 import org.example.meetlearning.enums.GenderEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
@@ -73,10 +74,8 @@ public interface TeacherConverter {
         teacher.setManagerId(reqVo.getManagerId());
         teacher.setManager(reqVo.getManager());
         teacher.setLanguage(reqVo.getLanguage());
-        teacher.setCurrencyName(reqVo.getCurrencyCode());
-        teacher.setCurrencyName(reqVo.getCurrencyName());
+        teacher.setCurrencyCode(reqVo.getCurrencyCode());
         teacher.setGender(reqVo.getGender());
-//        teacher.setSpecialties(reqVo.getSpecialties());
         return teacher;
     }
 

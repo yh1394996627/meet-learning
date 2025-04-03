@@ -122,6 +122,17 @@
         group by manager_id
     </select>
 
+    <select id="selectAllGroupManager" resultType="org.example.meetlearning.vo.common.SelectValueVo">
+        select
+        manager_id as "value",
+        manager as "label"
+        from teacher
+        where
+        deleted = 0 and manager_status = true
+        <include refid="common_where"/>
+        group by manager_id
+    </select>
+
     <select id="selectGroupCountry" resultType="org.example.meetlearning.vo.common.SelectValueVo">
         select
         country as "value",

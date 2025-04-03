@@ -77,7 +77,7 @@ public class BasePcService {
 
 
     /**
-     * 创建登陆帐号。学生 老师 代理商来源
+     * 创建登陆帐号 学生 老师 代理商来源
      */
     public User addUser(String userCode, String userName, String recordId, String accountCode,
                         String password, RoleEnum roleType, String name, String enName, String email) {

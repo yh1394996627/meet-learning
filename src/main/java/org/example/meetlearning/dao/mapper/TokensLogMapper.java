@@ -13,7 +13,7 @@ public interface TokensLogMapper {
 
     List<TokensLog> selectByUserId(String userId);
 
-    Page<TokensLog> selectPageByParams(@Param("params") Map<String, Object> params, Page<TokensLog> page);
+    Page<TokensLog> selectPageByParams(@Param("params") Map<String, Object> params,@Param("page") Page<TokensLog> page);
 
     int updateEntity(TokensLog record);
 

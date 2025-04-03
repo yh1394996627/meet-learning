@@ -81,6 +81,12 @@ public class TeacherService {
     public List<SelectValueVo> selectGroupManager(Map<String, Object> params) {
         return teacherMapper.selectGroupManager(params);
     }
+    /**
+     * 分组查管理者
+     */
+    public List<SelectValueVo> selectAllGroupManager(Map<String, Object> params) {
+        return teacherMapper.selectAllGroupManager(params);
+    }
 
     /**
      * 分组查国家

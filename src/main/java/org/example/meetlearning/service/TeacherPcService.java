@@ -124,7 +124,7 @@ public class TeacherPcService extends BasePcService {
         try {
             List<SelectValueVo> selectValueVos = new ArrayList<>();
             selectValueVos.add(new SelectValueVo("", "None"));
-            List<SelectValueVo> searchVos = teacherService.selectGroupManager(queryVo.getParams());
+            List<SelectValueVo> searchVos = teacherService.selectAllGroupManager(queryVo.getParams());
             selectValueVos.addAll(searchVos);
             return new RespVo<>(selectValueVos);
         } catch (Exception ex) {
@@ -175,6 +175,10 @@ public class TeacherPcService extends BasePcService {
             Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
             Assert.notNull(teacher, "Teacher cannot be empty");
             teacher = TeacherConverter.INSTANCE.toUpdateTeacher(userCode, userName, teacher, reqVo);
+            if (StringUtils.hasText(teacher.getCurrencyCode())) {
+                BaseConfig baseConfig = baseConfigService.selectByCode(teacher.getCurrencyCode());
+                teacher.setCurrencyCode(baseConfig != null ? baseConfig.getCode() : null);
+            }
             teacherService.updateEntity(teacher);
 
             //清掉原有特点并重新写入
@@ -247,10 +251,10 @@ public class TeacherPcService extends BasePcService {
     public List<SelectValueVo> groupStatus(RecordIdQueryVo queryVo) {
         Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
         List<SelectValueVo> selectValueVos = new ArrayList<>();
-        selectValueVos.add(new SelectValueVo(CourseTypeEnum.SINGLE.name(),CourseTypeEnum.SINGLE.name()));
-        selectValueVos.add(new SelectValueVo(CourseTypeEnum.TEST.name(),CourseTypeEnum.TEST.name()));
-        if(BooleanUtil.isTrue(teacher.getGroupStatus())){
-            selectValueVos.add(new SelectValueVo(CourseTypeEnum.GROUP.name(),CourseTypeEnum.GROUP.name()));
+        selectValueVos.add(new SelectValueVo(CourseTypeEnum.SINGLE.name(), CourseTypeEnum.SINGLE.name()));
+        selectValueVos.add(new SelectValueVo(CourseTypeEnum.TEST.name(), CourseTypeEnum.TEST.name()));
+        if (BooleanUtil.isTrue(teacher.getGroupStatus())) {
+            selectValueVos.add(new SelectValueVo(CourseTypeEnum.GROUP.name(), CourseTypeEnum.GROUP.name()));
         }
         return selectValueVos;
     }

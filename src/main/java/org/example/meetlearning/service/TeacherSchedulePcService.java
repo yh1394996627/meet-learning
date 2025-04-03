@@ -106,6 +106,8 @@ public class TeacherSchedulePcService {
                 }
             }
         }
-        teacherScheduleService.insertBatch(teacherSchedules);
+        if (!CollectionUtils.isEmpty(teacherSchedules)) {
+            teacherScheduleService.insertBatch(teacherSchedules);
+        }
     }
 }
