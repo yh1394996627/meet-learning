@@ -8,6 +8,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.ConfigTypeEnum;
+import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
 import org.example.meetlearning.service.impl.*;
@@ -243,9 +244,15 @@ public class TeacherPcService extends BasePcService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Boolean groupStatus(RecordIdQueryVo queryVo) {
+    public List<SelectValueVo> groupStatus(RecordIdQueryVo queryVo) {
         Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
-        return BooleanUtils.isTrue(teacher.getGroupStatus());
+        List<SelectValueVo> selectValueVos = new ArrayList<>();
+        selectValueVos.add(new SelectValueVo(CourseTypeEnum.SINGLE.name(),CourseTypeEnum.SINGLE.name()));
+        selectValueVos.add(new SelectValueVo(CourseTypeEnum.TEST.name(),CourseTypeEnum.TEST.name()));
+        if(BooleanUtil.isTrue(teacher.getGroupStatus())){
+            selectValueVos.add(new SelectValueVo(CourseTypeEnum.GROUP.name(),CourseTypeEnum.GROUP.name()));
+        }
+        return selectValueVos;
     }
 
 

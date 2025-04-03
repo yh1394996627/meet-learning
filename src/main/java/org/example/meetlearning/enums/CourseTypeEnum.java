@@ -9,7 +9,7 @@ public enum CourseTypeEnum {
 
     SINGLE("单人", 1),
     GROUP("团体", 2),
-    EXPERIENCE_TEST("体验测试", 3);
+    TEST("体验测试", 3);
 
 
     private final String remark;

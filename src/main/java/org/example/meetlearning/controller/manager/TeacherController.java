@@ -100,9 +100,9 @@ public class TeacherController implements BaseController {
         return teacherPcService.groupStatusSet(getUserCode(), getUserName(), reqVo);
     }
 
-    @Operation(summary = "是否开了团体课", operationId = "groupStatus")
+    @Operation(summary = "课程类型", operationId = "groupStatus")
     @PostMapping(value = "v1/teacher/group/status")
-    public RespVo<Boolean> groupStatus(@RequestBody RecordIdQueryVo queryVo) {
+    public RespVo<List<SelectValueVo>> groupStatus(@RequestBody RecordIdQueryVo queryVo) {
         return new RespVo<>(teacherPcService.groupStatus(queryVo));
     }
 
