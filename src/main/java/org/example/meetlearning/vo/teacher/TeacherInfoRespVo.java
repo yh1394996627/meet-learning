@@ -84,7 +84,7 @@ public class TeacherInfoRespVo {
     private String currencyName;
 
     @Schema(name = "specialties", description = "专业")
-    private String specialties;
+    private List<String> specialties;
 
     @Schema(name = "managerStatus", description = "管理人状态")
     private Boolean managerStatus;

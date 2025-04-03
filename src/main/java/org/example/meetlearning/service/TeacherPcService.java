@@ -347,6 +347,8 @@ public class TeacherPcService extends BasePcService {
             Assert.notNull(teacher, "Teacher information not obtained");
             TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(teacher);
             respVo.setFileRecordVos(getFileRecordVoList(queryVo.getRecordId()));
+            List<TeacherFeature> list = teacherFeatureService.selectByTeacherId(teacher.getRecordId());
+            respVo.setSpecialties(list.stream().map(TeacherFeature::getSpecialists).toList());
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("Query failed", ex);

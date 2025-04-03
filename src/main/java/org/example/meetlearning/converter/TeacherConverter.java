@@ -51,6 +51,7 @@ public interface TeacherConverter {
         teacher.setCreateTime(new Date());
         teacher.setRecordId(UUID.randomUUID().toString());
         teacher.setEnName(reqVo.getEnName());
+        teacher.setName(reqVo.getEnName());
         teacher.setEmail(reqVo.getEmail());
         teacher.setCountry(reqVo.getCountry());
         teacher.setManagerId(reqVo.getManagerId());

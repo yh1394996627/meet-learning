@@ -92,7 +92,6 @@ public class StudentClassPcService extends BasePcService {
             userFinanceRecordHashMap = new HashMap<>();
             userFinanceMap = new HashMap<>();
         }
-
         PageVo<StudentClassListRespVo> pageVo = PageVo.map(page, list -> {
             StudentClassListRespVo respVo = StudentClassConverter.INSTANCE.toStudentClassListRespVo(list);
             if (userFinanceMap.containsKey(list.getStudentId())) {
@@ -108,7 +107,6 @@ public class StudentClassPcService extends BasePcService {
         });
         return new RespVo<>(pageVo);
     }
-
 
     /**
      * 新增预约课程
