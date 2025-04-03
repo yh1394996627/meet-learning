@@ -34,6 +34,7 @@
         <result column="manager_status" jdbcType="BIT" property="managerStatus"/>
         <result column="test_status" jdbcType="BIT" property="testStatus"/>
         <result column="enabled_status" jdbcType="BIT" property="enabledStatus"/>
+        <result column="group_status" jdbcType="BIT" property="groupStatus"/>
         <result column="video_url" jdbcType="VARCHAR" property="videoUrl"/>
         <result column="gender" jdbcType="INTEGER" property="gender"/>
         <result column="zoom_user_id" jdbcType="INTEGER" property="zoomUserId"/>
@@ -44,10 +45,11 @@
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
-    record_id, name, en_name, attendance, rating, price, credits_price, rate, confirmed_qty,
-    canceled_qty, complaints_qty, salary_amount, email, country, manager_id, manager,
-    avatar_url, language, currency_code, currency_name, specialties, manager_status, 
-    test_status, enabled_status, video_url, gender, zoom_user_id, zoom_account_id, zoom_activation_status
+        record_id, name, en_name, attendance, rating, price, credits_price, rate, confirmed_qty,
+        canceled_qty, complaints_qty, salary_amount, email, country, manager_id, manager,
+        avatar_url, language, currency_code, currency_name, specialties, manager_status,
+        test_status, enabled_status, video_url, gender, zoom_user_id, zoom_account_id, zoom_activation_status,
+        group_status
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -486,6 +488,9 @@
             </if>
             <if test="zoomActivationStatus != null">
                 zoom_activation_status = #{zoomActivationStatus,jdbcType=BIT},
+            </if>
+            <if test="groupStatus != null">
+                group_status = #{groupStatus,jdbcType=BIT},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

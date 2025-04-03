@@ -4,6 +4,7 @@ import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.ConfigTypeEnum;
@@ -220,6 +221,31 @@ public class TeacherPcService extends BasePcService {
             log.error("更新状态失败", ex);
             return new RespVo<>(null, false, ex.getMessage());
         }
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public RespVo<String> groupStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
+        try {
+            Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
+            Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
+            Teacher newTeacher = new Teacher();
+            newTeacher.setId(teacher.getId());
+            newTeacher.setUpdator(userCode);
+            newTeacher.setUpdateName(userName);
+            newTeacher.setGroupStatus(BooleanUtil.isTrue(reqVo.getStatus()));
+            teacherService.updateEntity(newTeacher);
+            return new RespVo<>("更新状态成功");
+        } catch (Exception ex) {
+            log.error("更新状态失败", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean groupStatus(RecordIdQueryVo queryVo) {
+        Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
+        return BooleanUtils.isTrue(teacher.getGroupStatus());
     }
 
 

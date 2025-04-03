@@ -84,4 +84,6 @@ public class Teacher {
 
     private Boolean zoomActivationStatus;
 
+    private Boolean groupStatus;
+
 }

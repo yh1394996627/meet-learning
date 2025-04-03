@@ -445,7 +445,7 @@ public class ZoomOAuthService {
      */
     public void handleMeetingStarted(ZoomWebhookPayload payload) {
         // 处理会议开始逻辑
-        System.out.println("会议已开始: " + payload.getPayload().getObject().getUuid());
+        log.info("会议已开始: {}", payload.getPayload().getObject().getUuid());
         // 查询会议的预约课程
         String meetingId = payload.getPayload().getObject().getUuid();
         StudentClass studentClass = studentClassService.selectByMeetUuId(meetingId);
@@ -464,8 +464,22 @@ public class ZoomOAuthService {
      */
     public void handleMeetingEnded(ZoomWebhookPayload payload) {
         // 处理会议结束逻辑
-        System.out.println("会议已结束: " + payload.getPayload().getObject().getUuid());
+        log.info("会议已结束: {}", payload.getPayload().getObject().getUuid());
+        // 查询会议的预约课程
+        String meetingId = payload.getPayload().getObject().getUuid();
+        StudentClass studentClass = studentClassService.selectByMeetUuId(meetingId);
+        if (studentClass != null) {
+            StudentClass newStudentClass = new StudentClass();
+            newStudentClass.setId(studentClass.getId());
+            newStudentClass.setClassStatus(ClassStatusEnum.FINISH.getStatus());
+            studentClassService.updateEntity(newStudentClass);
+            //获取会议详情
 
+
+
+        } else {
+            log.error("No scheduled courses found");
+        }
     }
 
 

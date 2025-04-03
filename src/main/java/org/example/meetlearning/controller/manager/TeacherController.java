@@ -94,6 +94,18 @@ public class TeacherController implements BaseController {
         return teacherPcService.managerAccountStatusSet(getUserCode(), getUserName(), reqVo);
     }
 
+    @Operation(summary = "团体课设置", operationId = "groupStatusSet")
+    @PostMapping(value = "v1/teacher/group/set")
+    public RespVo<String> groupStatusSet(@RequestBody TeacherStatusReqVo reqVo) {
+        return teacherPcService.groupStatusSet(getUserCode(), getUserName(), reqVo);
+    }
+
+    @Operation(summary = "是否开了团体课", operationId = "groupStatus")
+    @PostMapping(value = "v1/teacher/group/status")
+    public RespVo<Boolean> groupStatus(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>(teacherPcService.groupStatus(queryVo));
+    }
+
     @Operation(summary = "老师类型设置", operationId = "teacherTypeStatusSet")
     @PostMapping(value = "v1/teacher/type")
     public RespVo<String> teacherTypeStatusSet(@RequestBody TeacherStatusReqVo reqVo) {
