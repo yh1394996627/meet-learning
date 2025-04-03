@@ -47,6 +47,9 @@ public class TeacherListRespVo {
     @Schema(name = "testStatus", description = "测试老师状态")
     private Boolean testStatus;
 
+    @Schema(name = "groupStatus", description = "团体课老师状态")
+    private Boolean groupStatus;
+
     @Schema(name = "managerStatus", description = "管理员状态")
     private Boolean managerStatus;
 
