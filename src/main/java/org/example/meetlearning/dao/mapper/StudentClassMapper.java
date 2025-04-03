@@ -15,6 +15,8 @@ public interface StudentClassMapper {
 
     StudentClass selectByRecordId(String recordId);
 
+    StudentClass selectByMeetUuId(String meetUuId);
+
     int updateEntity(StudentClass record);
 
     Page<StudentClass> selectByParams(@Param("params")Map<String, Object> params, Page<StudentClass> page);

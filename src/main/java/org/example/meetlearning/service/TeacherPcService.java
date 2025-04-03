@@ -259,10 +259,10 @@ public class TeacherPcService extends BasePcService {
     }
 
 
-    public List<TeacherLastCommentRespVo> teacherLastCommentRespVo(RecordIdQueryVo queryVo) {
-        List<TeacherEvaluationRecord> list = teacherEvaluationService.selectByTeacherIdLimit10(queryVo.getRecordId());
-        List<TeacherLastCommentRespVo> respVos = list.stream().map(item -> TeacherConverter.INSTANCE.toCommentVo(item)).toList();
-        return respVos;
+    public List<TeacherLastCommentRespVo> teacherLastCommentRespVo(String userCode, RecordIdQueryVo queryVo) {
+        String userId = StringUtils.hasText(queryVo.getRecordId()) ? queryVo.getRecordId() : userCode;
+        List<TeacherEvaluationRecord> list = teacherEvaluationService.selectByTeacherIdLimit20(userId);
+        return list.stream().map(TeacherConverter.INSTANCE::toCommentVo).toList();
     }
 
     public RespVo<TeacherDashboardRespVo> dashboard(String userCode) {

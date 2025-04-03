@@ -18,8 +18,8 @@ public class TeacherEvaluationService {
         return teacherEvaluationRecordMapper.selectByTeacherId(teacherId);
     }
 
-    public List<TeacherEvaluationRecord> selectByTeacherIdLimit10(String teacherId) {
-        return teacherEvaluationRecordMapper.selectByTeacherIdLimit10(teacherId);
+    public List<TeacherEvaluationRecord> selectByTeacherIdLimit20(String teacherId) {
+        return teacherEvaluationRecordMapper.selectByTeacherIdLimit20(teacherId);
     }
 
     public BigDecimal selectRatingByTeacherId(String teacherId) {

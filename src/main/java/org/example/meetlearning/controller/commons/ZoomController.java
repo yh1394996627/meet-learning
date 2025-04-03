@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
 import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.ZoomPcService;
 import org.example.meetlearning.service.ZoomService;
+import org.example.meetlearning.service.impl.ZoomOAuthService;
 import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.zoom.ZoomWebhookPayload;
 import org.json.JSONObject;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Objects;
 
 @RestController
@@ -28,92 +32,57 @@ import java.util.Objects;
 public class ZoomController implements BaseController {
 
     private final ZoomPcService zoomPcService;
-    private final ZoomService zoomService;
-    private final RedisTemplate redisTemplate;
+    private final ZoomOAuthService zoomOAuthService;
 
     @GetMapping("/zoom/callback")
-    public void handleCallback(@RequestParam("code") String authorizationCode) throws IOException {
-       // meeting(authorizationCode);
+    public String handleCallback(@RequestParam("code") String authorizationCode) throws IOException {
+        return authorizationCode;
     }
-//    private void meeting(String authorizationCode) throws IOException {
-//        // 使用授权码获取 Access Token
-//        String accessToken = zoomPcService.getAccessToken(authorizationCode);
-//        redisTemplate.opsForValue().set("zoom_access_token", accessToken);
-//
-//        // 获取ZOOM用户ID
-//        String user = zoomService.getZoomUserIdByEmail("1394996627@qq.com", accessToken);
-//        log.info("user：{}", user);
-//        JSONObject userObj = new JSONObject(user);
-//        // 创建会议
-//        String meet = zoomPcService.createMeeting(userObj.get("id").toString(), "test", "2025-03-29T10:00:00", accessToken);
-//        log.info("meet：{}", meet);
-//        // 查看会议信息
-//        JSONObject meetObj = new JSONObject(meet);
-//        String meetingInfo = zoomPcService.getMeetingInfo(meetObj.get("id").toString(), accessToken);
-//        log.info("meetingInfo：{}", meetingInfo);
-//        JSONObject meetingInfoObj = new JSONObject(meetingInfo);
-//    }
 
 
     @PostMapping("/api/zoom/event/callback")
-    public ResponseEntity<String> handleZoomEvent(
-            @RequestHeader(value = "authorization", required = false) String authToken,
-            @RequestBody String payload) {
-        log.info("payload: {}", payload);
-        log.info("authToken: {}", authToken);
-        JSONObject json = new JSONObject(payload);
-        String eventType = json.getString("event");
+    public ResponseEntity<String> handleWebhookEvent(
+            @RequestBody ZoomWebhookPayload payload,
+            @RequestHeader("x-zm-signature") String signature,
+            @RequestHeader("x-zm-request-timestamp") String timestamp) {
 
-        // 处理 URL 验证请求
-        if ("endpoint.url_validation".equals(eventType)) {
-            return handleUrlValidation(json);
+        // 1. 验证签名(可选但推荐)
+        // if (!verifySignature(signature, timestamp, payload)) {
+        //     return ResponseEntity.status(401).build();
+        // }
+
+        // 2. 处理不同的事件类型
+        switch (payload.getEvent()) {
+            case "meeting.started":
+                zoomOAuthService.handleMeetingStarted(payload);
+                break;
+            case "meeting.ended":
+                zoomOAuthService.handleMeetingEnded(payload);
+                break;
+            // 可以处理其他事件...
+            default:
+                break;
         }
 
-        return ResponseEntity.ok("Event received");
+        return ResponseEntity.ok().build();
     }
 
-    private ResponseEntity<String> handleUrlValidation(JSONObject json) {
+    // 验证Zoom webhook签名的示例方法
+    private boolean verifySignature(String signature, String timestamp, ZoomWebhookPayload payload) {
         try {
-            String plainToken = json.getJSONObject("payload").getString("plainToken");
+            String message = "v0:" + timestamp + ":" + payload.toString();
+            String secret = "YOUR_ZOOM_WEBHOOK_SECRET";
 
-            // 使用 HMAC-SHA256 加密令牌
-            String encryptedToken = encryptToken(plainToken);
+            Mac sha256 = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            sha256.init(secretKey);
 
-            // 构建响应 JSON
-            JSONObject response = new JSONObject();
-            response.put("plainToken", plainToken);
-            response.put("encryptedToken", encryptedToken);
+            String hash = "v0=" + Hex.encodeHexString(sha256.doFinal(message.getBytes(StandardCharsets.UTF_8)));
 
-            log.info("Successfully validated Zoom webhook URL");
-            return ResponseEntity.ok(response.toString());
-
+            return MessageDigest.isEqual(hash.getBytes(StandardCharsets.UTF_8), signature.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            log.error("URL validation failed", e);
-            return ResponseEntity.badRequest().body("Validation failed");
+            return false;
         }
-    }
-
-    // 加密令牌方法
-    private String encryptToken(String plainToken) throws Exception {
-        Mac sha256 = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKey = new SecretKeySpec(
-                "xStegieNSmqcx-E59w8K1A".getBytes(StandardCharsets.UTF_8),
-                "HmacSHA256");
-        sha256.init(secretKey);
-
-        byte[] hash = sha256.doFinal(plainToken.getBytes(StandardCharsets.UTF_8));
-        return bytesToHex(hash);
-    }
-
-    // 字节数组转十六进制
-    private String bytesToHex(byte[] hash) {
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
     }
 
 

@@ -32,7 +32,7 @@
         <result column="student_consumption" jdbcType="DECIMAL" property="studentConsumption"/>
         <result column="efficient_date" jdbcType="TIMESTAMP" property="efficientDate"/>
         <result column="student_balance" jdbcType="DECIMAL" property="studentBalance"/>
-        <result column="class_status" jdbcType="DECIMAL" property="classStatus"/>
+        <result column="class_status" jdbcType="INTEGER" property="classStatus"/>
         <result column="cancel_id" jdbcType="VARCHAR" property="cancelId"/>
         <result column="cancel_time" jdbcType="TIMESTAMP" property="cancelTime"/>
         <result column="meeting_record_id" jdbcType="VARCHAR" property="meetingRecordId"/>
@@ -54,6 +54,13 @@
         <include refid="Base_Column_List"/>
         from student_class
         where record_id = #{record_id}
+    </select>
+
+    <select id="selectByMeetUuId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student_class
+        where meeting_record_id = #{meetUuId}
     </select>
 
     <select id="selectByParams" resultMap="BaseResultMap">
@@ -208,6 +215,9 @@
             <if test="meetingRecordId != null">
                 meeting_record_id,
             </if>
+            <if test="classStatus != null">
+                class_status,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -302,6 +312,9 @@
             </if>
             <if test="meetingRecordId != null">
                 #{meetingRecordId,jdbcType=VARCHAR},
+            </if>
+            <if test="classStatus != null">
+                #{classStatus,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -404,6 +417,9 @@
             </if>
             <if test="isEvaluation != null">
                 is_evaluation = #{isEvaluation,jdbcType=VARCHAR},
+            </if>
+            <if test="classStatus != null">
+                class_status = #{classStatus,jdbcType=INTEGER},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

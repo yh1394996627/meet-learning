@@ -25,6 +25,13 @@ public class StudentClassService {
     }
 
     /**
+     * 根据meetUuId查询
+     */
+    public StudentClass selectByMeetUuId(String meetUuId) {
+        return studentClassMapper.selectByMeetUuId(meetUuId);
+    }
+
+    /**
      * 根据条件查询
      */
     public Page<StudentClass> selectByParams(Map<String,Object> params, Page<StudentClass> pageRequest) {

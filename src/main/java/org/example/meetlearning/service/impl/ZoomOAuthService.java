@@ -1,5 +1,6 @@
 package org.example.meetlearning.service.impl;
 
+import cn.hutool.core.io.resource.Resource;
 import cn.hutool.core.util.BooleanUtil;
 import com.google.gson.*;
 import lombok.extern.slf4j.Slf4j;
@@ -8,20 +9,17 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.common.ZoomUseRedisSetCommon;
+import org.example.meetlearning.dao.entity.StudentClass;
+import org.example.meetlearning.dao.entity.StudentClassMeeting;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.ZoomAccountSet;
+import org.example.meetlearning.enums.ClassStatusEnum;
 import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.vo.zoom.Registrant;
-import org.example.meetlearning.vo.zoom.ZoomAccount;
 import org.example.meetlearning.vo.zoom.ZoomBaseVerifyRespVo;
+import org.example.meetlearning.vo.zoom.ZoomWebhookPayload;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,18 +27,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -66,6 +59,12 @@ public class ZoomOAuthService {
 
     @Autowired
     private TeacherService teacherService;
+
+    @Autowired
+    private StudentClassService studentClassService;
+
+    @Autowired
+    private StudentClassMeetingService studentClassMeetingService;
 
 
     private OkHttpClient client = new OkHttpClient();
@@ -438,5 +437,76 @@ public class ZoomOAuthService {
             }
             return gson.fromJson(response.body().string(), JsonObject.class);
         }
+    }
+
+
+    /**
+     * 开始会议
+     */
+    public void handleMeetingStarted(ZoomWebhookPayload payload) {
+        // 处理会议开始逻辑
+        System.out.println("会议已开始: " + payload.getPayload().getObject().getUuid());
+        // 查询会议的预约课程
+        String meetingId = payload.getPayload().getObject().getUuid();
+        StudentClass studentClass = studentClassService.selectByMeetUuId(meetingId);
+        if (studentClass != null) {
+            StudentClass newStudentClass = new StudentClass();
+            newStudentClass.setId(studentClass.getId());
+            newStudentClass.setClassStatus(ClassStatusEnum.PROCESS.getStatus());
+            studentClassService.updateEntity(newStudentClass);
+        } else {
+            log.error("No scheduled courses found");
+        }
+    }
+
+    /**
+     * 结束会议
+     */
+    public void handleMeetingEnded(ZoomWebhookPayload payload) {
+        // 处理会议结束逻辑
+        System.out.println("会议已结束: " + payload.getPayload().getObject().getUuid());
+
+    }
+
+
+    /**
+     * 处理成员加入会议事件
+     */
+    private void handleParticipantJoined(ZoomWebhookPayload payload) {
+        ZoomWebhookPayload.Payload.Object.Participant participant = payload.getPayload().getObject().getParticipant();
+
+    }
+
+
+    /**
+     * 会议视频获取
+     */
+    public ResponseEntity<String> getMeetingRecordings(String accountId, String meetingUuId) {
+        StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingUuId);
+        Assert.notNull(studentClassMeeting, "Meeting information not obtained");
+        ZoomAccountSet zoomAccountSet = zoomBaseService.selectByAccountId(accountId);
+        Assert.notNull(zoomAccountSet, "Zoom account not found");
+        getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        String url = "https://api.zoom.us/v2/meetings/" + studentClassMeeting.getMeetId() + "/recordings";
+        return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+    }
+
+    /**
+     * 下载视频
+     */
+    public ResponseEntity<Resource> downloadRecording(String downloadUrl, String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        return restTemplate.exchange(
+                downloadUrl,
+                HttpMethod.GET,
+                entity,
+                Resource.class
+        );
     }
 }
