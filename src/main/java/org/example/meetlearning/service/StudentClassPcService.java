@@ -289,6 +289,15 @@ public class StudentClassPcService extends BasePcService {
         studentClassService.updateEntity(studentClass);
     }
 
+    public void studentClassCancelComplaint(RecordIdQueryVo reqVo) {
+        //新增评论
+        StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(studentClass, "Course information not obtained");
+        Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
+        Assert.notNull(teacher, "Teacher information not obtained");
+        teacherComplaintService.deletedEntity(studentClass.getRecordId());
+    }
+
 
     public String meetingJoinUrl(String classId) throws IOException {
         StudentClass studentClass = studentClassService.selectByRecordId(classId);

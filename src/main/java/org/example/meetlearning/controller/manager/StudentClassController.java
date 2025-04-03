@@ -108,7 +108,7 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "取消课程投诉", operationId = "studentClassCancelComplaint")
     @PostMapping(value = "v1/student/class/cancel/complaint")
     public RespVo<String> studentClassCancelComplaint(@RequestBody RecordIdQueryVo reqVo) {
-        //studentClassPcService.studentClassCancel(getUserCode(), reqVo);
+        studentClassPcService.studentClassCancelComplaint(reqVo);
         return new RespVo<>("Course cancelled successfully");
     }
 

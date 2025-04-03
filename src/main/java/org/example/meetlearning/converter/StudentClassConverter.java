@@ -3,6 +3,7 @@ package org.example.meetlearning.converter;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseStatusEnum;
@@ -45,6 +46,9 @@ public interface StudentClassConverter {
         respVo.setIsCourseVideoExpired(studentClass.getIsCourseVideoExpired());
         respVo.setAffiliateId(studentClass.getAffiliateId());
         respVo.setAffiliateName(studentClass.getAffiliateName());
+        respVo.setIsCanComplaint(BooleanUtils.isFalse(studentClass.getIsComplaint()));
+        respVo.setIsCanEvaluation(BooleanUtils.isFalse(studentClass.getIsEvaluation()));
+        respVo.setIsCanCancelComplaint(BooleanUtils.isTrue(studentClass.getIsComplaint()));
         return respVo;
     }
 
