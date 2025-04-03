@@ -138,7 +138,6 @@ public interface TeacherConverter {
         teacherRespVo.setCurrencyCode(teacher.getCurrencyCode());
         teacherRespVo.setCurrencyName(teacher.getCurrencyName());
         teacherRespVo.setGender(GenderEnum.MALE.getEnName());
-        teacherRespVo.setSpecialties(teacher.getSpecialties());
         teacherRespVo.setVideoUrl(teacher.getVideoUrl());
         teacherRespVo.setTestStatus(teacher.getTestStatus());
         teacherRespVo.setManagerStatus(teacher.getManagerStatus());
