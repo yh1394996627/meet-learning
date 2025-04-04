@@ -9,10 +9,11 @@
         <result column="begin_time" jdbcType="VARCHAR" property="beginTime"/>
         <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
         <result column="week_num" jdbcType="VARCHAR" property="weekNum"/>
+        <result column="course_type" jdbcType="VARCHAR" property="courseType"/>
     </resultMap>
     <sql id="Base_Column_List">
         id
-        , creator, create_time, teacher_id, begin_time, end_time, week_num
+        , creator, create_time, teacher_id, begin_time, end_time, week_num, course_type
     </sql>
     <select id="selectByTeacherIdAndWeekNum" resultMap="BaseResultMap">
         select
@@ -79,12 +80,12 @@
     <insert id="insertBatch" parameterType="list">
         insert into teacher_schedule (creator, create_time,
         teacher_id, begin_time, end_time,
-        week_num)
+        week_num,course_type)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
             #{item.teacherId,jdbcType=VARCHAR}, #{item.beginTime,jdbcType=VARCHAR}, #{item.endTime,jdbcType=VARCHAR},
-            #{item.weekNum,jdbcType=VARCHAR})
+            #{item.weekNum,jdbcType=VARCHAR},#{item.courseType,jdbcType=VARCHAR})
         </foreach>
     </insert>
 </mapper>

@@ -22,4 +22,6 @@ public class TeacherSchedule {
 
     private String weekNum;
 
+    private String courseType;
+
 }

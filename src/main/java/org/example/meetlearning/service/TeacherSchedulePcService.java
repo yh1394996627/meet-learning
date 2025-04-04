@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.ScheduleConverter;
 import org.example.meetlearning.dao.entity.TeacherSchedule;
 import org.example.meetlearning.dao.entity.TeacherScheduleSet;
+import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.enums.ScheduleTypeEnum;
 import org.example.meetlearning.service.impl.TeacherScheduleService;
 import org.example.meetlearning.util.TimeSplitterUtil;
@@ -82,7 +83,7 @@ public class TeacherSchedulePcService {
 
 
     /**
-     * 更新日程有效时间
+     * 更新日程有效时间  分小时和 1小时
      */
     private void updateSchedule(String teacherId, String weekNum) {
         // 删除原有日程
@@ -93,19 +94,35 @@ public class TeacherSchedulePcService {
         if (CollectionUtils.isEmpty(schedules)) {
             schedules = teacherScheduleService.selectSetByTeacherId(teacherId, weekNum, ScheduleTypeEnum.REGULAR.name());
         }
-        //按照每半小时拆分
+
         for (TeacherScheduleSet schedule : schedules) {
-            List<String> timeList = TimeSplitterUtil.splitByHalfHour(schedule.getBeginTime(), schedule.getEndTime());
+            //按照每半小时拆分
+            List<String> timeList = TimeSplitterUtil.splitByHalfHour(schedule.getBeginTime(), schedule.getEndTime(), 30);
             for (String s : timeList) {
                 String[] arr = StringUtils.split(s, "-");
-                if (arr.length == 2) {
+                if (arr != null && arr.length == 2) {
                     TeacherSchedule teacherSchedule = ScheduleConverter.INSTANCE.toCreateSchedule(schedule);
                     teacherSchedule.setBeginTime(arr[0]);
                     teacherSchedule.setEndTime(arr[1]);
+                    teacherSchedule.setCourseType(CourseTypeEnum.SINGLE.name());
                     teacherSchedules.add(teacherSchedule);
                 }
             }
+            //按照每1小时拆分
+            List<String> timeOneList = TimeSplitterUtil.splitByHalfHour(schedule.getBeginTime(), schedule.getEndTime(), 60);
+            for (String s : timeOneList) {
+                String[] arr = StringUtils.split(s, "-");
+                if (arr != null && arr.length == 2) {
+                    TeacherSchedule teacherSchedule = ScheduleConverter.INSTANCE.toCreateSchedule(schedule);
+                    teacherSchedule.setBeginTime(arr[0]);
+                    teacherSchedule.setEndTime(arr[1]);
+                    teacherSchedule.setCourseType(CourseTypeEnum.SINGLE.name());
+                    teacherSchedules.add(teacherSchedule);
+                }
+            }
+
         }
+
         if (!CollectionUtils.isEmpty(teacherSchedules)) {
             teacherScheduleService.insertBatch(teacherSchedules);
         }
