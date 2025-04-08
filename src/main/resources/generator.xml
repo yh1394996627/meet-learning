@@ -27,6 +27,8 @@
         <!--        <table tableName="teacher_evaluation_record" domainObjectName="TeacherEvaluationRecord"/>-->
         <!--        <table tableName="teacher_complaint_record" domainObjectName="TeacherComplaintRecord"/>-->
         <!--        <table tableName="student_class_meeting" domainObjectName="StudentClassMeeting"/>-->
-        <table tableName="zoom_account_set" domainObjectName="ZoomAccountSet"/>
+        <!--        <table tableName="zoom_account_set" domainObjectName="ZoomAccountSet"/>-->
+        <!--        <table tableName="teacher_deduction" domainObjectName="TeacherDeduction"/>-->
+        <table tableName="teacher_class_remark" domainObjectName="TeacherClassRemark"/>
     </context>
 </generatorConfiguration>

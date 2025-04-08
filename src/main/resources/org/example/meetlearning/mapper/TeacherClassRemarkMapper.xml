@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.TeacherClassRemarkMapper">
+  <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.TeacherClassRemark">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="record_id" jdbcType="VARCHAR" property="recordId" />
+    <result column="class_id" jdbcType="VARCHAR" property="classId" />
+    <result column="teacher_id" jdbcType="VARCHAR" property="teacherId" />
+    <result column="teacher_id" jdbcType="VARCHAR" property="teacherId" />
+    <result column="student_id" jdbcType="VARCHAR" property="studentId" />
+    <result column="file_page" jdbcType="DECIMAL" property="filePage" />
+    <result column="class_remark" jdbcType="VARCHAR" property="classRemark" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="teacher_name" jdbcType="VARCHAR" property="teacherName" />
+    <result column="class_time" jdbcType="VARCHAR" property="classTime" />
+    <result column="textbook" jdbcType="VARCHAR" property="textbook" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, creator, create_name, create_time, record_id, student_id, class_id, teacher_id, file_page, 
+    class_remark, remark, teacher_name, class_time, textbook
+  </sql>
+  
+  <select id="selectPageByStudentId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from teacher_class_remark
+      where student_id = #{studentId} order by id desc
+  </select>
+  
+  <insert id="insert" parameterType="org.example.meetlearning.dao.entity.TeacherClassRemark">
+    insert into teacher_class_remark (creator, create_name,
+            create_time, record_id, class_id,
+            teacher_id, file_page, class_remark,
+            remark,teacher_name, class_time, textbook)
+    values (#{creator,jdbcType=VARCHAR}, #{createName,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP}, #{recordId,jdbcType=VARCHAR}, #{classId,jdbcType=VARCHAR},
+            #{teacherId,jdbcType=VARCHAR}, #{filePage,jdbcType=DECIMAL}, #{classRemark,jdbcType=VARCHAR},
+            #{remark,jdbcType=VARCHAR},#{teacherName,jdbcType=VARCHAR},#{classTime,jdbcType=TIMESTAMP},
+            #{textbook,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="org.example.meetlearning.dao.entity.TeacherClassRemark">
+    update teacher_class_remark
+    <set>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createName != null">
+        create_name = #{createName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recordId != null">
+        record_id = #{recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        class_id = #{classId,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherId != null">
+        teacher_id = #{teacherId,jdbcType=VARCHAR},
+      </if>
+      <if test="studentId != null">
+        student_id = #{studentId,jdbcType=VARCHAR},
+      </if>
+      <if test="filePage != null">
+        file_page = #{filePage,jdbcType=DECIMAL},
+      </if>
+      <if test="classRemark != null">
+        class_remark = #{classRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

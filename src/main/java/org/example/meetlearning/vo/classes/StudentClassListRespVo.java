@@ -86,5 +86,12 @@ public class StudentClassListRespVo {
     @Schema(name = "isCanCancelComplaint", description = "是否可以取消投诉")
     private Boolean isCanCancelComplaint;
 
+    @Schema(name = "isCanCenterClass", description = "是否可以取消课程")
+    private Boolean isCanCenterClass;
+
+    @Schema(name = "isCanUpdateTime", description = "是否可以更改时间")
+    private Boolean isCanUpdateTime;
+
+
 
 }

@@ -85,5 +85,7 @@ public class StudentClass {
 
     private Boolean isEvaluation;
 
+    private String textbook;
+
 
 }
