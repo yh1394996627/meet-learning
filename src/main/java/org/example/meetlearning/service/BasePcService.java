@@ -194,12 +194,13 @@ public class BasePcService {
      * 批量上传证书用于老师
      */
     @Transactional(rollbackFor = Exception.class)
-    public RespVo<FileRecordVo> uploadCertificate(String userCode, MultipartFile file) {
+    public RespVo<FileRecordVo> uploadCertificate(String userCode, MultipartFile file, Integer fileType) {
         try {
             String fileName = "certificate/" + UUID.randomUUID() + "." + getLastPartOfString(Objects.requireNonNull(file.getOriginalFilename()));
             ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, file.getInputStream());
             //批量保存
             FileRecord record = FileRecordConverter.INSTANCE.toCreate(userCode, fileName, file.getOriginalFilename());
+            record.setFileType(fileType);
             fileRecordService.insertBatch(List.of(record));
             FileRecordVo recordVo = FileRecordConverter.INSTANCE.toFileRecordVo(record);
             recordVo.setFileUrl(downloadFile(fileName));
@@ -213,9 +214,9 @@ public class BasePcService {
     /**
      * 查询文件列表
      */
-    public List<FileRecordVo> getFileRecordVoList(String userCode) {
+    public List<FileRecordVo> getFileRecordVoList(String userCode ,Integer fileType) {
         List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
-        return fileRecords.stream().map(item -> {
+        return fileRecords.stream().filter(item -> fileType == null || item.getFileType().equals(fileType)).map(item -> {
             FileRecordVo fileRecordVo = FileRecordConverter.INSTANCE.toFileRecordVo(item);
             fileRecordVo.setFileUrl(downloadFile(fileRecordVo.getFileUrl()));
             return fileRecordVo;

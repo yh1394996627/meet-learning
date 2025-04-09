@@ -63,7 +63,6 @@ public class StudentController implements BaseController {
         return studentPcService.studentInfo(reqVo);
     }
 
-
     @Operation(summary = "学生端仪表盘-最火名师", operationId = "dashboardTeacher")
     @PostMapping(value = "v1/student/dashboard/teacher")
     public RespVo<List<TeacherInfoRespVo>> dashboardTeacher(@RequestBody StudentDashboardTeacherQueryVo queryVo) {

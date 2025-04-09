@@ -10,6 +10,7 @@ import org.example.meetlearning.converter.StudentConverter;
 import org.example.meetlearning.converter.UserConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.FileTypeEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -22,6 +23,7 @@ import org.example.meetlearning.vo.user.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -69,8 +71,17 @@ public class UserPcService extends BasePcService {
                 Teacher teacher = teacherService.selectByRecordId(accountUser.getRecordId());
                 Assert.notNull(BooleanUtil.isTrue(teacher.getEnabledStatus()), "Teacher account has been disabled");
             }
-
             UserInfoRespVo respVo = UserConverter.INSTANCE.toUserInfoRespVo(accountUser);
+            if (StringUtils.equals(accountUser.getType(), RoleEnum.MANAGER.name()) || StringUtils.equals(accountUser.getType(), RoleEnum.AFFILIATE.name())) {
+                List<FileRecordVo> fileRecordVos = getFileRecordVoList(accountUser.getRecordId(), FileTypeEnum.ZFB.getFileType());
+                if (!CollectionUtils.isEmpty(fileRecordVos)) {
+                    respVo.setZfbQrCode(fileRecordVos.get(0).getFileUrl());
+                }
+                List<FileRecordVo> wxFileRecordVos = getFileRecordVoList(accountUser.getRecordId(), FileTypeEnum.WX.getFileType());
+                if (!CollectionUtils.isEmpty(wxFileRecordVos)) {
+                    respVo.setWxQrCode(wxFileRecordVos.get(0).getFileUrl());
+                }
+            }
             UserFinance userFinance = userFinanceService.selectByUserId(accountUser.getRecordId());
             Assert.notNull(userFinance, "User Finance information not obtained");
             respVo.setBalanceQty(userFinance.getBalanceQty());
@@ -88,6 +99,16 @@ public class UserPcService extends BasePcService {
             User accountUser = userService.selectByRecordId(userCode);
             Assert.notNull(accountUser, "User information not obtained");
             UserInfoRespVo respVo = UserConverter.INSTANCE.toUserInfoRespVo(accountUser);
+            if (StringUtils.equals(accountUser.getType(), RoleEnum.MANAGER.name()) || StringUtils.equals(accountUser.getType(), RoleEnum.AFFILIATE.name())) {
+                List<FileRecordVo> fileRecordVos = getFileRecordVoList(accountUser.getRecordId(), FileTypeEnum.ZFB.getFileType());
+                if (!CollectionUtils.isEmpty(fileRecordVos)) {
+                    respVo.setZfbQrCode(fileRecordVos.get(0).getFileUrl());
+                }
+                List<FileRecordVo> wxFileRecordVos = getFileRecordVoList(accountUser.getRecordId(), FileTypeEnum.WX.getFileType());
+                if (!CollectionUtils.isEmpty(wxFileRecordVos)) {
+                    respVo.setWxQrCode(wxFileRecordVos.get(0).getFileUrl());
+                }
+            }
             UserFinance userFinance = userFinanceService.selectByUserId(accountUser.getRecordId());
             Assert.notNull(userFinance, "User Finance information not obtained");
             respVo.setBalanceQty(userFinance.getBalanceQty());
@@ -130,11 +151,11 @@ public class UserPcService extends BasePcService {
         return new RespVo<>(downloadFile(url));
     }
 
-    public RespVo<FileRecordVo> uploadPcFile(String userCode, String userId, MultipartFile file) {
+    public RespVo<FileRecordVo> uploadPcFile(String userCode, String userId, MultipartFile file, Integer fileType) {
         userCode = StringUtils.isNotEmpty(userId) ? userId : userCode;
         User accountUser = userService.selectByRecordId(userCode);
         Assert.notNull(accountUser, "User information not obtained");
-        return uploadCertificate(userCode, file);
+        return uploadCertificate(userCode, file, fileType);
     }
 
     public RespVo<String> deletedPcFile(String userCode, FileRecordVo fileRecordVo) {
