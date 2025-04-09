@@ -26,4 +26,6 @@ public interface StudentClassMapper {
     Long selectCompleteByParams(@Param("params")Map<String, Object> params);
 
     List<SelectValueVo> selectAffCountByParams(@Param("params")Map<String, Object> params);
+
+    List<StudentClass> selectByNowStudentId(String studentId,String nowDate);
 }

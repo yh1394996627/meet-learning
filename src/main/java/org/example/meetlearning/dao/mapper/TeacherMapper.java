@@ -25,6 +25,10 @@ public interface TeacherMapper {
 
     List<Teacher> selectListByAll();
 
+    List<Teacher> selectTop5ByRating();
+
+    List<Teacher> selectTop5ByQty();
+
     /**
      * 查询条件-管理者查询
      */

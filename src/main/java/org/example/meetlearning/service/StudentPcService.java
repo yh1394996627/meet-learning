@@ -4,16 +4,20 @@ package org.example.meetlearning.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.converter.StudentConverter;
+import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
+import org.example.meetlearning.vo.classes.StudentClassListRespVo;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
+import org.example.meetlearning.vo.teacher.TeacherInfoRespVo;
 import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
 import org.example.meetlearning.vo.user.UserStudentPayInfoVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
@@ -23,11 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,8 +47,9 @@ public class StudentPcService extends BasePcService {
 
     private final UserFinanceRecordService userFinanceRecordService;
 
-    private final BaseConfigService baseConfigService;
-    private final TokensLogService tokensLogService;
+    private final TeacherService teacherService;
+
+    private final StudentClassService studentClassService;
 
     /**
      * 学生信息分页查询
@@ -158,5 +161,22 @@ public class StudentPcService extends BasePcService {
         respVo.setExpirationTime(userFinance.getExpirationTime());
         return new RespVo<>(respVo);
     }
+
+    public List<TeacherInfoRespVo> dashboardTeacher(StudentDashboardTeacherQueryVo queryVo) {
+        List<Teacher> teacherList = new ArrayList<>();
+        if (queryVo.getType() == 1) {
+            teacherList = teacherService.selectTop5ByRating();
+        } else {
+            teacherList = teacherService.selectTop5ByQty();
+        }
+        return teacherList.stream().map(TeacherConverter.INSTANCE::toTeacherInfo).toList();
+    }
+
+
+    public List<StudentClassListRespVo> dashboardNowClass(String recordId) {
+        List<StudentClass> studentClassList = studentClassService.selectByNowStudentId(recordId);
+        return studentClassList.stream().map(StudentClassConverter.INSTANCE::toStudentClassListRespVo).toList();
+    }
+
 
 }

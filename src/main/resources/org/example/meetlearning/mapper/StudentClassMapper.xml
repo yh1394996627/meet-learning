@@ -64,6 +64,13 @@
         where meeting_record_id = #{meetUuId}
     </select>
 
+    <select id="selectByNowStudentId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student_class
+        where student_id = #{studentId} and course_time = #{courseTime} order by begin_time asc
+    </select>
+
     <select id="selectByParams" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

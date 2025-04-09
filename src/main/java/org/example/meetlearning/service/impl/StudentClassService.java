@@ -1,6 +1,7 @@
 package org.example.meetlearning.service.impl;
 
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.StudentClass;
@@ -8,6 +9,7 @@ import org.example.meetlearning.dao.mapper.StudentClassMapper;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +36,7 @@ public class StudentClassService {
     /**
      * 根据条件查询
      */
-    public Page<StudentClass> selectByParams(Map<String,Object> params, Page<StudentClass> pageRequest) {
+    public Page<StudentClass> selectByParams(Map<String, Object> params, Page<StudentClass> pageRequest) {
         return studentClassMapper.selectByParams(params, pageRequest);
     }
 
@@ -69,7 +71,15 @@ public class StudentClassService {
     /**
      * 根据条件查询
      */
-    public List<SelectValueVo> selectAffCountByParams(Map<String,Object> params) {
+    public List<SelectValueVo> selectAffCountByParams(Map<String, Object> params) {
         return studentClassMapper.selectAffCountByParams(params);
+    }
+
+
+    /**
+     * 根据recordId查询
+     */
+    public List<StudentClass> selectByNowStudentId(String studentId) {
+        return studentClassMapper.selectByNowStudentId(studentId, DateUtil.format(new Date(), "yyyy-MM-dd"));
     }
 }

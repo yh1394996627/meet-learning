@@ -108,4 +108,18 @@ public class TeacherService {
     public List<Teacher> selectListByAll() {
         return teacherMapper.selectListByAll();
     }
+
+    /**
+     * 查询最热门老师
+     */
+    public List<Teacher> selectTop5ByQty() {
+        return teacherMapper.selectTop5ByQty();
+    }
+
+    /**
+     * 查询最热门老师
+     */
+    public List<Teacher> selectTop5ByRating() {
+        return teacherMapper.selectTop5ByRating();
+    }
 }

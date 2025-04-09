@@ -100,6 +100,20 @@
         deleted = 0
     </select>
 
+    <select id="selectTop5ByRating" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        where deleted = 0 order by rating desc limit 5
+    </select>
+
+    <select id="selectTop5ByQty" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        where deleted = 0 order by confirmed_qty desc limit 5
+    </select>
+
     <select id="selectSalaryTotal" resultType="java.math.BigDecimal">
         select
         sum(IFNULL(salary_amount, 0)) as totalSalary

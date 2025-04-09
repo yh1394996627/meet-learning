@@ -5,15 +5,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.service.StudentPcService;
+import org.example.meetlearning.vo.classes.StudentClassListRespVo;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
+import org.example.meetlearning.vo.teacher.TeacherInfoRespVo;
 import org.example.meetlearning.vo.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 @Tag(name = "学生接口")
@@ -60,6 +64,15 @@ public class StudentController implements BaseController {
     }
 
 
+    @Operation(summary = "学生端仪表盘-最火名师", operationId = "dashboardTeacher")
+    @PostMapping(value = "v1/student/dashboard/teacher")
+    public RespVo<List<TeacherInfoRespVo>> dashboardTeacher(@RequestBody StudentDashboardTeacherQueryVo queryVo) {
+        return new RespVo(studentPcService.dashboardTeacher(queryVo));
+    }
 
-
+    @Operation(summary = "学生端仪表盘-今日课程", operationId = "dashboardNowClass")
+    @PostMapping(value = "v1/student/dashboard/now/class")
+    public RespVo<List<StudentClassListRespVo>> dashboardNowClass() {
+        return new RespVo(studentPcService.dashboardNowClass(getUserCode()));
+    }
 }
