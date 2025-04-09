@@ -40,32 +40,50 @@ public class ZoomController implements BaseController {
     }
 
 
+
     @PostMapping("/api/zoom/event/callback")
-    public ResponseEntity<String> handleWebhookEvent(
-            @RequestBody ZoomWebhookPayload payload,
-            @RequestHeader("x-zm-signature") String signature,
-            @RequestHeader("x-zm-request-timestamp") String timestamp) {
+    public ResponseEntity<String> handleZoomEvent(
+            @RequestHeader(value = "authorization", required = false) String authToken,
+            @RequestBody String payload) {
+        log.info("payload: {}", payload);
+        log.info("authToken: {}", authToken);
+        JSONObject json = new JSONObject(payload);
+        String eventType = json.getString("event");
 
-        // 1. 验证签名(可选但推荐)
-        // if (!verifySignature(signature, timestamp, payload)) {
-        //     return ResponseEntity.status(401).build();
-        // }
-
-        // 2. 处理不同的事件类型
-        switch (payload.getEvent()) {
-            case "meeting.started":
-                zoomOAuthService.handleMeetingStarted(payload);
-                break;
-            case "meeting.ended":
-                zoomOAuthService.handleMeetingEnded(payload);
-                break;
-            // 可以处理其他事件...
-            default:
-                break;
+        // 处理 URL 验证请求
+        if ("endpoint.url_validation".equals(eventType)) {
+            return handleUrlValidation(json);
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Event received");
     }
+
+//    @PostMapping("/api/zoom/event/callback")
+//    public ResponseEntity<String> handleWebhookEvent(
+//            @RequestBody ZoomWebhookPayload payload,
+//            @RequestHeader("x-zm-signature") String signature,
+//            @RequestHeader("x-zm-request-timestamp") String timestamp) {
+//
+//        // 1. 验证签名(可选但推荐)
+//        // if (!verifySignature(signature, timestamp, payload)) {
+//        //     return ResponseEntity.status(401).build();
+//        // }
+//
+//        // 2. 处理不同的事件类型
+//        switch (payload.getEvent()) {
+//            case "meeting.started":
+//                zoomOAuthService.handleMeetingStarted(payload);
+//                break;
+//            case "meeting.ended":
+//                zoomOAuthService.handleMeetingEnded(payload);
+//                break;
+//            // 可以处理其他事件...
+//            default:
+//                break;
+//        }
+//
+//        return ResponseEntity.ok().build();
+//    }
 
     // 验证Zoom webhook签名的示例方法
     private boolean verifySignature(String signature, String timestamp, ZoomWebhookPayload payload) {
@@ -83,6 +101,51 @@ public class ZoomController implements BaseController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+
+    private ResponseEntity<String> handleUrlValidation(JSONObject json) {
+        try {
+            String plainToken = json.getJSONObject("payload").getString("plainToken");
+
+            // 使用 HMAC-SHA256 加密令牌
+            String encryptedToken = encryptToken(plainToken);
+
+            // 构建响应 JSON
+            JSONObject response = new JSONObject();
+            response.put("plainToken", plainToken);
+            response.put("encryptedToken", encryptedToken);
+
+            log.info("Successfully validated Zoom webhook URL");
+            return ResponseEntity.ok(response.toString());
+
+        } catch (Exception e) {
+            log.error("URL validation failed", e);
+            return ResponseEntity.badRequest().body("Validation failed");
+        }
+    }
+
+    // 加密令牌方法
+    private String encryptToken(String plainToken) throws Exception {
+        Mac sha256 = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secretKey = new SecretKeySpec(
+                "xStegieNSmqcx-E59w8K1A".getBytes(StandardCharsets.UTF_8),
+                "HmacSHA256");
+        sha256.init(secretKey);
+
+        byte[] hash = sha256.doFinal(plainToken.getBytes(StandardCharsets.UTF_8));
+        return bytesToHex(hash);
+    }
+
+    // 字节数组转十六进制
+    private String bytesToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 
 
