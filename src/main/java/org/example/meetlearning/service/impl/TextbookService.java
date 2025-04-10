@@ -3,7 +3,9 @@ package org.example.meetlearning.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.Textbook;
+import org.example.meetlearning.dao.entity.TextbookRecord;
 import org.example.meetlearning.dao.mapper.TextbookMapper;
+import org.example.meetlearning.dao.mapper.TextbookRecordMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +16,8 @@ import java.util.Map;
 public class TextbookService {
 
     private final TextbookMapper textbookMapper;
+
+    private final TextbookRecordMapper textbookRecordMapper;
 
     /**
      * 新增教材
@@ -57,5 +61,27 @@ public class TextbookService {
         textbookMapper.deletedByRecordId(recordId);
     }
 
+
+    /**
+     * 根据教材id查询教材记录
+     */
+    public List<TextbookRecord> selectByTextbookId(String textbookId) {
+        return textbookRecordMapper.selectByTextbookId(textbookId);
+    }
+
+
+    /**
+     * 批量插入教材记录
+     */
+    public int insertBatch(List<TextbookRecord> records) {
+        return textbookRecordMapper.insertBatch(records);
+    }
+
+    /**
+     * 根据教材id删除教材记录
+     */
+    public int deleteByTextbookId(String textbookId ) {
+        return textbookRecordMapper.deleteByTextbookId(textbookId);
+    }
 
 }

@@ -19,7 +19,7 @@ public class TextbookRespVo {
     private Integer levelEnd;
 
     @Schema(name = "type", description = "教材类型")
-    private Integer type;
+    private String type;
 
     @Schema(name = "catalog", description = "教材目录")
     private String catalog;

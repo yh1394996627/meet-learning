@@ -15,12 +15,11 @@
         <result column="level_begin" jdbcType="INTEGER" property="levelBegin"/>
         <result column="level_end" jdbcType="INTEGER" property="levelEnd"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
-        <result column="catalog" jdbcType="VARCHAR" property="catalog"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id
-        , deleted, creator, create_name, create_time, updator, update_name, update_time, record_id, `name`, level_begin, level_end, `type`, `catalog`
+        , deleted, creator, create_name, create_time, updator, update_name, update_time, record_id, name, level_begin, level_end, `type`
     </sql>
 
     <select id="selectPageByParams" resultMap="BaseResultMap">
@@ -56,19 +55,25 @@
         <if test="params.keyword != null">
             and (name like LOWER(#{params.keyword}) or catalog like LOWER(#{params.keyword}))
         </if>
+        <if test="params.recordIds != null">
+            and record_id in
+            <foreach collection="recordIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
     </sql>
 
     <insert id="insert" parameterType="org.example.meetlearning.dao.entity.Textbook">
         insert into textbook (deleted, creator,
                               create_name, create_time, updator,
                               update_name, update_time, record_id,
-                              name, level_begin, level_end,
-                              type, catalog)
+                              level_begin, level_end,
+                              type, catalog, name)
         values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
                 #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updator,jdbcType=VARCHAR},
                 #{updateName,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{recordId,jdbcType=VARCHAR},
-                #{name,jdbcType=VARCHAR}, #{levelBegin,jdbcType=INTEGER}, #{levelEnd,jdbcType=INTEGER},
-                #{type,jdbcType=INTEGER}, #{catalog,jdbcType=VARCHAR})
+                #{levelBegin,jdbcType=INTEGER}, #{levelEnd,jdbcType=INTEGER},
+                #{type,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR})
     </insert>
 
     <update id="deletedByRecordId">
@@ -114,10 +119,7 @@
                 level_end = #{levelEnd,jdbcType=INTEGER},
             </if>
             <if test="type != null">
-                type = #{type,jdbcType=INTEGER},
-            </if>
-            <if test="catalog != null">
-                catalog = #{catalog,jdbcType=VARCHAR},
+                type = #{type,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

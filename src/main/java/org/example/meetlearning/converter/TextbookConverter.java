@@ -1,6 +1,8 @@
 package org.example.meetlearning.converter;
 
 import org.example.meetlearning.dao.entity.Textbook;
+import org.example.meetlearning.dao.entity.TextbookRecord;
+import org.example.meetlearning.vo.textbook.TextbookRecordReqVo;
 import org.example.meetlearning.vo.textbook.TextbookReqVo;
 import org.example.meetlearning.vo.textbook.TextbookRespVo;
 import org.mapstruct.Mapper;
@@ -21,7 +23,6 @@ public interface TextbookConverter {
         respVo.setLevelBegin(textbook.getLevelBegin());
         respVo.setLevelEnd(textbook.getLevelEnd());
         respVo.setType(textbook.getType());
-        respVo.setCatalog(textbook.getCatalog());
         return respVo;
     }
 
@@ -33,20 +34,31 @@ public interface TextbookConverter {
         textbook.setLevelBegin(reqVo.getLevelBegin());
         textbook.setLevelEnd(reqVo.getLevelEnd());
         textbook.setType(reqVo.getType());
-        textbook.setCatalog(reqVo.getCatalog());
         return textbook;
     }
 
-    default Textbook toUpdate(String userCode, String userName, Textbook textbook, TextbookReqVo reqVo) {
+
+    default TextbookRecord toCreateRecord(String userCode, String userName, Textbook textbook, TextbookRecordReqVo reqVo) {
+        TextbookRecord record = new TextbookRecord();
+        record.setCreator(userCode);
+        record.setCreateName(userName);
+        record.setCreateTime(new Date());
+        record.setTextbookId(textbook.getRecordId());
+        record.setTextbookName(textbook.getName());
+        record.setName(reqVo.getName());
+        record.setCatalog(reqVo.getCatalog());
+        return record;
+    }
+
+    default void toUpdate(String userCode, String userName, Textbook textbook, TextbookReqVo reqVo) {
         textbook.setName(reqVo.getName());
         textbook.setLevelBegin(reqVo.getLevelBegin());
         textbook.setLevelEnd(reqVo.getLevelEnd());
         textbook.setType(reqVo.getType());
-        textbook.setCatalog(reqVo.getCatalog());
+        textbook.setName(reqVo.getName());
         textbook.setUpdator(userCode);
         textbook.setUpdateName(userName);
         textbook.setUpdateTime(new Date());
-        return textbook;
     }
 
 }
