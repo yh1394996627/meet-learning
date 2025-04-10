@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.TextbookRecordMapper">
+  <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.TextbookRecord">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="create_name" jdbcType="VARCHAR" property="createName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="textbook_id" jdbcType="VARCHAR" property="textbookId" />
+    <result column="textbook_name" jdbcType="VARCHAR" property="textbookName" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="catalog" jdbcType="VARCHAR" property="catalog" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, creator, create_name, create_time, textbook_id, name, catalog, textbook_name
+  </sql>
+
+  <select id="selectByTextbookId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from textbook_record
+    where textbook_id = #{textbookId,jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deleteByTextbookId" parameterType="java.lang.Long">
+    delete from textbook_record
+    where textbook_id = #{textbookId,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insertBatch" parameterType="org.example.meetlearning.dao.entity.TextbookRecord">
+      insert into textbook_record
+      (id, creator, create_name, create_time, textbook_id, name, catalog, textbook_name)
+      values
+      <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.id,jdbcType=BIGINT}, #{item.creator,jdbcType=VARCHAR}, #{item.createName,jdbcType=VARCHAR},
+          #{item.createTime,jdbcType=TIMESTAMP}, #{item.textbookId,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR},
+          #{item.catalog,jdbcType=VARCHAR}, #{item.textbookName,jdbcType=VARCHAR})
+      </foreach>
+  </insert>
+
+  <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.TextbookRecord">
+    update textbook_record
+    <set>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createName != null">
+        create_name = #{createName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="textbookId != null">
+        textbook_id = #{textbookId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="catalog != null">
+        catalog = #{catalog,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
