@@ -1,6 +1,5 @@
 package org.example.meetlearning.dao.mapper;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,7 @@ public interface StudentClassMapper {
 
     StudentClass selectByRecordId(String recordId);
 
-    StudentClass selectByMeetUuId(String meetUuId);
+    StudentClass selectByMeetId(String meetUuId);
 
     int updateEntity(StudentClass record);
 

@@ -11,7 +11,8 @@ public enum CourseStatusEnum {
     PROCESS("process", "进行中", 2),
     FINISH("finish", "已完成", 3),
     BE_LATE("be late", "迟到", 4),
-    ABSENT("absent", "缺席", 5);
+    LEAVE_EARLY("leave early", "早退", 5),
+    ABSENT("absent", "缺席", 6);
 
     private final String entRemark;
     private final String remark;

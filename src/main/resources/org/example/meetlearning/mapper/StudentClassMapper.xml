@@ -57,7 +57,7 @@
         where record_id = #{record_id}
     </select>
 
-    <select id="selectByMeetUuId" resultMap="BaseResultMap">
+    <select id="selectByMeetId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from student_class

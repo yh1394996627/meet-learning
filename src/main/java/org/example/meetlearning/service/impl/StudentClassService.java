@@ -29,8 +29,8 @@ public class StudentClassService {
     /**
      * 根据meetUuId查询
      */
-    public StudentClass selectByMeetUuId(String meetUuId) {
-        return studentClassMapper.selectByMeetUuId(meetUuId);
+    public StudentClass selectByMeetId(String meetUuId) {
+        return studentClassMapper.selectByMeetId(meetUuId);
     }
 
     /**

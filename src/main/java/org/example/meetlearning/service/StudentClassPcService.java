@@ -144,7 +144,7 @@ public class StudentClassPcService extends BasePcService {
         JSONObject meetObj = new JSONObject(meeting);
         StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(entCode, userCode, meetObj);
 
-        studentClass.setMeetingRecordId(meetingEntity.getMeetUuid());
+        studentClass.setMeetingRecordId(meetingEntity.getMeetId());
         studentClassService.insertEntity(studentClass);
         return new RespVo<>("New successfully added");
     }
@@ -309,9 +309,9 @@ public class StudentClassPcService extends BasePcService {
             String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
             JSONObject meetObj = new JSONObject(meeting);
             StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(studentClass.getCreator(), studentClass.getCreateName(), meetObj);
-            studentClass.setMeetingRecordId(meetingEntity.getMeetUuid());
+            studentClass.setMeetingRecordId(meetingEntity.getMeetId());
             studentClassService.updateEntity(studentClass);
-            meetingRecordId = meetingEntity.getMeetUuid();
+            meetingRecordId = meetingEntity.getMeetId();
         }
         String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
         Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
@@ -323,7 +323,6 @@ public class StudentClassPcService extends BasePcService {
         //todo 先去掉校验，上线后开启
         //Assert.isTrue(isLessThan5Minutes, "You can only enter the meeting five minutes in advance");
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
-
         Assert.notNull(studentClassMeeting, "Meeting information not obtained");
         Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
         return studentClassMeeting.getMeetJoinUrl();

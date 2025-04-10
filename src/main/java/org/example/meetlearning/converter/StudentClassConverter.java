@@ -72,6 +72,8 @@ public interface StudentClassConverter {
         studentClass.setRecordId(UUID.randomUUID().toString());
         studentClass.setTeacherCourseStatus(CourseStatusEnum.NOT_STARTED.getStatus());
         studentClass.setStudentCourseStatus(CourseStatusEnum.NOT_STARTED.getStatus());
+        studentClass.setClassStatus(CourseStatusEnum.NOT_STARTED.getStatus());
+
         studentClass.setCourseVideoUrl(null);
         studentClass.setZoomId(null);
         studentClass.setIsCourseVideoExpired(false);

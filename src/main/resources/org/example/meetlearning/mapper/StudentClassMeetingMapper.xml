@@ -36,7 +36,7 @@
     select
     <include refid="Base_Column_List" />
     from student_class_meeting
-    where deleted = 0 and meet_uuid = #{meetingId}
+    where deleted = 0 and meet_id = #{meetingId}
   </select>
 
   <delete id="deleteByPrimaryKey">
