@@ -65,6 +65,7 @@ public class ZoomPcService {
                     zoomOAuthService.getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
                     JsonObject jsonObject = zoomOAuthService.getConsistentUserId(teacher.getEmail());
                     Teacher newTeacher = new Teacher();
+                    newTeacher.setZoomActivationStatus(false);
                     if (jsonObject != null) {
                         newTeacher.setId(teacher.getId());
                         newTeacher.setZoomUserId(jsonObjReplace(jsonObject.get("id").toString()));
@@ -96,6 +97,11 @@ public class ZoomPcService {
             return false;
         }
     }
+
+
+
+
+
 
 
     public String jsonObjReplace(String json) {

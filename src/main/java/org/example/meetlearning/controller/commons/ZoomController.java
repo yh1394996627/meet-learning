@@ -58,32 +58,6 @@ public class ZoomController implements BaseController {
         return ResponseEntity.ok("Event received");
     }
 
-//    @PostMapping("/api/zoom/event/callback")
-//    public ResponseEntity<String> handleWebhookEvent(
-//            @RequestBody ZoomWebhookPayload payload,
-//            @RequestHeader("x-zm-signature") String signature,
-//            @RequestHeader("x-zm-request-timestamp") String timestamp) {
-//
-//        // 1. 验证签名(可选但推荐)
-//        // if (!verifySignature(signature, timestamp, payload)) {
-//        //     return ResponseEntity.status(401).build();
-//        // }
-//
-//        // 2. 处理不同的事件类型
-//        switch (payload.getEvent()) {
-//            case "meeting.started":
-//                zoomOAuthService.handleMeetingStarted(payload);
-//                break;
-//            case "meeting.ended":
-//                zoomOAuthService.handleMeetingEnded(payload);
-//                break;
-//            // 可以处理其他事件...
-//            default:
-//                break;
-//        }
-//
-//        return ResponseEntity.ok().build();
-//    }
 
     // 验证Zoom webhook签名的示例方法
     private boolean verifySignature(String signature, String timestamp, ZoomWebhookPayload payload) {
