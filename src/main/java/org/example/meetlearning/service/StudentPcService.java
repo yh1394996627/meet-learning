@@ -1,7 +1,5 @@
 package org.example.meetlearning.service;
 
-import com.google.common.collect.Lists;
-
 import java.util.Date;
 
 
@@ -9,7 +7,6 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.converter.StudentConverter;
 import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.*;
