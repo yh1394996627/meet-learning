@@ -349,7 +349,7 @@ public class TeacherPcService extends BasePcService {
             TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(teacher);
             respVo.setFileRecordVos(getFileRecordVoList(queryVo.getRecordId(), FileTypeEnum.CERTIFICATE.getFileType()));
             List<TeacherFeature> list = teacherFeatureService.selectByTeacherId(teacher.getRecordId());
-            respVo.setSpecialties(list.stream().map(TeacherFeature::getSpecialists).toList());
+            respVo.setSpecialties(list.stream().map(TeacherFeature::getTextbookName).toList());
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("Query failed", ex);

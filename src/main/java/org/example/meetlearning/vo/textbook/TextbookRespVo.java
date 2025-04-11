@@ -3,6 +3,8 @@ package org.example.meetlearning.vo.textbook;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class TextbookRespVo {
 
@@ -21,7 +23,7 @@ public class TextbookRespVo {
     @Schema(name = "type", description = "教材类型")
     private String type;
 
-    @Schema(name = "catalog", description = "教材目录")
-    private String catalog;
+    @Schema(name = "catalogs", description = "教材目录")
+    private List<TextbookRecordReqVo> catalogs;
 
 }

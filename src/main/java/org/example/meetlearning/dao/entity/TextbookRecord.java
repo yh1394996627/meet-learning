@@ -15,6 +15,8 @@ public class TextbookRecord {
 
     private Date createTime;
 
+    private String recordId;
+
     private String textbookId;
 
     private String textbookName;

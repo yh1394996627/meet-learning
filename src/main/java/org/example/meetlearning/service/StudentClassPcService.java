@@ -133,11 +133,6 @@ public class StudentClassPcService extends BasePcService {
         operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice(), TokenContentEnum.COURSE_CLASS.getEnContent());
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(entCode, userCode, reqVo, student, teacher, affiliate, userFinance);
-        List<TeacherFeature> features = teacherFeatureService.selectByTeacherId(teacher.getRecordId());
-        if (!CollectionUtils.isEmpty(features)) {
-            List<String> courseList = features.stream().map(TeacherFeature::getSpecialists).toList();
-            studentClass.setCourseName(StringUtils.join(courseList.toArray(), ","));
-        }
         Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         //创建会议
         String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));

@@ -103,6 +103,8 @@ public interface StudentClassConverter {
         studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(studentFinance.getBalanceQty()));
         studentClass.setIsEvaluation(false);
         studentClass.setIsComplaint(false);
+        studentClass.setCourseId(reqVo.getTextbookId());
+        studentClass.setCourseName(reqVo.getTextbookName());
         return studentClass;
     }
 

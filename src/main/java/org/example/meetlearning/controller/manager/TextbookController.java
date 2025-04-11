@@ -40,8 +40,8 @@ public class TextbookController implements BaseController {
 
     @Operation(summary = "教材下拉查询", operationId = "textbookSelect")
     @PostMapping(value = "v1/textbook/select")
-    public RespVo<List<SelectValueVo>> textbookSelect() {
-        return new RespVo<>(pcService.selectValueVos());
+    public RespVo<List<SelectValueVo>> textbookSelect(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>(pcService.selectValueVos(queryVo));
     }
 
     @Operation(summary = "教材新增", operationId = "add")

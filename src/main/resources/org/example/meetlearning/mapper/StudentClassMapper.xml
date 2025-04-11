@@ -22,6 +22,7 @@
         <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
         <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
         <result column="teacher_country" jdbcType="VARCHAR" property="teacherCountry"/>
+        <result column="course_id" jdbcType="VARCHAR" property="courseId"/>
         <result column="course_name" jdbcType="VARCHAR" property="courseName"/>
         <result column="course_type" jdbcType="VARCHAR" property="courseType"/>
         <result column="begin_time" jdbcType="VARCHAR" property="beginTime"/>
@@ -45,7 +46,7 @@
         , deleted, is_course_video_expired, creator, teacher_course_status, student_course_status,
     course_video_url, zoom_id, create_name, create_time, updator, update_name, update_time, 
     record_id, student_id, student_name, student_country, teacher_id, teacher_name, teacher_country, 
-    course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
+    course_id, course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
     affiliate_name, student_consumption, efficient_date, student_balance, cancel_id, cancel_time,
         meeting_record_id, is_complaint, is_evaluation, textbook
     </sql>
@@ -190,6 +191,9 @@
             <if test="teacherCountry != null">
                 teacher_country,
             </if>
+            <if test="courseId != null">
+                course_id,
+            </if>
             <if test="courseName != null">
                 course_name,
             </if>
@@ -290,6 +294,9 @@
             </if>
             <if test="teacherCountry != null">
                 #{teacherCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="courseId != null">
+                #{courseId,jdbcType=VARCHAR},
             </if>
             <if test="courseName != null">
                 #{courseName,jdbcType=VARCHAR},
@@ -395,6 +402,9 @@
             </if>
             <if test="courseName != null">
                 course_name = #{courseName,jdbcType=VARCHAR},
+            </if>
+            <if test="courseId != null">
+                course_id = #{courseId,jdbcType=VARCHAR},
             </if>
             <if test="courseType != null">
                 course_type = #{courseType,jdbcType=VARCHAR},

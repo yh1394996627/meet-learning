@@ -18,6 +18,8 @@ public class TeacherFeature {
 
     private String teacherId;
 
-    private String specialists;
+    private String textbookId;
+
+    private String textbookName;
 
 }

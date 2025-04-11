@@ -7,6 +7,7 @@ import org.example.meetlearning.dao.entity.TeacherFeature;
 import org.example.meetlearning.enums.CurrencyEnum;
 import org.example.meetlearning.enums.GenderEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
 import org.example.meetlearning.vo.teacher.*;
 import org.mapstruct.Mapper;
@@ -105,13 +106,14 @@ public interface TeacherConverter {
     }
 
 
-    default TeacherFeature toTeacherFeature(String userCode, String teacherId, String feature) {
+    default TeacherFeature toTeacherFeature(String userCode, String teacherId, SelectValueVo selectValueVo) {
         TeacherFeature teacherFeature = new TeacherFeature();
         teacherFeature.setTeacherId(teacherId);
         teacherFeature.setRecordId(UUID.randomUUID().toString());
         teacherFeature.setCreateTime(new Date());
         teacherFeature.setCreator(userCode);
-        teacherFeature.setSpecialists(feature);
+        teacherFeature.setTextbookId(selectValueVo.getValue());
+        teacherFeature.setTextbookName(selectValueVo.getLabel());
         return teacherFeature;
     }
 

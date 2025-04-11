@@ -3,6 +3,7 @@ package org.example.meetlearning.vo.teacher;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.example.meetlearning.vo.common.SelectValueVo;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -56,7 +57,7 @@ public class TeacherUpdateReqVo {
     private String videoUrl;
 
     @Schema(name = "specialists", description = "教学特点")
-    private List<String> specialists;
+    private List<SelectValueVo> specialists;
 
     @Schema(name = "about", description = "关于")
     private String about;

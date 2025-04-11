@@ -69,6 +69,13 @@ public class TextbookService {
         return textbookRecordMapper.selectByTextbookId(textbookId);
     }
 
+    /**
+     * 根据教材id查询教材记录
+     */
+    public List<TextbookRecord> selectByTextbookIds(List<String> textbookIds) {
+        return textbookRecordMapper.selectByTextbookIds(textbookIds);
+    }
+
 
     /**
      * 批量插入教材记录

@@ -10,7 +10,9 @@ public interface TextbookRecordMapper {
 
     int insertBatch(List<TextbookRecord> records);
 
-    List<TextbookRecord> selectByTextbookId(String recordId);
+    List<TextbookRecord> selectByTextbookId(String textbookId);
+
+    List<TextbookRecord> selectByTextbookIds(List<String> textbookIds);
 
     int updateEntity(TextbookRecord record);
 
