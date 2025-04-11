@@ -72,6 +72,14 @@
         where student_id = #{studentId} and course_time = #{courseTime} order by begin_time asc
     </select>
 
+    <select id="selectPageByParams" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student_class
+        where deleted = 0
+        <include refid="common_where"/>
+    </select>
+
     <select id="selectByParams" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -113,6 +121,9 @@
         </if>
         <if test="params.studentKeyword != null">
             and student_name like #{params.studentKeyword}
+        </if>
+        <if test="params.studentId != null">
+            and student_id = #{params.studentId}
         </if>
         <if test="params.beginDate != null">
             and course_time >= #{params.beginDate}

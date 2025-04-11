@@ -36,8 +36,15 @@ public class StudentClassService {
     /**
      * 根据条件查询
      */
-    public Page<StudentClass> selectByParams(Map<String, Object> params, Page<StudentClass> pageRequest) {
-        return studentClassMapper.selectByParams(params, pageRequest);
+    public Page<StudentClass> selectPageByParams(Map<String, Object> params, Page<StudentClass> pageRequest) {
+        return studentClassMapper.selectPageByParams(params, pageRequest);
+    }
+
+    /**
+     * 根据条件查询
+     */
+    public List<StudentClass> selectByParams(Map<String, Object> params) {
+        return studentClassMapper.selectByParams(params);
     }
 
     /**

@@ -1,33 +1,32 @@
 package org.example.meetlearning.service;
 
+import com.google.common.collect.Lists;
 
+import java.util.Date;
+
+
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.converter.StudentConverter;
 import org.example.meetlearning.converter.TeacherConverter;
-import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.CourseStatusEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
-import org.example.meetlearning.vo.classes.StudentClassListRespVo;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
 import org.example.meetlearning.vo.teacher.TeacherInfoRespVo;
-import org.example.meetlearning.vo.user.UserStudentFinanceRecordQueryVo;
-import org.example.meetlearning.vo.user.UserStudentPayInfoVo;
-import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
-import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.function.Function;
@@ -173,10 +172,32 @@ public class StudentPcService extends BasePcService {
     }
 
 
-    public List<StudentClassListRespVo> dashboardNowClass(String recordId) {
-        List<StudentClass> studentClassList = studentClassService.selectByNowStudentId(recordId);
-        return studentClassList.stream().map(StudentClassConverter.INSTANCE::toStudentClassListRespVo).toList();
+    public List<StudentDashboardClassRespVo> dashboardNowClass(String recordId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("studentId", recordId);
+        List<StudentClass> studentClassList = studentClassService.selectByParams(params);
+        studentClassList = studentClassList.stream().sorted(Comparator.comparing(StudentClass::getCourseTime)).toList();
+        List<StudentDashboardClassRecordRespVo> studentDashboardClassRecordRespVoList = studentClassList.stream().map(studentClass -> {
+            StudentDashboardClassRecordRespVo respVo = new StudentDashboardClassRecordRespVo();
+            respVo.setDate(studentClass.getCourseTime());
+            respVo.setRecordId(studentClass.getRecordId());
+            respVo.setCourseName(studentClass.getCourseName());
+            respVo.setCourseTime(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd " + studentClass.getBeginTime() + "-" + studentClass.getEndTime()));
+            CourseStatusEnum courseStatus = CourseStatusEnum.getCourseStatusByType(studentClass.getClassStatus());
+            if (courseStatus != null) {
+                respVo.setCourseStatus(courseStatus.getEntRemark());
+            }
+            return respVo;
+        }).toList();
+        Map<Date, List<StudentDashboardClassRecordRespVo>> map = studentDashboardClassRecordRespVoList.stream().collect(Collectors.groupingBy(StudentDashboardClassRecordRespVo::getDate));
+        List<StudentDashboardClassRespVo> result = new ArrayList<>();
+        map.forEach((key, value) -> {
+            StudentDashboardClassRespVo respVo = new StudentDashboardClassRespVo();
+            respVo.setDate(key);
+            respVo.setRespVos(value);
+            result.add(respVo);
+        });
+        return result;
     }
-
 
 }

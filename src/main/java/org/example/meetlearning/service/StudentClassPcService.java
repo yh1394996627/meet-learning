@@ -3,11 +3,9 @@ package org.example.meetlearning.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
-import org.example.meetlearning.converter.MeetingConverter;
 import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseTypeEnum;
@@ -23,18 +21,14 @@ import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.evaluation.TeacherComplaintReqVo;
 import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
-import org.example.meetlearning.vo.student.StudentInfoRespVo;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +71,7 @@ public class StudentClassPcService extends BasePcService {
 
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
-        Page<StudentClass> page = studentClassService.selectByParams(queryVo.getParams(), queryVo.getPageRequest());
+        Page<StudentClass> page = studentClassService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
         List<String> userIds = page.getRecords().stream().map(StudentClass::getStudentId).toList();
         Map<String, UserFinance> userFinanceMap;
         Map<String, UserFinanceRecord> userFinanceRecordHashMap;

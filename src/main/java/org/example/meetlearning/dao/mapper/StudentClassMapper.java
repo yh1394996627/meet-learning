@@ -18,7 +18,9 @@ public interface StudentClassMapper {
 
     int updateEntity(StudentClass record);
 
-    Page<StudentClass> selectByParams(@Param("params")Map<String, Object> params, Page<StudentClass> page);
+    Page<StudentClass> selectPageByParams(@Param("params")Map<String, Object> params, Page<StudentClass> page);
+
+    List<StudentClass> selectByParams(@Param("params")Map<String, Object> params);
 
     Long selectCancelByParams(@Param("params")Map<String, Object> params);
 
