@@ -41,6 +41,7 @@ public class TeacherPcService extends BasePcService {
     private final BaseConfigService baseConfigService;
     private final UserService userService;
     private final TeacherEvaluationService teacherEvaluationService;
+    private final TextbookService textbookService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(String userCode, TeacherQueryVo queryVo) {
         try {
@@ -181,7 +182,11 @@ public class TeacherPcService extends BasePcService {
             //清掉原有特点并重新写入
             teacherFeatureService.deleteByTeacherId(teacher.getRecordId());
             Teacher finalTeacher = teacher;
-            List<TeacherFeature> features = reqVo.getSpecialists().stream().map(feature -> TeacherConverter.INSTANCE.toTeacherFeature(userCode, finalTeacher.getRecordId(), feature)).toList();
+            List<String> specialists = reqVo.getSpecialists();
+            Map<String, Object> params = new HashMap<>();
+            params.put("recordIds", specialists);
+            List<Textbook> textbooks = textbookService.selectByParams(params);
+            List<TeacherFeature> features = textbooks.stream().map(feature -> TeacherConverter.INSTANCE.toTeacherFeature(userCode, finalTeacher.getRecordId(), feature)).toList();
             if (!CollectionUtils.isEmpty(features)) {
                 teacherFeatureService.insertBatch(features);
             }

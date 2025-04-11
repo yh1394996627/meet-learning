@@ -4,6 +4,7 @@ import cn.hutool.core.util.BooleanUtil;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherEvaluationRecord;
 import org.example.meetlearning.dao.entity.TeacherFeature;
+import org.example.meetlearning.dao.entity.Textbook;
 import org.example.meetlearning.enums.CurrencyEnum;
 import org.example.meetlearning.enums.GenderEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -106,14 +107,14 @@ public interface TeacherConverter {
     }
 
 
-    default TeacherFeature toTeacherFeature(String userCode, String teacherId, SelectValueVo selectValueVo) {
+    default TeacherFeature toTeacherFeature(String userCode, String teacherId, Textbook textbook) {
         TeacherFeature teacherFeature = new TeacherFeature();
         teacherFeature.setTeacherId(teacherId);
         teacherFeature.setRecordId(UUID.randomUUID().toString());
         teacherFeature.setCreateTime(new Date());
         teacherFeature.setCreator(userCode);
-        teacherFeature.setTextbookId(selectValueVo.getValue());
-        teacherFeature.setTextbookName(selectValueVo.getLabel());
+        teacherFeature.setTextbookId(textbook.getRecordId());
+        teacherFeature.setTextbookName(textbook.getName());
         return teacherFeature;
     }
 

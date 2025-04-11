@@ -57,7 +57,7 @@ public class TeacherUpdateReqVo {
     private String videoUrl;
 
     @Schema(name = "specialists", description = "教学特点")
-    private List<SelectValueVo> specialists;
+    private List<String> specialists;
 
     @Schema(name = "about", description = "关于")
     private String about;
