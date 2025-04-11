@@ -28,6 +28,7 @@ public interface TextbookConverter {
 
     default Textbook toCreate(String userCode, String userName, TextbookReqVo reqVo) {
         Textbook textbook = new Textbook();
+        textbook.setDeleted(false);
         textbook.setCreator(userCode);
         textbook.setCreateName(userName);
         textbook.setName(reqVo.getName());
