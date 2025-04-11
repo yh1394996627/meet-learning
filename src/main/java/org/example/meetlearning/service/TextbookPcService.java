@@ -48,6 +48,7 @@ public class TextbookPcService {
     }
 
     public void add(String userCode, String userName, TextbookReqVo reqVo) {
+        Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCatalogs()), "catalogs cannot be empty");
         Textbook textbook = TextbookConverter.INSTANCE.toCreate(userCode, userName, reqVo);
         List<TextbookRecord> records = reqVo.getCatalogs().stream().map(item -> TextbookConverter.INSTANCE.toCreateRecord(userCode, userName, textbook, item)).toList();
         textbookService.insertEntity(textbook);
