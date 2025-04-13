@@ -53,6 +53,10 @@ public class StudentClass {
 
     private String teacherCountry;
 
+    private BigDecimal price;
+
+    private BigDecimal creditsPrice;
+
     private String courseId;
 
     private String courseName;

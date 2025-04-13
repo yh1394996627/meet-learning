@@ -22,6 +22,8 @@
         <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
         <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
         <result column="teacher_country" jdbcType="VARCHAR" property="teacherCountry"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="credits_price" jdbcType="DECIMAL" property="creditsPrice"/>
         <result column="course_id" jdbcType="VARCHAR" property="courseId"/>
         <result column="course_name" jdbcType="VARCHAR" property="courseName"/>
         <result column="course_type" jdbcType="VARCHAR" property="courseType"/>
@@ -48,7 +50,7 @@
     record_id, student_id, student_name, student_country, teacher_id, teacher_name, teacher_country, 
     course_id, course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
     affiliate_name, student_consumption, efficient_date, student_balance, cancel_id, cancel_time,
-        meeting_record_id, is_complaint, is_evaluation, textbook
+        meeting_record_id, is_complaint, is_evaluation, textbook, price, credits_price
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -244,6 +246,12 @@
             <if test="textbook != null">
                 textbook,
             </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="creditsPrice != null">
+                credits_price,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -347,6 +355,12 @@
             </if>
             <if test="textbook != null">
                 #{textbook,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="creditsPrice != null">
+                #{creditsPrice,jdbcType=DECIMAL},
             </if>
         </trim>
     </insert>
@@ -455,6 +469,12 @@
             </if>
             <if test="classStatus != null">
                 class_status = #{classStatus,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="creditsPrice != null">
+                credits_price =  #{creditsPrice,jdbcType=DECIMAL},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

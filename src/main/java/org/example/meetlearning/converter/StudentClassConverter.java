@@ -105,6 +105,8 @@ public interface StudentClassConverter {
         studentClass.setIsComplaint(false);
         studentClass.setCourseId(reqVo.getTextbookId());
         studentClass.setCourseName(reqVo.getTextbookName());
+        studentClass.setPrice(teacher.getPrice());
+        studentClass.setCreditsPrice(teacher.getCreditsPrice());
         return studentClass;
     }
 
