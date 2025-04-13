@@ -13,4 +13,6 @@ public interface TeacherCourseTimeMapper {
 
     List<TeacherCourseTime> selectByTeacherIdTime(String teacherId, Date courseTime);
 
+    List<TeacherCourseTime> selectByTeacherIdDateTime(String teacherId, Date courseTime, String beginTime, String endTime);
+
 }

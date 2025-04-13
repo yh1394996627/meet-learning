@@ -21,6 +21,25 @@
     where teacher_id = #{teacherId} and course_time = #{courseTime}
   </select>
 
+  <select id="selectByTeacherIdDateTime" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from teacher_course_time
+      where 1 = 1
+      <if test="teacherId != null">
+          and teacher_id = #{teacherId}
+      </if>
+      <if test="courseTime != null">
+          and course_time = #{courseTime}
+      </if>
+      <if test="beginTime != null">
+          and begin_time = #{beginTime}
+      </if>
+      <if test="endTime != null">
+          and end_time = #{endTime}
+      </if>
+  </select>
+
   <delete id="deleteByTeacherIdTime">
     delete from teacher_course_time
     where teacher_id = #{teacherId} and course_time = #{courseTime} and begin_time = #{beginTime} and end_time = #{endTime}

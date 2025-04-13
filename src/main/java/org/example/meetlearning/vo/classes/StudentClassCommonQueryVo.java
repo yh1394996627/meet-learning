@@ -11,6 +11,9 @@ import java.util.Map;
 @Data
 public class StudentClassCommonQueryVo {
 
+    @Schema(name = "teacherId", description = "老师ID")
+    private String teacherId;
+
     @Schema(name = "priceContent", description = "选择的价格")
     private BigDecimal priceContent;
 

@@ -69,6 +69,8 @@ public class StudentClassPcService extends BasePcService {
 
     private final StudentClassMeetingService studentClassMeetingService;
 
+    private final TeacherCourseTimeService teacherCourseTimeService;
+
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
         Page<StudentClass> page = studentClassService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
@@ -159,7 +161,10 @@ public class StudentClassPcService extends BasePcService {
             if (CollectionUtils.isEmpty(teacherIds)) {
                 return new RespVo<>(List.of());
             }
-            params.put("recordIds", teacherIds);
+            params.put("teacherIds", teacherIds);
+            List<TeacherCourseTime> courseTimes = teacherCourseTimeService.selectByTeacherIdDateTime(null, DateUtil.parse(queryVo.getCourseTime(), "yyyy-MM-dd"), arr[0], arr[1]);
+            List<String> noTeacherIds = courseTimes.stream().map(TeacherCourseTime::getTeacherId).distinct().toList();
+            params.put("noTeacherIds", noTeacherIds);
         }
         List<Teacher> teachers = teacherService.selectListParams(params);
         List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getRecordId(), teacher.getName())).toList();

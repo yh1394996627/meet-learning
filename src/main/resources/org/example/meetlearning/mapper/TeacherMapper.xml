@@ -159,9 +159,15 @@
     </select>
 
     <sql id="common_where">
-        <if test="params.recordIds != null">
-            and record_id in
-            <foreach collection="params.recordIds" item="item" separator="," open="(" close=")">
+        <if test="params.teacherIds != null">
+            and teacher_id in
+            <foreach collection="params.teacherIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.noTeacherIds != null">
+            and teacher_id not in
+            <foreach collection="params.noTeacherIds" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>
