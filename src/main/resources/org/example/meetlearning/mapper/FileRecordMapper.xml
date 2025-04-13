@@ -9,10 +9,11 @@
     <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="file_url" jdbcType="VARCHAR" property="fileUrl" />
     <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_type" jdbcType="INTEGER" property="fileType" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, creator, create_time, record_id, user_id, file_url, file_name
+    id, creator, create_time, record_id, user_id, file_url, file_name, file_type
   </sql>
 
   <select id="selectByUserId" resultMap="BaseResultMap">
@@ -28,12 +29,12 @@
       where record_id = #{recordId,jdbcType=BIGINT}
   </delete>
   <insert id="insertBatch" parameterType="org.example.meetlearning.dao.entity.FileRecord">
-      insert into file_record (creator, create_time,record_id, user_id, file_url,file_name)
+      insert into file_record (creator, create_time,record_id, user_id, file_url,file_name,file_type)
       values
       <foreach collection="list" item="item" index="index" separator=",">
           (#{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
           #{item.recordId,jdbcType=VARCHAR}, #{item.userId,jdbcType=VARCHAR}, #{item.fileUrl,jdbcType=VARCHAR},
-          #{item.fileName,jdbcType=VARCHAR})
+          #{item.fileName,jdbcType=VARCHAR}, #{item.fileType,jdbcType=INTEGER})
       </foreach>
 
   </insert>

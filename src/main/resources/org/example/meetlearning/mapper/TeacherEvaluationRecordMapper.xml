@@ -35,7 +35,7 @@
         where teacher_id = #{teacherId}
     </select>
 
-    <select id="selectByTeacherIdLimit10" resultMap="BaseResultMap">
+    <select id="selectByTeacherIdLimit20" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from teacher_evaluation_record

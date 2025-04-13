@@ -3,11 +3,9 @@ package org.example.meetlearning.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
-import org.example.meetlearning.converter.MeetingConverter;
 import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseTypeEnum;
@@ -23,18 +21,14 @@ import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.evaluation.TeacherComplaintReqVo;
 import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
-import org.example.meetlearning.vo.student.StudentInfoRespVo;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +71,7 @@ public class StudentClassPcService extends BasePcService {
 
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
-        Page<StudentClass> page = studentClassService.selectByParams(queryVo.getParams(), queryVo.getPageRequest());
+        Page<StudentClass> page = studentClassService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
         List<String> userIds = page.getRecords().stream().map(StudentClass::getStudentId).toList();
         Map<String, UserFinance> userFinanceMap;
         Map<String, UserFinanceRecord> userFinanceRecordHashMap;
@@ -92,7 +86,6 @@ public class StudentClassPcService extends BasePcService {
             userFinanceRecordHashMap = new HashMap<>();
             userFinanceMap = new HashMap<>();
         }
-
         PageVo<StudentClassListRespVo> pageVo = PageVo.map(page, list -> {
             StudentClassListRespVo respVo = StudentClassConverter.INSTANCE.toStudentClassListRespVo(list);
             if (userFinanceMap.containsKey(list.getStudentId())) {
@@ -108,7 +101,6 @@ public class StudentClassPcService extends BasePcService {
         });
         return new RespVo<>(pageVo);
     }
-
 
     /**
      * 新增预约课程
@@ -135,18 +127,13 @@ public class StudentClassPcService extends BasePcService {
         operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice(), TokenContentEnum.COURSE_CLASS.getEnContent());
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(entCode, userCode, reqVo, student, teacher, affiliate, userFinance);
-        List<TeacherFeature> features = teacherFeatureService.selectByTeacherId(teacher.getRecordId());
-        if (!CollectionUtils.isEmpty(features)) {
-            List<String> courseList = features.stream().map(TeacherFeature::getSpecialists).toList();
-            studentClass.setCourseName(StringUtils.join(courseList.toArray(), ","));
-        }
         Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         //创建会议
-        String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+        String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
         JSONObject meetObj = new JSONObject(meeting);
         StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(entCode, userCode, meetObj);
 
-        studentClass.setMeetingRecordId(meetingEntity.getMeetUuid());
+        studentClass.setMeetingRecordId(meetingEntity.getMeetId());
         studentClassService.insertEntity(studentClass);
         return new RespVo<>("New successfully added");
     }
@@ -271,6 +258,9 @@ public class StudentClassPcService extends BasePcService {
         newTeacher.setId(teacher.getId());
         newTeacher.setRating(BigDecimalUtil.nullOrZero(rating));
         teacherService.updateEntity(newTeacher);
+
+        studentClass.setIsEvaluation(true);
+        studentClassService.updateEntity(studentClass);
     }
 
     public void studentClassComplaint(String userCode, TeacherComplaintReqVo reqVo) {
@@ -281,6 +271,18 @@ public class StudentClassPcService extends BasePcService {
         Assert.notNull(teacher, "Teacher information not obtained");
         TeacherComplaintRecord teacherEvaluationRecord = StudentClassConverter.INSTANCE.toCreateTeacherComplaintRecord(userCode, teacher.getPrice(), reqVo.getRemark(), studentClass);
         teacherComplaintService.insert(teacherEvaluationRecord);
+
+        studentClass.setIsComplaint(true);
+        studentClassService.updateEntity(studentClass);
+    }
+
+    public void studentClassCancelComplaint(RecordIdQueryVo reqVo) {
+        //新增评论
+        StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(studentClass, "Course information not obtained");
+        Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
+        Assert.notNull(teacher, "Teacher information not obtained");
+        teacherComplaintService.deletedEntity(studentClass.getRecordId());
     }
 
 
@@ -292,12 +294,13 @@ public class StudentClassPcService extends BasePcService {
         if (StringUtils.isEmpty(meetingRecordId)) {
             Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
             //创建会议
-            String meeting = zoomOAuthService.createMeeting(studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+            Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
+            String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
             JSONObject meetObj = new JSONObject(meeting);
             StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(studentClass.getCreator(), studentClass.getCreateName(), meetObj);
-            studentClass.setMeetingRecordId(meetingEntity.getMeetUuid());
+            studentClass.setMeetingRecordId(meetingEntity.getMeetId());
             studentClassService.updateEntity(studentClass);
-            meetingRecordId = meetingEntity.getMeetUuid();
+            meetingRecordId = meetingEntity.getMeetId();
         }
         String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
         Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
@@ -309,7 +312,6 @@ public class StudentClassPcService extends BasePcService {
         //todo 先去掉校验，上线后开启
         //Assert.isTrue(isLessThan5Minutes, "You can only enter the meeting five minutes in advance");
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
-
         Assert.notNull(studentClassMeeting, "Meeting information not obtained");
         Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
         return studentClassMeeting.getMeetJoinUrl();

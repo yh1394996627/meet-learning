@@ -20,6 +20,9 @@ public class TeacherComplaintService {
     public int updateByEntity(TeacherComplaintRecord record) {
         return teacherComplaintRecordMapper.updateByEntity(record);
     }
+    public void deletedEntity(String recordId) {
+        teacherComplaintRecordMapper.deletedEntity(recordId);
+    }
 
     public int insert(TeacherComplaintRecord record) {
         return teacherComplaintRecordMapper.insert(record);

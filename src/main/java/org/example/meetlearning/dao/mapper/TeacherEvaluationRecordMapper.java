@@ -13,7 +13,7 @@ public interface TeacherEvaluationRecordMapper {
 
     List<TeacherEvaluationRecord> selectByTeacherId(String teacherId);
 
-    List<TeacherEvaluationRecord> selectByTeacherIdLimit10(String teacherId);
+    List<TeacherEvaluationRecord> selectByTeacherIdLimit20(String teacherId);
 
 
     BigDecimal selectRatingByTeacherId(String teacherId);

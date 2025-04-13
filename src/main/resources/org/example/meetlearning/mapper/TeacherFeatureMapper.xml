@@ -7,11 +7,12 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
         <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
-        <result column="specialists" jdbcType="VARCHAR" property="specialists"/>
+        <result column="textbook_id" jdbcType="VARCHAR" property="textbookId"/>
+        <result column="textbook_name" jdbcType="VARCHAR" property="textbookName"/>
     </resultMap>
+
     <sql id="Base_Column_List">
-        id
-        , creator, create_time, record_id, teacher_id, specialists
+        id, creator, create_time, record_id, teacher_id, textbook_id, textbook_name
     </sql>
     <select id="selectByTeacherId" resultMap="BaseResultMap">
         select
@@ -20,10 +21,10 @@
         where teacher_id = #{teacherId,jdbcType=VARCHAR}
     </select>
 
-    <select id="selectTeacherIdBySpecialists" resultType="java.lang.String">
+    <select id="selectTeacherIdByTextbookName" resultType="java.lang.String">
         select teacher_id
         from teacher_feature
-        where specialists = #{specialists,jdbcType=VARCHAR}
+        where textbook_name = #{textbookName,jdbcType=VARCHAR}
         <if test="teacherIds != null">
             and teacher_id in
             <foreach collection="teacherIds" item="item" separator="," open="(" close=")">
@@ -31,8 +32,6 @@
             </foreach>
         </if>
     </select>
-
-
 
     <delete id="deletedByTeacherId">
         delete
@@ -42,11 +41,12 @@
 
     <insert id="insertBatch" parameterType="org.example.meetlearning.dao.entity.TeacherFeature">
         insert into teacher_feature (creator, create_time,
-                                     record_id, teacher_id, specialists)
+                                     record_id, teacher_id, textbook_id, textbook_name)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
-            #{item.recordId,jdbcType=VARCHAR}, #{item.teacherId,jdbcType=VARCHAR}, #{item.specialists,jdbcType=VARCHAR})
+            #{item.recordId,jdbcType=VARCHAR}, #{item.teacherId,jdbcType=VARCHAR},
+            #{item.textbookId,jdbcType=VARCHAR}, #{item.textbookName,jdbcType=VARCHAR})
         </foreach>
     </insert>
 </mapper>

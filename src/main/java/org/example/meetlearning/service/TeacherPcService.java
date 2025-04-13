@@ -4,11 +4,10 @@ import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.*;
-import org.example.meetlearning.enums.ConfigTypeEnum;
-import org.example.meetlearning.enums.RoleEnum;
-import org.example.meetlearning.enums.ScheduleWeekEnum;
+import org.example.meetlearning.enums.*;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
@@ -42,6 +41,7 @@ public class TeacherPcService extends BasePcService {
     private final BaseConfigService baseConfigService;
     private final UserService userService;
     private final TeacherEvaluationService teacherEvaluationService;
+    private final TextbookService textbookService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(String userCode, TeacherQueryVo queryVo) {
         try {
@@ -122,7 +122,7 @@ public class TeacherPcService extends BasePcService {
         try {
             List<SelectValueVo> selectValueVos = new ArrayList<>();
             selectValueVos.add(new SelectValueVo("", "None"));
-            List<SelectValueVo> searchVos = teacherService.selectGroupManager(queryVo.getParams());
+            List<SelectValueVo> searchVos = teacherService.selectAllGroupManager(queryVo.getParams());
             selectValueVos.addAll(searchVos);
             return new RespVo<>(selectValueVos);
         } catch (Exception ex) {
@@ -173,12 +173,20 @@ public class TeacherPcService extends BasePcService {
             Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
             Assert.notNull(teacher, "Teacher cannot be empty");
             teacher = TeacherConverter.INSTANCE.toUpdateTeacher(userCode, userName, teacher, reqVo);
+            if (StringUtils.hasText(teacher.getCurrencyCode())) {
+                BaseConfig baseConfig = baseConfigService.selectByCode(teacher.getCurrencyCode());
+                teacher.setCurrencyCode(baseConfig != null ? baseConfig.getCode() : null);
+            }
             teacherService.updateEntity(teacher);
 
             //清掉原有特点并重新写入
             teacherFeatureService.deleteByTeacherId(teacher.getRecordId());
             Teacher finalTeacher = teacher;
-            List<TeacherFeature> features = reqVo.getSpecialists().stream().map(feature -> TeacherConverter.INSTANCE.toTeacherFeature(userCode, finalTeacher.getRecordId(), feature)).toList();
+            List<String> specialists = reqVo.getSpecialists();
+            Map<String, Object> params = new HashMap<>();
+            params.put("recordIds", specialists);
+            List<Textbook> textbooks = textbookService.selectByParams(params);
+            List<TeacherFeature> features = textbooks.stream().map(feature -> TeacherConverter.INSTANCE.toTeacherFeature(userCode, finalTeacher.getRecordId(), feature)).toList();
             if (!CollectionUtils.isEmpty(features)) {
                 teacherFeatureService.insertBatch(features);
             }
@@ -224,6 +232,37 @@ public class TeacherPcService extends BasePcService {
 
 
     @Transactional(rollbackFor = Exception.class)
+    public RespVo<String> groupStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
+        try {
+            Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
+            Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
+            Teacher newTeacher = new Teacher();
+            newTeacher.setId(teacher.getId());
+            newTeacher.setUpdator(userCode);
+            newTeacher.setUpdateName(userName);
+            newTeacher.setGroupStatus(BooleanUtil.isTrue(reqVo.getStatus()));
+            teacherService.updateEntity(newTeacher);
+            return new RespVo<>("更新状态成功");
+        } catch (Exception ex) {
+            log.error("更新状态失败", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public List<SelectValueVo> groupStatus(RecordIdQueryVo queryVo) {
+        Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
+        List<SelectValueVo> selectValueVos = new ArrayList<>();
+        selectValueVos.add(new SelectValueVo(CourseTypeEnum.SINGLE.name(), CourseTypeEnum.SINGLE.name()));
+        selectValueVos.add(new SelectValueVo(CourseTypeEnum.TEST.name(), CourseTypeEnum.TEST.name()));
+        if (BooleanUtil.isTrue(teacher.getGroupStatus())) {
+            selectValueVos.add(new SelectValueVo(CourseTypeEnum.GROUP.name(), CourseTypeEnum.GROUP.name()));
+        }
+        return selectValueVos;
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> teacherTypeStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
@@ -259,10 +298,10 @@ public class TeacherPcService extends BasePcService {
     }
 
 
-    public List<TeacherLastCommentRespVo> teacherLastCommentRespVo(RecordIdQueryVo queryVo) {
-        List<TeacherEvaluationRecord> list = teacherEvaluationService.selectByTeacherIdLimit10(queryVo.getRecordId());
-        List<TeacherLastCommentRespVo> respVos = list.stream().map(item -> TeacherConverter.INSTANCE.toCommentVo(item)).toList();
-        return respVos;
+    public List<TeacherLastCommentRespVo> teacherLastCommentRespVo(String userCode, RecordIdQueryVo queryVo) {
+        String userId = StringUtils.hasText(queryVo.getRecordId()) ? queryVo.getRecordId() : userCode;
+        List<TeacherEvaluationRecord> list = teacherEvaluationService.selectByTeacherIdLimit20(userId);
+        return list.stream().map(TeacherConverter.INSTANCE::toCommentVo).toList();
     }
 
     public RespVo<TeacherDashboardRespVo> dashboard(String userCode) {
@@ -313,7 +352,9 @@ public class TeacherPcService extends BasePcService {
             teacher.setVideoUrl(downloadVideo);
             Assert.notNull(teacher, "Teacher information not obtained");
             TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(teacher);
-            respVo.setFileRecordVos(getFileRecordVoList(queryVo.getRecordId()));
+            respVo.setFileRecordVos(getFileRecordVoList(queryVo.getRecordId(), FileTypeEnum.CERTIFICATE.getFileType()));
+            List<TeacherFeature> list = teacherFeatureService.selectByTeacherId(teacher.getRecordId());
+            respVo.setSpecialties(list.stream().map(TeacherFeature::getTextbookName).toList());
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("Query failed", ex);

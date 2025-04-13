@@ -20,4 +20,6 @@ public class FileRecord {
     private String fileUrl;
 
     private String fileName;
+
+    private Integer fileType;
 }

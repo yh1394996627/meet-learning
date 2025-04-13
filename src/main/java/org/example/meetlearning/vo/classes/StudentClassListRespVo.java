@@ -77,5 +77,21 @@ public class StudentClassListRespVo {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date efficientDate;
 
+    @Schema(name = "isCanComplaint", description = "是否可以投诉")
+    private Boolean isCanComplaint;
+
+    @Schema(name = "isCanEvaluation", description = "是否可以评价")
+    private Boolean isCanEvaluation;
+
+    @Schema(name = "isCanCancelComplaint", description = "是否可以取消投诉")
+    private Boolean isCanCancelComplaint;
+
+    @Schema(name = "isCanCenterClass", description = "是否可以取消课程")
+    private Boolean isCanCenterClass;
+
+    @Schema(name = "isCanUpdateTime", description = "是否可以更改时间")
+    private Boolean isCanUpdateTime;
+
+
 
 }

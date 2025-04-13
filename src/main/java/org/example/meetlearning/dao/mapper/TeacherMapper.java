@@ -25,10 +25,18 @@ public interface TeacherMapper {
 
     List<Teacher> selectListByAll();
 
+    List<Teacher> selectTop5ByRating();
+
+    List<Teacher> selectTop5ByQty();
+
     /**
      * 查询条件-管理者查询
      */
     List<SelectValueVo> selectGroupManager(@Param("params") Map<String, Object> params);
+    /**
+     * 查询条件-管理者查询
+     */
+    List<SelectValueVo> selectAllGroupManager(@Param("params") Map<String, Object> params);
 
     /**
      * 薪资统计查询

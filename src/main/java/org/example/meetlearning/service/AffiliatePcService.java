@@ -89,7 +89,7 @@ public class AffiliatePcService extends BasePcService {
 
             // 创建登陆帐号
             User newUser = addUser(userCode, userName, affiliate.getRecordId(), affiliate.getEmail(), reqVo.getPassword(),
-                    RoleEnum.MANAGER, affiliate.getName(), affiliate.getEnName(), affiliate.getEmail());
+                    RoleEnum.AFFILIATE, affiliate.getName(), affiliate.getEnName(), affiliate.getEmail());
 
             //创建用户关联的课时币
             addFinance(userCode, userName, newUser);

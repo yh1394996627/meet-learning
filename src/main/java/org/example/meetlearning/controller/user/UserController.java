@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.enums.FileTypeEnum;
 import org.example.meetlearning.service.UserPcService;
 import org.example.meetlearning.vo.common.FileRecordVo;
 import org.example.meetlearning.vo.common.PageVo;
@@ -62,7 +63,19 @@ public class UserController implements BaseController {
     @Operation(summary = "上传证书", operationId = "uploadFile")
     @PostMapping(value = "v1/user/upload/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public RespVo<FileRecordVo> uploadFile(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
-        return userPcService.uploadPcFile(getUserCode(), userId, file);
+        return userPcService.uploadPcFile(getUserCode(), userId, file, FileTypeEnum.CERTIFICATE.getFileType());
+    }
+
+    @Operation(summary = "代理商/管理员上传微信二维码", operationId = "uploadWxQrCode")
+    @PostMapping(value = "v1/user/upload/wx/qrcode", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public RespVo<FileRecordVo> uploadWxQrCode(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
+        return userPcService.uploadPcFile(getUserCode(), userId, file, FileTypeEnum.WX.getFileType());
+    }
+
+    @Operation(summary = "代理商/管理员上传支付宝二维码", operationId = "uploadZfbQrCode")
+    @PostMapping(value = "v1/user/upload/zfb/qrcode", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public RespVo<FileRecordVo> uploadZfbQrCode(@RequestParam(value = "userId", required = false) String userId, @RequestPart("file") MultipartFile file) {
+        return userPcService.uploadPcFile(getUserCode(), userId, file, FileTypeEnum.ZFB.getFileType());
     }
 
     @Operation(summary = "删除附件", operationId = "deleteFile")
@@ -95,5 +108,9 @@ public class UserController implements BaseController {
         userPcService.studentRegister(reqVo);
         return new RespVo<>("Registered successfully");
     }
+
+
+
+
 
 }

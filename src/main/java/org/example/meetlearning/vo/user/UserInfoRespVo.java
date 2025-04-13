@@ -37,4 +37,11 @@ public class UserInfoRespVo {
 
     @Schema(name = "balanceQty", description = "代币余额")
     private BigDecimal balanceQty;
+
+    @Schema(name = "zfbQrCode", description = "支付宝二维码")
+    private String zfbQrCode;
+
+    @Schema(name = "wxQrCode", description = "微信二维码")
+    private String wxQrCode;
+
 }

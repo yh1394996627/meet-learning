@@ -14,6 +14,9 @@ public class StudentClassCommonQueryVo {
     @Schema(name = "priceContent", description = "选择的价格")
     private BigDecimal priceContent;
 
+    @Schema(name = "courseType", description = "课程类型")
+    private String courseType;
+
     @Schema(name = "courseDate", description = "课程时间")
     private String courseDate;
 

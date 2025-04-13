@@ -53,6 +53,8 @@ public class StudentClass {
 
     private String teacherCountry;
 
+    private String courseId;
+
     private String courseName;
 
     private String courseType;
@@ -84,6 +86,8 @@ public class StudentClass {
     private Boolean isComplaint;
 
     private Boolean isEvaluation;
+
+    private String textbook;
 
 
 }

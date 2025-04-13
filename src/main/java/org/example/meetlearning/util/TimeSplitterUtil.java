@@ -12,7 +12,7 @@ public class TimeSplitterUtil {
      * @param endTime 结束时间 (格式: HH:mm)
      * @return 拆分后的时间段列表
      */
-    public static List<String> splitByHalfHour(String startTime, String endTime) {
+    public static List<String> splitByHalfHour(String startTime, String endTime , int addTime) {
         List<String> timeSlots = new ArrayList<>();
 
         LocalTime start = LocalTime.parse(startTime);
@@ -26,7 +26,7 @@ public class TimeSplitterUtil {
         LocalTime current = start;
 
         while (current.isBefore(end)) {
-            LocalTime next = current.plusMinutes(30);
+            LocalTime next = current.plusMinutes(addTime);
 
             // 如果下一个时间点超过了结束时间，则使用结束时间
             if (next.isAfter(end)) {
@@ -54,11 +54,11 @@ public class TimeSplitterUtil {
 
     public static void main(String[] args) {
         // 测试示例
-        List<String> slots = splitByHalfHour("09:11", "20:12");
+        List<String> slots = splitByHalfHour("09:11", "20:12",60);
         System.out.println("10:30 - 20:30 拆分结果:");
         slots.forEach(System.out::println);
 
         System.out.println("\n跨天测试 22:00 - 02:00 拆分结果:");
-        splitByHalfHour("22:00", "02:00").forEach(System.out::println);
+        splitByHalfHour("22:00", "02:00",60).forEach(System.out::println);
     }
 }

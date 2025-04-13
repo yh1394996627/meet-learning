@@ -94,6 +94,18 @@ public class TeacherController implements BaseController {
         return teacherPcService.managerAccountStatusSet(getUserCode(), getUserName(), reqVo);
     }
 
+    @Operation(summary = "团体课设置", operationId = "groupStatusSet")
+    @PostMapping(value = "v1/teacher/group/set")
+    public RespVo<String> groupStatusSet(@RequestBody TeacherStatusReqVo reqVo) {
+        return teacherPcService.groupStatusSet(getUserCode(), getUserName(), reqVo);
+    }
+
+    @Operation(summary = "课程类型", operationId = "groupStatus")
+    @PostMapping(value = "v1/teacher/group/status")
+    public RespVo<List<SelectValueVo>> groupStatus(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>(teacherPcService.groupStatus(queryVo));
+    }
+
     @Operation(summary = "老师类型设置", operationId = "teacherTypeStatusSet")
     @PostMapping(value = "v1/teacher/type")
     public RespVo<String> teacherTypeStatusSet(@RequestBody TeacherStatusReqVo reqVo) {
@@ -109,7 +121,7 @@ public class TeacherController implements BaseController {
     @Operation(summary = "老师最新评论", operationId = "teacherLastComment")
     @PostMapping(value = "v1/teacher/last/comment")
     public RespVo<List<TeacherLastCommentRespVo>> teacherLastComment(@RequestBody RecordIdQueryVo queryVo) {
-        return new RespVo<>(teacherPcService.teacherLastCommentRespVo(queryVo));
+        return new RespVo<>(teacherPcService.teacherLastCommentRespVo(getUserCode(), queryVo));
     }
 
     @Operation(summary = "老师仪表盘", operationId = "dashboard")

@@ -4,8 +4,11 @@ import cn.hutool.core.util.BooleanUtil;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherEvaluationRecord;
 import org.example.meetlearning.dao.entity.TeacherFeature;
+import org.example.meetlearning.dao.entity.Textbook;
+import org.example.meetlearning.enums.CurrencyEnum;
 import org.example.meetlearning.enums.GenderEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
+import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
 import org.example.meetlearning.vo.teacher.*;
 import org.mapstruct.Mapper;
@@ -34,6 +37,7 @@ public interface TeacherConverter {
         respVo.setComplaints(teacher.getComplaintsQty());
         respVo.setSalary(teacher.getSalaryAmount());
         respVo.setTestStatus(BooleanUtil.isTrue(teacher.getTestStatus()));
+        respVo.setGroupStatus(BooleanUtil.isTrue(teacher.getGroupStatus()));
         respVo.setManagerStatus(BooleanUtil.isTrue(teacher.getManagerStatus()));
         respVo.setEnableStatus(BooleanUtil.isTrue(teacher.getEnabledStatus()));
         respVo.setCountry(teacher.getCountry());
@@ -51,6 +55,7 @@ public interface TeacherConverter {
         teacher.setCreateTime(new Date());
         teacher.setRecordId(UUID.randomUUID().toString());
         teacher.setEnName(reqVo.getEnName());
+        teacher.setName(reqVo.getEnName());
         teacher.setEmail(reqVo.getEmail());
         teacher.setCountry(reqVo.getCountry());
         teacher.setManagerId(reqVo.getManagerId());
@@ -71,10 +76,8 @@ public interface TeacherConverter {
         teacher.setManagerId(reqVo.getManagerId());
         teacher.setManager(reqVo.getManager());
         teacher.setLanguage(reqVo.getLanguage());
-        teacher.setCurrencyName(reqVo.getCurrencyCode());
-        teacher.setCurrencyName(reqVo.getCurrencyName());
+        teacher.setCurrencyCode(reqVo.getCurrencyCode());
         teacher.setGender(reqVo.getGender());
-//        teacher.setSpecialties(reqVo.getSpecialties());
         return teacher;
     }
 
@@ -104,13 +107,14 @@ public interface TeacherConverter {
     }
 
 
-    default TeacherFeature toTeacherFeature(String userCode, String teacherId, String feature) {
+    default TeacherFeature toTeacherFeature(String userCode, String teacherId, Textbook textbook) {
         TeacherFeature teacherFeature = new TeacherFeature();
         teacherFeature.setTeacherId(teacherId);
         teacherFeature.setRecordId(UUID.randomUUID().toString());
         teacherFeature.setCreateTime(new Date());
         teacherFeature.setCreator(userCode);
-        teacherFeature.setSpecialists(feature);
+        teacherFeature.setTextbookId(textbook.getRecordId());
+        teacherFeature.setTextbookName(textbook.getName());
         return teacherFeature;
     }
 
@@ -137,7 +141,6 @@ public interface TeacherConverter {
         teacherRespVo.setCurrencyCode(teacher.getCurrencyCode());
         teacherRespVo.setCurrencyName(teacher.getCurrencyName());
         teacherRespVo.setGender(GenderEnum.MALE.getEnName());
-        teacherRespVo.setSpecialties(teacher.getSpecialties());
         teacherRespVo.setVideoUrl(teacher.getVideoUrl());
         teacherRespVo.setTestStatus(teacher.getTestStatus());
         teacherRespVo.setManagerStatus(teacher.getManagerStatus());

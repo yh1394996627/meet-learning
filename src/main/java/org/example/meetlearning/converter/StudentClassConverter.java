@@ -3,6 +3,8 @@ package org.example.meetlearning.converter;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import cn.hutool.core.date.DateUtil;
+import org.apache.commons.lang3.BooleanUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseStatusEnum;
@@ -40,11 +42,24 @@ public interface StudentClassConverter {
             respVo.setTeacherCourseStatusContent(Objects.requireNonNull(CourseStatusEnum.getCourseStatusByType(studentClass.getTeacherCourseStatus())).getEntRemark());
         }
         respVo.setCourseVideoUrl(studentClass.getCourseVideoUrl());
-        //默认25分钟
+        //默认25分钟  团体课1小时
         respVo.setCourseLongTime(new BigDecimal(25));
+        if (StringUtils.equals(studentClass.getCourseType(), CourseTypeEnum.GROUP.name())) {
+            respVo.setCourseLongTime(new BigDecimal(60));
+        }
         respVo.setIsCourseVideoExpired(studentClass.getIsCourseVideoExpired());
         respVo.setAffiliateId(studentClass.getAffiliateId());
         respVo.setAffiliateName(studentClass.getAffiliateName());
+        respVo.setIsCanComplaint(BooleanUtils.isFalse(studentClass.getIsComplaint()));
+        respVo.setIsCanEvaluation(BooleanUtils.isFalse(studentClass.getIsEvaluation()));
+        respVo.setIsCanCancelComplaint(BooleanUtils.isTrue(studentClass.getIsComplaint()));
+        //3小时以外才能变更课程时间
+        Date classTime = DateUtil.parse(studentClass.getCourseTime() + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+        long differenceInMillis = classTime.getTime() - new Date().getTime();
+        long differenceInHours = differenceInMillis / (60 * 60 * 1000);
+        respVo.setIsCanUpdateTime(differenceInHours > 3600);
+        //时间未到才能取消课程
+        respVo.setIsCanCenterClass(differenceInHours > 0);
         return respVo;
     }
 
@@ -57,6 +72,8 @@ public interface StudentClassConverter {
         studentClass.setRecordId(UUID.randomUUID().toString());
         studentClass.setTeacherCourseStatus(CourseStatusEnum.NOT_STARTED.getStatus());
         studentClass.setStudentCourseStatus(CourseStatusEnum.NOT_STARTED.getStatus());
+        studentClass.setClassStatus(CourseStatusEnum.NOT_STARTED.getStatus());
+
         studentClass.setCourseVideoUrl(null);
         studentClass.setZoomId(null);
         studentClass.setIsCourseVideoExpired(false);
@@ -86,6 +103,8 @@ public interface StudentClassConverter {
         studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(studentFinance.getBalanceQty()));
         studentClass.setIsEvaluation(false);
         studentClass.setIsComplaint(false);
+        studentClass.setCourseId(reqVo.getTextbookId());
+        studentClass.setCourseName(reqVo.getTextbookName());
         return studentClass;
     }
 
@@ -131,5 +150,6 @@ public interface StudentClassConverter {
         teacherComplaintRecord.setRemark(remark);
         return teacherComplaintRecord;
     }
+
 
 }

@@ -78,4 +78,12 @@ public class Teacher {
 
     private String videoUrl;
 
+    private String zoomUserId;
+
+    private String zoomAccountId;
+
+    private Boolean zoomActivationStatus;
+
+    private Boolean groupStatus;
+
 }

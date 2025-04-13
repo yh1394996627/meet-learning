@@ -1,6 +1,5 @@
 package org.example.meetlearning.dao.mapper;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -15,13 +14,19 @@ public interface StudentClassMapper {
 
     StudentClass selectByRecordId(String recordId);
 
+    StudentClass selectByMeetId(String meetUuId);
+
     int updateEntity(StudentClass record);
 
-    Page<StudentClass> selectByParams(@Param("params")Map<String, Object> params, Page<StudentClass> page);
+    Page<StudentClass> selectPageByParams(@Param("params")Map<String, Object> params, Page<StudentClass> page);
+
+    List<StudentClass> selectByParams(@Param("params")Map<String, Object> params);
 
     Long selectCancelByParams(@Param("params")Map<String, Object> params);
 
     Long selectCompleteByParams(@Param("params")Map<String, Object> params);
 
     List<SelectValueVo> selectAffCountByParams(@Param("params")Map<String, Object> params);
+
+    List<StudentClass> selectByNowStudentId(String studentId,String nowDate);
 }

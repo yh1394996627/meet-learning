@@ -10,7 +10,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.converter.TeacherClassRemarkConverter;
+import org.example.meetlearning.dao.entity.StudentClass;
+import org.example.meetlearning.dao.entity.TeacherClassRemark;
 import org.example.meetlearning.service.StudentClassPcService;
+import org.example.meetlearning.service.TeacherClassRemarkPcService;
 import org.example.meetlearning.vo.classes.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -18,7 +22,11 @@ import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.evaluation.TeacherComplaintReqVo;
 import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
+import org.example.meetlearning.vo.remark.TeacherClassRemarkPageRespVo;
+import org.example.meetlearning.vo.remark.TeacherClassRemarkQueryVo;
+import org.example.meetlearning.vo.remark.TeacherClassRemarkReqVo;
 import org.example.meetlearning.vo.student.StudentInfoRespVo;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +41,8 @@ import java.util.UUID;
 public class StudentClassController implements BaseController {
 
     private final StudentClassPcService studentClassPcService;
+
+    private final TeacherClassRemarkPcService teacherClassRemarkPcService;
 
     @Operation(summary = "学生预约记录列表", operationId = "studentClassPage")
     @PostMapping(value = "v1/student/class/page")
@@ -108,7 +118,7 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "取消课程投诉", operationId = "studentClassCancelComplaint")
     @PostMapping(value = "v1/student/class/cancel/complaint")
     public RespVo<String> studentClassCancelComplaint(@RequestBody RecordIdQueryVo reqVo) {
-        //studentClassPcService.studentClassCancel(getUserCode(), reqVo);
+        studentClassPcService.studentClassCancelComplaint(reqVo);
         return new RespVo<>("Course cancelled successfully");
     }
 
@@ -122,6 +132,19 @@ public class StudentClassController implements BaseController {
     @PostMapping(value = "v1/student/class/meeting")
     public RespVo<String> studentClassMeeting(@RequestBody RecordIdQueryVo queryVo) throws IOException {
         return new RespVo<>(studentClassPcService.meetingJoinUrl(queryVo.getRecordId()));
+    }
+
+    @Operation(summary = "新增老师备注", operationId = "studentClassMeeting")
+    @PostMapping(value = "v1/student/class/remark/add")
+    public RespVo<String> add(@RequestBody TeacherClassRemarkReqVo queryVo) {
+        teacherClassRemarkPcService.add(getUserCode(), getUserName(), queryVo);
+        return new RespVo<>("New successfully added");
+    }
+
+    @Operation(summary = "老师备注查询", operationId = "selectRemarkPage")
+    @PostMapping(value = "v1/student/class/remark/page")
+    public RespVo<PageVo<TeacherClassRemarkPageRespVo>> selectRemarkPage(TeacherClassRemarkQueryVo queryVo) {
+        return new RespVo<>(teacherClassRemarkPcService.selectPageByStudentId(queryVo));
     }
 
 }

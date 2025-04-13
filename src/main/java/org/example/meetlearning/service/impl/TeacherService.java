@@ -81,6 +81,12 @@ public class TeacherService {
     public List<SelectValueVo> selectGroupManager(Map<String, Object> params) {
         return teacherMapper.selectGroupManager(params);
     }
+    /**
+     * 分组查管理者
+     */
+    public List<SelectValueVo> selectAllGroupManager(Map<String, Object> params) {
+        return teacherMapper.selectAllGroupManager(params);
+    }
 
     /**
      * 分组查国家
@@ -101,5 +107,19 @@ public class TeacherService {
      */
     public List<Teacher> selectListByAll() {
         return teacherMapper.selectListByAll();
+    }
+
+    /**
+     * 查询最热门老师
+     */
+    public List<Teacher> selectTop5ByQty() {
+        return teacherMapper.selectTop5ByQty();
+    }
+
+    /**
+     * 查询最热门老师
+     */
+    public List<Teacher> selectTop5ByRating() {
+        return teacherMapper.selectTop5ByRating();
     }
 }

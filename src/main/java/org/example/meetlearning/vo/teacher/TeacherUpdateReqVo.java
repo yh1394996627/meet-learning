@@ -3,6 +3,7 @@ package org.example.meetlearning.vo.teacher;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.example.meetlearning.vo.common.SelectValueVo;
 
 import java.math.BigDecimal;
 import java.util.List;
