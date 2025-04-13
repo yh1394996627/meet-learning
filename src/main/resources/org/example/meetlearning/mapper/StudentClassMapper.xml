@@ -50,7 +50,7 @@
     record_id, student_id, student_name, student_country, teacher_id, teacher_name, teacher_country, 
     course_id, course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
     affiliate_name, student_consumption, efficient_date, student_balance, cancel_id, cancel_time,
-        meeting_record_id, is_complaint, is_evaluation, textbook, price, credits_price
+        meeting_record_id, is_complaint, is_evaluation, textbook, price, credits_price, class_status
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
