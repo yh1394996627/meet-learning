@@ -62,6 +62,12 @@
                 #{item}
             </foreach>
         </if>
+        <if test="params.noTeacherIds != null">
+            and teacher_id not in
+            <foreach collection="params.noTeacherIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="params.startTime != null">
             and begin_time &lt;= #{params.startTime}
         </if>

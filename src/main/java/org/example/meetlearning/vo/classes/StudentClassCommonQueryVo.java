@@ -44,6 +44,9 @@ public class StudentClassCommonQueryVo {
     @Schema(hidden = true)
     public Map<String, Object> getScheduleParams() {
         Map<String, Object> params = new HashMap<>();
+        if (teacherId != null) {
+            params.put("teacherId", teacherId);
+        }
         if (courseDate != null) {
             params.put("weekNum", ScheduleWeekEnum.getByDate(courseDate));
         }

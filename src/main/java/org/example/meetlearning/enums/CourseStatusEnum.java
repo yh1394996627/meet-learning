@@ -20,7 +20,7 @@ public enum CourseStatusEnum {
 
     public static CourseStatusEnum getCourseStatusByType(Integer status) {
         for (CourseStatusEnum courseStatus : CourseStatusEnum.values()) {
-            if (status.equals(courseStatus.status)) {
+            if (courseStatus.status.equals(status)) {
                 return courseStatus;
             }
         }

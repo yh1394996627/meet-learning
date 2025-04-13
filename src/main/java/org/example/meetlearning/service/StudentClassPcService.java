@@ -137,6 +137,8 @@ public class StudentClassPcService extends BasePcService {
 
         studentClass.setMeetingRecordId(meetingEntity.getMeetId());
         studentClassService.insertEntity(studentClass);
+        //记录老师已有课时
+        teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
         return new RespVo<>("New successfully added");
     }
 
@@ -177,7 +179,14 @@ public class StudentClassPcService extends BasePcService {
         if (CollectionUtils.isEmpty(teacherIds)) {
             return new RespVo<>(List.of());
         }
+
+        Map<String, Object> params = queryVo.getScheduleParams();
+//        List<TeacherCourseTime> courseTimes = teacherCourseTimeService.selectByTeacherIdDateTime(null, DateUtil.parse(queryVo.getCourseTime(), "yyyy-MM-dd"), arr[0], arr[1]);
+//        List<String> noTeacherIds = courseTimes.stream().map(TeacherCourseTime::getTeacherId).distinct().toList();
+//        params.put("noTeacherIds", noTeacherIds);
+
         List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
+
         List<String> resultList = teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
         return new RespVo<>(resultList);
     }
