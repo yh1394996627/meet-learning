@@ -214,9 +214,10 @@ public class TeacherSchedulePcService extends BasePcService {
                 teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
             }
         } else {
-            //删除时间段
-
-
+            for (StudentClassRegularRecord record : records) {
+                //删除占用的时间段
+                teacherCourseTimeService.deleteByTeacherIdTime(studentClassRegular.getTeacherId(), record.getCourseTime(), studentClassRegular.getBeginTime(), studentClassRegular.getEndTime());
+            }
         }
     }
 }
