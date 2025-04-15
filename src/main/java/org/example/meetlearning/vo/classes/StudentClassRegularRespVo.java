@@ -20,6 +20,9 @@ public class StudentClassRegularRespVo {
     @Schema(name = "courseType", description = "课程类型")
     private String courseType;
 
+    @Schema(name = "courseName", description = "课程名称")
+    private String courseName;
+
     @Schema(name = "courseTime", description = "课程时间 起始-结束")
     private String courseTime;
 

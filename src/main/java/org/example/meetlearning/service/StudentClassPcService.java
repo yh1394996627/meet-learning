@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.StudentClassConverter;
+import org.example.meetlearning.converter.StudentClassRegularConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.enums.RoleEnum;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -71,6 +73,8 @@ public class StudentClassPcService extends BasePcService {
 
     private final TeacherCourseTimeService teacherCourseTimeService;
 
+    private final StudentClassRegularService studentClassRegularService;
+
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
         Page<StudentClass> page = studentClassService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
@@ -111,7 +115,7 @@ public class StudentClassPcService extends BasePcService {
      * 3.学生扣掉课时币，添加扣除记录
      * 4.创建会议,生产会议链接
      */
-    public RespVo<String> studentClassAdd(String entCode, String userCode, String userName, StudentClassAddReqVo reqVo) throws IOException {
+    public RespVo<String> studentClassAdd(String userCode, String userName, StudentClassAddReqVo reqVo) throws IOException {
         //1.校验 2.拉取老师学生信息组装数据
         //查询学生信息
         Student student = reqVo.getStudentId() != null ? studentService.findByRecordId(reqVo.getStudentId()) : null;
@@ -128,12 +132,12 @@ public class StudentClassPcService extends BasePcService {
         //3.新增课时币学生扣减记录
         operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice().negate(), TokenContentEnum.COURSE_CLASS.getEnContent());
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
-        StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(entCode, userCode, reqVo, student, teacher, affiliate, userFinance);
+        StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
         Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         //创建会议
         String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
         JSONObject meetObj = new JSONObject(meeting);
-        StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(entCode, userCode, meetObj);
+        StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
 
         studentClass.setMeetingRecordId(meetingEntity.getMeetId());
         studentClassService.insertEntity(studentClass);
@@ -329,5 +333,23 @@ public class StudentClassPcService extends BasePcService {
         Assert.notNull(studentClassMeeting, "Meeting information not obtained");
         Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
         return studentClassMeeting.getMeetJoinUrl();
+    }
+
+    public void studentClassRegular(String userCode, String userName, StudentClassRegularReqVo reqVo) {
+        Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCourseDates()), "courseDates cannot be empty");
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getStudentId()), "studentId cannot be empty");
+        Student student = studentService.findByRecordId(reqVo.getStudentId());
+        Assert.notNull(student, "Student information not obtained");
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getTeacherId()), "teacherId cannot be empty");
+        Teacher teacher = teacherService.selectByRecordId(reqVo.getTeacherId());
+        Assert.notNull(teacher, "Teacher information not obtained");
+        //生成固定上课请求
+        StudentClassRegular studentClassRegular = StudentClassRegularConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher);
+        studentClassRegularService.insert(studentClassRegular);
+        //生成固定上课请求时间记录
+        List<StudentClassRegularRecord> regularRecords = reqVo.getCourseDates().stream().map(courseDate -> StudentClassRegularConverter.INSTANCE.toCreateRecord(studentClassRegular, courseDate)).toList();
+        regularRecords.forEach(studentClassRegularService::insertRecord);
+        //生成固定请求排班
+        teacherCourseTimeService.studentClassTimeSet(regularRecords.stream().map(item->StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular,item)).toList());
     }
 }

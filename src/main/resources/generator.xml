@@ -31,7 +31,9 @@
         <!--        <table tableName="teacher_deduction" domainObjectName="TeacherDeduction"/>-->
         <!--        <table tableName="teacher_class_remark" domainObjectName="TeacherClassRemark"/>-->
         <!--        <table tableName="textbook" domainObjectName="Textbook"/>-->
-<!--        <table tableName="textbook_record" domainObjectName="TextbookRecord"/>-->
-        <table tableName="teacher_course_time" domainObjectName="teacherCourseTime"/>
+        <!--        <table tableName="textbook_record" domainObjectName="TextbookRecord"/>-->
+        <!--        <table tableName="teacher_course_time" domainObjectName="teacherCourseTime"/>-->
+        <table tableName="student_class_regular" domainObjectName="StudentClassRegular"/>
+        <table tableName="student_class_regular_record" domainObjectName="StudentClassRegularRecord"/>
     </context>
 </generatorConfiguration>

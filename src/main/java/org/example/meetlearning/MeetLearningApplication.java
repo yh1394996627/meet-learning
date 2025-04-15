@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("org.example.meetlearning.dao.mapper")
 @EnableScheduling
 @EnableTransactionManagement
-@EnableAsync
+//                      @EnableAsync
 public class MeetLearningApplication {
 
     public static void main(String[] args) {

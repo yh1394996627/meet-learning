@@ -154,4 +154,48 @@ public interface StudentClassConverter {
     }
 
 
+    default StudentClass toCreateByRegular(String userCode, String userName, StudentClassRegular studentClassRegular, StudentClassRegularRecord studentClassRegularRecord, Student student, Teacher teacher, Affiliate affiliate, UserFinance studentFinance) {
+        StudentClass studentClass = new StudentClass();
+        studentClass.setDeleted(false);
+        studentClass.setCreator(userCode);
+        studentClass.setCreateName(userName);
+        studentClass.setCreateTime(new Date());
+        studentClass.setRecordId(UUID.randomUUID().toString());
+        studentClass.setTeacherCourseStatus(CourseStatusEnum.NOT_STARTED.getStatus());
+        studentClass.setStudentCourseStatus(CourseStatusEnum.NOT_STARTED.getStatus());
+        studentClass.setClassStatus(CourseStatusEnum.NOT_STARTED.getStatus());
+
+        studentClass.setCourseVideoUrl(null);
+        studentClass.setZoomId(null);
+        studentClass.setIsCourseVideoExpired(false);
+        studentClass.setStudentId(student.getRecordId());
+        studentClass.setStudentName(student.getName());
+        studentClass.setStudentCountry(student.getCountry());
+        studentClass.setTeacherId(teacher.getRecordId());
+        studentClass.setTeacherName(teacher.getName());
+        studentClass.setTeacherCountry(teacher.getCountry());
+        if (studentClassRegular.getCourseType() != null) {
+            CourseTypeEnum courseTypeEnum = CourseTypeEnum.valueOf(studentClassRegular.getCourseType());
+            assert courseTypeEnum != null;
+            studentClass.setCourseType(courseTypeEnum.name());
+        }
+        studentClass.setCourseTime(studentClassRegularRecord.getCourseTime());
+        studentClass.setBeginTime(studentClassRegular.getBeginTime());
+        studentClass.setEndTime(studentClassRegular.getEndTime());
+        if (affiliate != null) {
+            studentClass.setAffiliateId(affiliate.getRecordId());
+            studentClass.setAffiliateName(affiliate.getName());
+        }
+        studentClass.setStudentConsumption(BigDecimalUtil.nullOrZero(studentFinance.getConsumptionQty()));
+        studentClass.setEfficientDate(studentFinance.getExpirationTime());
+        studentClass.setStudentBalance(BigDecimalUtil.nullOrZero(studentFinance.getBalanceQty()));
+        studentClass.setIsEvaluation(false);
+        studentClass.setIsComplaint(false);
+        studentClass.setCourseId(studentClassRegular.getCourseId());
+        studentClass.setCourseName(studentClassRegular.getCourseName());
+        studentClass.setPrice(teacher.getPrice());
+        studentClass.setCreditsPrice(teacher.getCreditsPrice());
+        return studentClass;
+    }
+
 }

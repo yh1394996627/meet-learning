@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "老师日程接口")
@@ -41,19 +42,13 @@ public class TeacherScheduleController implements BaseController {
     @Operation(summary = "老师端日程-学生申请固定请求查询", operationId = "studentScheduleRegular")
     @PostMapping(value = "v1/schedule/class/regular")
     public RespVo<List<StudentClassRegularRespVo>> studentScheduleRegular() {
-        StudentClassRegularRespVo studentClassRegularRespVo = new StudentClassRegularRespVo();
-        studentClassRegularRespVo.setStudentId("111122332312");
-        studentClassRegularRespVo.setStudentName("ZHang San");
-        studentClassRegularRespVo.setStudentEmail("zangsan@qq.com");
-        studentClassRegularRespVo.setCourseType("SINGLE");
-        studentClassRegularRespVo.setCourseTime("9:30-10:00");
-        studentClassRegularRespVo.setCourseDateList("2025-03-30;2025-03-31;2025-04-01,2025-04-31;2025-05-31;2025-06-31;");
-        return new RespVo<>(List.of(studentClassRegularRespVo));
+        return new RespVo<>(teacherSchedulePcService.studentScheduleRegular(getUserCode()));
     }
 
     @Operation(summary = "老师端日程-同意、不同意操作", operationId = "studentScheduleRegular")
     @PostMapping(value = "v1/schedule/class/regular/opera")
-    public RespVo<String> studentScheduleRegular(@RequestBody ScheduleOperaVo ScheduleOperaVo) {
+    public RespVo<String> studentScheduleRegular(@RequestBody ScheduleOperaVo scheduleOperaVo) throws IOException {
+        teacherSchedulePcService.studentScheduleRegular(getUserCode(), getUserName(),scheduleOperaVo);
         return new RespVo<>("Operation successful");
     }
 }

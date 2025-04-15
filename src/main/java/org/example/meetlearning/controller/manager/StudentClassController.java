@@ -53,7 +53,7 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "新增学生预约", operationId = "studentClassAdd")
     @PostMapping(value = "v1/student/class/add")
     public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) throws IOException {
-        return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), getUserName(), reqVo);
+        return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), reqVo);
     }
 
     @Operation(summary = "选择课时币接口", operationId = "classCoinList")
@@ -125,6 +125,7 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "学生申请固定上课", operationId = "studentClassRegular")
     @PostMapping(value = "v1/student/class/regular")
     public RespVo<String> studentClassRegular(@RequestBody StudentClassRegularReqVo reqVo) {
+        studentClassPcService.studentClassRegular(getUserCode(), getUserName(), reqVo);
         return new RespVo<>("New complaint successfully added");
     }
 
