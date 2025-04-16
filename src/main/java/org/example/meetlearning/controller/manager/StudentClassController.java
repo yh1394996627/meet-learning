@@ -66,7 +66,7 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "选择时间段接口", operationId = "classTimeList")
     @PostMapping(value = "v1/student/class/time/list")
     public RespVo<List<String>> classTimeList(@RequestBody StudentClassCommonQueryVo queryVo) {
-        return studentClassPcService.classTimeList(queryVo);
+        return new RespVo<>(studentClassPcService.classTimeList(queryVo));
     }
 
     @Operation(summary = "选择老师接口", operationId = "classTeacherList")

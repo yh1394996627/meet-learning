@@ -177,23 +177,62 @@ public class StudentClassPcService extends BasePcService {
         return new RespVo<>(selectValueVos);
     }
 
-    public RespVo<List<String>> classTimeList(StudentClassCommonQueryVo queryVo) {
+
+    /**
+     * 3种场景
+     * 1.管理员预约，优先选择价格
+     * 2.学生预约课程
+     * 3.固定上课课程
+     */
+    public List<String> classTimeList(StudentClassCommonQueryVo queryVo) {
+        //1.管理员接口
+//        if (queryVo.getPriceContent() != null) {
+//            //按单价过滤老师
+//            List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
+//            List<String> teacherIds = teachers.stream().map(Teacher::getRecordId).toList();
+//            if (CollectionUtils.isEmpty(teacherIds)) {
+//                return List.of();
+//            }
+//            //获取日程时间
+//            List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
+//            //过滤出可用的日程时间
+//
+//
+//
+//            return teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
+//        } else if (!CollectionUtils.isEmpty(queryVo.getDates())) {
+//
+//
+//        } else if(StringUtils.isNotEmpty(queryVo.getCourseDate())){
+//
+//        }
+
+
         List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
         List<String> teacherIds = teachers.stream().map(Teacher::getRecordId).toList();
         if (CollectionUtils.isEmpty(teacherIds)) {
-            return new RespVo<>(List.of());
+            return List.of();
         }
-
         Map<String, Object> params = queryVo.getScheduleParams();
-//        List<TeacherCourseTime> courseTimes = teacherCourseTimeService.selectByTeacherIdDateTime(null, DateUtil.parse(queryVo.getCourseTime(), "yyyy-MM-dd"), arr[0], arr[1]);
-//        List<String> noTeacherIds = courseTimes.stream().map(TeacherCourseTime::getTeacherId).distinct().toList();
-//        params.put("noTeacherIds", noTeacherIds);
-
         List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
-
         List<String> resultList = teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
-        return new RespVo<>(resultList);
+        return resultList;
     }
+
+
+
+//    public List<String> getTimeList(String teacherId, String courseDate, String courseType){
+//        //1.查询日程
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("teacherId", teacherId);
+//        params.put("weekNum", ScheduleWeekEnum.getByDate(courseDate));
+//        List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(params);
+//        teacherSchedules.stream().filter(f->f.getCourseType().equals(courseType));
+//
+//
+//
+//    }
+
 
     public RespVo<StudentClassTotalRespVo> classTotalList(StudentClassQueryVo queryVo) {
         Long cancelTotal = studentClassService.selectCancelByParams(queryVo.getParams());
@@ -350,6 +389,6 @@ public class StudentClassPcService extends BasePcService {
         List<StudentClassRegularRecord> regularRecords = reqVo.getCourseDates().stream().map(courseDate -> StudentClassRegularConverter.INSTANCE.toCreateRecord(studentClassRegular, courseDate)).toList();
         regularRecords.forEach(studentClassRegularService::insertRecord);
         //生成固定请求排班
-        teacherCourseTimeService.studentClassTimeSet(regularRecords.stream().map(item->StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular,item)).toList());
+        teacherCourseTimeService.studentClassTimeSet(regularRecords.stream().map(item -> StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular, item)).toList());
     }
 }

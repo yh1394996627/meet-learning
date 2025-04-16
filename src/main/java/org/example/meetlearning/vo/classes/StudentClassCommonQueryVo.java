@@ -5,7 +5,9 @@ import lombok.Data;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -31,6 +33,9 @@ public class StudentClassCommonQueryVo {
 
     @Schema(name = "stopTime", description = "时间段 - 结束")
     private String stopTime;
+
+    @Schema(name = "dates", description = "课程时间")
+    private List<String> dates;
 
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
