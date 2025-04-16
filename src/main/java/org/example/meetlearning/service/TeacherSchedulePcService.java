@@ -148,11 +148,10 @@ public class TeacherSchedulePcService extends BasePcService {
                     TeacherSchedule teacherSchedule = ScheduleConverter.INSTANCE.toCreateSchedule(schedule);
                     teacherSchedule.setBeginTime(arr[0]);
                     teacherSchedule.setEndTime(arr[1]);
-                    teacherSchedule.setCourseType(CourseTypeEnum.SINGLE.name());
+                    teacherSchedule.setCourseType(CourseTypeEnum.GROUP.name());
                     teacherSchedules.add(teacherSchedule);
                 }
             }
-
         }
 
         if (!CollectionUtils.isEmpty(teacherSchedules)) {
