@@ -40,7 +40,7 @@
       select
       <include refid="Base_Column_List"/>
       from student_class_regular
-      where teacher_id = #{teacherId} and teacherId = -1
+      where teacher_id = #{teacherId} and audit_status = -1
   </select>
 
   <delete id="deleteByRecordId">

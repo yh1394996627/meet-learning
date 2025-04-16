@@ -163,6 +163,9 @@ public class TeacherSchedulePcService extends BasePcService {
 
     public List<StudentClassRegularRespVo> studentScheduleRegular(String userCode) {
         List<StudentClassRegular> regulars = studentClassRegularService.selectByTeacherId(userCode);
+        if (CollectionUtils.isEmpty(regulars)) {
+            return new ArrayList<>();
+        }
         List<String> teacherIds = regulars.stream().map(StudentClassRegular::getTeacherId).distinct().toList();
         List<StudentClassRegularRecord> records = studentClassRegularService.selectRecordByRegularId(teacherIds);
         Map<String, List<StudentClassRegularRecord>> recordMap = records.stream().collect(Collectors.groupingBy(StudentClassRegularRecord::getRegularId));
