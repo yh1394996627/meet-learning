@@ -19,4 +19,6 @@ public class TeacherCourseTime {
 
     private String endTime;
 
+    private String courseType;
+
 }

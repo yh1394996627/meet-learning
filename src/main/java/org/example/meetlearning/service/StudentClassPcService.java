@@ -14,6 +14,7 @@ import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
 import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.service.impl.*;
+import org.example.meetlearning.util.AvailableTimeCalculatorUtil;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.classes.*;
 import org.example.meetlearning.vo.common.PageVo;
@@ -31,10 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -186,52 +184,60 @@ public class StudentClassPcService extends BasePcService {
      */
     public List<String> classTimeList(StudentClassCommonQueryVo queryVo) {
         //1.管理员接口
-//        if (queryVo.getPriceContent() != null) {
-//            //按单价过滤老师
-//            List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
-//            List<String> teacherIds = teachers.stream().map(Teacher::getRecordId).toList();
-//            if (CollectionUtils.isEmpty(teacherIds)) {
-//                return List.of();
-//            }
-//            //获取日程时间
-//            List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
-//            //过滤出可用的日程时间
-//
-//
-//
-//            return teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
-//        } else if (!CollectionUtils.isEmpty(queryVo.getDates())) {
-//
-//
-//        } else if(StringUtils.isNotEmpty(queryVo.getCourseDate())){
-//
-//        }
-
-
-        List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
-        List<String> teacherIds = teachers.stream().map(Teacher::getRecordId).toList();
-        if (CollectionUtils.isEmpty(teacherIds)) {
-            return List.of();
+        if (queryVo.getPriceContent() != null) {
+            List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
+            List<String> teacherIds = teachers.stream().map(Teacher::getRecordId).toList();
+            if (CollectionUtils.isEmpty(teacherIds)) {
+                return List.of();
+            }
+            List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
+            return teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
+        } else if (!CollectionUtils.isEmpty(queryVo.getDates())) {
+            Map<String, List<String>> map = new HashMap<>();
+            for (String date : queryVo.getDates()) {
+                map.put(date, getHalfTimeList(queryVo.getTeacherId(), date, queryVo.getCourseType(), null, null));
+            }
+            if (map.isEmpty()) {
+                return List.of();
+            }
+            return AvailableTimeCalculatorUtil.findCommonTimeSlots(map);
+        } else if (StringUtils.isNotEmpty(queryVo.getCourseDate())) {
+            return getHalfTimeList(queryVo.getTeacherId(), queryVo.getCourseDate(), queryVo.getCourseType(), queryVo.getStartTime(), queryVo.getStopTime());
         }
-        Map<String, Object> params = queryVo.getScheduleParams();
-        List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
-        List<String> resultList = teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
-        return resultList;
+        return List.of();
     }
 
 
-
-//    public List<String> getTimeList(String teacherId, String courseDate, String courseType){
-//        //1.查询日程
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("teacherId", teacherId);
-//        params.put("weekNum", ScheduleWeekEnum.getByDate(courseDate));
-//        List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(params);
-//        teacherSchedules.stream().filter(f->f.getCourseType().equals(courseType));
-//
-//
-//
-//    }
+    public List<String> getHalfTimeList(String teacherId, String courseDate, String courseType, String startTime, String stopTime) {
+        //1.查询日程
+        Map<String, Object> params = new HashMap<>();
+        params.put("teacherId", teacherId);
+        params.put("weekNum", ScheduleWeekEnum.getByDate(courseDate));
+        params.put("courseType", courseType);
+        if (startTime != null) {
+            params.put("startTime", startTime);
+        }
+        if (stopTime != null) {
+            params.put("stopTime", stopTime);
+        }
+        List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(params);
+        List<String> teacherSchedulesList = teacherSchedules.stream().sorted(Comparator.comparing(TeacherSchedule::getBeginTime)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
+        //当天已预约时间段
+        List<TeacherCourseTime> teacherCourseTimes = teacherCourseTimeService.selectByTeacherIdTime(teacherId, DateUtil.parse(courseDate, "yyyy-MM-dd"));
+        List<String> teacherCourseTimesList = teacherCourseTimes.stream().sorted(Comparator.comparing(TeacherCourseTime::getBeginTime)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
+        if (!StringUtils.equals(CourseTypeEnum.GROUP.name(), courseType)) {
+            return AvailableTimeCalculatorUtil.getAvailableTimeSlots(teacherSchedulesList, teacherCourseTimesList);
+        } else {
+            teacherCourseTimes.stream().filter(teacherCourseTime -> teacherCourseTime.getCourseType().equals(CourseTypeEnum.GROUP.name())).toList();
+            teacherCourseTimesList = teacherCourseTimes.stream().sorted(Comparator.comparing(TeacherCourseTime::getBeginTime)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).collect(Collectors.toList());
+            teacherCourseTimesList = CollectionUtils.isEmpty(teacherCourseTimesList) ? List.of() : teacherCourseTimesList;
+            List<String> list = AvailableTimeCalculatorUtil.getAvailableTimeSlots(teacherSchedulesList, teacherCourseTimesList);
+            if (!CollectionUtils.isEmpty(list)) {
+                teacherCourseTimesList.addAll(list);
+            }
+            return teacherCourseTimesList.stream().distinct().toList();
+        }
+    }
 
 
     public RespVo<StudentClassTotalRespVo> classTotalList(StudentClassQueryVo queryVo) {

@@ -68,6 +68,9 @@
                 #{item}
             </foreach>
         </if>
+        <if test="params.courseType != null">
+            and course_type &lt;= #{params.courseType}
+        </if>
         <if test="params.startTime != null">
             and begin_time &lt;= #{params.startTime}
         </if>

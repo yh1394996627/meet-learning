@@ -6,13 +6,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.service.FileService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.file.FileInfoReqVo;
 import org.example.meetlearning.vo.file.FilePageRespVo;
 import org.example.meetlearning.vo.file.FileQueryVo;
+import org.example.meetlearning.vo.file.FileVideoReqVo;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +63,15 @@ public class FileController {
     }
 
 
-
-
+    @Operation(summary = "视频转换和格式返回前段", operationId = "getVideoUrl")
+    @PostMapping("v1/file/url")
+    public ResponseEntity<String> getVideoUrl(@RequestBody FileVideoReqVo reqVo) {
+        if (StringUtils.isEmpty(reqVo.getFilePath())) {
+            return ResponseEntity.ok("");
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "video/mp4"); // 告诉浏览器这是视频
+        headers.add("Content-Disposition", "inline; filename=\"video.mp4\""); // 内联播放，而非下载
+        return ResponseEntity.ok().headers(headers).body(reqVo.getFilePath());
+    }
 }
