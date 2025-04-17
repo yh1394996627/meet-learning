@@ -321,7 +321,7 @@ public class TeacherPcService extends BasePcService {
         List<SharedTeacherListRespVo> respVos = teacherList.stream().map(item -> {
             SharedTeacherListRespVo sharedTeacherListRespVo = TeacherConverter.INSTANCE.toSharedTeacherListRespVo(item);
             sharedTeacherListRespVo.setAvatarUtl(downloadFile(item.getAvatarUrl()));
-            sharedTeacherListRespVo.setVideoUrl(downloadFile(item.getAvatarUrl()));
+            sharedTeacherListRespVo.setVideoUrl(downloadFile(item.getVideoUrl()));
             return sharedTeacherListRespVo;
         }).toList();
         return new RespVo<>(respVos);
