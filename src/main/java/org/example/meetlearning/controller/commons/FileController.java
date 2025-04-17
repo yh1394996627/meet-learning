@@ -62,6 +62,23 @@ public class FileController {
         return fileService.removeDic(reqVo.getPath());
     }
 
+    @Operation(summary = "公共删除文件", operationId = "deletedFolderOrFile")
+    @PostMapping(value = "v1/file/public/deleted")
+    public RespVo<String> deletedFolderOrFile(@RequestParam("path") String path) {
+        fileService.deletedFolderOrFile(path);
+        return new RespVo<>("Delete successfully");
+    }
+    @Operation(summary = "公共创建文件夹", operationId = "createFolder")
+    @PostMapping(value = "v1/file/create/folder")
+    public RespVo<String> createFolder(@RequestParam("path") String path) {
+        return fileService.createFolder(path);
+    }
+
+    @Operation(summary = "公共上传文件", operationId = "uploadFolder")
+    @PostMapping(value = "v1/file/public/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public RespVo<String> uploadPublicFolder(@RequestParam("path") String path, @RequestPart("file") MultipartFile file) {
+        return fileService.uploadPublicFolder(path, file);
+    }
 
     @Operation(summary = "视频转换和格式返回前段", operationId = "getVideoUrl")
     @PostMapping("v1/file/url")

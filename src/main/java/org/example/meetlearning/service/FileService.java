@@ -3,6 +3,7 @@ package org.example.meetlearning.service;
 import com.aliyun.oss.common.utils.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.file.FilePageRespVo;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
@@ -18,10 +20,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -170,6 +169,69 @@ public class FileService {
             return new RespVo<>("File save failed", false, e.getMessage());
         }
         return new RespVo<>("File saved successfully");
+    }
+
+    public RespVo<String> uploadPublicFolder(String destinationPath, MultipartFile file) {
+        if (file.isEmpty()) {
+            return new RespVo<>("null", false, "The uploaded file cannot be empty");
+        }
+        destinationPath = publicFolder + destinationPath;
+        Path path = Paths.get(destinationPath);
+        // 如果目录不存在，则创建它
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path); // 递归创建目录
+                System.out.println("Directory created: " + destinationPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to create directory: " + destinationPath, e);
+            }
+        }
+        // 指定上传文件的存储路径
+        String filePath = destinationPath + file.getOriginalFilename();
+        // 保存文件
+        try {
+            log.info("--->filePath:{}", filePath);
+            // 保存文件
+            file.transferTo(new File(filePath));
+        } catch (IOException e) {
+            log.error("File save failed", e);
+            return new RespVo<>("File save failed", false, e.getMessage());
+        }
+        return new RespVo<>("File saved successfully");
+    }
+
+    public RespVo<String> createFolder(String destinationPath) {
+        destinationPath = publicFolder + destinationPath;
+        Path path = Paths.get(destinationPath);
+        // 如果目录不存在，则创建它
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path); // 递归创建目录
+                System.out.println("Directory created: " + destinationPath);
+            } catch (IOException e) {
+                log.error("Failed to create directory: " + e.getMessage());
+                throw new RuntimeException("Failed to create directory");
+            }
+        }
+        return new RespVo<>("Folder created successfully");
+    }
+
+    public void deletedFolderOrFile(String destinationPath) {
+        try {
+            Path path = Paths.get(destinationPath);
+            Assert.isTrue(!Files.exists(path), "The file or folder does not exist");
+            // 删除文件或文件夹
+            if (Files.isDirectory(path)) {
+                // 删除文件夹（包括子文件和子目录）
+                FileUtils.deleteDirectory(path.toFile()); // 使用Apache Commons IO
+            } else {
+                // 删除单个文件
+                Files.delete(path);
+            }
+        } catch (Exception e) {
+            log.error("Failed to delete file or folder: " + destinationPath);
+            throw new RuntimeException("Failed to delete file or folder: " + destinationPath);
+        }
     }
 
     public RespVo<String> removeDic(String destinationPath) {

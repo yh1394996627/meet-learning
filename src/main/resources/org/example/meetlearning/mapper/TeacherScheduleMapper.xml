@@ -49,7 +49,7 @@
         select
         begin_time,end_time
         from teacher_schedule
-        where week_num = #{weekNum,jdbcType=VARCHAR}
+        where week_num = #{params.weekNum,jdbcType=VARCHAR}
         <include refid="where_common"/>
         and begin_time is not null and end_time is not null
         group by begin_time,end_time
@@ -67,6 +67,9 @@
             <foreach collection="params.noTeacherIds" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
+        </if>
+        <if test="params.teacherId != null">
+            and teacher_id = #{params.teacherId}
         </if>
         <if test="params.courseType != null">
             and course_type &lt;= #{params.courseType}

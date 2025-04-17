@@ -18,6 +18,6 @@ public interface TeacherScheduleMapper {
 
     List<TeacherSchedule> selectByTeacherIdWeekNumGroupByTime(String weekNum, List<String> teacherIds);
 
-    List<TeacherSchedule> selectGroupTimeByParams(Map<String,Object> params);
+    List<TeacherSchedule> selectGroupTimeByParams(@Param("params") Map<String,Object> params);
 
 }
