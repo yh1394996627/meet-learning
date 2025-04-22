@@ -31,9 +31,6 @@ public interface StudentClassRegularConverter {
         regular.setCourseId(reqVo.getCourseId());
         regular.setCourseName(reqVo.getCourseName());
         regular.setCourseTime(new Date());
-        String[] split = reqVo.getCourseTime().split("-");
-        regular.setBeginTime(split[0]);
-        regular.setEndTime(split[1]);
         regular.setCourseType(reqVo.getCourseType());
         regular.setAuditStatus(-1);
         regular.setPrice(BigDecimalUtil.nullOrZero(teacher.getPrice()).multiply(new BigDecimal(reqVo.getCourseDates().size())));

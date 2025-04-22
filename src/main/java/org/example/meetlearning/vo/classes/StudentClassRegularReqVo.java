@@ -22,8 +22,8 @@ public class StudentClassRegularReqVo {
     @Schema(name = "courseType", description = "课程类型")
     private String courseType;
 
-    @Schema(name = "courseTime", description = "课程时间 起始-结束")
-    private String courseTime;
+    @Schema(name = "courseTimes", description = "课程时间集合 起始-结束")
+    private List<String> courseTimes;
 
     @Schema(name = "courseDates", description = "课程日期 yyy-MM-dd")
     private List<String> courseDates;

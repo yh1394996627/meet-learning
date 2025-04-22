@@ -193,14 +193,20 @@ public class StudentClassPcService extends BasePcService {
             List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
             return teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
         } else if (!CollectionUtils.isEmpty(queryVo.getDates())) {
-            Map<String, List<String>> map = new HashMap<>();
-            for (String date : queryVo.getDates()) {
-                map.put(date, getHalfTimeList(queryVo.getTeacherId(), date, queryVo.getCourseType(), null, null));
+            if (!StringUtils.equals(CourseTypeEnum.GROUP.name(), queryVo.getCourseType())) {
+                return List.of("00:00-00:30", "00:30-01:00", "01:00-01:30", "01:30-02:00", "02:00-02:30", "02:30-03:00", "03:00-03:30", "03:30-04:00",
+                        "04:00-04:30", "04:30-04:30", "04:30-05:00", "05:00-05:30", "05:30-06:00", "06:00-06:30", "06:30-07:00", "07:00-07:30", "07:30-08:00",
+                        "08:00-08:30", "08:30-09:00", "09:00-09:30", "09:30-10:00", "10:00-10:30", "10:30-11:00", "11:00-11:30", "11:30-12:00", "12:00-12:30",
+                        "12:30-13:00", "13:00-13:30", "13:30-14:00", "14:00-14:30", "14:30-15:00", "15:00-15:30", "15:30-16:00", "16:00-16:30", "16:30-17:00",
+                        "17:00-17:30", "17:30-18:00", "18:00-18:30", "18:30-19:00", "19:00-19:30", "19:30-20:00", "20:00-20:30", "20:30-21:00", "21:00-21:30",
+                        "21:30-22:00", "22:00-22:30", "22:30-23:00", "23:00-23:30", "23:30-00:00"
+                );
+            } else {
+                return List.of("00:00-01:00", "01:00-02:00", "02:00-03:00", "03:00-04:00", "04:00-05:00", "05:00-06:00", "06:00-07:00", "07:00-08:00",
+                        "08:00-09:00", "09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00",
+                        "17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00", "21:00-22:00", "22:00-23:00", "23:00-00:00"
+                );
             }
-            if (map.isEmpty()) {
-                return List.of();
-            }
-            return AvailableTimeCalculatorUtil.findCommonTimeSlots(map);
         } else if (StringUtils.isNotEmpty(queryVo.getCourseDate())) {
             return getHalfTimeList(queryVo.getTeacherId(), queryVo.getCourseDate(), queryVo.getCourseType(), queryVo.getStartTime(), queryVo.getStopTime());
         }
@@ -392,7 +398,13 @@ public class StudentClassPcService extends BasePcService {
         StudentClassRegular studentClassRegular = StudentClassRegularConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher);
         studentClassRegularService.insert(studentClassRegular);
         //生成固定上课请求时间记录
-        List<StudentClassRegularRecord> regularRecords = reqVo.getCourseDates().stream().map(courseDate -> StudentClassRegularConverter.INSTANCE.toCreateRecord(studentClassRegular, courseDate)).toList();
+        List<StudentClassRegularRecord> regularRecords = new ArrayList<>();
+        for (String courseTime : reqVo.getCourseTimes()) {
+            studentClassRegular.setBeginTime(courseTime.split("-")[0]);
+            studentClassRegular.setEndTime(courseTime.split("-")[1]);
+            List<StudentClassRegularRecord> records = reqVo.getCourseDates().stream().map(courseDate -> StudentClassRegularConverter.INSTANCE.toCreateRecord(studentClassRegular, courseDate)).toList();
+            regularRecords.addAll(records);
+        }
         regularRecords.forEach(studentClassRegularService::insertRecord);
         //生成固定请求排班
         teacherCourseTimeService.studentClassTimeSet(regularRecords.stream().map(item -> StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular, item)).toList());

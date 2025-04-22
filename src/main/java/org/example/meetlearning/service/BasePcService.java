@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +43,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -175,20 +177,78 @@ public class BasePcService {
     }
 
 
+//    public String generateAndUploadQrCode(String content) throws WriterException, IOException {
+//        String fileName = "qrcode/" + content + ".png";
+//        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+//        Map<EncodeHintType, Object> hints = new HashMap<>();
+//        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+//        String qrUrl = String.format("https://www.12talk.com/#/register?recordId=%s", content);
+//        BitMatrix bitMatrix = qrCodeWriter.encode(qrUrl, BarcodeFormat.QR_CODE, 300, 300, hints);
+//        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+//        byte[] qrCodeBytes = byteArrayOutputStream.toByteArray();
+//        InputStream inputStream = new ByteArrayInputStream(qrCodeBytes);
+//        ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, inputStream);
+//        return fileName;
+//    }
+
+
     public String generateAndUploadQrCode(String content) throws WriterException, IOException {
         String fileName = "qrcode/" + content + ".png";
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
         String qrUrl = String.format("https://www.12talk.com/#/register?recordId=%s", content);
+
+        // 生成二维码矩阵
         BitMatrix bitMatrix = qrCodeWriter.encode(qrUrl, BarcodeFormat.QR_CODE, 300, 300, hints);
-        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
-        byte[] qrCodeBytes = byteArrayOutputStream.toByteArray();
-        InputStream inputStream = new ByteArrayInputStream(qrCodeBytes);
-        ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, inputStream);
+        BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+
+        // 添加Logo到二维码
+        BufferedImage combinedImage = addLogoToQRCode(qrImage);
+
+        // 上传到OSS
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(combinedImage, "png", os);
+        InputStream is = new ByteArrayInputStream(os.toByteArray());
+        ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, is);
+
         return fileName;
+    }
+
+    private BufferedImage addLogoToQRCode(BufferedImage qrImage) throws IOException {
+        // 1. 加载Logo图片（示例使用类路径资源，需将logo.png放在resources目录下）
+        InputStream logoStream = getClass().getResourceAsStream("/static/logo.jpg");
+        BufferedImage logoImage = ImageIO.read(logoStream);
+
+        // 2. 计算Logo缩放比例（建议二维码尺寸的1/5）
+        int maxLogoSize = qrImage.getWidth() / 8;
+        int logoWidth = Math.min(logoImage.getWidth(), maxLogoSize);
+        int logoHeight = Math.min(logoImage.getHeight(), maxLogoSize);
+
+        // 3. 高质量缩放Logo
+        Image scaledLogo = logoImage.getScaledInstance(logoWidth, logoHeight, Image.SCALE_SMOOTH);
+
+        // 4. 创建新的合成图像
+        BufferedImage combined = new BufferedImage(qrImage.getWidth(), qrImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = combined.createGraphics();
+
+        // 5. 绘制二维码
+        g.drawImage(qrImage, 0, 0, null);
+
+        // 6. 计算Logo位置（居中）
+        int x = (qrImage.getWidth() - logoWidth) / 2;
+        int y = (qrImage.getHeight() - logoHeight) / 2;
+
+        // 7. 添加白色背景（可选）
+        g.setColor(Color.WHITE);
+        g.fillRect(x - 2, y - 2, logoWidth + 4, logoHeight + 4); // 扩展2像素作为边框
+
+        // 8. 绘制Logo
+        g.drawImage(scaledLogo, x, y, null);
+        g.dispose();
+        return combined;
     }
 
     /**
