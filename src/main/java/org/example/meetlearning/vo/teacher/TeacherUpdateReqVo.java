@@ -32,6 +32,9 @@ public class TeacherUpdateReqVo {
     @Schema(name = "price", description = "单价")
     private BigDecimal price;
 
+    @Schema(name = "groupPrice", description = "团体课单价")
+    private BigDecimal groupPrice;
+
     @Schema(name = "creditsPrice", description = "积分单价")
     private BigDecimal creditsPrice;
 
@@ -46,6 +49,9 @@ public class TeacherUpdateReqVo {
 
     @Schema(name = "rate", description = "比率")
     private BigDecimal rate;
+
+    @Schema(name = "groupRate", description = "团体课比率")
+    private BigDecimal groupRate;
 
     @Schema(name = "managerId", description = "管理ID")
     private String managerId;

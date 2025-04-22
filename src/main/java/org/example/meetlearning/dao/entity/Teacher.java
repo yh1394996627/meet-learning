@@ -38,9 +38,13 @@ public class Teacher {
 
     private BigDecimal price;
 
+    private BigDecimal groupPrice;
+
     private BigDecimal creditsPrice;
 
     private BigDecimal rate;
+
+    private BigDecimal groupRate;
 
     private BigDecimal confirmedQty;
 

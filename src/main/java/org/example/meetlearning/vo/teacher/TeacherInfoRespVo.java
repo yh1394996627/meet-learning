@@ -38,11 +38,17 @@ public class TeacherInfoRespVo {
     @Schema(name = "price", description = "价格")
     private BigDecimal price;
 
+    @Schema(name = "groupPrice", description = "团体价格")
+    private BigDecimal groupPrice;
+
     @Schema(name = "creditsPrice", description = "积分价格")
     private BigDecimal creditsPrice;
 
     @Schema(name = "rate", description = "比例")
     private BigDecimal rate;
+
+    @Schema(name = "groupRate", description = "团体比例")
+    private BigDecimal groupRate;
 
     @Schema(name = "confirmedQty", description = "确认数量")
     private BigDecimal confirmedQty;
