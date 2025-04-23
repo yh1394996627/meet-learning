@@ -231,7 +231,7 @@ public class FileService {
                 Files.delete(path);
             }
         } catch (Exception e) {
-            log.error("Failed to delete file or folder: " + destinationPath);
+            log.error("Failed to delete file or folder: " + e);
             throw new RuntimeException("Failed to delete file or folder: " + destinationPath);
         }
     }
