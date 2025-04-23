@@ -41,7 +41,7 @@ public class TeacherCourseTimeService {
     public void studentClassTimeSet(List<StudentClass> studentClasses) {
         for (StudentClass studentClass : studentClasses) {
             List<TeacherCourseTime> teacherCourseTimes = teacherCourseTimeMapper.selectByTeacherIdDateTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime());
-            Assert.isTrue(!CollectionUtils.isEmpty(teacherCourseTimes), "Teacher【" + studentClass.getTeacherName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】, there is already an appointment available");
+            Assert.isTrue(CollectionUtils.isEmpty(teacherCourseTimes), "Teacher【" + studentClass.getTeacherName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】,  there is already an appointment available");
             TeacherCourseTime teacherCourseTime = new TeacherCourseTime();
             teacherCourseTime.setRecordId(UUID.randomUUID().toString());
             teacherCourseTime.setTeacherId(studentClass.getTeacherId());
