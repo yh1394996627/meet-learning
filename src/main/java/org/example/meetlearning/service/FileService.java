@@ -201,6 +201,7 @@ public class FileService {
     }
 
     public RespVo<String> createFolder(String destinationPath) {
+        Assert.isTrue(StringUtils.isNotEmpty(destinationPath), "Path cannot be empty");
         destinationPath = publicFolder + destinationPath;
         Path path = Paths.get(destinationPath);
         // 如果目录不存在，则创建它
@@ -218,6 +219,7 @@ public class FileService {
 
     public void deletedFolderOrFile(String destinationPath) {
         try {
+            Assert.isTrue(StringUtils.isNotEmpty(destinationPath), "Path cannot be empty");
             Path path = Paths.get(destinationPath);
             Assert.isTrue(!Files.exists(path), "The file or folder does not exist");
             // 删除文件或文件夹

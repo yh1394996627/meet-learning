@@ -64,14 +64,14 @@ public class FileController {
 
     @Operation(summary = "公共删除文件", operationId = "deletedFolderOrFile")
     @PostMapping(value = "v1/file/public/deleted")
-    public RespVo<String> deletedFolderOrFile(@RequestParam("path") String path) {
-        fileService.deletedFolderOrFile(path);
+    public RespVo<String> deletedFolderOrFile(@RequestBody FileInfoReqVo reqVo) {
+        fileService.deletedFolderOrFile(reqVo.getPath());
         return new RespVo<>("Delete successfully");
     }
     @Operation(summary = "公共创建文件夹", operationId = "createFolder")
     @PostMapping(value = "v1/file/create/folder")
-    public RespVo<String> createFolder(@RequestParam("path") String path) {
-        return fileService.createFolder(path);
+    public RespVo<String> createFolder(@RequestBody FileInfoReqVo reqVo) {
+        return fileService.createFolder(reqVo.getPath());
     }
 
     @Operation(summary = "公共上传文件", operationId = "uploadFolder")
