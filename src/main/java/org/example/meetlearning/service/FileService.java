@@ -219,20 +219,35 @@ public class FileService {
 
     public void deletedFolderOrFile(String destinationPath) {
         try {
-            Assert.isTrue(StringUtils.isNotEmpty(destinationPath), "Path cannot be empty");
-            Path path = Paths.get("usr/local/apps/material/public-folder/dist.zip");
-            Assert.isTrue(!Files.exists(path), "The file or folder does not exist");
-            // 删除文件或文件夹
+            // 1. 校验路径非空
+            Assert.isTrue(StringUtils.isNotBlank(destinationPath), "Path cannot be empty");
+
+            Path path = Paths.get(destinationPath);
+
+            // 2. 校验路径存在
+            Assert.isTrue(Files.exists(path), "The file or folder does not exist: " + destinationPath);
+
+            // 3. 删除逻辑
             if (Files.isDirectory(path)) {
-                // 删除文件夹（包括子文件和子目录）
-                FileUtils.deleteDirectory(path.toFile()); // 使用Apache Commons IO
+                // 使用递归删除确保处理符号链接和权限问题
+                FileUtils.deleteDirectory(path.toFile());
             } else {
-                // 删除单个文件
+                // 删除文件前检查写权限
+                if (!Files.isWritable(path)) {
+                    throw new AccessDeniedException("No write permission for file: " + destinationPath);
+                }
                 Files.delete(path);
             }
+
+            log.info("Successfully deleted: {}", destinationPath);
+
+        } catch (IllegalArgumentException e) {
+            // 参数校验失败的已知异常直接抛出
+            throw e;
         } catch (Exception e) {
-            log.error("Failed to delete file or folder: " + e);
-            throw new RuntimeException("Failed to delete file or folder: " + destinationPath);
+            log.error("Failed to delete file or folder: {}", destinationPath, e);
+            // 保留原始异常信息
+            throw new RuntimeException("Failed to delete: " + destinationPath, e);
         }
     }
 
