@@ -220,7 +220,7 @@ public class FileService {
     public void deletedFolderOrFile(String destinationPath) {
         try {
             Assert.isTrue(StringUtils.isNotEmpty(destinationPath), "Path cannot be empty");
-            Path path = Paths.get(destinationPath);
+            Path path = Paths.get("usr/local/apps/material/public-folder/dist.zip");
             Assert.isTrue(!Files.exists(path), "The file or folder does not exist");
             // 删除文件或文件夹
             if (Files.isDirectory(path)) {
