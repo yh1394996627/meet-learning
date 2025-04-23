@@ -23,7 +23,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -37,7 +39,9 @@ public class TokensLogPcService {
     private final UserService userService;
 
     public RespVo<PageVo<TokensLogListRespVo>> tokensLogPage(String userCode, String userName, TokensLogQueryVo queryVo) {
-        Page<TokensLog> page = tokensLogService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userCode);
+        Page<TokensLog> page = tokensLogService.selectPageByParams(params, queryVo.getPageRequest());
         PageVo<TokensLogListRespVo> pageVO = PageVo.map(page, list -> TokenConverter.INSTANCE.toListVo(userCode, userName, list));
         return new RespVo<>(pageVO);
     }

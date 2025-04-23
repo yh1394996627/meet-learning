@@ -84,8 +84,7 @@ public interface StudentClassConverter {
         studentClass.setTeacherName(teacher.getName());
         studentClass.setTeacherCountry(teacher.getCountry());
         if (reqVo.getCourseType() != null) {
-            CourseTypeEnum courseTypeEnum = CourseTypeEnum.getByType(reqVo.getCourseType());
-            assert courseTypeEnum != null;
+            CourseTypeEnum courseTypeEnum = CourseTypeEnum.valueOf(reqVo.getCourseType());
             studentClass.setCourseType(courseTypeEnum.name());
         }
         studentClass.setCourseTime(reqVo.getCourseDate());
