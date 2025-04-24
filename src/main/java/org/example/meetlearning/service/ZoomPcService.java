@@ -129,15 +129,19 @@ public class ZoomPcService {
         }
         switch (eventType) {
             case "meeting.started":
+                log.info("开始会议处理中。。。");
                 handleMeetingStarted(objData);
                 break;
             case "meeting.ended":
+                log.info("结束会议处理中。。。");
                 handleMeetingEnded(objData);
                 break;
             case "meeting.participant_joined":
+                log.info("加入会议处理中。。。");
                 handleParticipantJoined(objData);
                 break;
             case "meeting.participant_left":
+                log.info("离开会议处理中。。。");
                 handleParticipantLeft(objData);
                 break;
             default:
@@ -150,6 +154,7 @@ public class ZoomPcService {
      * 开始会议事件
      */
     private void handleMeetingStarted(JSONObject eventData) {
+
         String meetingId = eventData.getString("id");
         String hostId = eventData.getString("host_id");
         long startLongTime = eventData.getLong("start_time");
@@ -163,7 +168,6 @@ public class ZoomPcService {
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
         meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Meeting started");
-        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting");
     }
 
     /**
