@@ -127,6 +127,7 @@ public class ZoomPcService {
         if ("endpoint.url_validation".equals(eventType)) {
             handleUrlValidation(json);
         }
+        log.info("objData:{}", objData);
         switch (eventType) {
             case "meeting.started":
                 log.info("开始会议处理中。。。");
@@ -154,12 +155,7 @@ public class ZoomPcService {
      * 开始会议事件
      */
     private void handleMeetingStarted(JSONObject eventData) {
-
         String meetingId = eventData.getString("id");
-        String hostId = eventData.getString("host_id");
-        long startLongTime = eventData.getLong("start_time");
-        Date startTime = new Date(startLongTime);
-        log.info("Meeting started - ID: {}, Host: {}, Time: {}", meetingId, hostId, startTime);
         // 更新课程状态
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
