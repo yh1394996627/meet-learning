@@ -24,9 +24,9 @@
 
     <insert id="insert" parameterType="org.example.meetlearning.dao.entity.MeetingLog">
         insert into meeting_log (creator, create_name,
-                                 create_time, record_id, remark)
+                                 create_time, meeting_id, remark)
         values (#{creator,jdbcType=VARCHAR}, #{createName,jdbcType=VARCHAR},
-                #{createTime,jdbcType=TIMESTAMP}, #{recordId,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+                #{createTime,jdbcType=TIMESTAMP}, #{meetingId,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
     </insert>
 
 </mapper>
