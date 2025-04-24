@@ -53,6 +53,9 @@ public class ZoomPcService {
     @Autowired
     private StudentClassMeetingService studentClassMeetingService;
 
+    @Autowired
+    private MeetingLogService meetingLogService;
+
     public Boolean isZoomInstalled(String userCode) {
         try {
             User user = userService.selectByRecordId(userCode);
@@ -109,7 +112,8 @@ public class ZoomPcService {
 
         // 处理会议事件
         JSONObject eventData = json.getJSONObject("payload");
-        String meetingId = eventData.getString("id");
+        JSONObject objData = eventData.getJSONObject("object");
+        String meetingId = objData.getString("id");
         // 根据会议ID查找预约课程并且获取ZOOM配置
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         Assert.notNull(studentClass, "No appointment information obtained");
@@ -125,16 +129,16 @@ public class ZoomPcService {
         }
         switch (eventType) {
             case "meeting.started":
-                handleMeetingStarted(eventData);
+                handleMeetingStarted(objData);
                 break;
             case "meeting.ended":
-                handleMeetingEnded(eventData);
+                handleMeetingEnded(objData);
                 break;
             case "meeting.participant_joined":
-                handleParticipantJoined(eventData);
+                handleParticipantJoined(objData);
                 break;
             case "meeting.participant_left":
-                handleParticipantLeft(eventData);
+                handleParticipantLeft(objData);
                 break;
             default:
                 log.warn("Unhandled Zoom event type: {}", eventType);
@@ -158,7 +162,8 @@ public class ZoomPcService {
         updateStudentClass.setClassStatus(CourseStatusEnum.PROCESS.getStatus());
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
-
+        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Meeting started");
+        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting");
     }
 
     /**

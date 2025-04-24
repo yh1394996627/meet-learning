@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.MeetingLogMapper">
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.MeetingLog">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="meeting_id" jdbcType="VARCHAR" property="meetingId"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , creator, create_time, create_name, meeting_id, remark
+    </sql>
+
+    <select id="selectByMeetingId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from meeting_log
+        where meeting_id = #{meetingId}
+    </select>
+
+    <insert id="insert" parameterType="org.example.meetlearning.dao.entity.MeetingLog">
+        insert into meeting_log (creator, create_name,
+                                 create_time, record_id, remark)
+        values (#{creator,jdbcType=VARCHAR}, #{createName,jdbcType=VARCHAR},
+                #{createTime,jdbcType=TIMESTAMP}, #{recordId,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+    </insert>
+
+</mapper>

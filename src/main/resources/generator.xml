@@ -33,7 +33,8 @@
         <!--        <table tableName="textbook" domainObjectName="Textbook"/>-->
         <!--        <table tableName="textbook_record" domainObjectName="TextbookRecord"/>-->
         <!--        <table tableName="teacher_course_time" domainObjectName="teacherCourseTime"/>-->
-        <table tableName="student_class_regular" domainObjectName="StudentClassRegular"/>
-        <table tableName="student_class_regular_record" domainObjectName="StudentClassRegularRecord"/>
+        <!--        <table tableName="student_class_regular" domainObjectName="StudentClassRegular"/>-->
+        <!--        <table tableName="student_class_regular_record" domainObjectName="StudentClassRegularRecord"/>-->
+        <table tableName="meeting_log" domainObjectName="MeetingLog"/>
     </context>
 </generatorConfiguration>
