@@ -164,6 +164,7 @@ public class ZoomPcService {
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
         meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Meeting started");
+        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting");
     }
 
     /**
@@ -171,10 +172,6 @@ public class ZoomPcService {
      */
     private void handleMeetingEnded(JSONObject eventData) {
         String meetingId = eventData.getString("id");
-        String hostId = eventData.getString("host_id");
-        long endTime = eventData.getLong("end_time");
-
-        log.info("Meeting ended - ID: {}, Host: {}, Time: {}", meetingId, hostId, new Date(endTime));
         // 更新课程状态
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
@@ -189,6 +186,8 @@ public class ZoomPcService {
         }
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
+        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "End of the meeting");
+
     }
 
     /**
@@ -196,12 +195,7 @@ public class ZoomPcService {
      */
     private void handleParticipantJoined(JSONObject eventData) {
         String meetingId = eventData.getString("id");
-        String participantId = eventData.getString("participant_id");
-        String userId = eventData.optString("user_id", "guest");
         String email = eventData.optString("email", null); // 获取邮箱
-        long joinLongTime = eventData.getLong("join_time");
-        Date joinTime = new Date(joinLongTime);
-        log.info("Participant joined - Meeting: {}, User: {}, Time: {}", meetingId, userId, joinTime);
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
         updateStudentClass.setId(studentClass.getId());
@@ -210,21 +204,22 @@ public class ZoomPcService {
         if (user != null) {
             String recordId = user.getRecordId();
             Date beginTime = DateUtil.parse(studentClass.getCourseTime() + " " + studentClass.getBeginTime());
-            CourseStatusEnum courseStatus = beginTime.compareTo(joinTime) > 0 ? CourseStatusEnum.BE_LATE : CourseStatusEnum.PROCESS;
+            CourseStatusEnum courseStatus = beginTime.compareTo(new Date()) > 0 ? CourseStatusEnum.BE_LATE : CourseStatusEnum.PROCESS;
             if (StringUtils.equals(recordId, studentClass.getStudentId())) {
                 updateStudentClass.setStudentCourseStatus(courseStatus.getStatus());
+                //todo 记录会议日志 展示没有需求实现
+                meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getTeacherName() + "] joins the meeting");
             }
             if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
                 updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
                 //老师迟到处理
                 if (courseStatus == CourseStatusEnum.BE_LATE) {
                     //todo 暂时没有处理
-
                 }
+                meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting");
             }
             studentClassService.updateEntity(updateStudentClass);
         }
-        //todo 记录会议日志 展示没有需求实现
     }
 
     /**
@@ -232,13 +227,7 @@ public class ZoomPcService {
      */
     private void handleParticipantLeft(JSONObject eventData) {
         String meetingId = eventData.getString("id");
-        String participantId = eventData.getString("participant_id");
-        String userId = eventData.optString("user_id", "guest");
-        long leaveLongTime = eventData.getLong("leave_time");
-        Date leaveTime = new Date(leaveLongTime);
         String email = eventData.optString("email", null); // 获取邮箱
-
-        log.info("Participant left - Meeting: {}, User: {}, Time: {}", meetingId, userId, leaveTime);
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
         updateStudentClass.setId(studentClass.getId());
@@ -247,21 +236,23 @@ public class ZoomPcService {
         if (user != null) {
             String recordId = user.getRecordId();
             Date endTime = DateUtil.parse(studentClass.getCourseTime() + " " + studentClass.getEndTime());
-            CourseStatusEnum courseStatus = endTime.compareTo(leaveTime) > 0 ? CourseStatusEnum.LEAVE_EARLY : CourseStatusEnum.FINISH;
+            CourseStatusEnum courseStatus = endTime.compareTo(new Date()) > 0 ? CourseStatusEnum.LEAVE_EARLY : CourseStatusEnum.FINISH;
             if (StringUtils.equals(recordId, studentClass.getStudentId())) {
                 updateStudentClass.setStudentCourseStatus(courseStatus.getStatus());
+                meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getTeacherName() + "] leaves the meeting");
+
             }
             if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
                 updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
                 //老师早退处理
                 if (courseStatus == CourseStatusEnum.LEAVE_EARLY) {
                     //todo 暂时没有处理
-
                 }
+                meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] leaves the meeting");
+
             }
             studentClassService.updateEntity(updateStudentClass);
         }
-        //todo 记录会议日志 展示没有需求实现
     }
 
 
