@@ -2,6 +2,7 @@ package org.example.meetlearning.dao.entity;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -22,5 +23,7 @@ public class BaseConfig {
     private String symbol;
 
     private String type;
+
+    private BigDecimal rate;
 
 }

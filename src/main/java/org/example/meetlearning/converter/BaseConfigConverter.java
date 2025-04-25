@@ -5,6 +5,7 @@ import org.example.meetlearning.vo.config.BaseConfigRespVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
@@ -19,10 +20,11 @@ public interface BaseConfigConverter {
         respVo.setCode(record.getCode());
         respVo.setName(record.getName());
         respVo.setType(record.getType());
+        respVo.setRate(record.getRate());
         return respVo;
     }
 
-    default BaseConfig toCreate(String userCode, String code, String name, String symbol, String type) {
+    default BaseConfig toCreate(String userCode, String code, String name, String symbol, String type, BigDecimal rate) {
         BaseConfig record = new BaseConfig();
         record.setCreator(userCode);
         record.setCreateTime(new Date());
@@ -31,6 +33,7 @@ public interface BaseConfigConverter {
         record.setName(name);
         record.setSymbol(symbol);
         record.setType(type);
+        record.setRate(rate);
         return record;
     }
 

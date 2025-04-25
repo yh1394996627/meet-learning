@@ -47,7 +47,7 @@ public class BaseConfigPcService {
             Assert.isTrue(nameBaseConfig == null, "Configuration already exists name:【" + queryVo.getName() + "】");
             BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getSymbol());
             Assert.isTrue(symbolBaseConfig == null, "Configuration already exists symbol:【" + queryVo.getSymbol() + "】");
-            BaseConfig config = BaseConfigConverter.INSTANCE.toCreate(userCode, queryVo.getCode(), queryVo.getName(), queryVo.getSymbol(), queryVo.getConfigType().name());
+            BaseConfig config = BaseConfigConverter.INSTANCE.toCreate(userCode, queryVo.getCode(), queryVo.getName(), queryVo.getSymbol(), queryVo.getConfigType().name(), queryVo.getRate());
             baseConfigService.insertEntity(config);
             return new RespVo<>("New configuration successfully added");
         } catch (Exception e) {
@@ -77,6 +77,7 @@ public class BaseConfigPcService {
         baseConfig.setName(queryVo.getName());
         baseConfig.setSymbol(queryVo.getSymbol());
         baseConfig.setType(queryVo.getConfigType().name());
+        baseConfig.setRate(queryVo.getRate());
         baseConfigService.updateEntity(baseConfig);
         return new RespVo<>("New configuration successfully update");
     }

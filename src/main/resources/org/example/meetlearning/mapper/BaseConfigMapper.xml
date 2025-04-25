@@ -10,9 +10,10 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="symbol" jdbcType="VARCHAR" property="symbol" />
     <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="rate" jdbcType="DECIMAL" property="type" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, creator, create_time, record_id, code, name, symbol, type
+    id, creator, create_time, record_id, code, name, symbol, type, rate
   </sql>
 
   <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -59,21 +60,22 @@
   <insert id="insertEntity" parameterType="org.example.meetlearning.dao.entity.BaseConfig">
       insert into base_config (creator, create_time,
                                record_id, code, name,
-                               symbol,  type)
+                               symbol,  type, rate)
       values (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
               #{recordId,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
-              #{symbol,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR})
+              #{symbol,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR} , #{rate,jdbcType=DECIMAL})
   </insert>
 
   <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.BaseConfig">
-    update base_config
-    set creator = #{creator,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      record_id = #{recordId,jdbcType=VARCHAR},
-      code = #{code,jdbcType=VARCHAR},
-      name = #{name,jdbcType=VARCHAR},
-      symbol = #{symbol,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=BIGINT}
+      update base_config
+      set creator     = #{creator,jdbcType=VARCHAR},
+          create_time = #{createTime,jdbcType=TIMESTAMP},
+          record_id   = #{recordId,jdbcType=VARCHAR},
+          code        = #{code,jdbcType=VARCHAR},
+          name        = #{name,jdbcType=VARCHAR},
+          symbol      = #{symbol,jdbcType=VARCHAR},
+          type        = #{type,jdbcType=VARCHAR},
+          rate        = #{rate,jdbcType=DECIMAL}
+      where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

@@ -51,7 +51,6 @@ public class BaseConfigController implements BaseController {
         return baseConfigPcService.deletedConfig(reqVo);
     }
 
-
     @Operation(summary = "基础配置查询 key value", operationId = "selectConfig")
     @PostMapping(value = "v1/config/select")
     public RespVo<List<SelectValueVo>> selectConfig(@RequestBody BaseConfigQueryVo queryVo) {

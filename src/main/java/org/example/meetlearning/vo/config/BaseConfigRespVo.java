@@ -2,6 +2,8 @@ package org.example.meetlearning.vo.config;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class BaseConfigRespVo {
 
@@ -12,5 +14,7 @@ public class BaseConfigRespVo {
     private String name;
 
     private String type;
+
+    private BigDecimal rate;
 
 }
