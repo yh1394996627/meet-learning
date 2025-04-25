@@ -35,7 +35,7 @@
         </foreach>
     </select>
 
-    <delete id="deleteByTextbookId" parameterType="java.lang.Long">
+    <delete id="deleteByTextbookId">
         delete
         from textbook_record
         where textbook_id = #{textbookId,jdbcType=VARCHAR}
