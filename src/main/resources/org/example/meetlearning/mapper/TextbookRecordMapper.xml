@@ -43,10 +43,10 @@
 
     <insert id="insertBatch" parameterType="org.example.meetlearning.dao.entity.TextbookRecord">
         insert into textbook_record
-        (id, creator, create_name, create_time, textbook_id, name, catalog, textbook_name,record_id)
+        (creator, create_name, create_time, textbook_id, name, catalog, textbook_name,record_id)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.id,jdbcType=BIGINT}, #{item.creator,jdbcType=VARCHAR}, #{item.createName,jdbcType=VARCHAR},
+            ( #{item.creator,jdbcType=VARCHAR}, #{item.createName,jdbcType=VARCHAR},
             #{item.createTime,jdbcType=TIMESTAMP}, #{item.textbookId,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR},
             #{item.catalog,jdbcType=VARCHAR}, #{item.textbookName,jdbcType=VARCHAR}, #{item.recordId,jdbcType=VARCHAR})
         </foreach>
