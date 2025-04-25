@@ -214,7 +214,7 @@ public class ZoomPcService {
                 updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
                 //老师迟到处理
                 if (courseStatus == CourseStatusEnum.BE_LATE) {
-                    //todo 暂时没有处理
+                    //todo 暂时没有迟到的处理逻辑
                 }
                 meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting");
             }
