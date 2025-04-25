@@ -61,6 +61,7 @@ public class TextbookPcService {
         Textbook textbook = textbookService.selectByRecordId(reqVo.getRecordId());
         textbookService.updateEntity(textbook);
         TextbookConverter.INSTANCE.toUpdate(userCode, userName, textbook, reqVo);
+        textbookService.updateEntity(textbook);
         List<TextbookRecord> records = reqVo.getCatalogs().stream().map(item -> TextbookConverter.INSTANCE.toCreateRecord(userCode, userName, textbook, item)).toList();
         textbookService.insertBatch(records);
     }
