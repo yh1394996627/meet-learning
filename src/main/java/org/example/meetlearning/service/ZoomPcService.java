@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.crypto.Mac;
@@ -30,6 +31,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@Transactional
 public class ZoomPcService {
 
     @Value("${zoom.api-url}")
@@ -104,12 +106,15 @@ public class ZoomPcService {
         }
     }
 
-    public void handleZoomEvent(String authToken, String payload) {
+    public ResponseEntity<String> handleZoomEvent(String authToken, String payload) {
         log.info("payload: {}", payload);
         log.info("authToken: {}", authToken);
         JSONObject json = new JSONObject(payload);
         String eventType = json.getString("event");
-
+        // 处理URL验证请求
+        if ("endpoint.url_validation".equals(eventType)) {
+            return handleUrlValidation(json);
+        }
         // 处理会议事件
         JSONObject eventData = json.getJSONObject("payload");
         JSONObject objData = eventData.getJSONObject("object");
@@ -123,10 +128,7 @@ public class ZoomPcService {
         ZoomAccountSet zoomAccountSet = zoomBaseService.selectByAccountId(account);
         zoomOAuthService.getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
         json.put("eventToken", zoomAccountSet.getCbToken());
-        // 处理URL验证请求
-        if ("endpoint.url_validation".equals(eventType)) {
-            handleUrlValidation(json);
-        }
+
         log.info("objData:{}", objData);
         switch (eventType) {
             case "meeting.started":
@@ -148,7 +150,7 @@ public class ZoomPcService {
             default:
                 log.warn("Unhandled Zoom event type: {}", eventType);
         }
-        ResponseEntity.ok("Event received");
+        return ResponseEntity.ok("Event received");
     }
 
     /**
@@ -161,6 +163,7 @@ public class ZoomPcService {
         StudentClass updateStudentClass = new StudentClass();
         updateStudentClass.setId(studentClass.getId());
         updateStudentClass.setClassStatus(CourseStatusEnum.PROCESS.getStatus());
+        updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.PROCESS.getStatus());
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
         meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Meeting started");
