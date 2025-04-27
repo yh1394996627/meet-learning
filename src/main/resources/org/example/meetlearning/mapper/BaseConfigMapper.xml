@@ -10,7 +10,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="symbol" jdbcType="VARCHAR" property="symbol" />
     <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="rate" jdbcType="DECIMAL" property="type" />
+    <result column="rate" jdbcType="DECIMAL" property="rate" />
   </resultMap>
   <sql id="Base_Column_List">
     id, creator, create_time, record_id, code, name, symbol, type, rate
