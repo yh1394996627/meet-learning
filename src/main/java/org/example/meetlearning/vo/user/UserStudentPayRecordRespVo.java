@@ -27,7 +27,7 @@ public class UserStudentPayRecordRespVo {
     private BigDecimal canQty;
 
     @Schema(name = "expirationTime", description = "失效日期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date expirationTime;
 
 

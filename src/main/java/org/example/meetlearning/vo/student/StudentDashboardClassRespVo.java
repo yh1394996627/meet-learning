@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class StudentDashboardClassRespVo {
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
 
     private List<StudentDashboardClassRecordRespVo> respVos;
