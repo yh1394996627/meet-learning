@@ -100,9 +100,11 @@ public class StudentPcService extends BasePcService {
             student.setAffiliateName(managerUser.getName());
         }
         studentService.save(student);
+
         //创建登陆帐号
+        String managerId = StringUtils.hasText(student.getAffiliateId()) ? student.getAffiliateId() : null;
         User newUser = addUser(userCode, userName, student.getRecordId(), student.getEmail(), reqVo.getPassword(),
-                RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail());
+                RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail(), managerId);
 
         //创建用户关联的课时币
         addFinance(userCode, userName, newUser);

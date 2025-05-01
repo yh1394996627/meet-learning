@@ -82,12 +82,12 @@ public class BasePcService {
      * 创建登陆帐号 学生 老师 代理商来源
      */
     public User addUser(String userCode, String userName, String recordId, String accountCode,
-                        String password, RoleEnum roleType, String name, String enName, String email) {
+                        String password, RoleEnum roleType, String name, String enName, String email, String managerId) {
         User user = userService.selectByAccountCode(email);
         Assert.isNull(user, "The user already exists and cannot be added");
 
         user = UserConverter.INSTANCE.toCreateUser(userCode, userName, recordId, accountCode,
-                password, roleType, name, enName, email);
+                password, roleType, name, enName, email, managerId);
         userService.insertEntity(user);
         log.info("Login account successfully added recordId:{}", recordId);
         return user;
@@ -275,7 +275,7 @@ public class BasePcService {
     /**
      * 查询文件列表
      */
-    public List<FileRecordVo> getFileRecordVoList(String userCode ,Integer fileType) {
+    public List<FileRecordVo> getFileRecordVoList(String userCode, Integer fileType) {
         List<FileRecord> fileRecords = fileRecordService.selectByUserId(userCode);
         return fileRecords.stream().filter(item -> fileType == null || item.getFileType().equals(fileType)).map(item -> {
             FileRecordVo fileRecordVo = FileRecordConverter.INSTANCE.toFileRecordVo(item);

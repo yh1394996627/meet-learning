@@ -37,7 +37,7 @@ public interface UserConverter {
     }
 
     default User toCreateUser(String userCode, String userName, String recordId, String accountCode,
-                              String password, RoleEnum roleType, String name, String enName, String email) {
+                              String password, RoleEnum roleType, String name, String enName, String email, String managerId) {
         User user = new User();
         user.setDeleted(false);
         user.setIsManager(true);
@@ -53,6 +53,7 @@ public interface UserConverter {
         user.setEmail(email);
         user.setEnabled(true);
         user.setRemark("");
+        user.setManagerId(managerId);
         return user;
     }
 

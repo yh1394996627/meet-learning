@@ -212,7 +212,7 @@ public class UserPcService extends BasePcService {
             studentService.save(student);
             //创建登陆帐号
             User newUser = addUser(student.getCreator(), student.getCreateName(), student.getRecordId(), student.getEmail(), reqVo.getPassword(),
-                    RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail());
+                    RoleEnum.STUDENT, student.getName(), student.getName(), student.getEmail(), reqVo.getAffiliateId());
 
             //创建用户关联的课时币
             addFinance(student.getCreator(), student.getCreateName(), newUser);

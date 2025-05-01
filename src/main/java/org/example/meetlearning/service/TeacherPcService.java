@@ -155,7 +155,7 @@ public class TeacherPcService extends BasePcService {
             teacherService.insertEntity(teacher);
             //创建登陆帐号
             User newUser = addUser(userCode, userName, teacher.getRecordId(), teacher.getEmail(), reqVo.getPassword(),
-                    RoleEnum.STUDENT, teacher.getName(), teacher.getEnName(), teacher.getEmail());
+                    RoleEnum.STUDENT, teacher.getName(), teacher.getEnName(), teacher.getEmail(), null);
 
             //创建用户关联的课时币
             addFinance(userCode, userName, newUser);
