@@ -128,6 +128,10 @@ public interface TeacherConverter {
         teacherRespVo.setAttendance(teacher.getAttendance());
         teacherRespVo.setRating(teacher.getRating());
         teacherRespVo.setPrice(teacher.getPrice());
+        teacherRespVo.setGroupPrice(teacher.getPrice());
+        teacherRespVo.setCoin(teacher.getCoin());
+        teacherRespVo.setGroupCoin(teacher.getGroupCoin());
+        teacherRespVo.setGroupPrice(teacher.getPrice());
         teacherRespVo.setCreditsPrice(teacher.getCreditsPrice());
         teacherRespVo.setRate(teacher.getRate());
         teacherRespVo.setConfirmedQty(teacher.getConfirmedQty());
