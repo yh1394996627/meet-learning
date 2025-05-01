@@ -115,6 +115,7 @@ public class StudentPcService extends BasePcService {
         String recordId = reqVo.getRecordId();
         Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
         Student student = studentService.findByRecordId(recordId);
+        String oldManagerId = student.getAffiliateId();
         student = StudentConverter.INSTANCE.toUpdateStudent(student, reqVo);
         if (StringUtils.hasText(reqVo.getAffiliateId())) {
             User affiliateUser = userService.selectByRecordId(reqVo.getAffiliateId());
@@ -126,6 +127,14 @@ public class StudentPcService extends BasePcService {
         student.setUpdateName(userName);
         student.setUpdateTime(new Date());
         studentService.update(student);
+        //更新user代理商
+        if(!StringUtils.pathEquals(oldManagerId, student.getAffiliateId())){
+            User user = userService.selectByRecordId(recordId);
+            User newUser = new User();
+            newUser.setManagerId(student.getAffiliateId());
+            newUser.setId(user.getId());
+            userService.updateEntity(newUser);
+        }
         return new RespVo<>("Student update successful");
     }
 
