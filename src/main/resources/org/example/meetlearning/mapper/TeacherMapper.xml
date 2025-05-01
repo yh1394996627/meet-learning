@@ -498,7 +498,6 @@
             <if test="salaryAmount != null">
                 salary_amount = #{salaryAmount,jdbcType=DECIMAL},
             </if>
-            coin ,group_coin, group_price
             <if test="coin != null">
                 coin = #{coin,jdbcType=DECIMAL},
             </if>
