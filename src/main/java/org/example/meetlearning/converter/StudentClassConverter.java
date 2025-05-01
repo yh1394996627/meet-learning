@@ -106,6 +106,9 @@ public interface StudentClassConverter {
         studentClass.setCourseName(reqVo.getTextbookName());
         studentClass.setPrice(teacher.getPrice());
         studentClass.setCreditsPrice(teacher.getCreditsPrice());
+        studentClass.setGroupPrice(teacher.getGroupPrice());
+        studentClass.setCoin(teacher.getCoin());
+        studentClass.setGroupCoin(teacher.getGroupCoin());
         return studentClass;
     }
 

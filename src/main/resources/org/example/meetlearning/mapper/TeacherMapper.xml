@@ -16,7 +16,10 @@
         <result column="attendance" jdbcType="DECIMAL" property="attendance"/>
         <result column="rating" jdbcType="DECIMAL" property="rating"/>
         <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="group_price" jdbcType="DECIMAL" property="groupPrice"/>
         <result column="credits_price" jdbcType="DECIMAL" property="creditsPrice"/>
+        <result column="coin" jdbcType="DECIMAL" property="coin"/>
+        <result column="group_coin" jdbcType="DECIMAL" property="groupCoin"/>
         <result column="rate" jdbcType="DECIMAL" property="rate"/>
         <result column="confirmed_qty" jdbcType="DECIMAL" property="confirmedQty"/>
         <result column="canceled_qty" jdbcType="DECIMAL" property="canceledQty"/>
@@ -49,7 +52,7 @@
         canceled_qty, complaints_qty, salary_amount, email, country, manager_id, manager,
         avatar_url, language, currency_code, currency_name, specialties, manager_status,
         test_status, enabled_status, video_url, gender, zoom_user_id, zoom_account_id, zoom_activation_status,
-        group_status
+        group_status, coin ,group_coin, group_price
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -66,12 +69,20 @@
         where id = #{id}
     </select>
 
-    <select id="priceGroupList" resultType="java.math.BigDecimal">
-        select IFNULL(price, 0) as price
+    <select id="coinList" resultType="java.math.BigDecimal">
+        select IFNULL(coin, 0) as coin
         from teacher
-        where deleted = 0
-        group by price
-        order by price asc
+        where deleted = 0 and zoom_activation_status = true
+        group by coin
+        order by coin asc
+    </select>
+
+    <select id="coinGroupList" resultType="java.math.BigDecimal">
+        select IFNULL(group_coin, 0) as group_coin
+        from teacher
+        where deleted = 0 and zoom_activation_status = true
+        group by group_coin
+        order by group_coin asc
     </select>
 
 
@@ -302,6 +313,15 @@
             <if test="gender != null">
                 gender,
             </if>
+            <if test="coin != null">
+                coin,
+            </if>
+            <if test="groupCoin != null">
+                group_coin,
+            </if>
+            <if test="groupPrice != null">
+                group_price,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -406,6 +426,15 @@
             <if test="gender != null">
                 #{genderl,jdbcType=VARCHAR},
             </if>
+            <if test="coin != null">
+                #{coin,jdbcType=DECIMAL},
+            </if>
+            <if test="groupCoin != null">
+                #{groupCoin,jdbcType=DECIMAL},
+            </if>
+            <if test="groupPrice != null">
+                #{groupPrice,jdbcType=DECIMAL},
+            </if>
         </trim>
     </insert>
 
@@ -468,6 +497,16 @@
             </if>
             <if test="salaryAmount != null">
                 salary_amount = #{salaryAmount,jdbcType=DECIMAL},
+            </if>
+            coin ,group_coin, group_price
+            <if test="coin != null">
+                coin = #{coin,jdbcType=DECIMAL},
+            </if>
+            <if test="groupCoin != null">
+                group_coin = #{groupCoin,jdbcType=DECIMAL},
+            </if>
+            <if test="groupPrice != null">
+                group_price = #{groupPrice,jdbcType=DECIMAL},
             </if>
             <if test="email != null">
                 email = #{email,jdbcType=VARCHAR},

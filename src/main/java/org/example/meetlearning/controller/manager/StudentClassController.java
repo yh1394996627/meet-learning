@@ -58,10 +58,9 @@ public class StudentClassController implements BaseController {
 
     @Operation(summary = "选择课时币接口", operationId = "classCoinList")
     @PostMapping(value = "v1/student/class/coin/list")
-    public RespVo<List<SelectValueVo>> classCoinList() {
-        return studentClassPcService.classCoinList();
+    public RespVo<List<SelectValueVo>> classCoinList(@RequestBody StudentCoinQueryVo queryVo) {
+        return studentClassPcService.classCoinList(queryVo);
     }
-
 
     @Operation(summary = "选择时间段接口", operationId = "classTimeList")
     @PostMapping(value = "v1/student/class/time/list")

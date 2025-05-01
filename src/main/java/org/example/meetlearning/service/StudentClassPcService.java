@@ -144,9 +144,14 @@ public class StudentClassPcService extends BasePcService {
         return new RespVo<>("New successfully added");
     }
 
-    public RespVo<List<SelectValueVo>> classCoinList() {
-        List<BigDecimal> priceList = teacherService.priceGroupList();
-        List<SelectValueVo> selectValueVos = priceList.stream().map(price -> new SelectValueVo(price.toString(), "Any teacher with " + price + " tokens")).toList();
+    public RespVo<List<SelectValueVo>> classCoinList(StudentCoinQueryVo queryVo) {
+        List<BigDecimal> coinList = new ArrayList<>();
+        if(StringUtils.equals(queryVo.getCourseType(), CourseTypeEnum.GROUP.name())){
+            coinList = teacherService.coinGroupList();
+        }else{
+            coinList = teacherService.coinList();
+        }
+        List<SelectValueVo> selectValueVos = coinList.stream().map(price -> new SelectValueVo(price.toString(), "Any teacher with " + price + " tokens")).toList();
         return new RespVo<>(selectValueVos);
     }
 

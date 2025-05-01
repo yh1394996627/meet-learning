@@ -37,8 +37,12 @@ public class TeacherService {
         return teacherMapper.selectById(id);
     }
 
-    public List<BigDecimal> priceGroupList() {
-        return teacherMapper.priceGroupList();
+    public List<BigDecimal> coinList() {
+        return teacherMapper.coinList();
+    }
+
+    public List<BigDecimal> coinGroupList() {
+        return teacherMapper.coinGroupList();
     }
 
 

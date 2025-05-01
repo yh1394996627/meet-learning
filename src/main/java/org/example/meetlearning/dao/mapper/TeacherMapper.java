@@ -17,7 +17,9 @@ public interface TeacherMapper {
 
     Teacher selectById(Long id);
 
-    List<BigDecimal> priceGroupList();
+    List<BigDecimal> coinList();
+
+    List<BigDecimal> coinGroupList();
 
     Page<Teacher> selectPageByParams(@Param("params") Map<String, Object> params, Page<Teacher> page);
 

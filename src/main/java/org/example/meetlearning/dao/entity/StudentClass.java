@@ -57,6 +57,12 @@ public class StudentClass {
 
     private BigDecimal creditsPrice;
 
+    private BigDecimal groupPrice;
+
+    private BigDecimal coin;
+
+    private BigDecimal groupCoin;
+
     private String courseId;
 
     private String courseName;

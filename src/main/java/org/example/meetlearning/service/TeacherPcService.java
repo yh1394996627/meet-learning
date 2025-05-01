@@ -94,6 +94,7 @@ public class TeacherPcService extends BasePcService {
         } else {
             return null;
         }
+        params.put("zoomActivationStatus", true);
         Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
         PageVo<TeacherInfoRespVo> pageVo = PageVo.map(teacherPage, list -> {
             TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(list);
