@@ -264,7 +264,7 @@ public class ZoomPcService {
             String plainToken = json.getJSONObject("payload").getString("plainToken");
 
             // 使用 HMAC-SHA256 加密令牌
-            String encryptedToken = encryptToken(plainToken, json.get("eventToken").toString());
+            String encryptedToken = encryptToken(plainToken);
 
             // 构建响应 JSON
             JSONObject response = new JSONObject();
@@ -273,6 +273,7 @@ public class ZoomPcService {
 
             log.info("Successfully validated Zoom webhook URL");
             return ResponseEntity.ok(response.toString());
+
         } catch (Exception e) {
             log.error("URL validation failed", e);
             return ResponseEntity.badRequest().body("Validation failed");
@@ -280,9 +281,10 @@ public class ZoomPcService {
     }
 
     // 加密令牌方法
-    private String encryptToken(String plainToken, String eventToken) throws Exception {
+    private String encryptToken(String plainToken) throws Exception {
         Mac sha256 = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKey = new SecretKeySpec(eventToken.getBytes(StandardCharsets.UTF_8),
+        SecretKeySpec secretKey = new SecretKeySpec(
+                "xStegieNSmqcx-E59w8K1A".getBytes(StandardCharsets.UTF_8),
                 "HmacSHA256");
         sha256.init(secretKey);
 

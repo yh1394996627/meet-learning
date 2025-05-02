@@ -43,8 +43,7 @@ public class ZoomController implements BaseController {
     public ResponseEntity<String> handleZoomEvent(
             @RequestHeader(value = "authorization", required = false) String authToken,
             @RequestBody String payload) {
-        zoomPcService.handleZoomEvent(authToken, payload);
-        return ResponseEntity.ok("Event received");
+        return zoomPcService.handleZoomEvent(authToken, payload);
     }
 
     @GetMapping("/api/zoom/event/callback")
