@@ -151,7 +151,6 @@
             <if test="zoomUserId != null">
                 zoom_user_id = #{zoomUserId,jdbcType=VARCHAR},
             </if>
-            secret_token, verification_token
             <if test="secretToken != null">
                 secret_token = #{secretToken,jdbcType=VARCHAR},
             </if>
