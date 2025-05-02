@@ -22,7 +22,8 @@ public interface ZoomBaseConverter {
         respVo.setAccountId(zoomAccountSet.getZoomAccountId());
         respVo.setClientId(zoomAccountSet.getZoomClientId());
         respVo.setClientSecret(zoomAccountSet.getZoomClientSecret());
-        respVo.setToken(zoomAccountSet.getCbToken());
+        respVo.setSecretToken(zoomAccountSet.getSecretToken());
+        respVo.setVerificationToken(zoomAccountSet.getVerificationToken());
         respVo.setType(zoomAccountSet.getZoomType());
         respVo.setUsedQty(zoomAccountSet.getUsedQty());
         respVo.setTotalUsedQty(zoomAccountSet.getTotalUsedQty());
@@ -42,14 +43,15 @@ public interface ZoomBaseConverter {
         zoomAccountSet.setZoomAccountId(reqVo.getAccountId());
         zoomAccountSet.setZoomClientId(reqVo.getClientId());
         zoomAccountSet.setZoomClientSecret(reqVo.getClientSecret());
-        zoomAccountSet.setCbToken(reqVo.getToken());
+        zoomAccountSet.setSecretToken(reqVo.getSecretToken());
+        zoomAccountSet.setVerificationToken(reqVo.getVerificationToken());
         zoomAccountSet.setTotalUsedQty(0);
         zoomAccountSet.setUsedQty(0);
         zoomAccountSet.setZoomType(0);
         return zoomAccountSet;
     }
 
-    default ZoomAccountSet toUpdateZoomAccountSet(String userCode, String userName,Long id, ZoomBaseReqVo reqVo) {
+    default ZoomAccountSet toUpdateZoomAccountSet(String userCode, String userName, Long id, ZoomBaseReqVo reqVo) {
         ZoomAccountSet newZoomAccountSet = new ZoomAccountSet();
         newZoomAccountSet.setId(id);
         newZoomAccountSet.setDeleted(false);
@@ -60,7 +62,8 @@ public interface ZoomBaseConverter {
         newZoomAccountSet.setZoomAccountId(reqVo.getAccountId());
         newZoomAccountSet.setZoomClientId(reqVo.getClientId());
         newZoomAccountSet.setZoomClientSecret(reqVo.getClientSecret());
-        newZoomAccountSet.setCbToken(reqVo.getToken());
+        newZoomAccountSet.setVerificationToken(reqVo.getVerificationToken());
+        newZoomAccountSet.setSecretToken(reqVo.getSecretToken());
         return newZoomAccountSet;
     }
 

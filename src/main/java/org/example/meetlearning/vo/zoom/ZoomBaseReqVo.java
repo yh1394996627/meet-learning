@@ -26,6 +26,12 @@ public class ZoomBaseReqVo {
     @Schema(name = "token", description = "token")
     private String token;
 
+    @Schema(name = "secretToken", description = "secretToken")
+    private String secretToken;
+
+    @Schema(name = "verificationToken", description = "verificationToken")
+    private String verificationToken;
+
     @Schema(name = "type", description = "账号类型 1:免费版 2:PRO 3:商业版 4:企业版")
     private Integer type;
 

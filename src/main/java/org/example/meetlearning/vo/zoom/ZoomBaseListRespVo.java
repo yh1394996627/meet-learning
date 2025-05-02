@@ -41,4 +41,10 @@ public class ZoomBaseListRespVo {
     @Schema(name = "statusMsg", description = "状态信息")
     private String statusMsg;
 
+    @Schema(name = "secretToken", description = "回调secretToken")
+    private String secretToken;
+
+    @Schema(name = "verificationToken", description = "回调verificationToken")
+    private String verificationToken;
+
 }

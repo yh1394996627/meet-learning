@@ -36,8 +36,6 @@ public class ZoomAccountSet {
 
     private String zoomUserId;
 
-    private String cbToken;
-
     private Boolean isException;
 
     private String zoomStatusMsg;
@@ -47,5 +45,9 @@ public class ZoomAccountSet {
     private Integer usedQty;
 
     private Integer zoomType;
+
+    private String secretToken;
+
+    private String verificationToken;
 
 }

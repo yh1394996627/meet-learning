@@ -16,7 +16,9 @@ public interface ZoomAccountSetMapper {
 
     ZoomAccountSet selectByRecordId(String recordId);
 
-    ZoomAccountSet selectByAccountId(String recordId);
+    ZoomAccountSet selectByVerificationToken(String verificationToken);
+
+    ZoomAccountSet selectByAccountId(String accountId);
 
     ZoomAccountSet selectOneOrderByQty();
 

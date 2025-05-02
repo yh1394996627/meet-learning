@@ -16,7 +16,8 @@
         <result column="zoom_client_id" jdbcType="VARCHAR" property="zoomClientId"/>
         <result column="zoom_client_secret" jdbcType="VARCHAR" property="zoomClientSecret"/>
         <result column="zoom_user_id" jdbcType="VARCHAR" property="zoomUserId"/>
-        <result column="cb_token" jdbcType="VARCHAR" property="cbToken"/>
+        <result column="secret_token" jdbcType="VARCHAR" property="secretToken"/>
+        <result column="verification_token" jdbcType="VARCHAR" property="verificationToken"/>
         <result column="zoom_status_msg" jdbcType="VARCHAR" property="zoomStatusMsg"/>
         <result column="total_used_qty" jdbcType="INTEGER" property="totalUsedQty"/>
         <result column="used_qty" jdbcType="INTEGER" property="usedQty"/>
@@ -28,7 +29,7 @@
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
     zoom_email, zoom_account_id, zoom_client_id, zoom_client_secret, zoom_user_id, zoom_status_msg, 
-    total_used_qty, used_qty, zoom_type, is_exception, record_id, cb_token
+    total_used_qty, used_qty, zoom_type, is_exception, record_id, secret_token, verification_token
     </sql>
 
     <select id="selectByParams" resultMap="BaseResultMap">
@@ -44,6 +45,13 @@
         <include refid="Base_Column_List"/>
         from zoom_account_set
         where record_id = #{recordId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByVerificationToken" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zoom_account_set
+        where verification_token = #{verificationToken,jdbcType=VARCHAR}
     </select>
 
     <select id="selectByAccountId" resultMap="BaseResultMap">
@@ -94,14 +102,14 @@
                                       update_name, update_time, zoom_email,
                                       zoom_account_id, zoom_client_id, zoom_client_secret,
                                       zoom_user_id, zoom_status_msg, total_used_qty,
-                                      used_qty, zoom_type, is_exception, record_id, cb_token)
+                                      used_qty, zoom_type, is_exception, record_id, secret_token, verification_token)
         values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
                 #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updator,jdbcType=VARCHAR},
                 #{updateName,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{zoomEmail,jdbcType=VARCHAR},
                 #{zoomAccountId,jdbcType=VARCHAR}, #{zoomClientId,jdbcType=VARCHAR},
                 #{zoomClientSecret,jdbcType=VARCHAR}, #{zoomUserId,jdbcType=VARCHAR}, #{zoomStatusMsg,jdbcType=VARCHAR},
                 #{totalUsedQty,jdbcType=INTEGER}, #{usedQty,jdbcType=INTEGER}, #{zoomType,jdbcType=INTEGER},
-                #{isException,jdbcType=BIT}, #{recordId,jdbcType=VARCHAR}, #{cbToken,jdbcType=VARCHAR})
+                #{isException,jdbcType=BIT}, #{recordId,jdbcType=VARCHAR}, #{secretToken,jdbcType=VARCHAR}, #{verificationToken,jdbcType=VARCHAR})
     </insert>
 
     <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.ZoomAccountSet">
@@ -143,8 +151,12 @@
             <if test="zoomUserId != null">
                 zoom_user_id = #{zoomUserId,jdbcType=VARCHAR},
             </if>
-            <if test="cbToken != null">
-                cb_token = #{cbToken,jdbcType=VARCHAR},
+            secret_token, verification_token
+            <if test="secretToken != null">
+                secret_token = #{secretToken,jdbcType=VARCHAR},
+            </if>
+            <if test="verificationToken != null">
+                verification_token = #{verificationToken,jdbcType=VARCHAR},
             </if>
             <if test="zoomStatusMsg != null">
                 zoom_status_msg = #{zoomStatusMsg,jdbcType=VARCHAR},
