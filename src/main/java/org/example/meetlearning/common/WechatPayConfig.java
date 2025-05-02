@@ -6,6 +6,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import java.security.PrivateKey;
@@ -17,15 +18,14 @@ public class WechatPayConfig {
     @Value("${wechat.pay.mch-id}")
     private String mchId;
 
-    @Value("${wechat.pay.cert-path}/apiclient_key.pem")
-    private Resource privateKeyResource;
-
-    @Value("${wechat.pay.cert-path}/apiclient_cert.pem")
-    private Resource certificateResource;
+    @Value("${wechat.pay.cert-path}")
+    private String certPath;
 
     @Bean
     public CloseableHttpClient wechatPayHttpClient() throws Exception {
         // 加载商户私钥和证书
+        Resource privateKeyResource = new FileSystemResource(certPath + "/apiclient_key.pem");
+        Resource certificateResource = new FileSystemResource(certPath + "/apiclient_cert.pem");
         PrivateKey privateKey = PemUtil.loadPrivateKey(privateKeyResource.getInputStream());
         X509Certificate certificate = PemUtil.loadCertificate(certificateResource.getInputStream());
         String serialNo = certificate.getSerialNumber().toString(16);
