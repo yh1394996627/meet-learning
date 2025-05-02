@@ -28,6 +28,11 @@ public class ZoomBaseService {
     public ZoomAccountSet selectByAccountId(String accountId) {
         return zoomAccountSetMapper.selectByAccountId(accountId);
     }
+
+    public ZoomAccountSet selectByVerificationToken(String verificationToken) {
+        return zoomAccountSetMapper.selectByVerificationToken(verificationToken);
+    }
+
     public ZoomAccountSet selectOneOrderByQty() {
         return zoomAccountSetMapper.selectOneOrderByQty();
     }

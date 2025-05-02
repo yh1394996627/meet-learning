@@ -113,6 +113,9 @@ public class ZoomPcService {
         String eventType = json.getString("event");
         // 处理URL验证请求
         if ("endpoint.url_validation".equals(eventType)) {
+            // 获取配置信息 激活token
+            ZoomAccountSet zoomAccountSet = zoomBaseService.selectByVerificationToken(authToken);
+            json.put("secretToken", zoomAccountSet.getSecretToken());
             return handleUrlValidation(json);
         }
         // 处理会议事件
@@ -127,7 +130,7 @@ public class ZoomPcService {
         // 获取配置信息 激活token
         ZoomAccountSet zoomAccountSet = zoomBaseService.selectByAccountId(account);
         zoomOAuthService.getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
-        json.put("eventToken", zoomAccountSet.getCbToken());
+        json.put("eventToken", zoomAccountSet.getSecretToken());
 
         log.info("objData:{}", objData);
         switch (eventType) {
@@ -262,9 +265,10 @@ public class ZoomPcService {
     private ResponseEntity<String> handleUrlValidation(JSONObject json) {
         try {
             String plainToken = json.getJSONObject("payload").getString("plainToken");
+            String secretToken = json.getString("secretToken");
 
             // 使用 HMAC-SHA256 加密令牌
-            String encryptedToken = encryptToken(plainToken);
+            String encryptedToken = encryptToken(plainToken, secretToken);
 
             // 构建响应 JSON
             JSONObject response = new JSONObject();
@@ -281,10 +285,10 @@ public class ZoomPcService {
     }
 
     // 加密令牌方法
-    private String encryptToken(String plainToken) throws Exception {
+    private String encryptToken(String plainToken, String secretToken) throws Exception {
         Mac sha256 = Mac.getInstance("HmacSHA256");
         SecretKeySpec secretKey = new SecretKeySpec(
-                "xStegieNSmqcx-E59w8K1A".getBytes(StandardCharsets.UTF_8),
+                secretToken.getBytes(StandardCharsets.UTF_8),
                 "HmacSHA256");
         sha256.init(secretKey);
 
