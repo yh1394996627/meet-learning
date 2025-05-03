@@ -16,7 +16,7 @@ public class StudentClassAddReqVo {
     private String teacherId;
 
     @Schema(name = "courseDate", description = "课程日期")
-    private Date courseDate;
+    private String courseDate;
 
     @Schema(name = "courseType", description = "课程类型")
     private String courseType;

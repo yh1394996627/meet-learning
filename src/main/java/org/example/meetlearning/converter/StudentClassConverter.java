@@ -87,7 +87,7 @@ public interface StudentClassConverter {
             CourseTypeEnum courseTypeEnum = CourseTypeEnum.valueOf(reqVo.getCourseType());
             studentClass.setCourseType(courseTypeEnum.name());
         }
-        studentClass.setCourseTime(reqVo.getCourseDate());
+        studentClass.setCourseTime(DateUtil.parse(reqVo.getCourseDate(),"yyyy-MM-dd"));
         if (StringUtils.isNotEmpty(reqVo.getCourseTime())) {
             String[] arr = StringUtils.split(reqVo.getCourseTime(), "-");
             studentClass.setBeginTime(arr[0]);

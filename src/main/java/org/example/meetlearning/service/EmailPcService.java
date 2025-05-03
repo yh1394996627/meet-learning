@@ -171,8 +171,7 @@ public class EmailPcService extends BasePcService {
                 + "font-size: 12px;"
                 + "padding-top: 20px;"
                 + "border-top: 1px solid #eeeeee;'>"
-                + "<p style='margin:5px 0;'>[公司名称]</p>"
-                + "<p style='margin:5px 0;'>服务热线：[联系电话]</p>"
+                + "<p style='margin:5px 0;'>中菲（广东）国际文化有限公司</p>"
                 + "</div>"
                 + "</div>";
     }
