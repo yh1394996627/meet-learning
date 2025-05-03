@@ -37,6 +37,9 @@ public class StudentClassCommonQueryVo {
     @Schema(name = "dates", description = "课程时间")
     private List<String> dates;
 
+    @Schema(name = "isRegular", description = "是否是固定上课")
+    private Boolean isRegular;
+
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();

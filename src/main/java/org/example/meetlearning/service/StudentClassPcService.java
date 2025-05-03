@@ -146,9 +146,9 @@ public class StudentClassPcService extends BasePcService {
 
     public RespVo<List<SelectValueVo>> classCoinList(StudentCoinQueryVo queryVo) {
         List<BigDecimal> coinList = new ArrayList<>();
-        if(StringUtils.equals(queryVo.getCourseType(), CourseTypeEnum.GROUP.name())){
+        if (StringUtils.equals(queryVo.getCourseType(), CourseTypeEnum.GROUP.name())) {
             coinList = teacherService.coinGroupList();
-        }else{
+        } else {
             coinList = teacherService.coinList();
         }
         List<SelectValueVo> selectValueVos = coinList.stream().map(price -> new SelectValueVo(price.toString(), "Any teacher with " + price + " tokens")).toList();
@@ -197,7 +197,7 @@ public class StudentClassPcService extends BasePcService {
             }
             List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(queryVo.getScheduleParams());
             return teacherSchedules.stream().map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
-        } else if (!CollectionUtils.isEmpty(queryVo.getDates())) {
+        } else if (BooleanUtil.isTrue(queryVo.getIsRegular())) {
             if (!StringUtils.equals(CourseTypeEnum.GROUP.name(), queryVo.getCourseType())) {
                 return List.of("00:00-00:30", "00:30-01:00", "01:00-01:30", "01:30-02:00", "02:00-02:30", "02:30-03:00", "03:00-03:30", "03:30-04:00",
                         "04:00-04:30", "04:30-04:30", "04:30-05:00", "05:00-05:30", "05:30-06:00", "06:00-06:30", "06:30-07:00", "07:00-07:30", "07:30-08:00",
