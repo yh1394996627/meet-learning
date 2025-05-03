@@ -114,7 +114,7 @@ public class EmailPcService extends BasePcService {
                 + "box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>"
 
                 + "<div style='text-align: center; margin-bottom: 25px;'>"
-                + "<img src='[您的LOGO地址]' alt='公司Logo' style='max-height: 50px;'>"
+                + "<img src='/static/logo.jpg' alt='公司Logo' style='max-height: 50px;'>"
                 + "</div>"
 
                 + "<h1 style='"
