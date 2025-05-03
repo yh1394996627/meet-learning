@@ -27,7 +27,10 @@ public class SharedTeacherListRespVo {
     @Schema(name = "creditsPrice", description = "积分单价")
     private BigDecimal creditsPrice;
 
-    @Schema(name = "price", description = "课时币单价")
-    private BigDecimal price;
+    @Schema(name = "coin", description = "课时币单价")
+    private BigDecimal coin;
+
+    @Schema(name = "groupCoin", description = "课时币团体课单价")
+    private BigDecimal groupCoin;
 
 }

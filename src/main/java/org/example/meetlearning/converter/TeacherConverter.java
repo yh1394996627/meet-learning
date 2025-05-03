@@ -101,7 +101,8 @@ public interface TeacherConverter {
         respVo.setRecordId(teacher.getRecordId());
         respVo.setName(teacher.getName());
         respVo.setCountry(teacher.getCountry());
-        respVo.setPrice(BigDecimalUtil.nullOrZero(teacher.getPrice()));
+        respVo.setCoin(BigDecimalUtil.nullOrZero(teacher.getCoin()));
+        respVo.setGroupCoin(BigDecimalUtil.nullOrZero(teacher.getGroupCoin()));
         respVo.setCreditsPrice(BigDecimalUtil.nullOrZero(teacher.getCreditsPrice()));
         respVo.setVideoUrl(teacher.getVideoUrl());
         respVo.setAvatarUtl(teacher.getAvatarUrl());
