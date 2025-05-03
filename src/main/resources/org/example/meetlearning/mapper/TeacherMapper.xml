@@ -203,6 +203,9 @@
         <if test="params.tokenPrice != null">
             and price = #{params.tokenPrice}
         </if>
+        <if test="params.zoomActivationStatus != null">
+            and zoom_activation_status = #{params.zoomActivationStatus}
+        </if>
         <if test="params.keyword != null">
             and `name` like LOWER(#{params.keyword})
         </if>
