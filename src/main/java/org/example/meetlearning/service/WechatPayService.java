@@ -33,7 +33,7 @@ public class WechatPayService {
         JSONObject requestBody = new JSONObject()
                 .put("mchid", mchId)
                 .put("appid", appid)
-                .put("description", "课时购买")
+                .put("description", "课时币购买")
                 .put("out_trade_no", generateOrderNo())
                 .put("notify_url", notifyUrl)
                 .put("amount", new JSONObject()

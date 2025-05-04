@@ -19,16 +19,20 @@ public class PayController {
     private WechatPayService payService;
 
     // 创建支付订单
-    @PostMapping("/wx/create")
+    @PostMapping(value = "/wx/create", produces = "application/json;charset=UTF-8")
     public ResponseEntity<?> createOrder(@RequestParam Integer courseCoins) {
         try {
             String codeUrl = payService.createNativeOrder(courseCoins);
-            return ResponseEntity.ok(Map.of(
-                    "code_url", codeUrl,
-                    "qrcode", QrCodeGenerator.generateBase64(codeUrl, 300, 300) // 可选：直接返回二维码图片地址
-            ));
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/json;charset=UTF-8")
+                    .body(Map.of(
+                            "code_url", codeUrl,
+                            "qrcode", QrCodeGenerator.generateBase64(codeUrl, 300, 300)
+                    ));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("支付创建失败: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .header("Content-Type", "text/plain;charset=UTF-8")
+                    .body("支付创建失败: " + e.getMessage());
         }
     }
 
