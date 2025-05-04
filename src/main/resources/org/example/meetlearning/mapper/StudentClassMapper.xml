@@ -117,7 +117,7 @@
         from student_class
         WHERE deleted = 0
           and teacher_id = #{teacherId}
-          and course_time = DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%d')
+          and DATE_FORMAT(course_time, '%Y-%m') = DATE_FORMAT(CURRENT_DATE(), '%Y-%m')
     </select>
 
     <select id="selectAffCountByParams" resultType="org.example.meetlearning.vo.common.SelectValueVo">
