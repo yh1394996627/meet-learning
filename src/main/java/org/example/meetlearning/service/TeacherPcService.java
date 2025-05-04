@@ -318,7 +318,7 @@ public class TeacherPcService extends BasePcService {
             //查询老师当月被投诉的课程数量
             respVo.setComplaintsQty(BigDecimal.ZERO);
             //查询老师当月已确认课程薪资
-            BigDecimal confirmedClassesAmount = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).map(item -> item.getPrice().add(item.getCreditsPrice())).reduce(BigDecimal.ZERO, BigDecimalUtil::add);
+            BigDecimal confirmedClassesAmount = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice())).reduce(BigDecimal.ZERO, BigDecimalUtil::add);
             respVo.setConfirmedClassesAmount(confirmedClassesAmount);
             //查询老师当月已取消扣款
             respVo.setCancelledDeductionsAmount(BigDecimal.ZERO);

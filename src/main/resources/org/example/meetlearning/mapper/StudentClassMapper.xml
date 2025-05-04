@@ -112,6 +112,7 @@
 
     <select id="selectClassStatusGroupByParams" resultMap="BaseResultMap">
         SELECT teacher_id,
+               class_status,
                price,
                group_price
         from student_class
