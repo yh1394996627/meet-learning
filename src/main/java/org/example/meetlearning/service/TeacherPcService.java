@@ -310,6 +310,16 @@ public class TeacherPcService extends BasePcService {
             Teacher teacher = teacherService.selectByRecordId(userCode);
             Assert.notNull(teacher, "Teacher cannot be empty");
             TeacherDashboardRespVo respVo = TeacherConverter.INSTANCE.toTeacherDashboard(teacher);
+            //查询老师当月已确认完成的课程数量
+
+            //查询老师当月已取消的课程数量
+
+            //查询老师当月被投诉的课程数量
+
+            //查询老师当月
+
+
+
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("Query Error", ex);

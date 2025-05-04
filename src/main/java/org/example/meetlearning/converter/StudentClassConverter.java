@@ -59,7 +59,7 @@ public interface StudentClassConverter {
         long differenceInHours = differenceInMillis / (60 * 60 * 1000);
         respVo.setIsCanUpdateTime(differenceInHours > 3600);
         //时间未到才能取消课程
-        respVo.setIsCanCenterClass(differenceInHours > 0);
+        respVo.setIsCanCenterClass(Objects.equals(studentClass.getClassStatus(), CourseStatusEnum.NOT_STARTED.getStatus()) && differenceInHours > 0);
         return respVo;
     }
 
@@ -87,7 +87,7 @@ public interface StudentClassConverter {
             CourseTypeEnum courseTypeEnum = CourseTypeEnum.valueOf(reqVo.getCourseType());
             studentClass.setCourseType(courseTypeEnum.name());
         }
-        studentClass.setCourseTime(DateUtil.parse(reqVo.getCourseDate(),"yyyy-MM-dd"));
+        studentClass.setCourseTime(DateUtil.parse(reqVo.getCourseDate(), "yyyy-MM-dd"));
         if (StringUtils.isNotEmpty(reqVo.getCourseTime())) {
             String[] arr = StringUtils.split(reqVo.getCourseTime(), "-");
             studentClass.setBeginTime(arr[0]);

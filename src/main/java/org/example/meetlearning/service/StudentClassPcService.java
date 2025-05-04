@@ -9,10 +9,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.converter.StudentClassRegularConverter;
 import org.example.meetlearning.dao.entity.*;
-import org.example.meetlearning.enums.CourseTypeEnum;
-import org.example.meetlearning.enums.RoleEnum;
-import org.example.meetlearning.enums.ScheduleWeekEnum;
-import org.example.meetlearning.enums.TokenContentEnum;
+import org.example.meetlearning.enums.*;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.AvailableTimeCalculatorUtil;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -294,6 +291,7 @@ public class StudentClassPcService extends BasePcService {
         newStudentClass.setId(studentClass.getId());
         newStudentClass.setCancelId(userCode);
         newStudentClass.setCancelTime(new Date());
+        newStudentClass.setClassStatus(CourseStatusEnum.CANCEL.getStatus());
         studentClassService.updateEntity(newStudentClass);
     }
 
