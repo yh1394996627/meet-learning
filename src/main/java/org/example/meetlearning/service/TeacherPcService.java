@@ -24,10 +24,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +39,7 @@ public class TeacherPcService extends BasePcService {
     private final UserService userService;
     private final TeacherEvaluationService teacherEvaluationService;
     private final TextbookService textbookService;
+    private final StudentClassService studentClassService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(String userCode, TeacherQueryVo queryVo) {
         try {
@@ -310,16 +308,28 @@ public class TeacherPcService extends BasePcService {
             Teacher teacher = teacherService.selectByRecordId(userCode);
             Assert.notNull(teacher, "Teacher cannot be empty");
             TeacherDashboardRespVo respVo = TeacherConverter.INSTANCE.toTeacherDashboard(teacher);
+            List<StudentClass> studentClasses = studentClassService.selectClassStatusGroupByParams(userCode);
             //查询老师当月已确认完成的课程数量
-
+            long confirmedComplete = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).count();
+            respVo.setConfirmedQty(new BigDecimal(confirmedComplete));
             //查询老师当月已取消的课程数量
-
+            long cancelledComplete = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL.getStatus())).count();
+            respVo.setCancelledQty(new BigDecimal(cancelledComplete));
             //查询老师当月被投诉的课程数量
-
-            //查询老师当月
-
-
-
+            respVo.setComplaintsQty(BigDecimal.ZERO);
+            //查询老师当月已确认课程薪资
+            BigDecimal confirmedClassesAmount = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).map(item -> item.getPrice().add(item.getCreditsPrice())).reduce(BigDecimal.ZERO, BigDecimalUtil::add);
+            respVo.setConfirmedClassesAmount(confirmedClassesAmount);
+            //查询老师当月已取消扣款
+            respVo.setCancelledDeductionsAmount(BigDecimal.ZERO);
+            //查询老师当月投诉扣款
+            respVo.setComplaintDeductionsAmount(BigDecimal.ZERO);
+            //查询老师奖金
+            respVo.setBonus(BigDecimal.ZERO);
+            //查询管理老师佣金
+            respVo.setBonus(BigDecimal.ZERO);
+            //总薪资
+            respVo.setTotalSalary(respVo.getTotalSalary());
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("Query Error", ex);

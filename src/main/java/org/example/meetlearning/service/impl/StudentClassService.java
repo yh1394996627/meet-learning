@@ -47,6 +47,10 @@ public class StudentClassService {
         return studentClassMapper.selectByParams(params);
     }
 
+    public List<StudentClass> selectClassStatusGroupByParams(String teacherId) {
+        return studentClassMapper.selectClassStatusGroupByParams(teacherId);
+    }
+
     /**
      * 更新
      */

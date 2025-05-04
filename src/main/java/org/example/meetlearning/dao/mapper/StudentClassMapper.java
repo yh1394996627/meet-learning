@@ -22,6 +22,8 @@ public interface StudentClassMapper {
 
     List<StudentClass> selectByParams(@Param("params")Map<String, Object> params);
 
+    List<StudentClass> selectClassStatusGroupByParams(String teacherId);
+
     Long selectCancelByParams(@Param("params")Map<String, Object> params);
 
     Long selectCompleteByParams(@Param("params")Map<String, Object> params);

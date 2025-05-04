@@ -110,6 +110,16 @@
         <include refid="common_where"/>
     </select>
 
+    <select id="selectClassStatusGroupByParams" resultMap="BaseResultMap">
+        SELECT teacher_id,
+               price,
+               group_price
+        from student_class
+        WHERE deleted = 0
+          and teacher_id = #{teacherId}
+          and course_time = DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%d')
+    </select>
+
     <select id="selectAffCountByParams" resultType="org.example.meetlearning.vo.common.SelectValueVo">
         select
         affiliate_id as `value`, CONCAT(count(record_id),"") as label
@@ -496,16 +506,16 @@
                 price = #{price,jdbcType=DECIMAL},
             </if>
             <if test="creditsPrice != null">
-                credits_price =  #{creditsPrice,jdbcType=DECIMAL},
+                credits_price = #{creditsPrice,jdbcType=DECIMAL},
             </if>
             <if test="groupPrice != null">
-                group_price =  #{groupPrice,jdbcType=DECIMAL},
+                group_price = #{groupPrice,jdbcType=DECIMAL},
             </if>
             <if test="groupCoin != null">
-                group_coin =  #{groupCoin,jdbcType=DECIMAL},
+                group_coin = #{groupCoin,jdbcType=DECIMAL},
             </if>
             <if test="coin != null">
-                coin =  #{coin,jdbcType=DECIMAL},
+                coin = #{coin,jdbcType=DECIMAL},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

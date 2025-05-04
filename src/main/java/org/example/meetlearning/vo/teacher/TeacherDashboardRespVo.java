@@ -35,4 +35,11 @@ public class TeacherDashboardRespVo {
     private BigDecimal rating;
 
 
+    @Schema(hidden = true)
+    public BigDecimal getTotalSalary(){
+        return confirmedClassesAmount.subtract(cancelledDeductionsAmount).subtract(cancelledDeductionsAmount)
+                .subtract(complaintDeductionsAmount).add(bonus).add(commission);
+    }
+
+
 }
