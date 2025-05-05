@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.PayConfigMapper">
+  <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.PayConfig">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="record_id" jdbcType="VARCHAR" property="recordId" />
+    <result column="currency_id" jdbcType="VARCHAR" property="currencyId" />
+    <result column="currency_code" jdbcType="VARCHAR" property="currencyCode" />
+    <result column="currency_name" jdbcType="VARCHAR" property="currencyName" />
+    <result column="quantity" jdbcType="DECIMAL" property="quantity" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="expiring_date" jdbcType="DATE" property="expiringDate" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, creator, create_time, record_id, currency_id, currency_code, currency_name, quantity,
+    amount, expiring_date
+  </sql>
+
+  <select id="selectByCurrency" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from pay_config
+    where currency_code = #{currencyCode}
+  </select>
+
+  <select id="selectByRecordId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from pay_config
+    where record_id = #{recordId}
+  </select>
+
+  <delete id="deleteByRecordId">
+    delete from pay_config
+    where record_id = #{recordId}
+  </delete>
+
+  <insert id="insert" parameterType="org.example.meetlearning.dao.entity.PayConfig">
+    insert into pay_config (creator, create_time,
+      record_id, currency_id, currency_code, 
+      currency_name, quantity, amount, 
+      expiring_date)
+    values (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{recordId,jdbcType=VARCHAR}, #{currencyId,jdbcType=VARCHAR}, #{currencyCode,jdbcType=VARCHAR}, 
+      #{currencyName,jdbcType=VARCHAR}, #{quantity,jdbcType=DECIMAL}, #{amount,jdbcType=DECIMAL}, 
+      #{expiringDate,jdbcType=DATE})
+  </insert>
+
+  <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.PayConfig">
+    update pay_config
+    <set>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recordId != null">
+        record_id = #{recordId,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyId != null">
+        currency_id = #{currencyId,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyCode != null">
+        currency_code = #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyName != null">
+        currency_name = #{currencyName,jdbcType=VARCHAR},
+      </if>
+      <if test="quantity != null">
+        quantity = #{quantity,jdbcType=DECIMAL},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="expiringDate != null">
+        expiring_date = #{expiringDate,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

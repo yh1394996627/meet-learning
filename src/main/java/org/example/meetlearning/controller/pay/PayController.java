@@ -1,28 +1,31 @@
 package org.example.meetlearning.controller.pay;
 
 import cn.hutool.json.JSONObject;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.service.WechatPayService;
 import org.example.meetlearning.util.QrCodeGenerator;
+import org.example.meetlearning.vo.pay.WxPayCreateReqVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/pay")
 @Slf4j
+@Tag(name = "支付")
 public class PayController {
 
     @Autowired
     private WechatPayService payService;
 
     // 创建支付订单
-    @PostMapping(value = "/wx/create", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<?> createOrder(@RequestParam Integer courseCoins) {
+    @PostMapping(value = "/api/pay/wx/create", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<?> createOrder(@RequestBody WxPayCreateReqVo reqVo) {
         try {
-            String codeUrl = payService.createNativeOrder(courseCoins);
+            String codeUrl = payService.createNativeOrder(new BigDecimal(0.01));
             return ResponseEntity.ok()
                     .header("Content-Type", "application/json;charset=UTF-8")
                     .body(Map.of(
@@ -57,4 +60,6 @@ public class PayController {
             return new JSONObject().put("code", "FAIL").put("message", "处理失败").toString();
         }
     }
+
+
 }

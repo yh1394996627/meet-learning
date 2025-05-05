@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 public class WechatPayService {
 
@@ -26,8 +28,7 @@ public class WechatPayService {
     private CloseableHttpClient httpClient;
 
     // 创建Native支付订单
-    public String createNativeOrder(Integer courseCoins) throws Exception {
-        int amount = courseCoins * 2 * 100; // 转换为分
+    public String createNativeOrder(BigDecimal courseCoins) throws Exception {
 
         // 构建请求体
         JSONObject requestBody = new JSONObject()
@@ -37,7 +38,7 @@ public class WechatPayService {
                 .put("out_trade_no", generateOrderNo())
                 .put("notify_url", notifyUrl)
                 .put("amount", new JSONObject()
-                        .put("total", amount)
+                        .put("total", courseCoins)
                         .put("currency", "CNY"));
 
         // 发送请求

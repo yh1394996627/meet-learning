@@ -35,6 +35,8 @@
         <!--        <table tableName="teacher_course_time" domainObjectName="teacherCourseTime"/>-->
         <!--        <table tableName="student_class_regular" domainObjectName="StudentClassRegular"/>-->
         <!--        <table tableName="student_class_regular_record" domainObjectName="StudentClassRegularRecord"/>-->
-        <table tableName="meeting_log" domainObjectName="MeetingLog"/>
+        <!--        <table tableName="meeting_log" domainObjectName="MeetingLog"/>-->
+        <!--        <table tableName="pay_config" domainObjectName="PayConfig"/>-->
+        <table tableName="recharge_order" domainObjectName="RechargeOrder"/>
     </context>
 </generatorConfiguration>
