@@ -25,6 +25,6 @@ public class PayConfigReqVo {
     private BigDecimal amount;
 
     @Schema(name = "expiringDate", description = "失效日期")
-    private Date expiringDate;
+    private String expiringDate;
 
 }

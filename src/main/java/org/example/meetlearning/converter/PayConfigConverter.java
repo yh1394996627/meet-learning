@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
+import cn.hutool.core.date.DateUtil;
 import org.example.meetlearning.dao.entity.PayConfig;
 import org.example.meetlearning.vo.pay.PayConfigReqVo;
 import org.example.meetlearning.vo.pay.PayConfigRespVo;
@@ -39,7 +40,7 @@ public interface PayConfigConverter {
         payConfig.setCurrencyName(payConfigReqVo.getCurrencyName());
         payConfig.setQuantity(payConfigReqVo.getQuantity());
         payConfig.setAmount(payConfigReqVo.getAmount());
-        payConfig.setExpiringDate(payConfigReqVo.getExpiringDate());
+        payConfig.setExpiringDate(DateUtil.parse(payConfigReqVo.getExpiringDate(), "yyyy-MM-dd"));
         return payConfig;
     }
 
@@ -50,7 +51,7 @@ public interface PayConfigConverter {
         payConfig.setCurrencyName(payConfigReqVo.getCurrencyName());
         payConfig.setQuantity(payConfigReqVo.getQuantity());
         payConfig.setAmount(payConfigReqVo.getAmount());
-        payConfig.setExpiringDate(payConfigReqVo.getExpiringDate());
+        payConfig.setExpiringDate(DateUtil.parse(payConfigReqVo.getExpiringDate(), "yyyy-MM-dd"));
         return payConfig;
     }
 
