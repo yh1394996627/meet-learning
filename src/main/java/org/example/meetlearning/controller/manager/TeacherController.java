@@ -100,6 +100,13 @@ public class TeacherController implements BaseController {
         return teacherPcService.groupStatusSet(getUserCode(), getUserName(), reqVo);
     }
 
+    @Operation(summary = "删除老师功能", operationId = "deleteTeacher")
+    @PostMapping(value = "v1/teacher/delete")
+    public RespVo<String> deleteTeacher(@RequestBody RecordIdQueryVo reqVo) {
+        return teacherPcService.deleteTeacher(reqVo);
+    }
+
+
     @Operation(summary = "课程类型", operationId = "groupStatus")
     @PostMapping(value = "v1/teacher/group/status")
     public RespVo<List<SelectValueVo>> groupStatus(@RequestBody RecordIdQueryVo queryVo) {

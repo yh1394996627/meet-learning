@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
+@Transactional
 public class TeacherPcService extends BasePcService {
 
     private final TeacherService teacherService;
@@ -145,7 +146,6 @@ public class TeacherPcService extends BasePcService {
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> teacherAdd(String userCode, String userName, TeacherAddReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getEmail()), "Email cannot be empty");
@@ -165,7 +165,6 @@ public class TeacherPcService extends BasePcService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> teacherUpdate(String userCode, String userName, TeacherUpdateReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "RecordId cannot be empty");
@@ -196,7 +195,6 @@ public class TeacherPcService extends BasePcService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> managerStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
@@ -213,7 +211,6 @@ public class TeacherPcService extends BasePcService {
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> managerAccountStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
@@ -230,7 +227,6 @@ public class TeacherPcService extends BasePcService {
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> groupStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
@@ -248,7 +244,22 @@ public class TeacherPcService extends BasePcService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    public RespVo<String> deleteTeacher(RecordIdQueryVo queryVo) {
+        try {
+            Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
+            Assert.notNull(teacher, "Teacher cannot be empty");
+            Assert.isTrue(BooleanUtil.isTrue(teacher.getEnabledStatus()), "The teacher is in the enabled state and cannot be deleted");
+            Teacher newTeacher = new Teacher();
+            newTeacher.setDeleted(true);
+            newTeacher.setId(teacher.getId());
+            teacherService.updateEntity(newTeacher);
+            return new RespVo<>("更新状态成功");
+        } catch (Exception ex) {
+            log.error("更新状态失败", ex);
+            return new RespVo<>(null, false, ex.getMessage());
+        }
+    }
+
     public List<SelectValueVo> groupStatus(RecordIdQueryVo queryVo) {
         Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
         List<SelectValueVo> selectValueVos = new ArrayList<>();
@@ -261,7 +272,6 @@ public class TeacherPcService extends BasePcService {
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> teacherTypeStatusSet(String userCode, String userName, TeacherStatusReqVo reqVo) {
         try {
             Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
