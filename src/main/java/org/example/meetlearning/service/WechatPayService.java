@@ -53,7 +53,8 @@ public class WechatPayService extends BasePcService {
     private static final String UNIFIED_ORDER_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
 
-    public String createOrder(WxPayCreateReqVo reqVo) throws Exception {
+    public Map<String, String> createOrder(WxPayCreateReqVo reqVo) throws Exception {
+        Map<String, String> resultMap = new HashMap<>();
         //查询基础配置
         PayConfig payConfig = payConfigService.getPayConfigByRecordId(reqVo.getConfigId());
         Assert.notNull(payConfig, "Configuration information not obtained");
@@ -85,11 +86,13 @@ public class WechatPayService extends BasePcService {
         // 解析响应
         String result = EntityUtils.toString(response.getEntity(), "UTF-8");
         Map<String, String> respMap = xmlToMap(result);
+        resultMap.put("orderId", rechargeOrder.getOrderId());
         if ("SUCCESS".equals(respMap.get("return_code"))) {
             String codeUrl = respMap.get("code_url");
             //添加支付订单
             rechargeOrderService.insert(rechargeOrder);
-            return codeUrl;
+            resultMap.put("codeUrl", codeUrl);
+            return resultMap;
         } else {
             throw new RuntimeException("微信下单失败: " + respMap.get("return_msg"));
         }

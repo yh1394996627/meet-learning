@@ -14,4 +14,7 @@ public class PayRespVo {
     @Schema(name = "qrCode", description = "二维码图片")
     private String qrCode;
 
+    @Schema(name = "orderId", description = "订单ID")
+    private String orderId;
+
 }
