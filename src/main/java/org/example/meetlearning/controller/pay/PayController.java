@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.common.QRCodeUtil;
 import org.example.meetlearning.service.WechatPayService;
 import org.example.meetlearning.util.QrCodeGenerator;
+import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.pay.PayRespVo;
 import org.example.meetlearning.vo.pay.WxPayCreateReqVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +25,19 @@ public class PayController {
     @Autowired
     private WechatPayService payService;
 
-    @Autowired
-    private QRCodeUtil qrCodeUtil;
+//    @Autowired
+//    private QRCodeUtil qrCodeUtil;
 
     // 创建支付订单
     @PostMapping(value = "/api/pay/wx/create", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<?> createOrder(@RequestBody WxPayCreateReqVo reqVo) {
+    public RespVo<PayRespVo> createOrder(@RequestBody WxPayCreateReqVo reqVo) {
         try {
             String codeUrl = payService.createOrder(reqVo);
-//            String qrCode = qrCodeUtil.generateQRCode(codeUrl, 300, 300);
-
-            return ResponseEntity.ok()
-                    .header("Content-Type", "application/json;charset=UTF-8")
-                    .body(Map.of(
-                            "code_url", codeUrl,
-                            "qrcode", QrCodeGenerator.generateBase64(codeUrl, 300, 300)
-                    ));
+            //String qrCode = qrCodeUtil.generateQRCode(codeUrl, 300, 300);
+            return new RespVo<>(new PayRespVo(codeUrl, QrCodeGenerator.generateBase64(codeUrl, 300, 300)));
         } catch (Exception e) {
-            return ResponseEntity.status(500)
-                    .header("Content-Type", "text/plain;charset=UTF-8")
-                    .body("支付创建失败: " + e.getMessage());
+            log.error("创建支付订单失败", e);
+            return new RespVo<>(null, false, e.getMessage());
         }
     }
 
@@ -51,9 +46,4 @@ public class PayController {
     public String payNotify(HttpServletRequest request) throws Exception {
         return payService.paymentNotify(request);
     }
-
-
-
-
-
 }
