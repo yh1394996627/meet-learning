@@ -10,6 +10,8 @@ public class RechargeOrder {
 
     private Long id;
 
+    private String orderId;
+
     private Date createTime;
 
     private Date payTime;
@@ -22,7 +24,11 @@ public class RechargeOrder {
 
     private BigDecimal quantity;
 
+    private String ipAddress;
+
     private String wxTransactionId;
+
+    private String payConfigId;
 
     private Integer status;
 

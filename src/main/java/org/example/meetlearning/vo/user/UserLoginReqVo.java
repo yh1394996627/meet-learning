@@ -18,4 +18,9 @@ public class UserLoginReqVo {
 
     @Schema(name = "manage", description = "是否是管理登录")
     private Boolean manage;
+
+    @Schema(name = "domain", description = "域名")
+    private String domain;
+
+
 }

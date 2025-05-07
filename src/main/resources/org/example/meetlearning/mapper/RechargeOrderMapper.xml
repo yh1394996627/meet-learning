@@ -5,8 +5,10 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="pay_time" jdbcType="TIMESTAMP" property="payTime"/>
+        <result column="order_id" jdbcType="VARCHAR" property="orderId"/>
         <result column="student_id" jdbcType="VARCHAR" property="studentId"/>
         <result column="manager_id" jdbcType="VARCHAR" property="managerId"/>
+        <result column="ip_address" jdbcType="VARCHAR" property="ipAddress"/>
         <result column="amount" jdbcType="DECIMAL" property="amount"/>
         <result column="quantity" jdbcType="DECIMAL" property="quantity"/>
         <result column="wx_transaction_id" jdbcType="VARCHAR" property="wxTransactionId"/>
@@ -15,7 +17,7 @@
 
     <sql id="Base_Column_List">
         id
-        , create_time, pay_time, student_id, manager_id, amount, quantity, wx_transaction_id,
+        , create_time, pay_time, student_id, manager_id, amount, quantity, wx_transaction_id, order_id, ip_address
     status
     </sql>
 
@@ -26,13 +28,21 @@
         where student_id = #{studentId}
     </select>
 
+    <select id="selectByRecordId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from recharge_order
+        where order_id = #{orderId}
+    </select>
+
     <insert id="insert" parameterType="org.example.meetlearning.dao.entity.RechargeOrder">
         insert into recharge_order (create_time, pay_time,
                                     student_id, manager_id, amount,
-                                    quantity, wx_transaction_id, status)
+                                    quantity, wx_transaction_id, status,  order_id, ip_address)
         values (#{createTime,jdbcType=TIMESTAMP}, #{payTime,jdbcType=TIMESTAMP},
                 #{studentId,jdbcType=VARCHAR}, #{managerId,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL},
-                #{quantity,jdbcType=DECIMAL}, #{wxTransactionId,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
+                #{quantity,jdbcType=DECIMAL}, #{wxTransactionId,jdbcType=VARCHAR},
+                #{status,jdbcType=TINYINT},#{orderId,jdbcType=VARCHAR},#{ipAddress,jdbcType=VARCHAR})
     </insert>
 
     <update id="update" parameterType="org.example.meetlearning.dao.entity.RechargeOrder">

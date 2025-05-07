@@ -12,5 +12,7 @@ public class WxPayCreateReqVo {
     @Schema(name = "configId", description = "支付配置id")
     private String configId;
 
+    @Schema(name = "ipAddress", description = "支付IP地址")
+    private String ipAddress;
 
 }

@@ -2,9 +2,8 @@ package org.example.meetlearning.converter;
 
 import cn.hutool.core.date.DateUtil;
 import org.codehaus.plexus.util.StringUtils;
-import org.example.meetlearning.dao.entity.User;
-import org.example.meetlearning.dao.entity.UserFinance;
-import org.example.meetlearning.dao.entity.UserFinanceRecord;
+import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.vo.manager.ManagerFinanceStudentRecordRespVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
 import org.example.meetlearning.vo.user.UserPayReqVo;
@@ -39,6 +38,7 @@ public interface UserFinanceConverter {
 
     default UserFinanceRecord toCreateRecord(String userCode, String userName, UserPayReqVo reqVo, User user, String affiliateId) {
         UserFinanceRecord userFinanceRecord = new UserFinanceRecord();
+        userFinanceRecord.setRecordId(UUID.randomUUID().toString());
         userFinanceRecord.setDeleted(false);
         userFinanceRecord.setCreator(userCode);
         userFinanceRecord.setCreateName(userName);
@@ -61,6 +61,35 @@ public interface UserFinanceConverter {
         userFinanceRecord.setRemark(reqVo.getRemark());
         userFinanceRecord.setDiscountRate(reqVo.getDiscountRate());
         userFinanceRecord.setAffiliateId(affiliateId);
+        return userFinanceRecord;
+    }
+
+
+    default UserFinanceRecord toWeChatRechargeRecord(User user, UserFinance userFinance, PayConfig payConfig, RechargeOrder rechargeOrder, BigDecimal quantity, Date expirationTime) {
+        UserFinanceRecord userFinanceRecord = new UserFinanceRecord();
+        userFinanceRecord.setDeleted(false);
+        userFinanceRecord.setRecordId(UUID.randomUUID().toString());
+        userFinanceRecord.setCreator(user.getRecordId());
+        userFinanceRecord.setCreateName(user.getName());
+        userFinanceRecord.setCreateTime(new Date());
+        userFinanceRecord.setUserId(userFinance.getUserId());
+        userFinanceRecord.setQuantity(quantity);
+        userFinanceRecord.setUsedQty(BigDecimal.ZERO);
+        userFinanceRecord.setCanQty(quantity);
+        userFinanceRecord.setUserType(userFinance.getUserType());
+        userFinanceRecord.setUserName(user.getName());
+        userFinanceRecord.setUserEmail(user.getEmail());
+        if (expirationTime != null) {
+            userFinanceRecord.setExpirationTime(expirationTime);
+        }
+        userFinanceRecord.setCurrencyCode(payConfig.getCurrencyCode());
+        userFinanceRecord.setCurrencyName(payConfig.getCurrencyName());
+        userFinanceRecord.setPayAmount(rechargeOrder.getAmount());
+        userFinanceRecord.setPaymentId("WeChat");
+        userFinanceRecord.setPaymentName("WeChat");
+        userFinanceRecord.setRemark(TokenContentEnum.WECHAT_RECHARGE.getEnContent());
+        userFinanceRecord.setDiscountRate(BigDecimal.ONE);
+        userFinanceRecord.setAffiliateId(user.getManagerId());
         return userFinanceRecord;
     }
 

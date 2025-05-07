@@ -10,6 +10,8 @@ public interface RechargeOrderMapper {
 
     List<RechargeOrder> selectByStudentId(String studentId);
 
+    RechargeOrder selectByRecordId(String studentId);
+
     int update(RechargeOrder record);
 
 }

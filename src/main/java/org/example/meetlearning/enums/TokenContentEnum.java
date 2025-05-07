@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum TokenContentEnum {
 
     COURSE_CLASS("课程预约","Course reservation"),
+    WECHAT_RECHARGE("微信充值","WeChat recharge"),
 
     ;
 

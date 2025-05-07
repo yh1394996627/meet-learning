@@ -375,7 +375,7 @@ public class BasePcService {
         userFinanceService.updateByEntity(userFinance);
     }
 
-    public void operaTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, String remark) {
+    public void operaTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, String remark, PayConfig payConfig ,RechargeOrder rechargeOrder,Date expirationTime) {
         User user = userService.selectByRecordId(userId);
         Assert.notNull(user, "user does not exist userId:" + userId);
         UserFinance userFinance = userFinanceService.selectByUserId(userId);
@@ -388,7 +388,11 @@ public class BasePcService {
         //更新 userFinance
         userFinance.setBalanceQty(balance);
         if (BigDecimalUtil.gtZero(quantity)) {
-            //暂时没有有场景
+            //微信充值课时币
+            UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toWeChatRechargeRecord(user, userFinance, payConfig, rechargeOrder, quantity, expirationTime);
+            userFinanceRecordService.insertEntity(userFinanceRecord);
+            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, user, balance, quantity, remark);
+            tokensLogService.insertEntity(tokensLog);
         } else {
             //已消费金额更新
             userFinance.setConsumptionQty(BigDecimalUtil.add(usedQty, quantity.abs()));
@@ -407,7 +411,6 @@ public class BasePcService {
                     userFinanceRecordService.updateByEntity(userFinanceRecord);
                 }
             }
-
             TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, user, balance, quantity, remark);
             tokensLogService.insertEntity(tokensLog);
         }

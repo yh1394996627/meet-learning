@@ -34,6 +34,8 @@ public class UserFinance {
 
     private BigDecimal consumptionQty;
 
+    private BigDecimal amount;
+
     private String userType;
 
     private Date expirationTime;
