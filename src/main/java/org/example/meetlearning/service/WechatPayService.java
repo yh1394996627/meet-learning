@@ -77,7 +77,6 @@ public class WechatPayService extends BasePcService {
         params.put("spbill_create_ip", rechargeOrder.getIpAddress());
         params.put("notify_url", config.getNotifyUrl());
         params.put("trade_type", config.getTradeType());
-        params.put("orderId", rechargeOrder.getOrderId());
         // 生成签名
         String sign = generateSignature(params, config.getApiKey());
         params.put("sign", sign);
@@ -169,8 +168,8 @@ public class WechatPayService extends BasePcService {
         }
         // 处理业务逻辑
         if ("SUCCESS".equals(params.get("result_code"))) {
-            String orderId = params.get("out_trade_no").toString();
-            String transactionId = params.get("transaction_id").toString();
+            String orderId = params.get("out_trade_no");
+            String transactionId = params.get("transaction_id");
             boolean success = handlePaymentNotify(orderId, transactionId);
             return success ? "<xml><return_code><![CDATA[SUCCESS]]></return_code></xml>"
                     : "<xml><return_code><![CDATA[FAIL]]></return_code></xml>";
