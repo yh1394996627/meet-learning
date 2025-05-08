@@ -18,12 +18,11 @@ public class ScheduledTasks {
    // @Scheduled(cron = "0 25,55 * * * *") // 秒 分 时 日 月 周
     public void executeForLoopWithThreadPool() {
         System.out.println("定时任务开始 | 线程: " + Thread.currentThread().getName());
-        //查询
 
         for (int i = 1; i <= 10; i++) {
             int finalI = i;
             taskExecutor.submit(() -> {
-                System.out.println("处理数据: " + finalI + " | 线程: " + Thread.currentThread().getName());
+                //System.out.println("处理数据: " + finalI + " | 线程: " + Thread.currentThread().getName());
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

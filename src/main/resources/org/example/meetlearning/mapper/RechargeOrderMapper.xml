@@ -9,6 +9,7 @@
         <result column="student_id" jdbcType="VARCHAR" property="studentId"/>
         <result column="manager_id" jdbcType="VARCHAR" property="managerId"/>
         <result column="ip_address" jdbcType="VARCHAR" property="ipAddress"/>
+        <result column="pay_config_id" jdbcType="VARCHAR" property="payConfigId"/>
         <result column="amount" jdbcType="DECIMAL" property="amount"/>
         <result column="quantity" jdbcType="DECIMAL" property="quantity"/>
         <result column="wx_transaction_id" jdbcType="VARCHAR" property="wxTransactionId"/>
@@ -17,7 +18,7 @@
 
     <sql id="Base_Column_List">
         id
-        , create_time, pay_time, student_id, manager_id, amount, quantity, wx_transaction_id, order_id, ip_address
+        , create_time, pay_time, student_id, manager_id, amount, quantity, wx_transaction_id, order_id, ip_address,pay_config_id
     status
     </sql>
 
@@ -38,11 +39,11 @@
     <insert id="insert" parameterType="org.example.meetlearning.dao.entity.RechargeOrder">
         insert into recharge_order (create_time, pay_time,
                                     student_id, manager_id, amount,
-                                    quantity, wx_transaction_id, status,  order_id, ip_address)
+                                    quantity, wx_transaction_id, status,  order_id, ip_address,pay_config_id)
         values (#{createTime,jdbcType=TIMESTAMP}, #{payTime,jdbcType=TIMESTAMP},
                 #{studentId,jdbcType=VARCHAR}, #{managerId,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL},
                 #{quantity,jdbcType=DECIMAL}, #{wxTransactionId,jdbcType=VARCHAR},
-                #{status,jdbcType=TINYINT},#{orderId,jdbcType=VARCHAR},#{ipAddress,jdbcType=VARCHAR})
+                #{status,jdbcType=TINYINT},#{orderId,jdbcType=VARCHAR},#{ipAddress,jdbcType=VARCHAR},#{payConfigId,jdbcType=VARCHAR})
     </insert>
 
     <update id="update" parameterType="org.example.meetlearning.dao.entity.RechargeOrder">

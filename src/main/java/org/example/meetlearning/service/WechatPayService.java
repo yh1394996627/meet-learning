@@ -2,6 +2,7 @@ package org.example.meetlearning.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -21,6 +22,7 @@ import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.pay.WxPayCreateReqVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
@@ -33,6 +35,8 @@ import static org.example.meetlearning.util.SecureXmlUtils.xmlToMap;
 
 @Service
 @AllArgsConstructor
+@Transactional
+@Slf4j
 public class WechatPayService extends BasePcService {
 
     private final WechatPayConfig config;
@@ -69,10 +73,11 @@ public class WechatPayService extends BasePcService {
         params.put("nonce_str", generateNonceStr());
         params.put("body", "coin recharge");
         params.put("out_trade_no", rechargeOrder.getOrderId());
-        params.put("total_fee", "1");
+        params.put("total_fee", String.valueOf(rechargeOrder.getAmount().multiply(new BigDecimal(100)).intValue()));
         params.put("spbill_create_ip", rechargeOrder.getIpAddress());
         params.put("notify_url", config.getNotifyUrl());
         params.put("trade_type", config.getTradeType());
+        params.put("orderId", rechargeOrder.getOrderId());
         // 生成签名
         String sign = generateSignature(params, config.getApiKey());
         params.put("sign", sign);
@@ -154,6 +159,7 @@ public class WechatPayService extends BasePcService {
         // 读取XML数据
         String xml = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
         Map<String, String> params = xmlToMap(xml);
+        log.info("params->:{}", params);
         // 验证签名
         String sign = params.get("sign");
         params.remove("sign");
