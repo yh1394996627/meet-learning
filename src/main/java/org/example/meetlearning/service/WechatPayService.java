@@ -1,5 +1,6 @@
 package org.example.meetlearning.service;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.BooleanUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -144,7 +145,8 @@ public class WechatPayService extends BasePcService {
         //学生添加课时币，如果有代理商添加佣金
         User user = userService.selectByRecordId(order.getStudentId());
         PayConfig payConfig = payConfigService.getPayConfigByRecordId(order.getPayConfigId());
-        operaTokenLogs(user.getRecordId(), user.getName(), user.getRecordId(), rechargeOrder.getQuantity(), TokenContentEnum.WECHAT_RECHARGE.getEnContent(), payConfig, rechargeOrder, payConfig.getExpiringDate());
+        Date expiringDate = DateUtil.offsetDay(new Date(), payConfig.getDays());
+        operaTokenLogs(user.getRecordId(), user.getName(), user.getRecordId(), rechargeOrder.getQuantity(), TokenContentEnum.WECHAT_RECHARGE.getEnContent(), payConfig, rechargeOrder, expiringDate);
         if (StringUtils.isNotEmpty(user.getManagerId())) {
             User manager = userService.selectByRecordId(user.getManagerId());
             if (manager != null && StringUtils.equals(manager.getType(), RoleEnum.AFFILIATE.name())) {
