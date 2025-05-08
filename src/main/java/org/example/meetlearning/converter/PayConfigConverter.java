@@ -26,7 +26,7 @@ public interface PayConfigConverter {
         payConfigRespVo.setCurrencyName(payConfig.getCurrencyName());
         payConfigRespVo.setQuantity(payConfig.getQuantity());
         payConfigRespVo.setAmount(payConfig.getAmount());
-        payConfigRespVo.setExpiringDate(payConfig.getExpiringDate());
+        payConfigRespVo.setDays(payConfig.getDays());
         return payConfigRespVo;
     }
 
@@ -40,7 +40,7 @@ public interface PayConfigConverter {
         payConfig.setCurrencyName(payConfigReqVo.getCurrencyName());
         payConfig.setQuantity(payConfigReqVo.getQuantity());
         payConfig.setAmount(payConfigReqVo.getAmount());
-        payConfig.setExpiringDate(DateUtil.parse(payConfigReqVo.getExpiringDate(), "yyyy-MM-dd"));
+        payConfig.setDays(payConfigReqVo.getDays());
         return payConfig;
     }
 
@@ -51,7 +51,7 @@ public interface PayConfigConverter {
         payConfig.setCurrencyName(payConfigReqVo.getCurrencyName());
         payConfig.setQuantity(payConfigReqVo.getQuantity());
         payConfig.setAmount(payConfigReqVo.getAmount());
-        payConfig.setExpiringDate(DateUtil.parse(payConfigReqVo.getExpiringDate(), "yyyy-MM-dd"));
+        payConfig.setDays(payConfigReqVo.getDays());
         return payConfig;
     }
 

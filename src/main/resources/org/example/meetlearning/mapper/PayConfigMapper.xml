@@ -11,12 +11,12 @@
     <result column="currency_name" jdbcType="VARCHAR" property="currencyName" />
     <result column="quantity" jdbcType="DECIMAL" property="quantity" />
     <result column="amount" jdbcType="DECIMAL" property="amount" />
-    <result column="expiring_date" jdbcType="DATE" property="expiringDate" />
+    <result column="days" jdbcType="INTEGER" property="days" />
   </resultMap>
 
   <sql id="Base_Column_List">
     id, creator, create_time, record_id, currency_id, currency_code, currency_name, quantity,
-    amount, expiring_date
+    amount, days
   </sql>
 
   <select id="selectByCurrency" resultMap="BaseResultMap">
@@ -41,12 +41,11 @@
   <insert id="insert" parameterType="org.example.meetlearning.dao.entity.PayConfig">
     insert into pay_config (creator, create_time,
       record_id, currency_id, currency_code, 
-      currency_name, quantity, amount, 
-      expiring_date)
+      currency_name, quantity, amount,  days)
     values (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{recordId,jdbcType=VARCHAR}, #{currencyId,jdbcType=VARCHAR}, #{currencyCode,jdbcType=VARCHAR}, 
       #{currencyName,jdbcType=VARCHAR}, #{quantity,jdbcType=DECIMAL}, #{amount,jdbcType=DECIMAL}, 
-      #{expiringDate,jdbcType=DATE})
+      #{days,jdbcType=INTEGER})
   </insert>
 
   <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.PayConfig">
@@ -76,8 +75,8 @@
       <if test="amount != null">
         amount = #{amount,jdbcType=DECIMAL},
       </if>
-      <if test="expiringDate != null">
-        expiring_date = #{expiringDate,jdbcType=DATE},
+      <if test="days != null">
+        days = #{expiringDate,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

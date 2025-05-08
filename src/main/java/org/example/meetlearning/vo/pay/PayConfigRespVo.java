@@ -31,7 +31,7 @@ public class PayConfigRespVo {
     @Schema(name = "amount", description = "充值金额")
     private BigDecimal amount;
 
-    @Schema(name = "expiringDate", description = "失效日期")
-    private Date expiringDate;
+    @Schema(name = "days", description = "生效天数")
+    private Integer days;
 
 }

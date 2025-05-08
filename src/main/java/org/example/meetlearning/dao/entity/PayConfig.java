@@ -26,6 +26,6 @@ public class PayConfig {
 
     private BigDecimal amount;
 
-    private Date expiringDate;
+    private Integer days;
 
 }
