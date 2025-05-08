@@ -1,5 +1,6 @@
 package org.example.meetlearning.service;
 
+import cn.hutool.core.util.BooleanUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,13 @@ import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
+import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.pay.WxPayCreateReqVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -176,4 +180,11 @@ public class WechatPayService extends BasePcService {
         }
         return "<xml><return_code><![CDATA[FAIL]]></return_code></xml>";
     }
+
+
+    public Boolean patStatus(RecordIdQueryVo queryVo) {
+        RechargeOrder rechargeOrder = rechargeOrderService.selectByRecordId(queryVo.getRecordId());
+        return BooleanUtil.isTrue(Objects.equals(rechargeOrder.getStatus(), PayStatusEnum.SUCCESS.getStatus()));
+    }
+
 }

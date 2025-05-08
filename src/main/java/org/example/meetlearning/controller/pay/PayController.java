@@ -31,10 +31,10 @@ public class PayController {
     @PostMapping(value = "/api/pay/wx/create", produces = "application/json;charset=UTF-8")
     public RespVo<PayRespVo> createOrder(@RequestBody WxPayCreateReqVo reqVo) {
         try {
-            Map<String,String> resultMap = payService.createOrder(reqVo);
+            Map<String, String> resultMap = payService.createOrder(reqVo);
             String codeUrl = resultMap.get("codeUrl");
             String orderId = resultMap.get("orderId");
-            return new RespVo<>(new PayRespVo(codeUrl, QrCodeGenerator.generateBase64(codeUrl, 300, 300),orderId));
+            return new RespVo<>(new PayRespVo(codeUrl, QrCodeGenerator.generateBase64(codeUrl, 300, 300), orderId));
         } catch (Exception e) {
             log.error("创建支付订单失败", e);
             return new RespVo<>(null, false, e.getMessage());
@@ -50,6 +50,6 @@ public class PayController {
 
     @PostMapping("/api/pay/wx/status")
     public RespVo<Boolean> patStatus(@RequestBody RecordIdQueryVo queryVo) {
-        return new RespVo<>(true);
+        return new RespVo<>(payService.patStatus(queryVo));
     }
 }
