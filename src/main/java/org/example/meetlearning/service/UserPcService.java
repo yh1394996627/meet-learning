@@ -58,7 +58,7 @@ public class UserPcService extends BasePcService {
 
     public RespVo<UserInfoRespVo> loginUser(UserLoginReqVo reqVo) {
         try {
-            User accountUser = userService.selectByRoleLogin(reqVo.getAccountCode(), MD5Util.md5("MD5", reqVo.getPassword()), reqVo.getRole().name());
+            User accountUser = userService.selectByLogin(reqVo.getAccountCode(), MD5Util.md5("MD5", reqVo.getPassword()));
             Assert.notNull(accountUser, "Account does not exist or account password is incorrect");
             if (BooleanUtil.isTrue(reqVo.getManage())) {
                 List<String> types = List.of(RoleEnum.MANAGER.name(), RoleEnum.TEACHER.name(), RoleEnum.AFFILIATE.name());
