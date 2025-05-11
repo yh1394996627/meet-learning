@@ -1,6 +1,7 @@
 package org.example.meetlearning.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,16 +9,14 @@ import java.io.File;
 import java.io.IOException;
 
 @Service
+@Slf4j
 public class ServiceDeployService {
 
-    public String uploadFolder(Integer type, MultipartFile file) {
+    public String uploadFolder(MultipartFile file) {
         if (file.isEmpty()) {
             return "文件不能为空";
         }
-        if (type != 1 && type != 2) {
-            return "type 类型不对  1夺分派  2后台管理";
-        }
-        String dist = type == 1 ? "manage" : "student";
+        String dist = "manage";
         String destinationPath = "/usr/local/apps/vue/" + dist + "/";
         // 指定上传文件的存储路径
         String filePath = destinationPath + file.getOriginalFilename();
@@ -27,13 +26,13 @@ public class ServiceDeployService {
             file.transferTo(new File(filePath));
             deployService(dist, filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("异常:{}",e);
             return "文件保存失败";
         }
         return "文件保存成功";
     }
 
-    private String deployService(String dfp, String filePath) {
+    private void deployService(String dfp, String filePath) {
         // 直接写死了固定地址
         deleteDirectory("/usr/share/nginx/html/" + dfp + "/dist/");
         deleteDirectory("/usr/share/nginx/html/" + dfp + "/__MACOSX/");
@@ -45,18 +44,17 @@ public class ServiceDeployService {
             process.waitFor();
             int exitCode = process.exitValue();
             if (exitCode != 0) {
-                return "解压命令执行失败，退出码：" + exitCode;
+                return;
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            return "解压命令执行异常";
+            return;
         } finally {
             // 删除原始ZIP文件
             new File(filePath).delete();
         }
         deploy();
         result = "服务发布成功";
-        return result;
     }
 
 

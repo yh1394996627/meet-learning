@@ -22,8 +22,8 @@ public class ServiceDeployController {
 
     @Operation(summary = "上传ZIP文件到服务器", operationId = "uploadFolder")
     @PostMapping(value = "v1/deploy/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String uploadFolder(@RequestParam("type") Integer type, @RequestPart("file") MultipartFile file) {
-        return serviceDeployService.uploadFolder(type, file);
+    public String uploadFolder(@RequestPart("file") MultipartFile file) {
+        return serviceDeployService.uploadFolder(file);
     }
 
 }

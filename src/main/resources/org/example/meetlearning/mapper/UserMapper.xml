@@ -37,6 +37,13 @@
         where account_code = #{accountCode} and password = #{password}
     </select>
 
+    <select id="selectByRoleLogin" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where account_code = #{accountCode} and password = #{password} and type = #{type}
+    </select>
+
     <select id="selectByAccountCode" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

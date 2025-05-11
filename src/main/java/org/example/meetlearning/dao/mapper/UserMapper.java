@@ -8,7 +8,9 @@ public interface UserMapper {
 
     User selectByRecordId(String recordId);
 
-    User selectByLogin(String accountCode,String password);
+    User selectByLogin(String accountCode, String password);
+
+    User selectByRoleLogin(String accountCode, String password, String type);
 
     User selectByAccountCode(String accountCode);
 

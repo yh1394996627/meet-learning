@@ -38,6 +38,15 @@ public class UserService {
     }
 
     /**
+     * 根据账号密码查询指定角色用户
+     *
+     * @return 用户信息
+     */
+    public User selectByRoleLogin(String accountCode, String password, String type) {
+        return userMapper.selectByRoleLogin(accountCode, password, type);
+    }
+
+    /**
      * 更新用户
      */
     public int updateEntity(User user) {

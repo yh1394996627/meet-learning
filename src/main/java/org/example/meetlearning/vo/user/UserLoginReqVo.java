@@ -4,6 +4,8 @@ package org.example.meetlearning.vo.user;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.example.meetlearning.enums.RoleEnum;
+import org.springframework.util.StringUtils;
 
 @Data
 public class UserLoginReqVo {
@@ -23,4 +25,16 @@ public class UserLoginReqVo {
     private String domain;
 
 
+    @Schema(hidden = true)
+    public RoleEnum getRole() {
+        if (!StringUtils.hasText(domain)) {
+            return RoleEnum.MANAGER;
+        }
+        return switch (domain) {
+            case "www.12talk.com" -> RoleEnum.STUDENT;
+            case "teacher.12talk.com" -> RoleEnum.TEACHER;
+            case "agent.12talk.com" -> RoleEnum.AFFILIATE;
+            default -> RoleEnum.MANAGER;
+        };
+    }
 }
