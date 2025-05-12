@@ -70,6 +70,8 @@ public class StudentClassPcService extends BasePcService {
 
     private final StudentClassRegularService studentClassRegularService;
 
+    private final BaseConfigService baseConfigService;
+
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
         Page<StudentClass> page = studentClassService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
@@ -87,8 +89,19 @@ public class StudentClassPcService extends BasePcService {
             userFinanceRecordHashMap = new HashMap<>();
             userFinanceMap = new HashMap<>();
         }
+        // 语言MAP
+        Map<String, String> countryMap = new HashMap<>();
+        List<SelectValueVo> selectValueVos = baseConfigService.selectByType(ConfigTypeEnum.LANGUAGE.name());
+        if (!CollectionUtils.isEmpty(selectValueVos)) {
+            countryMap = selectValueVos.stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
+        }
+        baseConfigService.selectByType(ConfigTypeEnum.COUNTRY.name()).stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
+        Map<String, String> finalCountryMap = countryMap;
         PageVo<StudentClassListRespVo> pageVo = PageVo.map(page, list -> {
             StudentClassListRespVo respVo = StudentClassConverter.INSTANCE.toStudentClassListRespVo(list);
+            if (StringUtils.isNotEmpty(list.getTeacherCountry())) {
+                respVo.setTeacherLanguage(finalCountryMap.get(list.getTeacherCountry()));
+            }
             if (userFinanceMap.containsKey(list.getStudentId())) {
                 UserFinance userFinance = userFinanceMap.get(list.getStudentId());
                 respVo.setStudentConsumption(BigDecimalUtil.nullOrZero(userFinance.getConsumptionQty()));
@@ -125,7 +138,7 @@ public class StudentClassPcService extends BasePcService {
         }
         Assert.isTrue(reqVo.getCourseType() != null, "Course type cannot be empty");
         //新增课时币学生扣减记录
-        operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(),null,null,null);
+        operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null);
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
         //教材补充

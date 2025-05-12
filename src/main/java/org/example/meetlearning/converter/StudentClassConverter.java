@@ -31,7 +31,7 @@ public interface StudentClassConverter {
         respVo.setStudentLanguage(studentClass.getStudentCountry());
         respVo.setTeacherId(studentClass.getTeacherId());
         respVo.setTeacherName(studentClass.getTeacherName());
-        respVo.setTeacherLanguage(studentClass.getTeacherCountry());
+        respVo.setTeacherLanguage(studentClass.getTeacherLanguage());
         respVo.setTextbookId(studentClass.getCourseId());
         respVo.setTextbookName(studentClass.getTextbook());
         respVo.setCourseTime(studentClass.getCourseTime().toString() + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime());
@@ -88,6 +88,7 @@ public interface StudentClassConverter {
             CourseTypeEnum courseTypeEnum = CourseTypeEnum.valueOf(reqVo.getCourseType());
             studentClass.setCourseType(courseTypeEnum.name());
         }
+        studentClass.setTeacherLanguage(teacher.getLanguage());
         studentClass.setCourseTime(DateUtil.parse(reqVo.getCourseDate(), "yyyy-MM-dd"));
         if (StringUtils.isNotEmpty(reqVo.getCourseTime())) {
             String[] arr = StringUtils.split(reqVo.getCourseTime(), "-");

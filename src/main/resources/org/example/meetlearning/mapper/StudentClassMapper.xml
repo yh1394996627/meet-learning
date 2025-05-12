@@ -22,6 +22,7 @@
         <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
         <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
         <result column="teacher_country" jdbcType="VARCHAR" property="teacherCountry"/>
+        <result column="teacher_language" jdbcType="VARCHAR" property="teacherLanguage"/>
         <result column="price" jdbcType="DECIMAL" property="price"/>
         <result column="group_price" jdbcType="DECIMAL" property="groupPrice"/>
         <result column="coin" jdbcType="DECIMAL" property="coin"/>
@@ -54,7 +55,7 @@
     course_id, course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
     affiliate_name, student_consumption, efficient_date, student_balance, cancel_id, cancel_time,
         meeting_record_id, is_complaint, is_evaluation, textbook, price, credits_price, class_status,
-        group_price, group_coin, coin, textbook
+        group_price, group_coin, coin, textbook, teacher_language
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -276,6 +277,9 @@
             <if test="coin != null">
                 coin,
             </if>
+            <if test="teacherLanguage != null">
+                teacher_language,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -394,6 +398,9 @@
             </if>
             <if test="coin != null">
                 #{coin,jdbcType=DECIMAL},
+            </if>
+            <if test="teacherLanguage != null">
+                #{teacherLanguage,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
