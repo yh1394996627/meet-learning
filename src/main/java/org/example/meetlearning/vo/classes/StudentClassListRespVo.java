@@ -31,11 +31,11 @@ public class StudentClassListRespVo {
     @Schema(name = "teacherLanguage", description = "老师国籍")
     private String teacherLanguage;
 
-    @Schema(name = "courseId", description = "课程ID")
-    private String courseId;
+    @Schema(name = "textbookId", description = "教材ID")
+    private String textbookId;
 
-    @Schema(name = "courseName", description = "课程名称")
-    private String courseName;
+    @Schema(name = "textbookName", description = "教材名称")
+    private String textbookName;
 
     @Schema(name = "courseTime", description = "上课时间")
     private String courseTime;

@@ -50,7 +50,7 @@ public class StudentClassPcService extends BasePcService {
 
     private final TeacherScheduleService teacherScheduleService;
 
-    private final TeacherFeatureService teacherFeatureService;
+    private final TextbookService textbookService;
 
     private final UserFinanceService userFinanceService;
 
@@ -111,7 +111,7 @@ public class StudentClassPcService extends BasePcService {
      * 4.创建会议,生产会议链接
      */
     public RespVo<String> studentClassAdd(String userCode, String userName, StudentClassAddReqVo reqVo) throws IOException {
-        //1.校验 2.拉取老师学生信息组装数据
+        //校验拉取老师学生信息组装数据
         //查询学生信息
         Student student = reqVo.getStudentId() != null ? studentService.findByRecordId(reqVo.getStudentId()) : null;
         Assert.notNull(student, "Student information not obtained");
@@ -124,10 +124,15 @@ public class StudentClassPcService extends BasePcService {
             affiliate = affiliateService.findByRecordId(student.getAffiliateId());
         }
         Assert.isTrue(reqVo.getCourseType() != null, "Course type cannot be empty");
-        //3.新增课时币学生扣减记录
+        //新增课时币学生扣减记录
         operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(),null,null,null);
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
+        //教材补充
+        if (StringUtils.isNotEmpty(reqVo.getTextbookId())) {
+            Textbook textbook = textbookService.selectByRecordId(reqVo.getTextbookId());
+            studentClass.setTextbook(textbook.getName());
+        }
         Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         //创建会议
         String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
