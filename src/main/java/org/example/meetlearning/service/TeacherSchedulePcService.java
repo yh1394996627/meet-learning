@@ -165,8 +165,9 @@ public class TeacherSchedulePcService extends BasePcService {
         if (CollectionUtils.isEmpty(regulars)) {
             return new ArrayList<>();
         }
-        List<String> teacherIds = regulars.stream().map(StudentClassRegular::getTeacherId).distinct().toList();
-        List<StudentClassRegularRecord> records = studentClassRegularService.selectRecordByRegularId(teacherIds);
+        List<String> recordIds = regulars.stream().map(StudentClassRegular::getRecordId).distinct().toList();
+        List<StudentClassRegularRecord> records = studentClassRegularService.selectRecordByRegularId(recordIds);
+        Assert.isTrue(!CollectionUtils.isEmpty(records), "regular cannot be empty");
         Map<String, List<StudentClassRegularRecord>> recordMap = records.stream().collect(Collectors.groupingBy(StudentClassRegularRecord::getRegularId));
         return regulars.stream().map(item -> {
             List<StudentClassRegularRecord> list = recordMap.get(item.getRecordId());

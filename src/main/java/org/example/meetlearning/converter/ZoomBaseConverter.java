@@ -26,7 +26,7 @@ public interface ZoomBaseConverter {
         respVo.setVerificationToken(zoomAccountSet.getVerificationToken());
         respVo.setType(zoomAccountSet.getZoomType());
         respVo.setUsedQty(zoomAccountSet.getUsedQty());
-        respVo.setTotalUsedQty(zoomAccountSet.getTotalUsedQty());
+        respVo.setTotalUsedQty(99);
         respVo.setStatusMsg(zoomAccountSet.getZoomStatusMsg());
         respVo.setIsException(BooleanUtil.isTrue(zoomAccountSet.getIsException()));
         return respVo;
