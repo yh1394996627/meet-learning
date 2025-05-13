@@ -54,7 +54,7 @@ public interface StudentClassRegularConverter {
         return regularRecord;
     }
 
-    default StudentClassRegularRespVo toRespVo(StudentClassRegular studentClassRegular, List<Date> courseDates) {
+    default StudentClassRegularRespVo toRespVo(StudentClassRegular studentClassRegular, List<Date> courseDates, List<String> courseTimes) {
         StudentClassRegularRespVo respVo = new StudentClassRegularRespVo();
         respVo.setRecordId(studentClassRegular.getRecordId());
         respVo.setStudentId(studentClassRegular.getStudentId());
@@ -62,7 +62,7 @@ public interface StudentClassRegularConverter {
         respVo.setStudentEmail(studentClassRegular.getStudentEmail());
         respVo.setCourseType(studentClassRegular.getCourseType());
         respVo.setCourseName(studentClassRegular.getCourseName());
-        respVo.setCourseTime(studentClassRegular.getBeginTime() + "-" + studentClassRegular.getEndTime());
+        respVo.setCourseTime(StringUtils.join(courseTimes,";"));
         String dateStr = StringUtils.join(courseDates.stream().map(date -> DateUtil.format(date, "yyyy-MM-dd")).toList(), ";");
         respVo.setCourseDateList(dateStr);
         return respVo;
@@ -72,6 +72,7 @@ public interface StudentClassRegularConverter {
         StudentClass studentClasses = new StudentClass();
         studentClasses.setTeacherId(studentClassRegular.getTeacherId());
         studentClasses.setStudentId(studentClassRegular.getStudentId());
+        studentClasses.setTeacherName(studentClassRegular.getTeacherName());
         studentClasses.setCourseTime(studentClassRegularRecord.getCourseTime());
         studentClasses.setBeginTime(studentClassRegularRecord.getBeginTime());
         studentClasses.setEndTime(studentClassRegularRecord.getEndTime());

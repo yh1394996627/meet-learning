@@ -172,7 +172,8 @@ public class TeacherSchedulePcService extends BasePcService {
         return regulars.stream().map(item -> {
             List<StudentClassRegularRecord> list = recordMap.get(item.getRecordId());
             List<Date> courseDates = list.stream().map(StudentClassRegularRecord::getCourseTime).distinct().toList();
-            return StudentClassRegularConverter.INSTANCE.toRespVo(item, courseDates);
+            List<String> courseTimes = list.stream().map(time->{return time.getBeginTime()+"-"+time.getEndTime();}).distinct().toList();
+            return StudentClassRegularConverter.INSTANCE.toRespVo(item, courseDates, courseTimes);
         }).toList();
     }
 
