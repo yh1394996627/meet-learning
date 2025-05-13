@@ -14,6 +14,7 @@ import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.textbook.TextbookQueryVo;
+import org.example.meetlearning.vo.textbook.TextbookRecordReqVo;
 import org.example.meetlearning.vo.textbook.TextbookReqVo;
 import org.example.meetlearning.vo.textbook.TextbookRespVo;
 import org.springframework.util.Assert;
@@ -65,4 +66,9 @@ public class TextbookController implements BaseController {
         return new RespVo<>("Operation successful");
     }
 
+    @Operation(summary = "根据教材ID查询绑定材料", operationId = "fileSearch")
+    @PostMapping(value = "v1/textbook/file")
+    public RespVo<List<TextbookRecordReqVo>> fileSearch(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>(pcService.fileSearch(queryVo));
+    }
 }

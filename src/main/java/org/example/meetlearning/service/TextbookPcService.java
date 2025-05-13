@@ -14,6 +14,7 @@ import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.textbook.TextbookQueryVo;
+import org.example.meetlearning.vo.textbook.TextbookRecordReqVo;
 import org.example.meetlearning.vo.textbook.TextbookReqVo;
 import org.example.meetlearning.vo.textbook.TextbookRespVo;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,20 @@ public class TextbookPcService {
         return PageVo.map(page, list -> TextbookConverter.INSTANCE.toRespVo(list, textbookRecordMap));
     }
 
+
+    public List<TextbookRecordReqVo> fileSearch(RecordIdQueryVo queryVo) {
+        Map<String, List<TextbookRecord>> textbookRecordMap;
+        List<TextbookRecord> records = textbookService.selectByTextbookIds(List.of(queryVo.getRecordId()));
+        return records.stream().map(item -> {
+            TextbookRecordReqVo reqVo = new TextbookRecordReqVo();
+            reqVo.setRecordId(item.getRecordId());
+            reqVo.setName(item.getName());
+            reqVo.setCatalog(item.getCatalog());
+            reqVo.setPath(item.getCatalog());
+            return reqVo;
+        }).toList();
+    }
+
     public void add(String userCode, String userName, TextbookReqVo reqVo) {
         Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCatalogs()), "catalogs cannot be empty");
         Textbook textbook = TextbookConverter.INSTANCE.toCreate(userCode, userName, reqVo);
@@ -73,7 +88,7 @@ public class TextbookPcService {
     }
 
     public List<SelectValueVo> selectValueVos(RecordIdQueryVo queryVo) {
-        if(StringUtils.isEmpty(queryVo.getRecordId())){
+        if (StringUtils.isEmpty(queryVo.getRecordId())) {
             List<Textbook> list = textbookService.selectByParams(new HashMap<>());
             return list.stream().map(item -> new SelectValueVo(item.getRecordId(), item.getName())).toList();
         }

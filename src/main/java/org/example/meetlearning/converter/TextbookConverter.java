@@ -7,6 +7,7 @@ import org.example.meetlearning.vo.textbook.TextbookReqVo;
 import org.example.meetlearning.vo.textbook.TextbookRespVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -26,7 +27,7 @@ public interface TextbookConverter {
         respVo.setLevelBegin(textbook.getLevelBegin());
         respVo.setLevelEnd(textbook.getLevelEnd());
         respVo.setType(textbook.getType());
-        if(textbookRecordMap.containsKey(textbook.getRecordId())){
+        if (textbookRecordMap.containsKey(textbook.getRecordId())) {
             respVo.setCatalogs(textbookRecordMap.get(textbook.getRecordId()).stream().map(item -> {
                 TextbookRecordReqVo recordRespVo = new TextbookRecordReqVo();
                 recordRespVo.setRecordId(item.getRecordId());
@@ -61,7 +62,10 @@ public interface TextbookConverter {
         record.setRecordId(UUID.randomUUID().toString());
         record.setTextbookName(textbook.getName());
         record.setName(reqVo.getName());
-        record.setCatalog(reqVo.getCatalog());
+        record.setCatalog(reqVo.getPath());
+        if (StringUtils.hasText(reqVo.getCatalog())) {
+            record.setCatalog(reqVo.getCatalog());
+        }
         return record;
     }
 

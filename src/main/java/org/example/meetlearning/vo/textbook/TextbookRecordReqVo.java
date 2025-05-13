@@ -10,4 +10,7 @@ public class TextbookRecordReqVo {
     private String name;
 
     private String catalog;
+
+    private String path;
+
 }
