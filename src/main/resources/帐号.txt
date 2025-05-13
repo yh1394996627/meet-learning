@@ -1,0 +1,4 @@
+学生端 www.12talk.com student@talk.com 11111111
+管理端 mge.12talk.com admin@talk.com 11111111
+老师端 teacher.12talk.com yuh1394996627@talk.com 11111111
+代理商 agent.12talk.com affiliate@talk.com 11111111

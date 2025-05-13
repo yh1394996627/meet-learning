@@ -153,7 +153,6 @@ public class TeacherSchedulePcService extends BasePcService {
                 }
             }
         }
-
         if (!CollectionUtils.isEmpty(teacherSchedules)) {
             teacherScheduleService.insertBatch(teacherSchedules);
         }
@@ -172,7 +171,9 @@ public class TeacherSchedulePcService extends BasePcService {
         return regulars.stream().map(item -> {
             List<StudentClassRegularRecord> list = recordMap.get(item.getRecordId());
             List<Date> courseDates = list.stream().map(StudentClassRegularRecord::getCourseTime).distinct().toList();
-            List<String> courseTimes = list.stream().map(time->{return time.getBeginTime()+"-"+time.getEndTime();}).distinct().toList();
+            List<String> courseTimes = list.stream().map(time -> {
+                return time.getBeginTime() + "-" + time.getEndTime();
+            }).distinct().toList();
             return StudentClassRegularConverter.INSTANCE.toRespVo(item, courseDates, courseTimes);
         }).toList();
     }
@@ -220,7 +221,7 @@ public class TeacherSchedulePcService extends BasePcService {
         } else {
             for (StudentClassRegularRecord record : records) {
                 //删除占用的时间段
-                teacherCourseTimeService.deleteByTeacherIdTime(studentClassRegular.getTeacherId(), record.getCourseTime(), studentClassRegular.getBeginTime(), studentClassRegular.getEndTime());
+                teacherCourseTimeService.deleteByRegularId(studentClassRegular.getTeacherId(), studentClassRegular.getRecordId());
             }
         }
     }

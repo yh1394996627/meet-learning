@@ -21,8 +21,8 @@ public class TeacherCourseTimeService {
 
     private TeacherCourseTimeMapper teacherCourseTimeMapper;
 
-    public void deleteByTeacherIdTime(String teacherId, Date courseTime, String beginTime, String endTime) {
-        teacherCourseTimeMapper.deleteByTeacherIdTime(teacherId, courseTime, beginTime, endTime);
+    public void deleteByRegularId(String teacherId, String regularId) {
+        teacherCourseTimeMapper.deleteByRegularId(teacherId, regularId);
     }
 
     public void insert(TeacherCourseTime record) {
@@ -48,6 +48,8 @@ public class TeacherCourseTimeService {
             teacherCourseTime.setCourseTime(studentClass.getCourseTime());
             teacherCourseTime.setBeginTime(studentClass.getBeginTime());
             teacherCourseTime.setEndTime(studentClass.getEndTime());
+            teacherCourseTime.setRegularId(studentClass.getRecordId());
+            teacherCourseTime.setCourseType(studentClass.getCourseType());
             insert(teacherCourseTime);
         }
     }

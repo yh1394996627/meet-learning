@@ -21,4 +21,5 @@ public class TeacherCourseTime {
 
     private String courseType;
 
+    private String regularId;
 }

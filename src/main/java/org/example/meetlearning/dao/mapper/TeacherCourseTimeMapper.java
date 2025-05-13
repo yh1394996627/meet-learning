@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TeacherCourseTimeMapper {
 
-    int deleteByTeacherIdTime(String teacherId, Date courseTime, String beginTime, String endTime);
+    int deleteByRegularId(String teacherId, String classId);
 
     int insert(TeacherCourseTime record);
 

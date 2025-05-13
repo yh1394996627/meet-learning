@@ -5,13 +5,16 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="record_id" jdbcType="VARCHAR" property="recordId" />
     <result column="teacher_id" jdbcType="VARCHAR" property="teacherId" />
+    <result column="regular_id" jdbcType="VARCHAR" property="regularId" />
+    <result column="course_type" jdbcType="VARCHAR" property="courseType" />
+    <result column="teacher_id" jdbcType="VARCHAR" property="teacherId" />
     <result column="course_time" jdbcType="TIMESTAMP" property="courseTime" />
     <result column="begin_time" jdbcType="VARCHAR" property="beginTime" />
     <result column="end_time" jdbcType="VARCHAR" property="endTime" />
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, record_id, teacher_id, course_time, begin_time, end_time
+    id, record_id, teacher_id, course_time, begin_time, end_time, regular_id, course_type
   </sql>
 
   <select id="selectByTeacherIdTime" resultMap="BaseResultMap">
@@ -40,16 +43,18 @@
 <!--      </if>-->
   </select>
 
-  <delete id="deleteByTeacherIdTime">
-    delete from teacher_course_time
-    where teacher_id = #{teacherId} and course_time = #{courseTime} and begin_time = #{beginTime} and end_time = #{endTime}
+  <delete id="deleteByRegularId">
+      delete
+      from teacher_course_time
+      where teacher_id = #{teacherId}
+        and regular_id = #{regularId}
   </delete>
 
   <insert id="insert" parameterType="org.example.meetlearning.dao.entity.TeacherCourseTime">
-    insert into teacher_course_time (record_id, teacher_id, course_time, begin_time, end_time
-      )
-    values (#{recordId,jdbcType=VARCHAR}, #{teacherId,jdbcType=VARCHAR},
-      #{courseTime,jdbcType=TIMESTAMP}, #{beginTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR}
-      )
+      insert into teacher_course_time (record_id, teacher_id, course_time, begin_time, end_time, regular_id,
+                                       course_type)
+      values (#{recordId,jdbcType=VARCHAR}, #{teacherId,jdbcType=VARCHAR},
+              #{courseTime,jdbcType=TIMESTAMP}, #{beginTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR},
+              #{regularId,jdbcType=VARCHAR}, #{courseType,jdbcType=VARCHAR})
   </insert>
 </mapper>

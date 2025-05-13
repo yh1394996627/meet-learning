@@ -62,7 +62,7 @@ public interface StudentClassRegularConverter {
         respVo.setStudentEmail(studentClassRegular.getStudentEmail());
         respVo.setCourseType(studentClassRegular.getCourseType());
         respVo.setCourseName(studentClassRegular.getCourseName());
-        respVo.setCourseTime(StringUtils.join(courseTimes,";"));
+        respVo.setCourseTime(StringUtils.join(courseTimes, ";"));
         String dateStr = StringUtils.join(courseDates.stream().map(date -> DateUtil.format(date, "yyyy-MM-dd")).toList(), ";");
         respVo.setCourseDateList(dateStr);
         return respVo;
@@ -79,6 +79,8 @@ public interface StudentClassRegularConverter {
         studentClasses.setCreator(studentClassRegular.getCreator());
         studentClasses.setCreateName(studentClassRegular.getCreateName());
         studentClasses.setCreateTime(new Date());
+        studentClasses.setCourseType(studentClassRegular.getCourseType());
+        studentClasses.setRecordId(studentClassRegular.getRecordId());
         return studentClasses;
     }
 
