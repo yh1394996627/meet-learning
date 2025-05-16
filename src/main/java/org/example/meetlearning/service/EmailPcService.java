@@ -11,10 +11,8 @@ import org.example.meetlearning.vo.common.RespVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -71,7 +69,7 @@ public class EmailPcService extends BasePcService {
     }
 
 
-    public void sendReEmail(String accessToken, String toEmail){
+    public void sendReEmail(String accessToken, String toEmail) {
         try {
             int verificationCode = (int) (Math.random() * 900000) + 100000;
             Config config = new Config()
@@ -102,8 +100,7 @@ public class EmailPcService extends BasePcService {
     }
 
 
-
-    public String verifyStr(String verificationCode){
+    public String verifyStr(String verificationCode) {
         return "<div style='"
                 + "max-width: 600px;"
                 + "margin: 20px auto;"
@@ -172,6 +169,95 @@ public class EmailPcService extends BasePcService {
                 + "padding-top: 20px;"
                 + "border-top: 1px solid #eeeeee;'>"
                 + "<p style='margin:5px 0;'>中菲（广东）国际文化有限公司</p>"
+                + "</div>"
+                + "</div>";
+    }
+
+
+    public RespVo<String> sendNotice(String time, String teacherName, String joinUrl, String toEmail) {
+        try {
+            int verificationCode = (int) (Math.random() * 900000) + 100000;
+            Config config = new Config()
+                    .setAccessKeyId(accessKeyId)
+                    .setAccessKeySecret(accessKeySecret);
+            config.endpoint = "dm.aliyuncs.com";
+
+            Client client = new Client(config);
+
+            // 动态替换模板变量
+            String htmlBody = sendNoticeStr(time, teacherName, joinUrl);
+            SingleSendMailRequest request = new SingleSendMailRequest()
+                    .setAccountName(accountName)
+                    .setFromAlias(fromAlias)
+                    .setAddressType(1)
+                    .setToAddress(toEmail)
+                    .setSubject(subject)
+                    .setHtmlBody(htmlBody)
+                    .setReplyToAddress(true);
+            SingleSendMailResponse response = client.singleSendMailWithOptions(request, new RuntimeOptions());
+            return new RespVo<>("发送成功");
+        } catch (Exception e) {
+            log.error("发送失败", e);
+            return new RespVo<>("发送失败", false, e.getMessage());
+        }
+    }
+
+    public String sendNoticeStr(String time, String teacherName, String joinUrl) {
+        return "<div style=\""
+                + "max-width: 600px;"
+                + "margin: 20px auto;"
+                + "padding: 30px;"
+                + "font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;"
+                + "background-color: #f7f7f7;"
+                + "border-radius: 8px;"
+                + "box-shadow: 0 2px 10px rgba(0,0,0,0.1);\">"
+
+                + "<h1 style=\""
+                + "color: #2c7be5;"
+                + "font-size: 24px;"
+                + "margin: 0 0 25px 0;"
+                + "text-align: center;"
+                + "padding-bottom: 15px;\">"
+                + "课程提醒"
+                + "</h1>"
+
+                + "<div style=\""
+                + "background: #ffffff;"
+                + "padding: 25px;"
+                + "border-radius: 6px;"
+                + "border: 1px solid #eeeeee;\">"
+
+                + "<div style=\"margin-bottom: 20px;\">"
+                + "<p style=\""
+                + "color: #666666;"
+                + "font-size: 16px;"
+                + "margin: 10px 0;\">"
+                + "<strong>上课时间：" + time + "</p>"
+                + "<p style=\""
+                + "color: #666666;"
+                + "font-size: 16px;"
+                + "margin: 10px 0;\">"
+                + "<strong>授课老师：</strong>" + teacherName + "</p>"
+                + "</div>"
+
+                + "<a href=\"" + joinUrl + "\" "
+                + "style=\""
+                + "display: block;"
+                + "width: 200px;"
+                + "margin: 20px auto;"
+                + "background-color: #2c7be5;"
+                + "color: white !important;"
+                + "padding: 15px 30px;"
+                + "border-radius: 5px;"
+                + "text-align: center;"
+                + "text-decoration: none;"
+                + "font-size: 18px;"
+                + "transition: background-color 0.3s;\""
+                + "onmouseover=\"this.style.backgroundColor='#1c5bb5'\" "
+                + "onmouseout=\"this.style.backgroundColor='#2c7be5'\">"
+                + "进入在线课堂"
+                + "</a>"
+
                 + "</div>"
                 + "</div>";
     }

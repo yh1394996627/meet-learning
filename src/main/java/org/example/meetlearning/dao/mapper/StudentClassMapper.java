@@ -1,5 +1,6 @@
 package org.example.meetlearning.dao.mapper;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,4 +32,8 @@ public interface StudentClassMapper {
     List<SelectValueVo> selectAffCountByParams(@Param("params")Map<String, Object> params);
 
     List<StudentClass> selectByNowStudentId(String studentId,String nowDate);
+
+    List<StudentClass> selectClassByTimeBt(Date courseTime, String nowDate);
+
+
 }

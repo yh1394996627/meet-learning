@@ -65,9 +65,11 @@ public class TextbookPcService {
     public void add(String userCode, String userName, TextbookReqVo reqVo) {
         Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCatalogs()), "catalogs cannot be empty");
         Textbook textbook = TextbookConverter.INSTANCE.toCreate(userCode, userName, reqVo);
-        List<TextbookRecord> records = reqVo.getCatalogs().stream().map(item -> TextbookConverter.INSTANCE.toCreateRecord(userCode, userName, textbook, item)).toList();
         textbookService.insertEntity(textbook);
-        textbookService.insertBatch(records);
+        if (!CollectionUtils.isEmpty(reqVo.getCatalogs())) {
+            List<TextbookRecord> records = reqVo.getCatalogs().stream().map(item -> TextbookConverter.INSTANCE.toCreateRecord(userCode, userName, textbook, item)).toList();
+            textbookService.insertBatch(records);
+        }
     }
 
     public void update(String userCode, String userName, TextbookReqVo reqVo) {
@@ -77,8 +79,10 @@ public class TextbookPcService {
         textbookService.updateEntity(textbook);
         TextbookConverter.INSTANCE.toUpdate(userCode, userName, textbook, reqVo);
         textbookService.updateEntity(textbook);
-        List<TextbookRecord> records = reqVo.getCatalogs().stream().map(item -> TextbookConverter.INSTANCE.toCreateRecord(userCode, userName, textbook, item)).toList();
-        textbookService.insertBatch(records);
+        if (!CollectionUtils.isEmpty(reqVo.getCatalogs())) {
+            List<TextbookRecord> records = reqVo.getCatalogs().stream().map(item -> TextbookConverter.INSTANCE.toCreateRecord(userCode, userName, textbook, item)).toList();
+            textbookService.insertBatch(records);
+        }
     }
 
     public void deleted(RecordIdQueryVo queryVo) {

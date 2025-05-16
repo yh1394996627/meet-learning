@@ -79,6 +79,18 @@
         where student_id = #{studentId} and course_time = #{courseTime} order by begin_time asc
     </select>
 
+    <select id="selectClassByTimeBt" resultMap="BaseResultMap">
+        select record_id,
+               course_time,
+               begin_time,
+               student_id,
+               teacher_id
+        from student_class
+        where deleted = 0
+          and course_time = #{courseDate}
+          and begin_time = #{beginTime}
+    </select>
+
     <select id="selectPageByParams" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

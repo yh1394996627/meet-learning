@@ -47,6 +47,17 @@ public class StudentClassService {
         return studentClassMapper.selectByParams(params);
     }
 
+
+    /**
+     * 根据时间段查询课程
+     */
+    public List<StudentClass> selectClassByTimeBt(Date courseTime, String beginTime) {
+        return studentClassMapper.selectClassByTimeBt(courseTime, beginTime);
+    }
+
+    /**
+     * 根据老师查询课程状态
+     */
     public List<StudentClass> selectClassStatusGroupByParams(String teacherId) {
         return studentClassMapper.selectClassStatusGroupByParams(teacherId);
     }
