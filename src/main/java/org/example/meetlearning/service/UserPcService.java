@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -119,6 +118,26 @@ public class UserPcService extends BasePcService {
             log.error("查询个人信息失败", ex);
             return new RespVo<>(null, false, ex.getMessage());
         }
+    }
+
+
+    public void updatePassword(UpdatePasswordReqVo reqVo) {
+        User accountUser = userService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(accountUser, "User information not obtained");
+        emailVerify(accountUser.getEmail(), reqVo.getVerifyCode());
+        User newUser = new User();
+        newUser.setId(accountUser.getId());
+        newUser.setPassword(MD5Util.md5("MD5", reqVo.getPassword()));
+        userService.updateEntity(newUser);
+    }
+
+    public void manageRestPassword(UpdatePasswordReqVo reqVo) {
+        User accountUser = userService.selectByRecordId(reqVo.getRecordId());
+        Assert.notNull(accountUser, "User information not obtained");
+        User newUser = new User();
+        newUser.setId(accountUser.getId());
+        newUser.setPassword(MD5Util.md5("MD5", "11111111"));
+        userService.updateEntity(newUser);
     }
 
     /**

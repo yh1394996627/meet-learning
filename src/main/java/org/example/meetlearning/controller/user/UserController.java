@@ -47,6 +47,22 @@ public class UserController implements BaseController {
         return userPcService.userInfo(getUserCode());
     }
 
+    @Operation(summary = "用户修改密码", operationId = "updatePw")
+    @PostMapping(value = "v1/user/update/password")
+    public RespVo<String> updatePw(@RequestBody UpdatePasswordReqVo reqVo) {
+        userPcService.updatePassword(reqVo);
+        return new RespVo<>("Password updated successfully");
+    }
+
+
+    @Operation(summary = "管理员重制密码", operationId = "restPassword")
+    @PostMapping(value = "v1/user/rest/password")
+    public RespVo<String> restPassword(@RequestBody UpdatePasswordReqVo reqVo) {
+        userPcService.manageRestPassword(reqVo);
+        return new RespVo<>("Password updated successfully");
+    }
+
+
 
     @Operation(summary = "上传头像", operationId = "uploadAvatar")
     @PostMapping(value = "v1/user/upload/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

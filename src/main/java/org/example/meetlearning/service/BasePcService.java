@@ -125,7 +125,6 @@ public class BasePcService {
         Object redisObj = redisTemplate.opsForValue().get(key);
         log.info("Redis key:{}", key);
         log.info("Redis redisObj:{}", redisObj);
-
         Assert.isTrue(redisObj != null && StringUtils.equals(verifyCode, redisObj.toString()), "Verification code error");
     }
 
