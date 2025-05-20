@@ -256,7 +256,7 @@ public class StudentClassPcService extends BasePcService {
         } else {
             teacherCourseTimes.stream().filter(teacherCourseTime -> teacherCourseTime.getCourseType().equals(CourseTypeEnum.GROUP.name())).toList();
             teacherCourseTimesList = teacherCourseTimes.stream().sorted(Comparator.comparing(TeacherCourseTime::getBeginTime)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).collect(Collectors.toList());
-            teacherCourseTimesList = CollectionUtils.isEmpty(teacherCourseTimesList) ? List.of() : teacherCourseTimesList;
+            teacherCourseTimesList = CollectionUtils.isEmpty(teacherCourseTimesList) ? new ArrayList<>() : teacherCourseTimesList;
             List<String> list = AvailableTimeCalculatorUtil.getAvailableTimeSlots(teacherSchedulesList, teacherCourseTimesList);
             if (!CollectionUtils.isEmpty(list)) {
                 teacherCourseTimesList.addAll(list);
