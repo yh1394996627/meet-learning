@@ -35,6 +35,12 @@ public class TeacherUpdateReqVo {
     @Schema(name = "groupPrice", description = "团体课单价")
     private BigDecimal groupPrice;
 
+    @Schema(name = "coin", description = "课时币")
+    private BigDecimal coin;
+
+    @Schema(name = "groupPrice", description = "团体课课时币")
+    private BigDecimal groupCoin;
+
     @Schema(name = "creditsPrice", description = "积分单价")
     private BigDecimal creditsPrice;
 

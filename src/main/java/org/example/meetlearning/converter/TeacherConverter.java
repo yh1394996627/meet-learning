@@ -71,8 +71,8 @@ public interface TeacherConverter {
         teacher.setPrice(reqVo.getPrice());
         teacher.setGroupPrice(reqVo.getGroupPrice());
         teacher.setCreditsPrice(reqVo.getCreditsPrice());
-        teacher.setCoin(reqVo.getRate());
-        teacher.setGroupCoin(reqVo.getGroupRate());
+        teacher.setCoin(reqVo.getCoin());
+        teacher.setGroupCoin(reqVo.getGroupCoin());
         teacher.setEmail(reqVo.getEmail());
         teacher.setCountry(reqVo.getCountry());
         teacher.setManagerId(reqVo.getManagerId());
