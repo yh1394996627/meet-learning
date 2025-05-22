@@ -125,8 +125,8 @@ public class UserPcService extends BasePcService {
         User accountUser = null;
         if(StringUtils.isNotEmpty(reqVo.getRecordId())) {
             accountUser = userService.selectByRecordId(reqVo.getRecordId());
-        }else if(StringUtils.isNotEmpty(reqVo.getAccountCode())){
-            accountUser = userService.selectByAccountCode(reqVo.getAccountCode());
+        }else if(StringUtils.isNotEmpty(reqVo.getEmail())){
+            accountUser = userService.selectByAccountCode(reqVo.getEmail());
         }
         Assert.notNull(accountUser, "User information not obtained");
         emailVerify(accountUser.getEmail(), reqVo.getVerifyCode());
@@ -137,7 +137,12 @@ public class UserPcService extends BasePcService {
     }
 
     public void manageRestPassword(UpdatePasswordReqVo reqVo) {
-        User accountUser = userService.selectByRecordId(reqVo.getRecordId());
+        User accountUser = null;
+        if(StringUtils.isNotEmpty(reqVo.getRecordId())) {
+            accountUser = userService.selectByRecordId(reqVo.getRecordId());
+        }else if(StringUtils.isNotEmpty(reqVo.getEmail())){
+            accountUser = userService.selectByAccountCode(reqVo.getEmail());
+        }
         Assert.notNull(accountUser, "User information not obtained");
         User newUser = new User();
         newUser.setId(accountUser.getId());
