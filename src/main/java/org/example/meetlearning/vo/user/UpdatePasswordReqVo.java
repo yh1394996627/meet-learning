@@ -9,6 +9,9 @@ public class UpdatePasswordReqVo {
     @Schema(name = "recordId", description = "用户id")
     private String recordId;
 
+    @Schema(name = "accountCode", description = "登陆账号")
+    private String accountCode;
+
     @Schema(name = "verifyCode", description = "验证码")
     private String verifyCode;
 

@@ -122,7 +122,12 @@ public class UserPcService extends BasePcService {
 
 
     public void updatePassword(UpdatePasswordReqVo reqVo) {
-        User accountUser = userService.selectByRecordId(reqVo.getRecordId());
+        User accountUser = null;
+        if(StringUtils.isNotEmpty(reqVo.getRecordId())) {
+            accountUser = userService.selectByRecordId(reqVo.getRecordId());
+        }else if(StringUtils.isNotEmpty(reqVo.getAccountCode())){
+            accountUser = userService.selectByAccountCode(reqVo.getAccountCode());
+        }
         Assert.notNull(accountUser, "User information not obtained");
         emailVerify(accountUser.getEmail(), reqVo.getVerifyCode());
         User newUser = new User();

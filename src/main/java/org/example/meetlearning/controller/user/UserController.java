@@ -54,15 +54,12 @@ public class UserController implements BaseController {
         return new RespVo<>("Password updated successfully");
     }
 
-
     @Operation(summary = "管理员重制密码", operationId = "restPassword")
     @PostMapping(value = "v1/user/rest/password")
     public RespVo<String> restPassword(@RequestBody UpdatePasswordReqVo reqVo) {
         userPcService.manageRestPassword(reqVo);
         return new RespVo<>("Password updated successfully");
     }
-
-
 
     @Operation(summary = "上传头像", operationId = "uploadAvatar")
     @PostMapping(value = "v1/user/upload/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

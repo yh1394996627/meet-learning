@@ -18,7 +18,6 @@ import java.util.TimeZone;
 @MapperScan("org.example.meetlearning.dao.mapper")
 @EnableScheduling
 @EnableTransactionManagement
-//                      @EnableAsync
 public class MeetLearningApplication {
 
     public static void main(String[] args) {
@@ -27,17 +26,17 @@ public class MeetLearningApplication {
 
 
     // 在启动类或配置类中添加
-    @PostConstruct
-    void init() {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
+//    @PostConstruct
+//    void init() {
+//        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+//    }
 
     // 配置Jackson全局序列化
-    @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-        return builder -> {
-            builder.simpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            builder.serializers(new DateSerializer(false, new ISO8601DateFormat()));
-        };
-    }
+//    @Bean
+//    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+//        return builder -> {
+//            builder.simpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//            builder.serializers(new DateSerializer(false, new ISO8601DateFormat()));
+//        };
+//    }
 }
