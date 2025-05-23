@@ -125,11 +125,12 @@ public class UserPcService extends BasePcService {
         User accountUser = null;
         if(StringUtils.isNotEmpty(reqVo.getRecordId())) {
             accountUser = userService.selectByRecordId(reqVo.getRecordId());
+            Assert.notNull(accountUser, "User information not obtained");
+            emailVerify(accountUser.getEmail(), reqVo.getVerifyCode());
         }else if(StringUtils.isNotEmpty(reqVo.getEmail())){
             accountUser = userService.selectByAccountCode(reqVo.getEmail());
         }
         Assert.notNull(accountUser, "User information not obtained");
-        emailVerify(accountUser.getEmail(), reqVo.getVerifyCode());
         User newUser = new User();
         newUser.setId(accountUser.getId());
         newUser.setPassword(MD5Util.md5("MD5", reqVo.getPassword()));
