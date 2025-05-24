@@ -73,8 +73,16 @@ public class StudentClassPcService extends BasePcService {
     private final BaseConfigService baseConfigService;
 
 
-    public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(StudentClassQueryVo queryVo) {
-        Page<StudentClass> page = studentClassService.selectPageByParams(queryVo.getParams(), queryVo.getPageRequest());
+    public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(String userCode, StudentClassQueryVo queryVo) {
+        User user = userService.selectByRecordId(userCode);
+        Assert.notNull(user, "User information not obtained");
+        Map<String, Object> params = queryVo.getParams();
+        if (StringUtils.equals(RoleEnum.TEACHER.name(), user.getType())) {
+            params.put("teacherId", userCode);
+        } else if (StringUtils.equals(RoleEnum.STUDENT.name(), user.getType())) {
+            params.put("studentId", userCode);
+        }
+        Page<StudentClass> page = studentClassService.selectPageByParams(params, queryVo.getPageRequest());
         List<String> userIds = page.getRecords().stream().map(StudentClass::getStudentId).toList();
         Map<String, UserFinance> userFinanceMap;
         Map<String, UserFinanceRecord> userFinanceRecordHashMap;
@@ -239,7 +247,8 @@ public class StudentClassPcService extends BasePcService {
         Map<String, Object> params = new HashMap<>();
         params.put("teacherId", teacherId);
         params.put("weekNum", ScheduleWeekEnum.getByDate(courseDate));
-        params.put("courseType", courseType);
+        String courseTypeStr = StringUtils.equals(CourseTypeEnum.TEST.name(), courseType) ? CourseTypeEnum.SINGLE.name() : courseType;
+        params.put("courseType", courseTypeStr);
         if (startTime != null) {
             params.put("startTime", startTime);
         }
@@ -247,21 +256,21 @@ public class StudentClassPcService extends BasePcService {
             params.put("stopTime", stopTime);
         }
         List<TeacherSchedule> teacherSchedules = teacherScheduleService.selectGroupTimeByParams(params);
-        List<String> teacherSchedulesList = teacherSchedules.stream().sorted(Comparator.comparing(TeacherSchedule::getBeginTime)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
+        List<String> teacherSchedulesList = teacherSchedules.stream().filter(f -> f.getCourseType().equals(courseTypeStr)).sorted(Comparator.comparing(TeacherSchedule::getBeginTime)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
         //当天已预约时间段
         List<TeacherCourseTime> teacherCourseTimes = teacherCourseTimeService.selectByTeacherIdTime(teacherId, DateUtil.parse(courseDate, "yyyy-MM-dd"));
         List<String> teacherCourseTimesList = teacherCourseTimes.stream().sorted(Comparator.comparing(TeacherCourseTime::getBeginTime)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).toList();
         if (!StringUtils.equals(CourseTypeEnum.GROUP.name(), courseType)) {
             return AvailableTimeCalculatorUtil.getAvailableTimeSlots(teacherSchedulesList, teacherCourseTimesList);
         } else {
-            teacherCourseTimes.stream().filter(teacherCourseTime -> teacherCourseTime.getCourseType().equals(CourseTypeEnum.GROUP.name())).toList();
             teacherCourseTimesList = teacherCourseTimes.stream().sorted(Comparator.comparing(TeacherCourseTime::getBeginTime)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).collect(Collectors.toList());
             teacherCourseTimesList = CollectionUtils.isEmpty(teacherCourseTimesList) ? new ArrayList<>() : teacherCourseTimesList;
+            List<String> resultList = teacherCourseTimes.stream().filter(f -> f.getCourseType().equals(courseTypeStr)).map(schedule -> schedule.getBeginTime() + "-" + schedule.getEndTime()).collect(Collectors.toList());
             List<String> list = AvailableTimeCalculatorUtil.getAvailableTimeSlots(teacherSchedulesList, teacherCourseTimesList);
             if (!CollectionUtils.isEmpty(list)) {
-                teacherCourseTimesList.addAll(list);
+                resultList.addAll(list);
             }
-            return teacherCourseTimesList.stream().distinct().toList();
+            return resultList.stream().distinct().toList();
         }
     }
 

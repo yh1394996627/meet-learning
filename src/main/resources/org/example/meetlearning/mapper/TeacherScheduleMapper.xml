@@ -47,7 +47,7 @@
 
     <select id="selectGroupTimeByParams" resultMap="BaseResultMap">
         select
-        begin_time,end_time
+        begin_time,end_time,course_type
         from teacher_schedule
         where week_num = #{params.weekNum,jdbcType=VARCHAR}
         <include refid="where_common"/>

@@ -155,6 +155,9 @@
         <if test="params.studentId != null">
             and student_id = #{params.studentId}
         </if>
+        <if test="params.teacherId != null">
+            and teacher_id = #{params.teacherId}
+        </if>
         <if test="params.beginDate != null">
             and course_time >= #{params.beginDate}
         </if>

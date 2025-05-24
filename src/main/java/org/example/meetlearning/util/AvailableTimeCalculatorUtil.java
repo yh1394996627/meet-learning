@@ -132,9 +132,9 @@ public class AvailableTimeCalculatorUtil {
 
         // 判断两个时间段是否有重叠
         public boolean overlapsWith(TimeSlot other) {
-            return !this.end.isBefore(other.start) && !this.start.isAfter(other.end) ||
-                    !other.end.isBefore(this.start) && !other.start.isAfter(this.end);
+            return this.end.isAfter(other.start) && other.end.isAfter(this.start);
         }
+
 
         @Override
         public String toString() {

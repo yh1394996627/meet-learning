@@ -21,19 +21,10 @@ class MeetLearningApplicationTests {
     @Autowired
     private EmailPcService emailPcService;
 
-//    @Autowired
-//    private ZoomService zoomService;
-//
-//    @Autowired
-//    private ZoomPcService zoomPcService;
-//
-//    @Autowired
-//    private RedisTemplate redisTemplate;
-//
-//    @Autowired
-//    private ZoomOAuthService zoomOAuthService;
-//    @Autowired
-//    private TeacherService teacherService;
+
+    @Autowired
+    private ZoomPcService zoomPcService;
+
 
     @Test
     void test1() throws Exception {
@@ -42,20 +33,9 @@ class MeetLearningApplicationTests {
 
     @Test
     void test2() throws JSONException, IOException {
-//        String accountId = "E3Ker_gzTQC5z7cOj9goQg";
-//        String clientId = "136G0saSOqZ5RlwPAT2Vg";
-//        String clientSecret = "QhWr3zrnirGRutMgwfgPLDxpZWlnO12k";
-//        String accessToken = zoomOAuthService.getValidAccessToken(clientId, clientSecret, accountId);
-//
-//        emailPcService.sendReEmail(accessToken, "yuh1394996627@gmail.com");
-//        String zoomUserId = zoomOAuthService.getZoomUserIdByEmail(accountId, "yuh9527@aliyun.com", accessToken);
-//        String meet = zoomOAuthService.createMeeting11(zoomUserId,"test001", "2025-03-30T10:00:00", CourseTypeEnum.GROUP);
-//        // 查看会议信息
-//        JSONObject meetObj = new JSONObject(meet);
-//        log.info("meetObj：{}", meetObj);
-//        //添加会议邮箱自动审批
-//        zoomOAuthService.addAndApproveParticipants(meetObj.get("id").toString(), List.of("1394996627@qq.com", "yuh9527@aliyun.com"), accessToken);
-
+        String aa = "{\"event\":\"meeting.started\",\"payload\":{\"account_id\":\"E3Ker_gzTQC5z7cOj9goQg\",\"object\":{\"duration\":60,\"start_time\":\"2025-05-23T08:35:21Z\",\"timezone\":\"Asia/Shanghai\",\"topic\":\"e48d2eb5-7ee6-4134-9577-d461ab617ac8\",\"id\":\"88685309085\",\"type\":2,\"uuid\":\"0axSNQv0Try0LVCwJiBpvQ==\",\"host_id\":\"pYV9SDB3TiKUFchDf007GQ\"}},\"event_ts\":1747989321374}";
+        //开始会议 - 加入会议
+        zoomPcService.handleZoomEvent(null,aa);
         log.info("123123123");
     }
 

@@ -36,11 +36,9 @@ public class StudentClassQueryVo extends PageRequestQuery<StudentClass> {
             params.put("studentKeyword", "%" + studentKeyword + "%");
         }
         if (StringUtils.hasText(beginDate) && StringUtils.hasText(endDate)) {
-            params.put("beginDate", DateUtil.parse(beginDate,"yyyy-MM-dd"));
-            params.put("endDate", DateUtil.parse(endDate,"yyyy-MM-dd"));
+            params.put("beginDate", DateUtil.parse(beginDate, "yyyy-MM-dd"));
+            params.put("endDate", DateUtil.parse(endDate, "yyyy-MM-dd"));
         }
         return params;
     }
-
-
 }
