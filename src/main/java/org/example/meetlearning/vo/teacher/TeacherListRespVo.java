@@ -26,6 +26,15 @@ public class TeacherListRespVo {
     @Schema(name = "price", description = "价格")
     private BigDecimal price;
 
+    @Schema(name = "groupPrice", description = "团队课价格")
+    private BigDecimal groupPrice;
+
+    @Schema(name = "coin", description = "课时币")
+    private BigDecimal coin;
+
+    @Schema(name = "groupCoin", description = "团队课时币")
+    private BigDecimal groupCoin;
+
     @Schema(name = "creditsPrice", description = "积分价格")
     private BigDecimal creditsPrice;
 
