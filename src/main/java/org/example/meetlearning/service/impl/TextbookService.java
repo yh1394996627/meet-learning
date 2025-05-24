@@ -48,6 +48,13 @@ public class TextbookService {
     }
 
     /**
+     * 根据名称查询
+     */
+    public Textbook selectByName(String name){
+        return textbookMapper.selectByName(name);
+    }
+
+    /**
      * 更新教材
      */
     public void updateEntity(Textbook textbook) {

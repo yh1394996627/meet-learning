@@ -1,6 +1,5 @@
 package org.example.meetlearning.service;
 
-import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -20,6 +19,7 @@ import org.example.meetlearning.vo.textbook.TextbookRespVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +64,8 @@ public class TextbookPcService {
 
     public void add(String userCode, String userName, TextbookReqVo reqVo) {
         Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCatalogs()), "catalogs cannot be empty");
+        Textbook oldBook = textbookService.selectByName(reqVo.getName());
+        Assert.isNull(oldBook, "Textbook already exists");
         Textbook textbook = TextbookConverter.INSTANCE.toCreate(userCode, userName, reqVo);
         textbookService.insertEntity(textbook);
         if (!CollectionUtils.isEmpty(reqVo.getCatalogs())) {
@@ -74,6 +76,8 @@ public class TextbookPcService {
 
     public void update(String userCode, String userName, TextbookReqVo reqVo) {
         Assert.notNull(reqVo.getRecordId(), "recordId is null");
+        Textbook oldBook = textbookService.selectByName(reqVo.getName());
+        Assert.isTrue(oldBook == null || !org.springframework.util.StringUtils.pathEquals(oldBook.getRecordId(), reqVo.getRecordId()), "Textbook already exists");
         textbookService.deleteByTextbookId(reqVo.getRecordId());
         Textbook textbook = textbookService.selectByRecordId(reqVo.getRecordId());
         textbookService.updateEntity(textbook);
@@ -92,7 +96,7 @@ public class TextbookPcService {
     }
 
     public List<SelectValueVo> selectValueVos(RecordIdQueryVo queryVo) {
-        if (StringUtils.isEmpty(queryVo.getRecordId())) {
+        if (!StringUtils.hasText(queryVo.getRecordId())) {
             List<Textbook> list = textbookService.selectByParams(new HashMap<>());
             return list.stream().map(item -> new SelectValueVo(item.getRecordId(), item.getName())).toList();
         }

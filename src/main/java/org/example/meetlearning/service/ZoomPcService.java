@@ -161,6 +161,8 @@ public class ZoomPcService {
      */
     private void handleMeetingStarted(JSONObject eventData) {
         String meetingId = eventData.getString("id");
+        String startTimeStr = eventData.getString("start_time");
+        Date startTime = DateUtil.parse(startTimeStr, "yyyy-MM-dd HH:mm:ss");
         // 更新课程状态
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();

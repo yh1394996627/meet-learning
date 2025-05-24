@@ -68,8 +68,8 @@ public class TeacherUpdateReqVo {
     @Schema(name = "videoUrl", description = "视频路径")
     private String videoUrl;
 
-    @Schema(name = "specialists", description = "教学特点")
-    private List<String> specialists;
+    @Schema(name = "specialties", description = "教学特点")
+    private List<String> specialties;
 
     @Schema(name = "about", description = "关于")
     private String about;

@@ -51,10 +51,23 @@
         where record_id = #{recordId}
     </select>
 
+    <select id="selectByName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from textbook
+        where name = #{name}
+    </select>
+
     <sql id="where_common">
         <if test="params.recordIds != null">
             and record_id in
-            <foreach collection="recordIds" item="item" separator="," open="(" close=")">
+            <foreach collection="params.recordIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.names != null">
+            and name in
+            <foreach collection="params.names" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>
