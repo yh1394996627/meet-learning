@@ -275,9 +275,11 @@ public class StudentClassPcService extends BasePcService {
     }
 
 
-    public RespVo<StudentClassTotalRespVo> classTotalList(StudentClassQueryVo queryVo) {
-        Long cancelTotal = studentClassService.selectCancelByParams(queryVo.getParams());
-        Long completeTotal = studentClassService.selectCompleteByParams(queryVo.getParams());
+    public RespVo<StudentClassTotalRespVo> classTotalList(String userCode, StudentClassQueryVo queryVo) {
+        Map<String, Object> params = queryVo.getParams();
+        params.put("teacherId", userCode);
+        Long cancelTotal = studentClassService.selectCancelByParams(params);
+        Long completeTotal = studentClassService.selectCompleteByParams(params);
         return new RespVo<>(new StudentClassTotalRespVo(new BigDecimal(completeTotal), new BigDecimal(cancelTotal)));
     }
 

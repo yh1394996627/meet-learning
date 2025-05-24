@@ -77,7 +77,7 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "统计接口", operationId = "classTotalList")
     @PostMapping(value = "v1/student/class/total")
     public RespVo<StudentClassTotalRespVo> classTotalList(@RequestBody StudentClassQueryVo queryVo) {
-        return studentClassPcService.classTotalList(queryVo);
+        return studentClassPcService.classTotalList(getUserCode(), queryVo);
     }
 
     @Operation(summary = "取消课程罚款提示 ,false提示", operationId = "studentClassCancelVerify")

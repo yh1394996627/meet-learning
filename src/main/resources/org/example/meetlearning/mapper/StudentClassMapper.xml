@@ -111,7 +111,7 @@
         select
         count(1)
         from student_class
-        where deleted = 0 and student_course_status = 1
+        where deleted = 0 and class_status = 7
         <include refid="common_where"/>
     </select>
 
@@ -119,7 +119,7 @@
         select
         count(1)
         from student_class
-        where deleted = 0 and student_course_status = 0
+        where deleted = 0 and class_status = 3
         <include refid="common_where"/>
     </select>
 
