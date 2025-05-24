@@ -47,7 +47,7 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "学生预约记录列表", operationId = "studentClassPage")
     @PostMapping(value = "v1/student/class/page")
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(@RequestBody StudentClassQueryVo queryVo) {
-        return studentClassPcService.studentClassPage(queryVo);
+        return studentClassPcService.studentClassPage(getUserCode(), queryVo);
     }
 
     @Operation(summary = "新增学生预约", operationId = "studentClassAdd")
