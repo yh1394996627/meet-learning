@@ -35,6 +35,12 @@ public class TeacherListRespVo {
     @Schema(name = "groupCoin", description = "团队课时币")
     private BigDecimal groupCoin;
 
+    @Schema(name = "absent", description = "旷课数量")
+    private BigDecimal absent = BigDecimal.ZERO;
+
+    @Schema(name = "oneStar", description = "一星数量")
+    private BigDecimal oneStar = BigDecimal.ZERO;
+
     @Schema(name = "creditsPrice", description = "积分价格")
     private BigDecimal creditsPrice;
 
