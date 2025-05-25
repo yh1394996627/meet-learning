@@ -132,7 +132,7 @@ public class WechatPayService extends BasePcService {
     public boolean handlePaymentNotify(String orderId, String transactionId) {
         RechargeOrder order = rechargeOrderService.selectByRecordId(orderId);
         // 检查订单状态
-        if (Objects.equals(order.getStatus(), PayStatusEnum.CREATED.getStatus())) {
+        if (!Objects.equals(order.getStatus(), PayStatusEnum.CREATED.getStatus())) {
             return false;
         }
         // 更新订单状态
@@ -146,13 +146,13 @@ public class WechatPayService extends BasePcService {
         User user = userService.selectByRecordId(order.getStudentId());
         PayConfig payConfig = payConfigService.getPayConfigByRecordId(order.getPayConfigId());
         Date expiringDate = DateUtil.offsetDay(new Date(), payConfig.getDays());
-        operaTokenLogs(user.getRecordId(), user.getName(), user.getRecordId(), rechargeOrder.getQuantity(), TokenContentEnum.WECHAT_RECHARGE.getEnContent(), payConfig, rechargeOrder, expiringDate);
+        operaTokenLogs(user.getRecordId(), user.getName(), user.getRecordId(), order.getQuantity(), TokenContentEnum.WECHAT_RECHARGE.getEnContent(), payConfig, rechargeOrder, expiringDate);
         if (StringUtils.isNotEmpty(user.getManagerId())) {
             User manager = userService.selectByRecordId(user.getManagerId());
             if (manager != null && StringUtils.equals(manager.getType(), RoleEnum.AFFILIATE.name())) {
                 Affiliate affiliate = affiliateService.findByRecordId(manager.getRecordId());
                 UserFinance userFinance = userFinanceService.selectByUserId(manager.getRecordId());
-                userFinance.setAmount(BigDecimalUtil.nullOrZero(userFinance.getAmount()).add(BigDecimalUtil.nullOrZero(affiliate.getCommissionRate()).multiply(rechargeOrder.getAmount())));
+                userFinance.setAmount(BigDecimalUtil.nullOrZero(userFinance.getAmount()).add(BigDecimalUtil.nullOrZero(affiliate.getCommissionRate()).multiply(order.getAmount())));
                 userFinanceService.updateByEntity(userFinance);
             }
         }

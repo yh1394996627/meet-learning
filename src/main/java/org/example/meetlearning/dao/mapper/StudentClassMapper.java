@@ -33,7 +33,7 @@ public interface StudentClassMapper {
 
     List<StudentClass> selectByNowStudentId(String studentId,String nowDate);
 
-    List<StudentClass> selectClassByTimeBt(Date courseTime, String beginTime);
+    List<StudentClass> selectClassByTimeBt(Date courseDate, String beginTime);
 
 
 }

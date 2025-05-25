@@ -18,8 +18,7 @@
 
     <sql id="Base_Column_List">
         id
-        , create_time, pay_time, student_id, manager_id, amount, quantity, wx_transaction_id, order_id, ip_address,pay_config_id
-    status
+        , create_time, pay_time, student_id, manager_id, amount, quantity, wx_transaction_id, order_id, ip_address,pay_config_id,status
     </sql>
 
     <select id="selectByStudentId" resultMap="BaseResultMap">

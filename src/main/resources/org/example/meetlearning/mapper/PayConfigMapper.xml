@@ -76,7 +76,7 @@
         amount = #{amount,jdbcType=DECIMAL},
       </if>
       <if test="days != null">
-        days = #{expiringDate,jdbcType=INTEGER},
+        days = #{days,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

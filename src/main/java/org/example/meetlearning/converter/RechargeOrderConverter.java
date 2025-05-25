@@ -26,6 +26,7 @@ public interface RechargeOrderConverter {
         order.setQuantity(payConfig.getQuantity());
         order.setStatus(PayStatusEnum.CREATED.getStatus());
         order.setIpAddress(ipAddress);
+        order.setPayConfigId(payConfig.getRecordId());
         return order;
     }
 
