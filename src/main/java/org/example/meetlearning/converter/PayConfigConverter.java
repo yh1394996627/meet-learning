@@ -40,7 +40,7 @@ public interface PayConfigConverter {
         payConfig.setCurrencyName(payConfigReqVo.getCurrencyName());
         payConfig.setQuantity(payConfigReqVo.getQuantity());
         payConfig.setAmount(payConfigReqVo.getAmount());
-        payConfig.setDays(payConfigReqVo.getDays());
+        payConfig.setDays(payConfigReqVo.getExpiringDate());
         return payConfig;
     }
 
@@ -51,7 +51,7 @@ public interface PayConfigConverter {
         payConfig.setCurrencyName(payConfigReqVo.getCurrencyName());
         payConfig.setQuantity(payConfigReqVo.getQuantity());
         payConfig.setAmount(payConfigReqVo.getAmount());
-        payConfig.setDays(payConfigReqVo.getDays());
+        payConfig.setDays(payConfigReqVo.getExpiringDate());
         return payConfig;
     }
 

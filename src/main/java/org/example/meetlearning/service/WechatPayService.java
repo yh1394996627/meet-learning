@@ -184,6 +184,28 @@ public class WechatPayService extends BasePcService {
     }
 
 
+    public String paymentNotify111(Map<String, String> params) throws Exception {
+        // 读取XML数据
+        log.info("params->:{}", params);
+        // 验证签名
+        String sign = params.get("sign");
+        params.remove("sign");
+        String calculatedSign = generateSignature(params, config.getApiKey());
+        if (!sign.equals(calculatedSign)) {
+            return "<xml><return_code><![CDATA[FAIL]]></return_code></xml>";
+        }
+        // 处理业务逻辑
+        if ("SUCCESS".equals(params.get("result_code"))) {
+            String orderId = params.get("out_trade_no");
+            String transactionId = params.get("transaction_id");
+            boolean success = handlePaymentNotify(orderId, transactionId);
+            return success ? "<xml><return_code><![CDATA[SUCCESS]]></return_code></xml>"
+                    : "<xml><return_code><![CDATA[FAIL]]></return_code></xml>";
+        }
+        return "<xml><return_code><![CDATA[FAIL]]></return_code></xml>";
+    }
+
+
     public Boolean patStatus(RecordIdQueryVo queryVo) {
         RechargeOrder rechargeOrder = rechargeOrderService.selectByRecordId(queryVo.getRecordId());
         return BooleanUtil.isTrue(Objects.equals(rechargeOrder.getStatus(), PayStatusEnum.SUCCESS.getStatus()));
