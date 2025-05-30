@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "老师接口")
 @RestController
@@ -165,5 +167,23 @@ public class TeacherController implements BaseController {
                 new SelectValueVo(TeacherSpecialistsEnum.KIDS.name(), TeacherSpecialistsEnum.KIDS.name())
         );
         return new RespVo<>(selectValueVos);
+    }
+
+    @Operation(summary = "管理员老师列表-结算工资记录", operationId = "settlementSalaryList")
+    @PostMapping(value = "v1/teacher/salary/settlement")
+    public RespVo<List<TeacherSalaryRespVo>> settlementSalaryList(@RequestBody RecordIdQueryVo queryVo) {
+        TeacherSalaryRespVo teacherSalaryRespVo = new TeacherSalaryRespVo();
+        teacherSalaryRespVo.setRecordId(UUID.randomUUID().toString());
+        teacherSalaryRespVo.setTeacherId(queryVo.getRecordId());
+        teacherSalaryRespVo.setSalary(BigDecimal.valueOf(100));
+        teacherSalaryRespVo.setCurrencyCode("CNY");
+        teacherSalaryRespVo.setSettlementDate(new Date());
+        return new RespVo<>(List.of(teacherSalaryRespVo));
+    }
+
+    @Operation(summary = "管理员老师列表-结算工资操作", operationId = "settlementSalary")
+    @PostMapping(value = "v1/teacher/settlement/salary")
+    public RespVo<String> settlementSalary(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>("Operation successful");
     }
 }
