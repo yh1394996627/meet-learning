@@ -7,6 +7,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.example.meetlearning.dao.entity.StudentClass;
+import org.example.meetlearning.vo.classes.StudentClassPriceGroupVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 
 public interface StudentClassMapper {
@@ -23,6 +24,8 @@ public interface StudentClassMapper {
 
     List<StudentClass> selectByParams(@Param("params")Map<String, Object> params);
 
+    List<StudentClass> selectAbsentByDate(Date courseTime);
+
     List<StudentClass> selectClassStatusGroupByParams(String teacherId);
 
     Long selectCancelByParams(@Param("params")Map<String, Object> params);
@@ -32,6 +35,8 @@ public interface StudentClassMapper {
     List<SelectValueVo> selectAffCountByParams(@Param("params")Map<String, Object> params);
 
     List<StudentClass> selectByNowStudentId(String studentId,String nowDate);
+
+    List<StudentClassPriceGroupVo> selectByGltDateStudentId(String teacherId, Date courseDate);
 
     List<StudentClass> selectClassByTimeBt(Date courseDate, String beginTime);
 

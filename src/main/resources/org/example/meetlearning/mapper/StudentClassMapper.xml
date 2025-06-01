@@ -46,6 +46,7 @@
         <result column="is_complaint" jdbcType="VARCHAR" property="isComplaint"/>
         <result column="is_evaluation" jdbcType="VARCHAR" property="isEvaluation"/>
         <result column="textbook" jdbcType="VARCHAR" property="textbook"/>
+        <result column="is_verification" jdbcType="BIT" property="isVerification"/>
     </resultMap>
     <sql id="Base_Column_List">
         id
@@ -55,7 +56,7 @@
     course_id, course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
     affiliate_name, student_consumption, efficient_date, student_balance, cancel_id, cancel_time,
         meeting_record_id, is_complaint, is_evaluation, textbook, price, credits_price, class_status,
-        group_price, group_coin, coin, textbook, teacher_language
+        group_price, group_coin, coin, textbook, teacher_language, is_verification
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -77,6 +78,22 @@
         <include refid="Base_Column_List"/>
         from student_class
         where student_id = #{studentId} and course_time = #{courseTime} order by begin_time asc
+    </select>
+
+    <select id="selectByGltDateStudentId" resultType="org.example.meetlearning.vo.classes.StudentClassPriceGroupVo">
+        select teacher_id   as teacherId,
+               record_id    as recordId,
+               price        as price,
+               group_price  as groupPrice,
+               class_status as classStatus,
+               course_type  as courseType,
+               count(1)     as totalQty
+        from student_class
+        where deleted = 0
+          and teacher_id = #{teacherId}
+          and is_verification = false
+          and course_time &lt;= #{courseDate}
+        group by course_type, price, group_price, class_status
     </select>
 
     <select id="selectClassByTimeBt" resultMap="BaseResultMap">
@@ -105,6 +122,14 @@
         from student_class
         where deleted = 0
         <include refid="common_where"/>
+    </select>
+
+
+    <select id="selectAbsentByDate" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student_class
+        where deleted = 0 and teacher_course_status = 1 and course_time &lt;= #{courseTime}
     </select>
 
     <select id="selectCancelByParams" resultType="java.lang.Long">

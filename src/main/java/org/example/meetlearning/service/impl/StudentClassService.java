@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.StudentClass;
 import org.example.meetlearning.dao.mapper.StudentClassMapper;
+import org.example.meetlearning.vo.classes.StudentClassPriceGroupVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,12 @@ public class StudentClassService {
         return studentClassMapper.selectByParams(params);
     }
 
+    /**
+     * 获取缺勤列表
+     */
+    public List<StudentClass> selectAbsentByDate(Date courseDate) {
+        return studentClassMapper.selectAbsentByDate(courseDate);
+    }
 
     /**
      * 根据时间段查询课程
@@ -99,9 +106,18 @@ public class StudentClassService {
 
 
     /**
-     * 根据recordId查询
+     * 根据studentId查询
      */
     public List<StudentClass> selectByNowStudentId(String studentId) {
         return studentClassMapper.selectByNowStudentId(studentId, DateUtil.format(new Date(), "yyyy-MM-dd"));
     }
+
+    /**
+     * 根据teacherId和courseDate查询未核销的课程
+     */
+    public List<StudentClassPriceGroupVo> selectByGltDateStudentId(String teacherId, Date courseDate) {
+        return studentClassMapper.selectByGltDateStudentId(teacherId, courseDate);
+    }
+
+
 }

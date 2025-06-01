@@ -1,5 +1,6 @@
 package org.example.meetlearning.dao.mapper;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,5 +23,7 @@ public interface UserFinanceRecordMapper {
     List<UserFinanceRecord> selectDateGroupByUserIds(List<String> userIds);
 
     int updateByEntity(UserFinanceRecord record);
+
+    List<UserFinanceRecord> selectByLtDate(Date expirationTime);
 
 }

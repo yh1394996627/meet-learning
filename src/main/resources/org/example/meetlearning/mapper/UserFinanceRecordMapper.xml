@@ -76,6 +76,12 @@
         <if test="params.userId != null">
             and user_id = #{params.userId}
         </if>
+        <if test="params.userIds != null">
+            and user_id in
+            <foreach collection="userIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="params.isComplete != null">
             and can_qty > 0;
         </if>
@@ -133,6 +139,11 @@
                 #{balanceQty,jdbcType=DECIMAL}, #{affiliateId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR},
                 #{userEmail,jdbcType=VARCHAR})
     </insert>
+
+    <update id="selectByLtDate">
+        select * from user_finance_record
+        where deleted = 0 and expiration_time &lt;= #{expirationTime}
+    </update>
 
     <update id="updateByEntity" parameterType="org.example.meetlearning.dao.entity.UserFinanceRecord">
         update user_finance_record

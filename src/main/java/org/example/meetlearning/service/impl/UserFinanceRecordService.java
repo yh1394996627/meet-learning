@@ -7,6 +7,7 @@ import org.example.meetlearning.dao.entity.UserFinanceRecord;
 import org.example.meetlearning.dao.mapper.UserFinanceRecordMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,6 @@ public class UserFinanceRecordService {
         return userFinanceRecordMapper.selectByUserId(userId);
     }
 
-
     /**
      * 分页查询
      */
@@ -52,13 +52,16 @@ public class UserFinanceRecordService {
         return userFinanceRecordMapper.selectByParamsCurrencyGroup(params);
     }
 
-
     public List<UserFinanceRecord> selectDaByParams(Map<String, Object> params) {
         return userFinanceRecordMapper.selectDaByParams(params);
     }
 
     public List<UserFinanceRecord> selectDateGroupByUserIds(List<String> userIds) {
         return userFinanceRecordMapper.selectDateGroupByUserIds(userIds);
+    }
+
+    public List<UserFinanceRecord> selectByLtDate(Date expirationTime) {
+        return userFinanceRecordMapper.selectByLtDate(expirationTime);
     }
 
 }

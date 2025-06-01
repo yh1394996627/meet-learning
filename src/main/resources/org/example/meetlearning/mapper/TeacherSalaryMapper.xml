@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.TeacherSalaryMapper">
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.TeacherSalary">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updator" jdbcType="VARCHAR" property="updator"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
+        <result column="teacher_id" jdbcType="VARCHAR" property="teacherId"/>
+        <result column="is_verification" jdbcType="BIT" property="isVerification"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="group_price" jdbcType="DECIMAL" property="groupPrice"/>
+        <result column="confirmed_qty" jdbcType="DECIMAL" property="confirmedQty"/>
+        <result column="one_star_qty" jdbcType="DECIMAL" property="oneStarQty"/>
+        <result column="absent_qty" jdbcType="DECIMAL" property="absentQty"/>
+        <result column="group_confirmed_qty" jdbcType="DECIMAL" property="groupConfirmedQty"/>
+        <result column="group_one_star_qty" jdbcType="DECIMAL" property="groupOneStarQty"/>
+        <result column="group_absent_qty" jdbcType="DECIMAL" property="groupAbsentQty"/>
+        <result column="begin_date" jdbcType="DATE" property="beginDate"/>
+        <result column="end_date" jdbcType="DATE" property="endDate"/>
+        <result column="confirmed_amount" jdbcType="DECIMAL" property="confirmedAmount"/>
+        <result column="one_star_amount" jdbcType="DECIMAL" property="oneStarAmount"/>
+        <result column="absent_amount" jdbcType="DECIMAL" property="absentAmount"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , deleted, creator, create_name, create_time, updator, update_name, update_time,
+    record_id, teacher_id, is_verification, price, group_price, confirmed_qty, one_star_qty, absent_qty, group_confirmed_qty,
+    group_one_star_qty, group_absent_qty, begin_date, end_date, confirmed_amount, one_star_amount, 
+    absent_amount
+    </sql>
+
+    <select id="selectByTeacherId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher_salary
+        where teacher_id = #{teacherId}
+    </select>
+
+    <select id="selectByUnVerTeacherId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher_salary
+        where deleted = 0 and teacher_id = #{teacherId} and is_verification = 0;
+    </select>
+
+    <select id="selectByUnVerTeacherIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher_salary
+        where deleted = 0 and teacher_id in
+        <foreach collection="teacherIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and is_verification = 0
+    </select>
+
+    <insert id="insert" parameterType="org.example.meetlearning.dao.entity.TeacherSalary">
+        insert into teacher_salary (deleted, creator,
+                                    create_name, create_time, updator,
+                                    update_name, update_time, record_id,
+                                    teacher_id, is_verification,
+                                    price, group_price, confirmed_qty,
+                                    one_star_qty, absent_qty, group_confirmed_qty,
+                                    group_one_star_qty, group_absent_qty, begin_date,
+                                    end_date, confirmed_amount, one_star_amount,
+                                    absent_amount)
+        values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
+                #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updator,jdbcType=VARCHAR},
+                #{updateName,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{recordId,jdbcType=VARCHAR},
+                #{teacherId,jdbcType=VARCHAR}, #{isVerification,jdbcType=BIT},
+                #{price,jdbcType=DECIMAL}, #{groupPrice,jdbcType=DECIMAL}, #{confirmedQty,jdbcType=DECIMAL},
+                #{oneStarQty,jdbcType=DECIMAL}, #{absentQty,jdbcType=DECIMAL}, #{groupConfirmedQty,jdbcType=DECIMAL},
+                #{groupOneStarQty,jdbcType=DECIMAL}, #{groupAbsentQty,jdbcType=DECIMAL}, #{beginDate,jdbcType=DATE},
+                #{endDate,jdbcType=DATE}, #{confirmedAmount,jdbcType=DECIMAL}, #{oneStarAmount,jdbcType=DECIMAL},
+                #{absentAmount,jdbcType=DECIMAL})
+    </insert>
+
+    <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.TeacherSalary">
+        update teacher_salary
+        <set>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createName != null">
+                create_name = #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updator != null">
+                updator = #{updator,jdbcType=VARCHAR},
+            </if>
+            <if test="updateName != null">
+                update_name = #{updateName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordId != null">
+                record_id = #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="groupPrice != null">
+                group_price = #{groupPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="confirmedQty != null">
+                confirmed_qty = #{confirmedQty,jdbcType=DECIMAL},
+            </if>
+            <if test="oneStarQty != null">
+                one_star_qty = #{oneStarQty,jdbcType=DECIMAL},
+            </if>
+            <if test="absentQty != null">
+                absent_qty = #{absentQty,jdbcType=DECIMAL},
+            </if>
+            <if test="groupConfirmedQty != null">
+                group_confirmed_qty = #{groupConfirmedQty,jdbcType=DECIMAL},
+            </if>
+            <if test="groupOneStarQty != null">
+                group_one_star_qty = #{groupOneStarQty,jdbcType=DECIMAL},
+            </if>
+            <if test="groupAbsentQty != null">
+                group_absent_qty = #{groupAbsentQty,jdbcType=DECIMAL},
+            </if>
+            <if test="beginDate != null">
+                begin_date = #{beginDate,jdbcType=DATE},
+            </if>
+            <if test="endDate != null">
+                end_date = #{endDate,jdbcType=DATE},
+            </if>
+            <if test="confirmedAmount != null">
+                confirmed_amount = #{confirmedAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="oneStarAmount != null">
+                one_star_amount = #{oneStarAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="absentAmount != null">
+                absent_amount = #{absentAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="isVerification != null">
+                is_verification = #{isVerification,jdbcType=BIT},
+            </if>
+        </set>
+        where record_id = #{recordId,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

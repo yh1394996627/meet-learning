@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.ZoomCallbackMsgMapper">
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.ZoomCallbackMsg">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="token" jdbcType="VARCHAR" property="token"/>
+    </resultMap>
+
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+               type="org.example.meetlearning.dao.entity.ZoomCallbackMsg">
+        <result column="payload" jdbcType="LONGVARCHAR" property="payload"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , deleted, create_time, record_id, name, token
+    </sql>
+
+    <sql id="Blob_Column_List">
+        payload
+    </sql>
+
+    <select id="selectByRecordId" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from zoom_callback_msg
+        where
+        and record_id in
+        <foreach collection="recordIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectByRecordIds" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from zoom_callback_msg
+        where record_id = #{recordId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectAll" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from zoom_callback_msg
+        where deleted = 0
+    </select>
+
+    <delete id="deleteByRecordId" parameterType="java.lang.Long">
+        update zoom_callback_msg
+        set deleted = 1
+        where record_id = #{recordId,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="org.example.meetlearning.dao.entity.ZoomCallbackMsg">
+        insert into zoom_callback_msg (deleted, create_time,
+                                       record_id, name, token,
+                                       payload)
+        values (#{deleted,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP},
+                #{recordId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR},
+                #{payload,jdbcType=LONGVARCHAR})
+    </insert>
+
+    <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.ZoomCallbackMsg">
+        update zoom_callback_msg
+        <set>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordId != null">
+                record_id = #{recordId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                token = #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="payload != null">
+                payload = #{payload,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

@@ -101,5 +101,6 @@ public class StudentClass {
 
     private String textbook;
 
+    private Boolean isVerification = false;
 
 }
