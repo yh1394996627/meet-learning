@@ -44,7 +44,7 @@ class MeetLearningApplicationTests {
     @Test
     void test2() throws JSONException, IOException {
         //todo 会议开始
-        String aa = "{\"event\":\"meeting.started\",\"payload\":{\"account_id\":\"E3Ker_gzTQC5z7cOj9goQg\",\"object\":{\"duration\":60,\"start_time\":\"2025-05-23T08:35:21Z\",\"timezone\":\"Asia/Shanghai\",\"topic\":\"e48d2eb5-7ee6-4134-9577-d461ab617ac8\",\"id\":\"88685309085\",\"type\":2,\"uuid\":\"0axSNQv0Try0LVCwJiBpvQ==\",\"host_id\":\"pYV9SDB3TiKUFchDf007GQ\"}},\"event_ts\":1747989321374}";
+        String aa = "{\"event\":\"meeting.started\",\"payload\":{\"account_id\":\"E3Ker_gzTQC5z7cOj9goQg\",\"object\":{\"duration\":60,\"start_time\":\"2025-06-01T07:58:52Z\",\"timezone\":\"Asia/Shanghai\",\"topic\":\"08067811-a781-42bc-8bcb-b940ab790cec\",\"id\":\"86222216938\",\"type\":2,\"uuid\":\"ffyZvNmtQpibQgsZVWWygA==\",\"host_id\":\"pYV9SDB3TiKUFchDf007GQ\"}},\"event_ts\":1748764732415}";
         //开始会议 - 加入会议
         zoomPcService.handleZoomEvent(null, aa);
         log.info("123123123");
@@ -72,10 +72,6 @@ class MeetLearningApplicationTests {
     void test3() throws JSONException, IOException {
         //todo 薪资结算测试接口
         teacherSalaryPcService.updateSalary("11111", "2222222", "1adcea54-a93a-4e01-8ebc-d5299df74fa6", new Date());
-
-
-
-
 
     }
 

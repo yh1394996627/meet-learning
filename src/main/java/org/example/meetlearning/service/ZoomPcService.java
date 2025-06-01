@@ -30,9 +30,6 @@ import java.util.Objects;
 @Transactional
 public class ZoomPcService {
 
-    @Value("${zoom.api-url}")
-    private String apiUrl;
-
     @Autowired
     private ZoomOAuthService zoomOAuthService;
 
@@ -179,7 +176,7 @@ public class ZoomPcService {
     private void handleMeetingStarted(JSONObject eventData) {
         String meetingId = eventData.getString("id");
         String startTimeStr = eventData.getString("start_time");
-        Date startTime = DateUtil.parse(startTimeStr, "yyyy-MM-dd HH:mm:ss");
+        Date startTime = DateUtil.parse(startTimeStr);
         // 更新课程状态
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
@@ -188,8 +185,7 @@ public class ZoomPcService {
         updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.PROCESS.getStatus());
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
-        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Meeting started");
-        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting");
+        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Meeting started", startTime);
     }
 
     /**
@@ -197,6 +193,8 @@ public class ZoomPcService {
      */
     private void handleMeetingEnded(JSONObject eventData) {
         String meetingId = eventData.getString("id");
+        String endTimeStr = eventData.getString("end_time");
+        Date endTime = DateUtil.parse(endTimeStr);
         // 更新课程状态
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
@@ -211,7 +209,7 @@ public class ZoomPcService {
         }
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
-        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "End of the meeting");
+        meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "End of the meeting", endTime);
 
     }
 
@@ -220,6 +218,8 @@ public class ZoomPcService {
      */
     private void handleParticipantJoined(JSONObject eventData) {
         String meetingId = eventData.getString("id");
+        String joinTimeStr = eventData.getString("join_time");
+        Date joinTime = DateUtil.parse(joinTimeStr);
         String email = eventData.optString("email", null); // 获取邮箱
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
@@ -233,7 +233,7 @@ public class ZoomPcService {
             if (StringUtils.equals(recordId, studentClass.getStudentId())) {
                 updateStudentClass.setStudentCourseStatus(courseStatus.getStatus());
                 //todo 记录会议日志 展示没有需求实现
-                meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getTeacherName() + "] joins the meeting");
+                meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getStudentName() + "] joins the meeting", joinTime);
             }
             if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
                 updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
@@ -241,7 +241,7 @@ public class ZoomPcService {
                 if (courseStatus == CourseStatusEnum.BE_LATE) {
                     //todo 暂时没有迟到的处理逻辑
                 }
-                meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting");
+                meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting", joinTime);
             }
             studentClassService.updateEntity(updateStudentClass);
         }
@@ -252,6 +252,8 @@ public class ZoomPcService {
      */
     private void handleParticipantLeft(JSONObject eventData) {
         String meetingId = eventData.getString("id");
+        String leaveTimeStr = eventData.getString("leave_time");
+        Date leaveTime = DateUtil.parse(leaveTimeStr);
         String email = eventData.optString("email", null); // 获取邮箱
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
@@ -264,8 +266,7 @@ public class ZoomPcService {
             CourseStatusEnum courseStatus = endTime.compareTo(new Date()) > 0 ? CourseStatusEnum.LEAVE_EARLY : CourseStatusEnum.FINISH;
             if (StringUtils.equals(recordId, studentClass.getStudentId())) {
                 updateStudentClass.setStudentCourseStatus(courseStatus.getStatus());
-                meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getTeacherName() + "] leaves the meeting");
-
+                meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getTeacherName() + "] leaves the meeting", leaveTime);
             }
             if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
                 updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
@@ -273,8 +274,7 @@ public class ZoomPcService {
                 if (courseStatus == CourseStatusEnum.LEAVE_EARLY) {
                     //todo 暂时没有处理
                 }
-                meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] leaves the meeting");
-
+                meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] leaves the meeting", leaveTime);
             }
             studentClassService.updateEntity(updateStudentClass);
         }

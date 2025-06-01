@@ -18,11 +18,14 @@ public class MeetingLogService {
     /**
      * 插入会议日志
      */
-    public int insert(String userCode, String userName, String meetingId, String remark) {
+    public int insert(String userCode, String userName, String meetingId, String remark, Date date) {
         MeetingLog meetingLog = new MeetingLog();
         meetingLog.setCreator(userCode);
         meetingLog.setCreateName(userName);
         meetingLog.setCreateTime(new Date());
+        if (date != null) {
+            meetingLog.setCreateTime(date);
+        }
         meetingLog.setMeetingId(meetingId);
         meetingLog.setRemark(remark);
         return meetingLogMapper.insert(meetingLog);
