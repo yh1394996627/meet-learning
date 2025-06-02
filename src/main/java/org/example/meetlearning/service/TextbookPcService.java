@@ -77,7 +77,7 @@ public class TextbookPcService {
     public void update(String userCode, String userName, TextbookReqVo reqVo) {
         Assert.notNull(reqVo.getRecordId(), "recordId is null");
         Textbook oldBook = textbookService.selectByName(reqVo.getName());
-        Assert.isTrue(!org.springframework.util.StringUtils.pathEquals(oldBook.getRecordId(), reqVo.getRecordId()), "Textbook already exists");
+        Assert.isTrue(org.springframework.util.StringUtils.pathEquals(oldBook.getRecordId(), reqVo.getRecordId()), "Textbook already exists");
         textbookService.deleteByTextbookId(reqVo.getRecordId());
         Textbook textbook = textbookService.selectByRecordId(reqVo.getRecordId());
         textbookService.updateEntity(textbook);

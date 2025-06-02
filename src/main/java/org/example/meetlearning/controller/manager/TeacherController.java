@@ -175,12 +175,13 @@ public class TeacherController implements BaseController {
     @Operation(summary = "管理员老师列表-结算工资记录", operationId = "settlementSalaryList")
     @PostMapping(value = "v1/teacher/salary/settlement")
     public RespVo<List<TeacherSalaryRespVo>> settlementSalaryList(@RequestBody RecordIdQueryVo queryVo) {
-        return new RespVo<>(List.of(teacherSalaryRespVo));
+        return new RespVo<>(teacherSalaryPcService.settlementSalaryList(queryVo));
     }
 
     @Operation(summary = "管理员老师列表-结算工资操作", operationId = "settlementSalary")
     @PostMapping(value = "v1/teacher/settlement/salary")
     public RespVo<String> settlementSalary(@RequestBody RecordIdQueryVo queryVo) {
+        teacherSalaryPcService.settlementSalary(getUserCode(), getUserName(), queryVo.getRecordId());
         return new RespVo<>("Operation successful");
     }
 }

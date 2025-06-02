@@ -1,7 +1,9 @@
 package org.example.meetlearning.service;
 
 
+import cn.hutool.core.date.DateUtil;
 import lombok.AllArgsConstructor;
+import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.converter.TeacherSalaryConverter;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherSalary;
@@ -82,17 +84,29 @@ public class TeacherSalaryPcService {
         BigDecimal cancelDeGroupQty = cancelDeVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal cancelDeAmount = absentVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal cancelDeGroupAmount = absentVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        //结算过的课程 核酸状态 改为true;
-        studentClassService.updateByGltDateTeacherId(teacherId, endDate);
+        teacherSalary.setDeductionQty(cancelDeQty);
+        teacherSalary.setGroupDeductionQtyQty(cancelDeGroupQty);
+        teacherSalary.setDeductionAmount(BigDecimalUtil.add(cancelDeAmount, cancelDeGroupAmount));
+
+        teacherSalaryService.updateEntity(teacherSalary);
+
     }
 
 
     public List<TeacherSalaryRespVo> settlementSalaryList(RecordIdQueryVo queryVo) {
         List<TeacherSalary> teacherSalaries = teacherSalaryService.selectByTeacherId(queryVo.getRecordId());
         teacherSalaries = teacherSalaries.stream().sorted(Comparator.comparing(TeacherSalary::getId)).toList();
+        return teacherSalaries.stream().map(TeacherSalaryConverter.INSTANCE::toRespVo).toList();
+    }
 
 
-        return null;
+    public void settlementSalary(String  userCode, String userName,String  teacherId) {
+        Date endDate = DateUtil.parseDate(DateUtil.formatDate(new Date()));
+        updateSalary( userCode,  userName,  teacherId, DateUtil.parseDate(DateUtil.formatDate(new Date())));
+        TeacherSalary teacherSalary = teacherSalaryService.selectByUnVerTeacherId(teacherId);
+        teacherSalary.setIsVerification(true);
+        //结算过的课程 核酸状态 改为true;
+        studentClassService.updateByGltDateTeacherId(teacherId, endDate);
     }
 
 }
