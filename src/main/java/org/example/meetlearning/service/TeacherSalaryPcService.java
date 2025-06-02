@@ -92,7 +92,7 @@ public class TeacherSalaryPcService {
         teacherSalaries = teacherSalaries.stream().sorted(Comparator.comparing(TeacherSalary::getId)).toList();
 
 
-        return
+        return null;
     }
 
 }
