@@ -37,6 +37,9 @@ public class TeacherSalaryService {
         return teacherSalaryMapper.selectByUnVerTeacherId(teacherId);
     }
 
+    public void updateByGltDateTeacherId(){
+        teacherSalaryMapper.updateByGltDateTeacherId();
+    }
 
 
 }

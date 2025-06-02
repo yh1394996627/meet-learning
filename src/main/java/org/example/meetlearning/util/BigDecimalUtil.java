@@ -1,6 +1,8 @@
 package org.example.meetlearning.util;
 
 
+import org.codehaus.plexus.util.StringUtils;
+
 import java.math.BigDecimal;
 
 public class BigDecimalUtil {
@@ -44,5 +46,9 @@ public class BigDecimalUtil {
 
     public static Boolean eqZero(BigDecimal v1) {
         return nullOrZero(v1).compareTo(BigDecimal.ZERO) == 0;
+    }
+
+    public static Boolean equals(BigDecimal v1,BigDecimal v2) {
+        return nullOrZero(v1).compareTo(v2) == 0;
     }
 }

@@ -72,6 +72,7 @@ public class StudentClassPcService extends BasePcService {
 
     private final BaseConfigService baseConfigService;
 
+    private final TeacherSalaryPcService teacherSalaryPcService;
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(String userCode, StudentClassQueryVo queryVo) {
         User user = userService.selectByRecordId(userCode);
@@ -343,7 +344,7 @@ public class StudentClassPcService extends BasePcService {
     }
 
 
-    public void studentClassEvaluate(String userCode, TeacherEvaluationReqVo reqVo) {
+    public void studentClassEvaluate(String userCode, String userName, TeacherEvaluationReqVo reqVo) {
         //新增评论
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
         Assert.notNull(studentClass, "Course information not obtained");
@@ -359,9 +360,20 @@ public class StudentClassPcService extends BasePcService {
         newTeacher.setId(teacher.getId());
         newTeacher.setRating(BigDecimalUtil.nullOrZero(rating));
         teacherService.updateEntity(newTeacher);
-
         studentClass.setIsEvaluation(true);
-        studentClassService.updateEntity(studentClass);
+        if (BigDecimalUtil.equals(reqVo.getRating(), BigDecimal.ONE)) {
+            //新增投诉
+            Assert.notNull(teacher, "Teacher information not obtained");
+            TeacherComplaintRecord teacherComplaintRecord = StudentClassConverter.INSTANCE.toCreateTeacherComplaintRecord(userCode, teacher.getPrice(), reqVo.getRemark(), studentClass);
+            teacherComplaintService.insert(teacherComplaintRecord);
+            studentClass.setIsComplaint(true);
+            studentClass.setClassStatus( CourseStatusEnum.WAIT_ONT_STAR.getStatus());
+            // 更新薪资表
+            studentClassService.updateEntity(studentClass);
+            teacherSalaryPcService.updateSalary(userCode, userName, teacher.getRecordId(), DateUtil.parse(DateUtil.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd"));
+        } else {
+            studentClassService.updateEntity(studentClass);
+        }
     }
 
     public void studentClassComplaint(String userCode, TeacherComplaintReqVo reqVo) {

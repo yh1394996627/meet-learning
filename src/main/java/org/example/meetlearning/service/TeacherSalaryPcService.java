@@ -18,7 +18,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +42,7 @@ public class TeacherSalaryPcService {
             teacherSalary = TeacherSalaryConverter.INSTANCE.toCreate(userCode, userName, teacher);
             teacherSalaryService.insertEntity(teacherSalary);
         }
-        List<StudentClassPriceGroupVo> studentClassPriceGroupVos = studentClassService.selectByGltDateStudentId(teacherId, endDate);
+        List<StudentClassPriceGroupVo> studentClassPriceGroupVos = studentClassService.selectByGltDateTeacherId(teacherId, endDate);
         //获取 确认数量 和 确认金额
         List<StudentClassPriceGroupVo> completeVos = studentClassPriceGroupVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).toList();
         BigDecimal completeQty = completeVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -72,9 +71,13 @@ public class TeacherSalaryPcService {
         teacherSalary.setGroupAbsentQty(absentGroupQty);
         teacherSalary.setAbsentAmount(BigDecimalUtil.add(absentAmount, absentGroupAmount));
         teacherSalaryService.updateEntity(teacherSalary);
-
-        List<String> verRecordIds = completeVos.stream().filter(item -> CourseStatusEnum.isVerCourseStatus(item.getClassStatus())).map(StudentClassPriceGroupVo::getRecordId).distinct().toList();
-
-
+        //获取 三天内取消的课程数量 和 金额 薪资一半
+        List<StudentClassPriceGroupVo> cancelDeVos = studentClassPriceGroupVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL_DE.getStatus())).toList();
+        BigDecimal cancelDeQty = cancelDeVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal cancelDeGroupQty = cancelDeVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal cancelDeAmount = absentVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal cancelDeGroupAmount = absentVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        //结算过的课程 核酸状态 改为true;
+        studentClassService.updateByGltDateTeacherId(teacherId, endDate);
     }
 }

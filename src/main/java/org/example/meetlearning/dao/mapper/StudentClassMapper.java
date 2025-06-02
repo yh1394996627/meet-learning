@@ -20,23 +20,25 @@ public interface StudentClassMapper {
 
     int updateEntity(StudentClass record);
 
-    Page<StudentClass> selectPageByParams(@Param("params")Map<String, Object> params, Page<StudentClass> page);
+    Page<StudentClass> selectPageByParams(@Param("params") Map<String, Object> params, Page<StudentClass> page);
 
-    List<StudentClass> selectByParams(@Param("params")Map<String, Object> params);
+    List<StudentClass> selectByParams(@Param("params") Map<String, Object> params);
 
     List<StudentClass> selectAbsentByDate(Date courseTime);
 
     List<StudentClass> selectClassStatusGroupByParams(String teacherId);
 
-    Long selectCancelByParams(@Param("params")Map<String, Object> params);
+    Long selectCancelByParams(@Param("params") Map<String, Object> params);
 
-    Long selectCompleteByParams(@Param("params")Map<String, Object> params);
+    Long selectCompleteByParams(@Param("params") Map<String, Object> params);
 
-    List<SelectValueVo> selectAffCountByParams(@Param("params")Map<String, Object> params);
+    List<SelectValueVo> selectAffCountByParams(@Param("params") Map<String, Object> params);
 
-    List<StudentClass> selectByNowStudentId(String studentId,String nowDate);
+    List<StudentClass> selectByNowStudentId(String studentId, String nowDate);
 
-    List<StudentClassPriceGroupVo> selectByGltDateStudentId(String teacherId, Date courseDate);
+    List<StudentClassPriceGroupVo> selectByGltDateTeacherId(String teacherId, Date courseDate);
+
+    void updateByGltDateTeacherId(String teacherId, Date courseDate);
 
     List<StudentClass> selectClassByTimeBt(Date courseDate, String beginTime);
 

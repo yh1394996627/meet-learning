@@ -13,6 +13,7 @@ public interface TeacherSalaryMapper {
 
     int updateEntity(TeacherSalary record);
 
+
     List<TeacherSalary> selectByUnVerTeacherIds(List<String> teacherIds);
 
     TeacherSalary selectByUnVerTeacherId(String teacherId);

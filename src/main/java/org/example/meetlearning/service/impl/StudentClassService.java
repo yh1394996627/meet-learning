@@ -115,9 +115,14 @@ public class StudentClassService {
     /**
      * 根据teacherId和courseDate查询未核销的课程
      */
-    public List<StudentClassPriceGroupVo> selectByGltDateStudentId(String teacherId, Date courseDate) {
-        return studentClassMapper.selectByGltDateStudentId(teacherId, courseDate);
+    public List<StudentClassPriceGroupVo> selectByGltDateTeacherId(String teacherId, Date courseDate) {
+        return studentClassMapper.selectByGltDateTeacherId(teacherId, courseDate);
     }
+
+     public void updateByGltDateTeacherId(String teacherId, Date courseDate) {
+        studentClassMapper.updateByGltDateTeacherId(teacherId, courseDate);
+    }
+
 
 
 }

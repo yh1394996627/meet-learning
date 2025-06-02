@@ -16,8 +16,7 @@ public enum CourseStatusEnum {
     LEAVE_EARLY("leave early", "早退", 5),
     ABSENT("absent", "缺席", 6),
     CANCEL("cancel", "取消课程", 7),
-    CANCEL_DE("cancel", "取消课程-扣款一半薪资", 8),
-    CANCEL_ALL_DE("cancel", "取消课程-扣款全部薪资", 9),
+    CANCEL_DE("cancel deduction", "三天内取消课程-扣款一半薪资", 8),
     WAIT_ONT_STAR("one_star", "一星评价待处理", 10),
     ONT_STAR("one_star", "一星评价", 11),
     ;
@@ -49,8 +48,7 @@ public enum CourseStatusEnum {
                     CourseStatusEnum.ONT_STAR,
                     CourseStatusEnum.FINISH,
                     CourseStatusEnum.ABSENT,
-                    CourseStatusEnum.CANCEL_DE,
-                    CourseStatusEnum.CANCEL_ALL_DE
+                    CourseStatusEnum.CANCEL_DE
             );
             return verStatus.contains(statusEnum);
         }

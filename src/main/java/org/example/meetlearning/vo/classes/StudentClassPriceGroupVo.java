@@ -7,8 +7,6 @@ import java.math.BigDecimal;
 @Data
 public class StudentClassPriceGroupVo {
 
-    private String recordId;
-
     private String teacherId;
 
     private BigDecimal price;

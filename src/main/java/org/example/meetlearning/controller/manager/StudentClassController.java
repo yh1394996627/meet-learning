@@ -103,12 +103,13 @@ public class StudentClassController implements BaseController {
     @Operation(summary = "学生评价", operationId = "studentClassEvaluate")
     @PostMapping(value = "v1/student/class/evaluate")
     public RespVo<String> studentClassEvaluate(@RequestBody TeacherEvaluationReqVo reqVo) {
-        studentClassPcService.studentClassEvaluate(getUserCode(), reqVo);
+        studentClassPcService.studentClassEvaluate(getUserCode(), getUserName(), reqVo);
         return new RespVo<>("Successfully added comment");
     }
 
     @Operation(summary = "学生投诉", operationId = "studentClassComplaint")
     @PostMapping(value = "v1/student/class/complaint")
+    @Deprecated
     public RespVo<String> studentClassComplaint(@RequestBody TeacherComplaintReqVo reqVo) {
         studentClassPcService.studentClassComplaint(getUserCode(), reqVo);
         return new RespVo<>("New complaint successfully added");

@@ -80,7 +80,7 @@
         where student_id = #{studentId} and course_time = #{courseTime} order by begin_time asc
     </select>
 
-    <select id="selectByGltDateStudentId" resultType="org.example.meetlearning.vo.classes.StudentClassPriceGroupVo">
+    <select id="selectByGltDateTeacherId" resultType="org.example.meetlearning.vo.classes.StudentClassPriceGroupVo">
         select teacher_id   as teacherId,
                record_id    as recordId,
                price        as price,
@@ -95,6 +95,16 @@
           and course_time &lt;= #{courseDate}
         group by course_type, price, group_price, class_status
     </select>
+
+    <update id="updateByGltDateTeacherId">
+        update student_class
+        set is_verification = true
+        where deleted = 0
+          and teacher_id = #{teacherId}
+          and class_status in ('FINISH', 'ABSENT', 'CANCEL_DE', 'ONT_STAR')
+          and is_verification = false
+          and course_time &lt;= #{courseDate}
+    </update>
 
     <select id="selectClassByTimeBt" resultMap="BaseResultMap">
         select record_id,
