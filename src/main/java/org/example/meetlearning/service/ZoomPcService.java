@@ -52,7 +52,8 @@ public class ZoomPcService {
     private MeetingLogService meetingLogService;
 
     @Autowired
-    private TeacherSalaryService teacherSalaryService;
+    private TeacherSalaryPcService teacherSalaryPcService;
+
 
     public Boolean isZoomInstalled(String userCode) {
         try {
@@ -210,7 +211,8 @@ public class ZoomPcService {
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
         meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "End of the meeting", endTime);
-
+        //更新老师薪资
+        teacherSalaryPcService.updateSalary("SYSTEM", "SYSTEM", studentClass.getTeacherId(), new Date());
     }
 
     /**

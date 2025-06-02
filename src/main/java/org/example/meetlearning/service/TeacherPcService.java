@@ -41,6 +41,7 @@ public class TeacherPcService extends BasePcService {
     private final TeacherEvaluationService teacherEvaluationService;
     private final TextbookService textbookService;
     private final StudentClassService studentClassService;
+    private final TeacherSalaryService teacherSalaryService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(String userCode, TeacherQueryVo queryVo) {
         try {
@@ -321,23 +322,23 @@ public class TeacherPcService extends BasePcService {
             Assert.notNull(teacher, "Teacher cannot be empty");
             TeacherDashboardRespVo respVo = TeacherConverter.INSTANCE.toTeacherDashboard(teacher);
             List<StudentClass> studentClasses = studentClassService.selectClassStatusGroupByParams(userCode);
-            //查询老师当月已确认完成的课程数量
-            long confirmedComplete = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).count();
-            respVo.setConfirmedQty(new BigDecimal(confirmedComplete));
+            respVo.setConfirmedQty(BigDecimal.ZERO);
+            respVo.setComplaintsQty(BigDecimal.ZERO);
+            respVo.setBonus(BigDecimal.ZERO);
+            respVo.setConfirmedClassesAmount(BigDecimal.ZERO);
+            respVo.setCancelledDeductionsAmount(BigDecimal.ZERO);
+            respVo.setComplaintDeductionsAmount(BigDecimal.ZERO);
+            TeacherSalary teacherSalary = teacherSalaryService.selectByUnVerTeacherId(userCode);
+            if (teacherSalary != null) {
+                respVo.setConfirmedQty(BigDecimalUtil.add(teacherSalary.getConfirmedQty(), teacherSalary.getGroupConfirmedQty()));
+                respVo.setComplaintsQty(BigDecimalUtil.add(teacherSalary.getOneStarQty(), teacherSalary.getGroupOneStarQty()));
+                respVo.setCancelledDeductionsAmount(BigDecimalUtil.add(teacherSalary.getDeductionQty(), teacherSalary.getGroupDeductionQtyQty()));
+                respVo.setComplaintDeductionsAmount(teacherSalary.getOneStarAmount());
+                respVo.setConfirmedClassesAmount(teacherSalary.getConfirmedAmount());
+            }
             //查询老师当月已取消的课程数量
             long cancelledComplete = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL.getStatus())).count();
             respVo.setCancelledQty(new BigDecimal(cancelledComplete));
-            //查询老师当月被投诉的课程数量
-            respVo.setComplaintsQty(BigDecimal.ZERO);
-            //查询老师当月已确认课程薪资
-            BigDecimal confirmedClassesAmount = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice())).reduce(BigDecimal.ZERO, BigDecimalUtil::add);
-            respVo.setConfirmedClassesAmount(confirmedClassesAmount);
-            //查询老师当月已取消扣款
-            respVo.setCancelledDeductionsAmount(BigDecimal.ZERO);
-            //查询老师当月投诉扣款
-            respVo.setComplaintDeductionsAmount(BigDecimal.ZERO);
-            //查询老师奖金
-            respVo.setBonus(BigDecimal.ZERO);
             //查询管理老师佣金
             respVo.setBonus(BigDecimal.ZERO);
             //总薪资

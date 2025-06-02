@@ -162,7 +162,7 @@ public interface TeacherConverter {
 
     default TeacherDashboardRespVo toTeacherDashboard(Teacher teacher) {
         TeacherDashboardRespVo respVo = new TeacherDashboardRespVo();
-        respVo.setRate(BigDecimalUtil.nullOrZero(teacher.getRate()));
+        respVo.setRate(BigDecimalUtil.nullOrZero(teacher.getPrice()));
         respVo.setConfirmedQty(BigDecimalUtil.nullOrZero(teacher.getConfirmedQty()));
         respVo.setCancelledQty(BigDecimalUtil.nullOrZero(teacher.getCanceledQty()));
         respVo.setComplaintsQty(BigDecimalUtil.nullOrZero(teacher.getComplaintsQty()));
@@ -174,6 +174,8 @@ public interface TeacherConverter {
         respVo.setTotalSalary(BigDecimalUtil.nullOrZero(teacher.getSalaryAmount()));
         respVo.setAttendanceRate(BigDecimalUtil.nullOrZero(teacher.getAttendance()));
         respVo.setRating(BigDecimalUtil.nullOrZero(teacher.getRating()));
+        respVo.setCurrencyCode(teacher.getCurrencyCode());
+         respVo.setCurrencyName(teacher.getCurrencyName());
         return respVo;
     }
 

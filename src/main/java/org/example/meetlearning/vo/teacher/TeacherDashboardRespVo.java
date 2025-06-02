@@ -33,11 +33,15 @@ public class TeacherDashboardRespVo {
     private BigDecimal attendanceRate;
     @Schema(name = "rating", description = "老师评分")
     private BigDecimal rating;
+    @Schema(name = "currencyCode", description = "币种")
+    private String currencyCode;
+    @Schema(name = "currencyName", description = "币种")
+    private String currencyName;
 
 
     @Schema(hidden = true)
     public BigDecimal getTotalSalary(){
-        return confirmedClassesAmount.subtract(cancelledDeductionsAmount).subtract(cancelledDeductionsAmount)
+        return confirmedClassesAmount.subtract(cancelledDeductionsAmount)
                 .subtract(complaintDeductionsAmount).add(bonus).add(commission);
     }
 

@@ -49,7 +49,7 @@ public class TeacherSalaryPcService {
             teacherSalary = TeacherSalaryConverter.INSTANCE.toCreate(userCode, userName, teacher);
             teacherSalaryService.insertEntity(teacherSalary);
         }
-        List<StudentClassPriceGroupVo> studentClassPriceGroupVos = studentClassService.selectByGltDateTeacherId(teacherId, endDate);
+        List<StudentClassPriceGroupVo> studentClassPriceGroupVos = studentClassService.selectByGltDateTeacherId(teacherId, DateUtil.parseDate(DateUtil.formatDate(endDate)));
         //获取 确认数量 和 确认金额
         List<StudentClassPriceGroupVo> completeVos = studentClassPriceGroupVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).toList();
         BigDecimal completeQty = completeVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -87,7 +87,6 @@ public class TeacherSalaryPcService {
         teacherSalary.setDeductionQty(cancelDeQty);
         teacherSalary.setGroupDeductionQtyQty(cancelDeGroupQty);
         teacherSalary.setDeductionAmount(BigDecimalUtil.add(cancelDeAmount, cancelDeGroupAmount));
-
         teacherSalaryService.updateEntity(teacherSalary);
 
     }
@@ -100,9 +99,9 @@ public class TeacherSalaryPcService {
     }
 
 
-    public void settlementSalary(String  userCode, String userName,String  teacherId) {
+    public void settlementSalary(String userCode, String userName, String teacherId) {
         Date endDate = DateUtil.parseDate(DateUtil.formatDate(new Date()));
-        updateSalary( userCode,  userName,  teacherId, DateUtil.parseDate(DateUtil.formatDate(new Date())));
+        updateSalary(userCode, userName, teacherId, DateUtil.parseDate(DateUtil.formatDate(new Date())));
         TeacherSalary teacherSalary = teacherSalaryService.selectByUnVerTeacherId(teacherId);
         teacherSalary.setIsVerification(true);
         //结算过的课程 核酸状态 改为true;

@@ -165,6 +165,7 @@ public class StudentClassPcService extends BasePcService {
         studentClassService.insertEntity(studentClass);
         //记录老师已有课时
         teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
+        teacherSalaryPcService.updateSalary(userCode, userName, studentClass.getTeacherId(), new Date());
         return new RespVo<>("New successfully added");
     }
 
@@ -367,7 +368,7 @@ public class StudentClassPcService extends BasePcService {
             TeacherComplaintRecord teacherComplaintRecord = StudentClassConverter.INSTANCE.toCreateTeacherComplaintRecord(userCode, teacher.getPrice(), reqVo.getRemark(), studentClass);
             teacherComplaintService.insert(teacherComplaintRecord);
             studentClass.setIsComplaint(true);
-            studentClass.setClassStatus( CourseStatusEnum.WAIT_ONT_STAR.getStatus());
+            studentClass.setClassStatus(CourseStatusEnum.WAIT_ONT_STAR.getStatus());
             // 更新薪资表
             studentClassService.updateEntity(studentClass);
             teacherSalaryPcService.updateSalary(userCode, userName, teacher.getRecordId(), DateUtil.parse(DateUtil.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd"));

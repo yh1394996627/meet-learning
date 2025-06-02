@@ -36,7 +36,7 @@
           and course_time = #{courseTime}
       </if>
       <if test="beginTime != null">
-          and (begin_time >= #{beginTime} and end_time >= #{beginTime})
+          and (begin_time >= #{beginTime} and end_time &lt;= #{endTime})
       </if>
 <!--      <if test="endTime != null">-->
 <!--          and end_time >= #{endTime}-->
