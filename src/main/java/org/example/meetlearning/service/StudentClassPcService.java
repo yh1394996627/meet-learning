@@ -147,7 +147,7 @@ public class StudentClassPcService extends BasePcService {
         }
         Assert.isTrue(reqVo.getCourseType() != null, "Course type cannot be empty");
         //新增课时币学生扣减记录
-        operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null);
+        operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null);
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
         //教材补充
