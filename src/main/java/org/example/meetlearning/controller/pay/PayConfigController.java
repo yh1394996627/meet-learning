@@ -47,7 +47,7 @@ public class PayConfigController implements BaseController {
     }
 
     @Operation(summary = "支付配置删除", operationId = "payConfigDelete")
-    @PostMapping(value = "v1/pay/config/delete")
+    @PostMapping(value = "v1/pay/config/deleted")
     public RespVo<String> payConfigDelete(@RequestBody RecordIdQueryVo reqVo) {
         payConfigPcService.delete(reqVo.getRecordId());
         return new RespVo<>("Operation successful");
