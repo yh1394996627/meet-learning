@@ -28,6 +28,10 @@ public class TeacherSalary {
 
     private String teacherId;
 
+    private String currencyRecordId;
+
+    private String currencyCode;
+
     private Boolean isVerification = false;
 
     private BigDecimal price;
@@ -40,11 +44,15 @@ public class TeacherSalary {
 
     private BigDecimal absentQty;
 
+    private BigDecimal deductionQty;
+
     private BigDecimal groupConfirmedQty;
 
     private BigDecimal groupOneStarQty;
 
     private BigDecimal groupAbsentQty;
+
+    private BigDecimal groupDeductionQtyQty;
 
     private Date beginDate;
 
@@ -56,5 +64,6 @@ public class TeacherSalary {
 
     private BigDecimal absentAmount;
 
+    private BigDecimal deductionAmount;
 
 }

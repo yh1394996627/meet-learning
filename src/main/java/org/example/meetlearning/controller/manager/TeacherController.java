@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.example.meetlearning.controller.BaseController;
 import org.example.meetlearning.enums.TeacherSpecialistsEnum;
 import org.example.meetlearning.service.TeacherPcService;
+import org.example.meetlearning.service.TeacherSalaryPcService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -27,6 +28,8 @@ import java.util.UUID;
 public class TeacherController implements BaseController {
 
     private final TeacherPcService teacherPcService;
+
+    private final TeacherSalaryPcService teacherSalaryPcService;
 
     @Operation(summary = "老师列表", operationId = "teacherPage")
     @PostMapping(value = "v1/teacher/page")
@@ -172,12 +175,6 @@ public class TeacherController implements BaseController {
     @Operation(summary = "管理员老师列表-结算工资记录", operationId = "settlementSalaryList")
     @PostMapping(value = "v1/teacher/salary/settlement")
     public RespVo<List<TeacherSalaryRespVo>> settlementSalaryList(@RequestBody RecordIdQueryVo queryVo) {
-        TeacherSalaryRespVo teacherSalaryRespVo = new TeacherSalaryRespVo();
-        teacherSalaryRespVo.setRecordId(UUID.randomUUID().toString());
-        teacherSalaryRespVo.setTeacherId(queryVo.getRecordId());
-        teacherSalaryRespVo.setSalary(BigDecimal.valueOf(100));
-        teacherSalaryRespVo.setCurrencyCode("CNY");
-        teacherSalaryRespVo.setSettlementDate(new Date());
         return new RespVo<>(List.of(teacherSalaryRespVo));
     }
 

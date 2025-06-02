@@ -12,12 +12,17 @@ import org.example.meetlearning.service.impl.TeacherSalaryService;
 import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.classes.StudentClassPriceGroupVo;
+import org.example.meetlearning.vo.common.RecordIdQueryVo;
+import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.teacher.TeacherSalaryRespVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -80,4 +85,14 @@ public class TeacherSalaryPcService {
         //结算过的课程 核酸状态 改为true;
         studentClassService.updateByGltDateTeacherId(teacherId, endDate);
     }
+
+
+    public List<TeacherSalaryRespVo> settlementSalaryList(RecordIdQueryVo queryVo) {
+        List<TeacherSalary> teacherSalaries = teacherSalaryService.selectByTeacherId(queryVo.getRecordId());
+        teacherSalaries = teacherSalaries.stream().sorted(Comparator.comparing(TeacherSalary::getId)).toList();
+
+
+        return
+    }
+
 }
