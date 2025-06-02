@@ -32,6 +32,9 @@ public class PayController {
     public RespVo<PayRespVo> createOrder(@RequestBody WxPayCreateReqVo reqVo) {
         try {
             Map<String, String> resultMap = payService.createOrder(reqVo);
+            if (resultMap == null) {
+                return new RespVo<>(new PayRespVo(null, null, null));
+            }
             String codeUrl = resultMap.get("codeUrl");
             String orderId = resultMap.get("orderId");
             return new RespVo<>(new PayRespVo(codeUrl, QrCodeGenerator.generateBase64(codeUrl, 300, 300), orderId));

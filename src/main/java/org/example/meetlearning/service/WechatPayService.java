@@ -66,7 +66,9 @@ public class WechatPayService extends BasePcService {
         Map<String, String> resultMap = new HashMap<>();
         //查询基础配置
         PayConfig payConfig = payConfigService.getPayConfigByRecordId(reqVo.getConfigId());
-        Assert.notNull(payConfig, "Configuration information not obtained");
+        if (payConfig == null) {
+            return null;
+        }
         Student student = studentService.findByRecordId(reqVo.getStudentId());
         Assert.notNull(student, "Student information not obtained");
         //生成支付订单
