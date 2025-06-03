@@ -82,6 +82,8 @@ public class StudentClassPcService extends BasePcService {
             params.put("teacherId", userCode);
         } else if (StringUtils.equals(RoleEnum.STUDENT.name(), user.getType())) {
             params.put("studentId", userCode);
+        } else if (StringUtils.equals(RoleEnum.AFFILIATE.name(), user.getType())) {
+            params.put("affiliateIds", List.of(userCode));
         }
         Page<StudentClass> page = studentClassService.selectPageByParams(params, queryVo.getPageRequest());
         List<String> userIds = page.getRecords().stream().map(StudentClass::getStudentId).toList();

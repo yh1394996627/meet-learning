@@ -30,7 +30,7 @@ public class StudentController implements BaseController {
     @Operation(summary = "学生列表", operationId = "studentPage")
     @PostMapping(value = "v1/student/page")
     public RespVo<PageVo<StudentListRespVo>> studentPage(@RequestBody StudentRequestQueryVo queryVo) {
-        return studentPcService.studentPage(queryVo);
+        return studentPcService.studentPage(getUserCode(), queryVo);
     }
 
     @Operation(summary = "新增学生接口", operationId = "studentAdd")

@@ -25,6 +25,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.management.relation.Role;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,8 +54,13 @@ public class StudentPcService extends BasePcService {
      * @param queryVo
      * @return
      */
-    public RespVo<PageVo<StudentListRespVo>> studentPage(StudentRequestQueryVo queryVo) {
-        Page<Student> page = studentService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
+    public RespVo<PageVo<StudentListRespVo>> studentPage(String userCode, StudentRequestQueryVo queryVo) {
+        Map<String, Object> params = queryVo.getParams();
+        User user = userService.selectByRecordId(userCode);
+        if(StringUtils.pathEquals(RoleEnum.AFFILIATE.name(), user.getType())){
+            params.put("affiliateIds", List.of(userCode));
+        }
+        Page<Student> page = studentService.findPageByParams(params, queryVo.getPageRequest());
         List<String> userIds = page.getRecords().stream().map(Student::getRecordId).toList();
         Map<String, UserFinance> userFinanceMap;
         Map<String, UserFinanceRecord> userFinanceRecordHashMap;
