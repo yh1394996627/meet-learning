@@ -21,6 +21,7 @@ import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.*;
+import org.hibernate.usertype.UserType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -91,6 +92,12 @@ public class UserPcService extends BasePcService {
             Assert.notNull(userFinance, "User Finance information not obtained");
             respVo.setBalanceQty(userFinance.getBalanceQty());
             respVo.setCreditsBalance(userFinance.getCreditsBalance());
+            if (StringUtils.equals(accountUser.getType(), RoleEnum.TEACHER.name())) {
+                Teacher teacher = teacherService.selectByRecordId(accountUser.getRecordId());
+                if (teacher != null) {
+                    respVo.setAvatarUrl(downloadFile(teacher.getAvatarUrl()));
+                }
+            }
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("登陆失败", ex);
@@ -118,6 +125,12 @@ public class UserPcService extends BasePcService {
             Assert.notNull(userFinance, "User Finance information not obtained");
             respVo.setBalanceQty(userFinance.getBalanceQty());
             respVo.setCreditsBalance(userFinance.getCreditsBalance());
+            if (StringUtils.equals(accountUser.getType(), RoleEnum.TEACHER.name())) {
+                Teacher teacher = teacherService.selectByRecordId(accountUser.getRecordId());
+                if (teacher != null) {
+                    respVo.setAvatarUrl(downloadFile(teacher.getAvatarUrl()));
+                }
+            }
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("查询个人信息失败", ex);
