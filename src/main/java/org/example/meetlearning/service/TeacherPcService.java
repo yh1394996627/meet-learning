@@ -191,6 +191,8 @@ public class TeacherPcService extends BasePcService {
                     teacherFeatureService.insertBatch(features);
                 }
             }
+            //更新用户表数据
+            updateBaseDate(teacher.getRecordId(), teacher.getName(), teacher.getEmail());
             return new RespVo<>("Teacher update successful");
         } catch (Exception ex) {
             log.error("Failed to update teacher", ex);

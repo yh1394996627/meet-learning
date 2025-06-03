@@ -374,7 +374,7 @@ public class BasePcService {
         userFinanceService.updateByEntity(userFinance);
     }
 
-    public void operaTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, String remark, PayConfig payConfig ,RechargeOrder rechargeOrder,Date expirationTime) {
+    public void operaTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, String remark, PayConfig payConfig, RechargeOrder rechargeOrder, Date expirationTime) {
         User user = userService.selectByRecordId(userId);
         Assert.notNull(user, "user does not exist userId:" + userId);
         UserFinance userFinance = userFinanceService.selectByUserId(userId);
@@ -416,4 +416,15 @@ public class BasePcService {
         userFinanceService.updateByEntity(userFinance);
     }
 
+
+    public void updateBaseDate(String recordId, String name, String email) {
+        User user = userService.selectByRecordId(recordId);
+        if (user == null) {
+            return;
+        }
+        user.setEmail(email);
+        user.setName(name);
+        user.setEnName(name);
+        userService.updateEntity(user);
+    }
 }

@@ -135,6 +135,8 @@ public class StudentPcService extends BasePcService {
             newUser.setId(user.getId());
             userService.updateEntity(newUser);
         }
+        //更新用户表数据
+        updateBaseDate(student.getRecordId(), student.getName(), student.getEmail());
         return new RespVo<>("Student update successful");
     }
 
