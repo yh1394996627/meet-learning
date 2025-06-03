@@ -1,11 +1,16 @@
 package org.example.meetlearning;
 
+import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherSalary;
+import org.example.meetlearning.enums.CourseTypeEnum;
 import org.example.meetlearning.service.EmailPcService;
 import org.example.meetlearning.service.TeacherSalaryPcService;
 import org.example.meetlearning.service.WechatPayService;
 import org.example.meetlearning.service.ZoomPcService;
+import org.example.meetlearning.service.impl.TeacherService;
+import org.example.meetlearning.service.impl.ZoomOAuthService;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +39,12 @@ class MeetLearningApplicationTests {
 
     @Autowired
     private TeacherSalaryPcService teacherSalaryPcService;
+
+    @Autowired
+    private ZoomOAuthService zoomOAuthService;
+
+    @Autowired
+    private TeacherService teacherService;
 
 
     @Test
@@ -77,7 +88,9 @@ class MeetLearningApplicationTests {
 
     @Test
     void test4() throws JSONException, IOException {
+        Teacher teacher = teacherService.selectByRecordId("1adcea54-a93a-4e01-8ebc-d5299df74fa6");
 
+        zoomOAuthService.createMeeting(teacher,  "1adcea54-a93a-4e01-8ebc-d5299df74fa6", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"), CourseTypeEnum.SINGLE);
     }
 
 

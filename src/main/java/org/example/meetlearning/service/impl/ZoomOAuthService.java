@@ -1,7 +1,10 @@
 package org.example.meetlearning.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.resource.Resource;
 import cn.hutool.core.util.BooleanUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -25,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -33,6 +37,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -65,6 +76,9 @@ public class ZoomOAuthService {
 
     @Autowired
     private StudentClassMeetingService studentClassMeetingService;
+
+    @Autowired
+    private TaskScheduler taskScheduler;  // Spring提供的任务调度器
 
 
     private OkHttpClient client = new OkHttpClient();
@@ -177,14 +191,18 @@ public class ZoomOAuthService {
      */
     public String createMeeting(Teacher teacher, String topic, String startTime, CourseTypeEnum courseType) throws IOException {
         //获取ZOOM生效的账号
-        Integer zoomType = courseType == CourseTypeEnum.GROUP ? 2 : 1;
+        Integer duration = courseType == CourseTypeEnum.GROUP ? 60 : 30;
         Assert.isTrue(StringUtils.isNotEmpty(teacher.getZoomUserId()) && StringUtils.isNotEmpty(teacher.getZoomAccountId()), "Zoom userId not found");
         ZoomAccountSet zoomAccountSet = zoomBaseService.selectByAccountId(teacher.getZoomAccountId());
         Assert.isTrue(!BooleanUtil.isTrue(zoomAccountSet.getIsException()), "Zoom account is exception");
         // 获取token
         getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
         String url = zoomApiUrl + "/users/" + teacher.getZoomUserId() + "/meetings";
-        String json = "{\"topic\":\"" + topic + "\",\"start_time\":\"" + startTime + "\"}";
+        String json = "{" +
+                "\"topic\":\"" + topic + "\"," +
+                "\"start_time\":\"" + startTime + "\"," +
+                "\"duration\":" + duration + // 添加30分钟持续时间参数
+                "}";
         RequestBody body = RequestBody.create(json, okhttp3.MediaType.parse("application/json"));
         Request request = new Request.Builder()
                 .url(url)
@@ -192,9 +210,59 @@ public class ZoomOAuthService {
                 .post(body)
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            return response.body().string();
+            if (!response.isSuccessful()) {
+                String errorBody = null;
+                if (response.body() != null) {
+                    errorBody = response.body().string();
+                }
+                // 解析Zoom错误信息
+                if (errorBody != null && errorBody.contains("Maximum duration limit")) {
+                    throw new RuntimeException("会议时长超过账户限制");
+                }
+                throw new IOException("Unexpected code " + response);
+            }
+
+            // 解析开始时间并计算结束时间（开始时间+30分钟）
+            Instant meetingStart = parseZoomTime(startTime);
+            Instant meetingEnd = meetingStart.plus(duration, ChronoUnit.MINUTES);
+            String result = null;
+            if (response.body() != null) {
+                result = response.body().string();
+                scheduleEndMeetingTask(parseMeetingId(result), teacher.getZoomAccountId(), meetingEnd);
+            }
+            return result;
         }
+
+    }
+
+    private Instant parseZoomTime(String zoomTime) {
+        try {
+            zoomTime = DateUtil.format(DateUtil.parse(zoomTime, "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm:ss");
+            // 1. 获取服务器默认时区
+            ZoneId serverZone = ZoneId.systemDefault();
+            System.out.println("服务器时区: " + serverZone); // 调试信息
+
+            // 2. 定义日期时间格式（匹配您的输入格式）
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    .withZone(serverZone);
+
+            // 3. 解析为ZonedDateTime（包含时区信息）
+            TemporalAccessor parsed = formatter.parse(zoomTime);
+            ZonedDateTime zonedDateTime = ZonedDateTime.from(parsed);
+
+            // 4. 转换为Instant（UTC时间）
+            return zonedDateTime.toInstant();
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("无法解析时间: " + zoomTime, e);
+        }
+    }
+
+
+    // 解析会议ID的方法
+    private String parseMeetingId(String responseBody) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(responseBody);
+        return root.get("id").asText();
     }
 
     /**
@@ -435,6 +503,123 @@ public class ZoomOAuthService {
                 throw new IOException("Failed to get user info: " + response.body().string());
             }
             return gson.fromJson(response.body().string(), JsonObject.class);
+        }
+    }
+
+
+    private void scheduleEndMeetingTask(String meetingId, String accountId, Instant meetingEnd) {
+        // 计算30分钟后的执行时间
+        taskScheduler.schedule(() -> {
+            try {
+                // 1. 重新获取有效token
+                ZoomAccountSet account = zoomBaseService.selectByAccountId(accountId);
+                getValidAccessToken(account.getZoomClientId(), account.getZoomClientSecret(), accountId);
+
+                // 2. 调用结束会议API
+                endMeeting(meetingId);
+            } catch (Exception e) {
+                // 处理异常，记录日志
+                log.error("Failed to end meeting", e);
+                log.error("Failed to end meeting {}: {}", meetingId, e.getMessage());
+            }
+        }, meetingEnd);
+    }
+
+    public void endMeeting(String meetingId) throws IOException {
+        // 3. 构建结束会议请求
+        String url = zoomApiUrl + "/meetings/" + meetingId + "/status";
+        String json = "{\"action\": \"end\"}";
+
+        RequestBody body = RequestBody.create(json, okhttp3.MediaType.parse("application/json"));
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .put(body)
+                .build();
+
+        // 4. 执行请求并处理响应
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                handleErrorResponse(response, "结束会议失败");
+            }
+        }
+    }
+
+    //todo 删除会议 定时任务处理
+    public void deleteMeeting(String meetingId) throws IOException {
+        // 3. 构建删除会议请求
+        String url = zoomApiUrl + "/meetings/" + meetingId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .delete()
+                .build();
+
+        // 4. 执行请求并处理响应
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                handleErrorResponse(response, "删除会议失败");
+            }
+        }
+    }
+
+
+    private void handleErrorResponse(Response response, String defaultMessage) throws IOException {
+        String errorBody = null;
+        if (response.body() != null) {
+            errorBody = response.body().string();
+        }
+
+        // 解析Zoom API错误信息
+        if (errorBody != null) {
+            try {
+                JsonObject errorJson = JsonParser.parseString(errorBody).getAsJsonObject();
+                if (errorJson.has("code") && errorJson.has("message")) {
+                    int errorCode = errorJson.get("code").getAsInt();
+                    String errorMsg = errorJson.get("message").getAsString();
+
+                    switch (errorCode) {
+                        case 3001:
+                            throw new MeetingNotFoundException("会议不存在: " + errorMsg);
+                        case 300:
+                            throw new MeetingStatusException("会议状态不允许此操作: " + errorMsg);
+                        case 124:
+                            throw new RateLimitException("API请求超出限制: " + errorMsg);
+                        default:
+                            throw new ZoomApiException("Zoom API错误 [" + errorCode + "]: " + errorMsg);
+                    }
+                }
+            } catch (Exception e) {
+                throw new IOException(defaultMessage + " - 响应体: " + errorBody, e);
+            }
+        }
+
+        throw new IOException(defaultMessage + " - HTTP状态码: " + response.code());
+    }
+
+    // 自定义异常类
+    public static class MeetingNotFoundException extends RuntimeException {
+        public MeetingNotFoundException(String message) {
+            super(message);
+        }
+    }
+
+    public static class MeetingStatusException extends RuntimeException {
+        public MeetingStatusException(String message) {
+            super(message);
+        }
+    }
+
+    public static class RateLimitException extends RuntimeException {
+        public RateLimitException(String message) {
+            super(message);
+        }
+    }
+
+    public static class ZoomApiException extends RuntimeException {
+        public ZoomApiException(String message) {
+            super(message);
         }
     }
 }
