@@ -58,7 +58,7 @@ public interface StudentClassConverter {
         Date classTime = DateUtil.parse(studentClass.getCourseTime() + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         long differenceInMillis = classTime.getTime() - new Date().getTime();
         long differenceInHours = differenceInMillis / (60 * 60 * 1000);
-        respVo.setIsCanUpdateTime(differenceInHours > 3600);
+        respVo.setIsCanUpdateTime(differenceInHours >= 2);
         //时间未到才能取消课程
         respVo.setIsCanCenterClass(Objects.equals(studentClass.getClassStatus(), CourseStatusEnum.NOT_STARTED.getStatus()) && differenceInHours > 0);
         return respVo;

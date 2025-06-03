@@ -223,14 +223,15 @@ public class ZoomOAuthService {
             }
 
             // 解析开始时间并计算结束时间（开始时间+30分钟）
-            Instant meetingStart = parseZoomTime(startTime);
-            Instant meetingEnd = meetingStart.plus(duration, ChronoUnit.MINUTES);
-            String result = null;
-            if (response.body() != null) {
-                result = response.body().string();
-                scheduleEndMeetingTask(parseMeetingId(result), teacher.getZoomAccountId(), meetingEnd);
-            }
-            return result;
+//            Instant meetingStart = parseZoomTime(startTime);
+//            Instant meetingEnd = meetingStart.plus(duration, ChronoUnit.MINUTES);
+//            String result = null;
+//            if (response.body() != null) {
+//                result = response.body().string();
+//                scheduleEndMeetingTask(parseMeetingId(result), teacher.getZoomAccountId(), meetingEnd);
+//            }
+//            return result;
+            return  response.body().string();
         }
 
     }
