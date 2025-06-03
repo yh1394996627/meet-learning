@@ -48,7 +48,8 @@ public class TokensLogPcService extends BasePcService {
 
     public RespVo<PageVo<TokensLogListRespVo>> tokensLogPage(String userCode, String userName, TokensLogQueryVo queryVo) {
         Map<String, Object> params = new HashMap<>();
-        params.put("userId", queryVo.getRecordId());
+        String userId = StringUtils.isNotEmpty(queryVo.getRecordId()) ? queryVo.getRecordId() : userCode;
+        params.put("userId", userId);
         Page<TokensLog> page = tokensLogService.selectPageByParams(params, queryVo.getPageRequest());
         PageVo<TokensLogListRespVo> pageVO = PageVo.map(page, list -> TokenConverter.INSTANCE.toListVo(userCode, userName, list));
         return new RespVo<>(pageVO);
