@@ -12,6 +12,9 @@ public class TokensLogAddReqVo {
     @Schema(name = "userId", description = "业务ID")
     private String userId;
 
+    @Schema(name = "recordId", description = "业务ID")
+    private String recordId;
+
     @Schema(name = "quantity", description = "数量")
     private BigDecimal quantity;
 

@@ -5,6 +5,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.vo.manager.ManagerFinanceStudentRecordRespVo;
+import org.example.meetlearning.vo.token.TokensLogAddReqVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
 import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.mapstruct.Mapper;
@@ -63,6 +64,33 @@ public interface UserFinanceConverter {
         userFinanceRecord.setAffiliateId(affiliateId);
         return userFinanceRecord;
     }
+
+
+    default UserFinanceRecord toAffCreateRecord(String userCode, String userName, TokensLogAddReqVo reqVo, User user, String affiliateId) {
+        UserFinanceRecord userFinanceRecord = new UserFinanceRecord();
+        userFinanceRecord.setRecordId(UUID.randomUUID().toString());
+        userFinanceRecord.setDeleted(false);
+        userFinanceRecord.setCreator(userCode);
+        userFinanceRecord.setCreateName(userName);
+        userFinanceRecord.setCreateTime(new Date());
+        userFinanceRecord.setUserId(reqVo.getUserId());
+        userFinanceRecord.setQuantity(reqVo.getQuantity());
+        userFinanceRecord.setUsedQty(BigDecimal.ZERO);
+        userFinanceRecord.setCanQty(reqVo.getQuantity());
+        userFinanceRecord.setUserType(user.getType());
+        userFinanceRecord.setUserName(user.getName());
+        userFinanceRecord.setUserEmail(user.getEmail());
+        userFinanceRecord.setCurrencyCode(reqVo.getCurrencyCode());
+        userFinanceRecord.setCurrencyName(reqVo.getCurrencyName());
+        userFinanceRecord.setPayAmount(reqVo.getAmount());
+        userFinanceRecord.setPaymentId(reqVo.getPaymentCode());
+        userFinanceRecord.setRemark(reqVo.getRemark());
+        userFinanceRecord.setAffiliateId(affiliateId);
+        return userFinanceRecord;
+    }
+
+
+
 
 
     default UserFinanceRecord toWeChatRechargeRecord(User user, UserFinance userFinance, PayConfig payConfig, RechargeOrder rechargeOrder, BigDecimal quantity, Date expirationTime) {

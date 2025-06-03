@@ -8,10 +8,13 @@ import org.example.meetlearning.converter.AffiliateConverter;
 import org.example.meetlearning.dao.entity.Affiliate;
 import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.entity.User;
+import org.example.meetlearning.dao.entity.UserFinance;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.service.impl.StudentClassService;
 import org.example.meetlearning.service.impl.StudentService;
+import org.example.meetlearning.service.impl.UserFinanceService;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -42,6 +45,8 @@ public class AffiliatePcService extends BasePcService {
 
     private final StudentClassService studentClassService;
 
+    private final UserFinanceService userFinanceService;
+
     public RespVo<PageVo<AffiliateListPageRespVo>> affiliatePage(AffiliateQueryVo queryVo) {
         try {
             Page<Affiliate> page = affiliateService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
@@ -67,6 +72,10 @@ public class AffiliatePcService extends BasePcService {
                 }
                 if (countCourseMap.containsKey(list.getRecordId())) {
                     respVo.setCourseTotal(countCourseMap.get(list.getRecordId()));
+                }
+                UserFinance userFinance = userFinanceService.selectByUserId(list.getRecordId());
+                if (userFinance != null) {
+                    respVo.setBalance(BigDecimalUtil.nullOrZero(userFinance.getBalanceQty()));
                 }
                 return respVo;
             });

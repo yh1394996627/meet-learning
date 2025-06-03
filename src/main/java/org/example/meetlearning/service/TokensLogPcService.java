@@ -1,28 +1,32 @@
 package org.example.meetlearning.service;
 
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.TokenConverter;
-import org.example.meetlearning.dao.entity.BaseConfig;
-import org.example.meetlearning.dao.entity.TokensLog;
-import org.example.meetlearning.dao.entity.User;
-import org.example.meetlearning.service.impl.BaseConfigService;
-import org.example.meetlearning.service.impl.TokensLogService;
-import org.example.meetlearning.service.impl.UserService;
+import org.example.meetlearning.converter.UserFinanceConverter;
+import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.RoleEnum;
+import org.example.meetlearning.service.impl.*;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.token.TokensLogAddReqVo;
 import org.example.meetlearning.vo.token.TokensLogListRespVo;
 import org.example.meetlearning.vo.token.TokensLogQueryVo;
+import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +34,7 @@ import java.util.Map;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class TokensLogPcService {
+public class TokensLogPcService extends BasePcService {
 
     private final TokensLogService tokensLogService;
 
@@ -38,9 +42,13 @@ public class TokensLogPcService {
 
     private final UserService userService;
 
+    private final UserFinanceService userFinanceService;
+
+    private final UserFinanceRecordService userFinanceRecordService;
+
     public RespVo<PageVo<TokensLogListRespVo>> tokensLogPage(String userCode, String userName, TokensLogQueryVo queryVo) {
         Map<String, Object> params = new HashMap<>();
-        params.put("userId", userCode);
+        params.put("userId", queryVo.getRecordId());
         Page<TokensLog> page = tokensLogService.selectPageByParams(params, queryVo.getPageRequest());
         PageVo<TokensLogListRespVo> pageVO = PageVo.map(page, list -> TokenConverter.INSTANCE.toListVo(userCode, userName, list));
         return new RespVo<>(pageVO);
@@ -49,21 +57,44 @@ public class TokensLogPcService {
 
     public RespVo<String> addTokensLog(String userCode, String userName, TokensLogAddReqVo tokensLogAddReqVo) {
         try {
-            User user = userService.selectByRecordId(userCode);
-            Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getUserId()), "user is not null");
-            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateToken(userCode, userName, user, tokensLogAddReqVo);
-            if (StringUtils.isNotEmpty(tokensLogAddReqVo.getCurrencyCode())) {
-                BaseConfig baseConfig = baseConfigService.selectByCode(tokensLogAddReqVo.getCurrencyCode());
-                Assert.notNull(baseConfig, "Configuration information not obtained record:【" + tokensLogAddReqVo.getCurrencyCode() + "】");
-                tokensLog.setCurrencyCode(baseConfig.getCode());
-                tokensLog.setCurrencyName(baseConfig.getName());
-            }
-            tokensLogService.insertEntity(tokensLog);
+            String userId = StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()) ? tokensLogAddReqVo.getRecordId() : userCode;
+            Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()), "user is not null");
+            financeTokenLogs(userCode, userName, userId, tokensLogAddReqVo);
             return new RespVo<>("New successfully added");
         } catch (Exception ex) {
             log.error("New failed", ex);
             return new RespVo<>(null, false, "New failed, unknown error!");
         }
+    }
+
+
+    public void financeTokenLogs(String userCode, String userName, String userId, TokensLogAddReqVo reqVo) {
+        User user = userService.selectByRecordId(userId);
+        Assert.notNull(user, "user does not exist userId:" + userId);
+        UserFinance userFinance = userFinanceService.selectByUserId(userId);
+        Assert.notNull(userFinance, "To obtain management financial information");
+        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
+        BigDecimal balanceQty = userFinance.getBalanceQty();
+        BigDecimal balance = BigDecimalUtil.add(balanceQty, reqVo.getQuantity());
+        Assert.isTrue(BigDecimalUtil.gteZero(balance), "Insufficient balance");
+        //更新 userFinance
+        userFinance.setBalanceQty(balance);
+        //新增用户课时币记录 userFinanceRecord
+        UserFinanceRecord userFinanceRecord = UserFinanceConverter.INSTANCE.toAffCreateRecord(userCode, userName, reqVo, user, null);
+        userFinanceRecord.setUserId(userId);
+        userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(reqVo.getQuantity()));
+        userFinanceRecordService.insertEntity(userFinanceRecord);
+        //添加记录课时币记录
+        TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, user, reqVo.getQuantity(), reqVo.getAmount(), reqVo.getRemark());
+        tokensLog.setUserId(userId);
+        if (!org.apache.commons.lang3.StringUtils.isEmpty(reqVo.getCurrencyCode())) {
+            BaseConfig baseConfig = baseConfigService.selectByCode(reqVo.getCurrencyCode());
+            Assert.notNull(baseConfig, "Configuration information not obtained record:【" + reqVo.getCurrencyCode() + "】");
+            tokensLog.setCurrencyCode(baseConfig.getCode());
+            tokensLog.setCurrencyName(baseConfig.getName());
+        }
+        tokensLogService.insertEntity(tokensLog);
+        userFinanceService.updateByEntity(userFinance);
     }
 
 }
