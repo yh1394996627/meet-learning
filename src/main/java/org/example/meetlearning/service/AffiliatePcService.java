@@ -158,7 +158,9 @@ public class AffiliatePcService extends BasePcService {
 
     public RespVo<AffiliateDashboardRespVo> dashboard(String userCode) {
         try {
-            return new RespVo<>(new AffiliateDashboardRespVo(new BigDecimal(12), new BigDecimal(13), new BigDecimal(14)));
+            UserFinance userFinance = userFinanceService.selectByUserId(userCode);
+            Affiliate affiliate = affiliateService.findByRecordId(userCode);
+            return new RespVo<>(new AffiliateDashboardRespVo(BigDecimalUtil.nullOrZero(affiliate.getCommissionRate()), BigDecimalUtil.nullOrZero(userFinance.getAmount()), BigDecimalUtil.nullOrZero(userFinance.getBalanceQty())));
         } catch (Exception ex) {
             log.error("Query failed", ex);
             return new RespVo<>(null, false, ex.getMessage());
@@ -174,6 +176,4 @@ public class AffiliatePcService extends BasePcService {
         }
         return downloadFile(qrCode);
     }
-
-
 }
