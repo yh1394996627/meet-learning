@@ -128,7 +128,7 @@ public class StudentPcService extends BasePcService {
         student.setUpdateTime(new Date());
         studentService.update(student);
         //更新user代理商
-        if(!StringUtils.pathEquals(oldManagerId, student.getAffiliateId())){
+        if (!StringUtils.pathEquals(oldManagerId, student.getAffiliateId())) {
             User user = userService.selectByRecordId(recordId);
             User newUser = new User();
             newUser.setManagerId(student.getAffiliateId());
@@ -176,7 +176,12 @@ public class StudentPcService extends BasePcService {
         } else {
             teacherList = teacherService.selectTop5ByQty();
         }
-        return teacherList.stream().map(TeacherConverter.INSTANCE::toTeacherInfo).toList();
+        return teacherList.stream().map(item -> {
+            TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(item);
+            respVo.setAvatarUrl(downloadFile(item.getAvatarUrl()));
+            respVo.setVideoUrl(downloadFile(item.getVideoUrl()));
+            return respVo;
+        }).toList();
     }
 
 
