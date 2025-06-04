@@ -5,10 +5,12 @@ import cn.hutool.core.date.DateUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.example.meetlearning.dao.entity.StudentClass;
+import org.example.meetlearning.enums.CourseStatusEnum;
 import org.example.meetlearning.vo.common.PageRequestQuery;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -26,6 +28,9 @@ public class StudentClassQueryVo extends PageRequestQuery<StudentClass> {
     @Schema(name = "endDate", description = "结束日期")
     private String endDate;
 
+    @Schema(name = "studentClassStatus", description = "课程状态 0未上课 1已上课")
+    private Integer studentClassStatus;
+
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
@@ -38,6 +43,9 @@ public class StudentClassQueryVo extends PageRequestQuery<StudentClass> {
         if (StringUtils.hasText(beginDate) && StringUtils.hasText(endDate)) {
             params.put("beginDate", DateUtil.parse(beginDate, "yyyy-MM-dd"));
             params.put("endDate", DateUtil.parse(endDate, "yyyy-MM-dd"));
+        }
+        if (studentClassStatus != null) {
+            params.put("isUnClass", studentClassStatus == 0);
         }
         return params;
     }

@@ -156,6 +156,7 @@
         from student_class
         where deleted = 0 and class_status = 3
         <include refid="common_where"/>
+        order by course_time asc, begin_time asc
     </select>
 
     <select id="selectClassStatusGroupByParams" resultMap="BaseResultMap">
@@ -198,6 +199,12 @@
         </if>
         <if test="params.endDate != null">
             and course_time &lt;= #{params.endDate}
+        </if>
+        <if test="params.isUnClass != null and params.isUnClass == 1">
+            and class_status in (1,2)
+        </if>
+        <if test="params.isUnClass != null and params.isUnClass == 0">
+            and class_status &lt;> 1
         </if>
         <if test="params.affiliateIds != null">
             and affiliate_id in
