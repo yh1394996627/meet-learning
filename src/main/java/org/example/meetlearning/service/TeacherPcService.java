@@ -283,7 +283,9 @@ public class TeacherPcService extends BasePcService {
         Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
         List<SelectValueVo> selectValueVos = new ArrayList<>();
         selectValueVos.add(new SelectValueVo(CourseTypeEnum.SINGLE.name(), CourseTypeEnum.SINGLE.name()));
-        selectValueVos.add(new SelectValueVo(CourseTypeEnum.TEST.name(), CourseTypeEnum.TEST.name()));
+        if (BooleanUtil.isTrue(teacher.getTestStatus())) {
+            selectValueVos.add(new SelectValueVo(CourseTypeEnum.TEST.name(), CourseTypeEnum.TEST.name()));
+        }
         if (BooleanUtil.isTrue(teacher.getGroupStatus())) {
             selectValueVos.add(new SelectValueVo(CourseTypeEnum.GROUP.name(), CourseTypeEnum.GROUP.name()));
         }

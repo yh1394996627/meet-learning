@@ -207,6 +207,7 @@ public class ZoomPcService {
         }
         if (Objects.equals(studentClass.getTeacherCourseStatus(), CourseStatusEnum.NOT_STARTED.getStatus())) {
             updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.ABSENT.getStatus());
+            updateStudentClass.setClassStatus(CourseStatusEnum.ABSENT.getStatus());
         }
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现
