@@ -1,5 +1,6 @@
 package org.example.meetlearning.service.impl;
 
+import io.jsonwebtoken.lang.Collections;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.converter.TeacherSalaryConverter;
 import org.example.meetlearning.dao.entity.Teacher;
@@ -7,6 +8,7 @@ import org.example.meetlearning.dao.entity.TeacherSalary;
 import org.example.meetlearning.dao.mapper.TeacherSalaryMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,6 +32,9 @@ public class TeacherSalaryService {
     }
 
     public List<TeacherSalary> selectByUnVerTeacherIds(List<String> teacherIds) {
+        if (Collections.isEmpty(teacherIds)) {
+            return new ArrayList<>();
+        }
         return teacherSalaryMapper.selectByUnVerTeacherIds(teacherIds);
     }
 

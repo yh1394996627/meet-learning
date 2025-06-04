@@ -56,10 +56,24 @@ public class TeacherPcService extends BasePcService {
             List<SelectValueVo> baseConfigs = baseConfigService.selectByType(ConfigTypeEnum.COUNTRY.name());
             Map<String, String> countryMap = baseConfigs.stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
             Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
+            List<String> teacherIds = teacherPage.getRecords().stream().map(Teacher::getRecordId).distinct().toList();
+            List<TeacherSalary> salaryList = teacherSalaryService.selectByUnVerTeacherIds(teacherIds);
+            Map<String, TeacherSalary> salaryMap = salaryList.stream().collect(Collectors.toMap(TeacherSalary::getTeacherId, teacherSalary -> teacherSalary));
             PageVo<TeacherListRespVo> pageVo = PageVo.map(teacherPage, list -> {
                 TeacherListRespVo respVo = TeacherConverter.INSTANCE.toListVo(list);
                 if (countryMap.containsKey(list.getCountry())) {
                     respVo.setCountry(countryMap.get(list.getCountry()));
+                }
+                if (salaryMap.containsKey(list.getRecordId())) {
+                    TeacherSalary salary = salaryMap.get(list.getRecordId());
+                    respVo.setConfirmed(BigDecimalUtil.add(salary.getConfirmedQty(), salary.getGroupConfirmedQty()));
+                    respVo.setOneStar(BigDecimalUtil.add(salary.getOneStarQty(), salary.getGroupOneStarQty()));
+                    respVo.setAbsent(BigDecimalUtil.add(salary.getAbsentQty(), salary.getGroupAbsentQty()));
+                    BigDecimal amount = BigDecimalUtil.nullOrZero(salary.getConfirmedAmount())
+                            .subtract(BigDecimalUtil.nullOrZero(salary.getAbsentAmount()))
+                            .subtract(BigDecimalUtil.nullOrZero(salary.getDeductionAmount()))
+                            .subtract(BigDecimalUtil.nullOrZero(salary.getOneStarAmount()));
+                    respVo.setSalary(amount);
                 }
                 return respVo;
             });
