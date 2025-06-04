@@ -36,7 +36,7 @@ public interface StudentClassRegularConverter {
         regular.setCourseTime(new Date());
         regular.setCourseType(reqVo.getCourseType());
         regular.setAuditStatus(-1);
-        regular.setPrice(BigDecimalUtil.nullOrZero(teacher.getPrice()).multiply(new BigDecimal(reqVo.getCourseDates().size())));
+        regular.setPrice(BigDecimalUtil.nullOrZero(teacher.getCoin()).multiply(new BigDecimal(reqVo.getCourseDates().size())).multiply(new BigDecimal(reqVo.getCourseTimes().size())));
         regular.setCreditsPrice(new BigDecimal("0"));
         return regular;
     }

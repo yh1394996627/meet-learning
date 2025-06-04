@@ -453,6 +453,10 @@ public class StudentClassPcService extends BasePcService {
             List<StudentClassRegularRecord> records = reqVo.getCourseDates().stream().map(courseDate -> StudentClassRegularConverter.INSTANCE.toCreateRecord(studentClassRegular, courseDate)).toList();
             regularRecords.addAll(records);
         }
+        BigDecimal sumQty = studentClassRegular.getPrice();
+        UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
+        BigDecimal canQty = BigDecimalUtil.nullOrZero(userFinance.getBalanceQty());
+        Assert.isTrue(BigDecimalUtil.gteThan(canQty, sumQty),"余额不足，无法申请固定上课");
         regularRecords.forEach(studentClassRegularService::insertRecord);
         //生成固定请求排班
         teacherCourseTimeService.studentClassTimeSet(regularRecords.stream().map(item -> StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular, item)).toList());
