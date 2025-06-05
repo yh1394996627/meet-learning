@@ -23,7 +23,7 @@
     class_remark, remark, teacher_name, class_time, textbook
   </sql>
   
-  <select id="selectPageByStudentId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectPageByStudentId" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List"/>
       from teacher_class_remark

@@ -45,7 +45,9 @@ public interface TeacherClassRemarkConverter {
         respVo.setTeacherName(remark.getTeacherName());
         respVo.setFilePage(BigDecimalUtil.nullOrZero(remark.getFilePage()));
         respVo.setClassRemark(remark.getClassRemark());
+        respVo.setClassTime(remark.getClassTime());
         respVo.setRemark(remark.getRemark());
+        respVo.setTextbook(remark.getTextbook());
         return respVo;
     }
 
