@@ -33,11 +33,11 @@
   <insert id="insert" parameterType="org.example.meetlearning.dao.entity.TeacherClassRemark">
     insert into teacher_class_remark (creator, create_name,
             create_time, record_id, class_id,
-            teacher_id, file_page, class_remark,
+            teacher_id, student_id,  file_page, class_remark,
             remark,teacher_name, class_time, textbook)
     values (#{creator,jdbcType=VARCHAR}, #{createName,jdbcType=VARCHAR},
             #{createTime,jdbcType=TIMESTAMP}, #{recordId,jdbcType=VARCHAR}, #{classId,jdbcType=VARCHAR},
-            #{teacherId,jdbcType=VARCHAR}, #{filePage,jdbcType=DECIMAL}, #{classRemark,jdbcType=VARCHAR},
+            #{teacherId,jdbcType=VARCHAR}, #{studentId,jdbcType=VARCHAR}, #{filePage,jdbcType=DECIMAL}, #{classRemark,jdbcType=VARCHAR},
             #{remark,jdbcType=VARCHAR},#{teacherName,jdbcType=VARCHAR},#{classTime,jdbcType=TIMESTAMP},
             #{textbook,jdbcType=VARCHAR})
   </insert>
