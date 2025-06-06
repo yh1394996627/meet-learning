@@ -22,7 +22,7 @@ public class TeacherSalaryRespVo {
     @Schema(description = "币种")
     private String currencyCode;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @Schema(description = "结算日期")
     private Date settlementDate;
 

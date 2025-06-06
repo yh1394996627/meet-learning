@@ -74,7 +74,7 @@ public class StudentClassListRespVo {
     private BigDecimal studentBalance;
 
     @Schema(name = "efficientDate", description = "产品最新有效期")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date efficientDate;
 
     @Schema(name = "isCanComplaint", description = "是否可以投诉")

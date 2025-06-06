@@ -66,12 +66,12 @@ public class StudentController implements BaseController {
     @Operation(summary = "学生端仪表盘-最火名师", operationId = "dashboardTeacher")
     @PostMapping(value = "v1/student/dashboard/teacher")
     public RespVo<List<TeacherInfoRespVo>> dashboardTeacher(@RequestBody StudentDashboardTeacherQueryVo queryVo) {
-        return new RespVo(studentPcService.dashboardTeacher(queryVo));
+        return new RespVo<>(studentPcService.dashboardTeacher(queryVo));
     }
 
     @Operation(summary = "学生端仪表盘-日期课程", operationId = "dashboardNowClass")
     @PostMapping(value = "v1/student/dashboard/now/class")
     public RespVo<List<StudentDashboardClassRespVo>> dashboardNowClass() {
-        return new RespVo(studentPcService.dashboardNowClass(getUserCode()));
+        return new RespVo<>(studentPcService.dashboardNowClass(getUserCode()));
     }
 }
