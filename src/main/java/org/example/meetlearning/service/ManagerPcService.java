@@ -57,7 +57,7 @@ public class ManagerPcService {
         List<UserFinanceRecord> recordList = userFinanceRecordService.selectDaByParams(params);
 
         respVo.setTransactions(recordList.size());
-        BigDecimal balanceQty = recordList.stream().map(UserFinanceRecord::getBalanceQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal balanceQty = recordList.stream().map(item -> BigDecimalUtil.nullOrZero(item.getBalanceQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
         respVo.setBalanceQty(balanceQty);
         List<UserFinanceRecord> studentFinanceRecordList = userFinanceRecordService.selectByParamsGroup(params);
         //学生金额信息
