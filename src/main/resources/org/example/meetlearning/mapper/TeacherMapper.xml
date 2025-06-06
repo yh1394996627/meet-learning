@@ -171,13 +171,13 @@
 
     <sql id="common_where">
         <if test="params.teacherIds != null">
-            and teacher_id in
+            and record_id in
             <foreach collection="params.teacherIds" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>
         <if test="params.noTeacherIds != null">
-            and teacher_id not in
+            and record_id not in
             <foreach collection="params.noTeacherIds" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>

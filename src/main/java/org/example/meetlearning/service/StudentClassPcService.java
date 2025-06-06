@@ -198,9 +198,11 @@ public class StudentClassPcService extends BasePcService {
                 return new RespVo<>(List.of());
             }
             params.put("teacherIds", teacherIds);
-            List<TeacherCourseTime> courseTimes = teacherCourseTimeService.selectByTeacherIdDateTime(null, DateUtil.parse(queryVo.getCourseTime(), "yyyy-MM-dd"), arr[0], arr[1]);
+            List<TeacherCourseTime> courseTimes = teacherCourseTimeService.selectByTeacherIdDateTime(null, DateUtil.parse(queryVo.getCourseDate(), "yyyy-MM-dd"), arr[0], arr[1]);
             List<String> noTeacherIds = courseTimes.stream().map(TeacherCourseTime::getTeacherId).distinct().toList();
-            params.put("noTeacherIds", noTeacherIds);
+            if (!CollectionUtils.isEmpty(noTeacherIds)) {
+                params.put("noTeacherIds", noTeacherIds);
+            }
         }
         List<Teacher> teachers = teacherService.selectListParams(params);
         List<SelectValueVo> selectValueVos = teachers.stream().map(teacher -> new SelectValueVo(teacher.getRecordId(), teacher.getName())).toList();
@@ -456,7 +458,7 @@ public class StudentClassPcService extends BasePcService {
         BigDecimal sumQty = studentClassRegular.getPrice();
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         BigDecimal canQty = BigDecimalUtil.nullOrZero(userFinance.getBalanceQty());
-        Assert.isTrue(BigDecimalUtil.gteThan(canQty, sumQty),"余额不足，无法申请固定上课");
+        Assert.isTrue(BigDecimalUtil.gteThan(canQty, sumQty), "余额不足，无法申请固定上课");
         regularRecords.forEach(studentClassRegularService::insertRecord);
         //生成固定请求排班
         teacherCourseTimeService.studentClassTimeSet(regularRecords.stream().map(item -> StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular, item)).toList());
