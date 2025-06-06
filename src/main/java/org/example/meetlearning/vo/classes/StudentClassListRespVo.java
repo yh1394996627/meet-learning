@@ -92,6 +92,7 @@ public class StudentClassListRespVo {
     @Schema(name = "isCanUpdateTime", description = "是否可以更改时间")
     private Boolean isCanUpdateTime;
 
-
+    @Schema(name = "isCanJoin", description = "是否可以加入会议")
+    private Boolean isCanJoin;
 
 }

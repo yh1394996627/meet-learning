@@ -61,6 +61,8 @@ public interface StudentClassConverter {
         respVo.setIsCanUpdateTime(differenceInHours >= 3);
         //时间未到才能取消课程
         respVo.setIsCanCenterClass(Objects.equals(studentClass.getClassStatus(), CourseStatusEnum.NOT_STARTED.getStatus()) && differenceInHours > 0);
+        CourseStatusEnum statusEnum = CourseStatusEnum.getCourseStatusByType(studentClass.getClassStatus());
+        respVo.setIsCanJoin(statusEnum == CourseStatusEnum.NOT_STARTED || statusEnum == CourseStatusEnum.PROCESS);
         return respVo;
     }
 
