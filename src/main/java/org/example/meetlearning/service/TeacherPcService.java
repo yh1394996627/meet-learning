@@ -110,10 +110,19 @@ public class TeacherPcService extends BasePcService {
         }
         params.put("zoomActivationStatus", true);
         Page<Teacher> teacherPage = teacherService.selectPageParams(params, queryVo.getPageRequest());
+        List<String> teacherRecordIds = teacherPage.getRecords().stream().map(Teacher::getRecordId).distinct().toList();
+        List<TeacherFeature> teacherFeatures = teacherFeatureService.selectByTeacherIds(teacherRecordIds);
+        Map<String, List<TeacherFeature>> textbookMap = teacherFeatures.stream().collect(Collectors.groupingBy(TeacherFeature::getTeacherId));
+
         PageVo<TeacherInfoRespVo> pageVo = PageVo.map(teacherPage, list -> {
             TeacherInfoRespVo respVo = TeacherConverter.INSTANCE.toTeacherInfo(list);
             respVo.setAvatarUrl(downloadFile(list.getAvatarUrl()));
             respVo.setVideoUrl(downloadFile(list.getVideoUrl()));
+            if (textbookMap.containsKey(list.getRecordId())) {
+                List<TeacherFeature> features = textbookMap.get(list.getRecordId());
+                List<String> textbookNames = features.stream().map(TeacherFeature::getTextbookName).distinct().toList();
+                respVo.setTextbooks(textbookNames);
+            }
             return respVo;
         });
         return pageVo;

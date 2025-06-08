@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.TeacherFeature;
 import org.example.meetlearning.dao.mapper.TeacherFeatureMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +34,16 @@ public class TeacherFeatureService {
      */
     public List<TeacherFeature> selectByTeacherId(String teacherId) {
         return teacherFeatureMapper.selectByTeacherId(teacherId);
+    }
+
+    /**
+     * 根据老师id批量查询
+     */
+    public List<TeacherFeature> selectByTeacherIds(List<String> teacherIds) {
+        if(CollectionUtils.isEmpty(teacherIds)){
+            return new ArrayList<>();
+        }
+        return teacherFeatureMapper.selectByTeacherIds(teacherIds);
     }
 
     /**

@@ -14,4 +14,6 @@ public interface TeacherFeatureMapper {
 
     List<String> selectTeacherIdByTextbookName(String specialists, List<String> teacherIds);
 
+    List<TeacherFeature> selectByTeacherIds(List<String> teacherIds);
+
 }

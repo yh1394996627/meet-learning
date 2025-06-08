@@ -3,6 +3,7 @@ package org.example.meetlearning.vo.teacher;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.example.meetlearning.vo.common.FileRecordVo;
+import org.example.meetlearning.vo.common.SelectValueVo;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -112,5 +113,8 @@ public class TeacherInfoRespVo {
 
     @Schema(name = "fileRecordVos", description = "附件")
     private List<FileRecordVo> fileRecordVos;
+
+    @Schema(name = "textbooks", description = "教材")
+    private List<String> textbooks;
 
 }

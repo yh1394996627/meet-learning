@@ -12,7 +12,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, creator, create_time, record_id, teacher_id, textbook_id, textbook_name
+        id
+        , creator, create_time, record_id, teacher_id, textbook_id, textbook_name
     </sql>
     <select id="selectByTeacherId" resultMap="BaseResultMap">
         select
@@ -33,6 +34,16 @@
         </if>
     </select>
 
+    <select id="selectByTeacherIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher_feature
+        where teacher_id in
+        <foreach collection="teacherIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
     <delete id="deletedByTeacherId">
         delete
         from teacher_feature
@@ -41,7 +52,7 @@
 
     <insert id="insertBatch" parameterType="org.example.meetlearning.dao.entity.TeacherFeature">
         insert into teacher_feature (creator, create_time,
-                                     record_id, teacher_id, textbook_id, textbook_name)
+        record_id, teacher_id, textbook_id, textbook_name)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.creator,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
