@@ -57,7 +57,7 @@ public class StudentPcService extends BasePcService {
     public RespVo<PageVo<StudentListRespVo>> studentPage(String userCode, StudentRequestQueryVo queryVo) {
         Map<String, Object> params = queryVo.getParams();
         User user = userService.selectByRecordId(userCode);
-        if(StringUtils.pathEquals(RoleEnum.AFFILIATE.name(), user.getType())){
+        if (StringUtils.pathEquals(RoleEnum.AFFILIATE.name(), user.getType())) {
             params.put("affiliateIds", List.of(userCode));
         }
         Page<Student> page = studentService.findPageByParams(params, queryVo.getPageRequest());
@@ -134,7 +134,7 @@ public class StudentPcService extends BasePcService {
         student.setUpdateTime(new Date());
         studentService.update(student);
         //更新user代理商
-        if (!StringUtils.pathEquals(oldManagerId, student.getAffiliateId())) {
+        if (!StringUtils.pathEquals(oldManagerId, student.getAffiliateId()) && StringUtils.hasText(student.getAffiliateId())) {
             User user = userService.selectByRecordId(recordId);
             User newUser = new User();
             newUser.setManagerId(student.getAffiliateId());
