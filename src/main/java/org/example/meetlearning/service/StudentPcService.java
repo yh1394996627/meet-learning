@@ -134,7 +134,7 @@ public class StudentPcService extends BasePcService {
         student.setUpdateTime(new Date());
         studentService.update(student);
         //更新user代理商
-        if (!StringUtils.pathEquals(oldManagerId, student.getAffiliateId()) && StringUtils.hasText(student.getAffiliateId())) {
+        if (!org.apache.commons.lang3.StringUtils.equals(oldManagerId, student.getAffiliateId()) && StringUtils.hasText(student.getAffiliateId())) {
             User user = userService.selectByRecordId(recordId);
             User newUser = new User();
             newUser.setManagerId(student.getAffiliateId());
