@@ -1,6 +1,7 @@
 package org.example.meetlearning.vo.student;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -60,5 +61,8 @@ public class StudentInfoRespVo {
     private String affiliateId;
 
     private String affiliateName;
+
+    @Schema(name = "avatarUrl", description = "头像")
+    private String avatarUrl;
 
 }

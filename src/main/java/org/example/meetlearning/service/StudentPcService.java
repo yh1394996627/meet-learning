@@ -174,6 +174,9 @@ public class StudentPcService extends BasePcService {
         Assert.notNull(userFinance, "Student Finance information not obtained");
         respVo.setBalance(userFinance.getBalanceQty());
         respVo.setExpirationTime(userFinance.getExpirationTime());
+        if (StringUtils.hasText(student.getAvatarUrl())) {
+            respVo.setAvatarUrl(downloadFile(student.getAvatarUrl()));
+        }
         return new RespVo<>(respVo);
     }
 
