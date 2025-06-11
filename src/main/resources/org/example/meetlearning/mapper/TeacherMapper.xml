@@ -92,6 +92,7 @@
         from teacher
         where deleted = 0
         <include refid="common_where"/>
+        order by id desc
     </select>
 
     <select id="selectListByParams" resultMap="BaseResultMap">
