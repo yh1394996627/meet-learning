@@ -96,6 +96,7 @@
             deleted = 0
             <include refid="where_common"/>
         </where>
+        order by  id desc
     </select>
 
 
