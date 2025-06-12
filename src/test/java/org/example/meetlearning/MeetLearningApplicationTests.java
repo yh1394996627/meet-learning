@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherSalary;
 import org.example.meetlearning.enums.CourseTypeEnum;
-import org.example.meetlearning.service.EmailPcService;
-import org.example.meetlearning.service.TeacherSalaryPcService;
-import org.example.meetlearning.service.WechatPayService;
-import org.example.meetlearning.service.ZoomPcService;
+import org.example.meetlearning.service.*;
 import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.service.impl.ZoomOAuthService;
 import org.json.JSONException;
@@ -45,6 +42,9 @@ class MeetLearningApplicationTests {
 
     @Autowired
     private TeacherService teacherService;
+
+    @Autowired
+    private TaskPcService taskPcService;
 
 
     @Test
@@ -97,5 +97,10 @@ class MeetLearningApplicationTests {
     @Test
     void test5() {
         emailPcService.sendNotice("2025-05-19 10:30", "Join", "https://www.12talk.com", "1394996627@qq.com");
+    }
+
+    @Test
+    void test6() {
+        taskPcService.runTaskAtMidnight();
     }
 }

@@ -124,6 +124,7 @@
         from student_class
         where deleted = 0
         <include refid="common_where"/>
+        order by course_time asc, begin_time asc
     </select>
 
     <select id="selectByParams" resultMap="BaseResultMap">

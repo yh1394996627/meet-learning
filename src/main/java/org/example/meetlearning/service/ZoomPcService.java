@@ -122,6 +122,9 @@ public class ZoomPcService {
             String meetingId = objData.getString("id");
             // 根据会议ID查找预约课程并且获取ZOOM配置
             StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
+            if(studentClass==null){
+                return ResponseEntity.ok("{}");
+            }
             Assert.notNull(studentClass, "No appointment information obtained");
             Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
             String account = teacher.getZoomAccountId();
@@ -221,7 +224,8 @@ public class ZoomPcService {
      */
     private void handleParticipantJoined(JSONObject eventData) {
         String meetingId = eventData.getString("id");
-        String joinTimeStr = eventData.getString("join_time");
+        JSONObject participantData = eventData.getJSONObject("participant");
+        String joinTimeStr = participantData.getString("join_time");
         Date joinTime = DateUtil.parse(joinTimeStr);
         String email = eventData.optString("email", null); // 获取邮箱
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
@@ -255,7 +259,8 @@ public class ZoomPcService {
      */
     private void handleParticipantLeft(JSONObject eventData) {
         String meetingId = eventData.getString("id");
-        String leaveTimeStr = eventData.getString("leave_time");
+        JSONObject participantData = eventData.getJSONObject("participant");
+        String leaveTimeStr = participantData.getString("leave_time");
         Date leaveTime = DateUtil.parse(leaveTimeStr);
         String email = eventData.optString("email", null); // 获取邮箱
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);

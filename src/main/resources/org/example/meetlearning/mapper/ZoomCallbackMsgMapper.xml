@@ -43,7 +43,10 @@
         ,
         <include refid="Blob_Column_List"/>
         from zoom_callback_msg
-        where record_id = #{recordId,jdbcType=VARCHAR}
+        where deleted = 0 and record_id in
+        <foreach collection="recordIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
     </select>
 
     <select id="selectAll" resultMap="ResultMapWithBLOBs">
@@ -55,7 +58,7 @@
         where deleted = 0
     </select>
 
-    <delete id="deleteByRecordId" parameterType="java.lang.Long">
+    <delete id="deleteByRecordId">
         update zoom_callback_msg
         set deleted = 1
         where record_id = #{recordId,jdbcType=VARCHAR}
