@@ -15,6 +15,8 @@ public interface TeacherMapper {
 
     Teacher selectByRecordId(String recordId);
 
+    List<Teacher> selectByRecordIds(List<String> recordIds);
+
     Teacher selectById(Long id);
 
     List<BigDecimal> coinList();

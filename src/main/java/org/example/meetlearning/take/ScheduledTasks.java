@@ -2,16 +2,11 @@ package org.example.meetlearning.take;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.dao.entity.StudentClass;
-import org.example.meetlearning.dao.entity.StudentClassMeeting;
-import org.example.meetlearning.dao.entity.UserFinance;
-import org.example.meetlearning.dao.entity.UserFinanceRecord;
+import org.codehaus.plexus.util.StringUtils;
+import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseStatusEnum;
 import org.example.meetlearning.service.EmailPcService;
-import org.example.meetlearning.service.impl.StudentClassMeetingService;
-import org.example.meetlearning.service.impl.StudentClassService;
-import org.example.meetlearning.service.impl.UserFinanceRecordService;
-import org.example.meetlearning.service.impl.UserFinanceService;
+import org.example.meetlearning.service.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,12 +14,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -50,6 +47,12 @@ public class ScheduledTasks {
 
     @Autowired
     private UserFinanceService userFinanceService;
+
+    @Autowired
+    private ZoomOAuthService zoomOAuthService;
+
+    @Autowired
+    private TeacherService teacherService;
 
 
     //@Scheduled(cron = "0 * * * * ?")  // 每分钟执行一次
@@ -94,15 +97,15 @@ public class ScheduledTasks {
             userFinanceRecordService.updateByEntity(record);
         }
         List<String> userIds = records.stream().map(UserFinanceRecord::getUserId).distinct().toList();
-        Map<String,Object> params = new HashMap<>();
-        params.put("userIds",userIds);
+        Map<String, Object> params = new HashMap<>();
+        params.put("userIds", userIds);
         List<UserFinanceRecord> userFinanceRecords = userFinanceRecordService.selectDaByParams(params);
         userFinanceRecords = userFinanceRecords.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime).reversed()).toList();
-        Map<String,List<UserFinanceRecord>> userFinanceRecordMap = userFinanceRecords.stream().collect(Collectors.groupingBy(UserFinanceRecord::getUserId));
+        Map<String, List<UserFinanceRecord>> userFinanceRecordMap = userFinanceRecords.stream().collect(Collectors.groupingBy(UserFinanceRecord::getUserId));
         List<UserFinance> userFinance = userFinanceService.selectByUserIds(userIds);
         for (UserFinance finance : userFinance) {
             List<UserFinanceRecord> list = userFinanceRecordMap.get(finance.getUserId());
-            BigDecimal balanceQty =  list.stream().map(UserFinanceRecord::getBalanceQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal balanceQty = list.stream().map(UserFinanceRecord::getBalanceQty).reduce(BigDecimal.ZERO, BigDecimal::add);
             finance.setBalanceQty(balanceQty);
             finance.setUpdateTime(new Date());
             finance.setExpirationTime(list.get(0).getExpirationTime());
@@ -112,14 +115,31 @@ public class ScheduledTasks {
         log.info("预约课程老师旷课处理执行");
         //将课程结束时间小于当前时间但是课程状态还是未开始的课程按旷课处理
         List<StudentClass> studentClasses = studentClassService.selectAbsentByDate(DateUtil.parse(DateUtil.format(new Date(), "yyyy-MM-dd")));
-        log.info("缺席的课程数量 count:{}",  studentClasses.size());
+        log.info("缺席的课程数量 count:{}", studentClasses.size());
         for (StudentClass studentClass : studentClasses) {
             studentClass.setTeacherCourseStatus(CourseStatusEnum.ABSENT.getStatus());
             studentClass.setClassStatus(CourseStatusEnum.ABSENT.getStatus());
             studentClassService.updateEntity(studentClass);
         }
         //更新老师薪资表
-
         log.info("预约课程老师旷课处理执行结束");
+    }
+
+    @Scheduled(cron = "0 0,30 * * * ?")
+    public void closeMeetingTask() throws IOException {
+        //获取到你跟前日期和结束时间节点
+        Date courseTime = DateUtil.parseDate(DateUtil.format(new Date(), "yyyy-MM-dd"));
+        String endTime = DateUtil.format(new Date(), "HH:mm");
+        List<StudentClass> studentClasses = studentClassService.selectByCourseDate(courseTime, endTime);
+        List<String> teacherIds = studentClasses.stream().map(StudentClass::getTeacherId).distinct().toList();
+        List<Teacher> teachers = teacherService.selectByRecordIds(teacherIds);
+        Map<String, Teacher> teacherMap = teachers.stream().collect(Collectors.toMap(Teacher::getRecordId, Function.identity()));
+        //查询老师
+        for (StudentClass studentClass : studentClasses) {
+            Teacher teacher = teacherMap.get(studentClass.getTeacherId());
+            if (teacher != null && StringUtils.isNotEmpty(teacher.getZoomAccountId())) {
+                zoomOAuthService.scheduleEndMeetingTask(studentClass.getMeetingRecordId(), teacher.getZoomAccountId());
+            }
+        }
     }
 }

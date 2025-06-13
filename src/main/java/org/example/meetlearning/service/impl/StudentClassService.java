@@ -49,6 +49,13 @@ public class StudentClassService {
     }
 
     /**
+     * 获取课程列表
+     */
+    public List<StudentClass> selectByCourseDate(Date courseDate, String endTime) {
+        return studentClassMapper.selectByCourseDate(courseDate, endTime);
+    }
+
+    /**
      * 获取缺勤列表
      */
     public List<StudentClass> selectAbsentByDate(Date courseDate) {

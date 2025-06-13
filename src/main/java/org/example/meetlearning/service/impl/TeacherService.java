@@ -6,8 +6,10 @@ import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.mapper.TeacherMapper;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +27,18 @@ public class TeacherService {
      */
     public Teacher selectByRecordId(String recordId) {
         return teacherMapper.selectByRecordId(recordId);
+    }
+
+    /**
+     * 根据业务ID查询老师
+     *
+     * @return 老师信息
+     */
+    public List<Teacher> selectByRecordIds(List<String> recordIds) {
+        if (CollectionUtils.isEmpty(recordIds)) {
+            return new ArrayList<>();
+        }
+        return teacherMapper.selectByRecordIds(recordIds);
     }
 
 
@@ -85,6 +99,7 @@ public class TeacherService {
     public List<SelectValueVo> selectGroupManager(Map<String, Object> params) {
         return teacherMapper.selectGroupManager(params);
     }
+
     /**
      * 分组查管理者
      */

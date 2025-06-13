@@ -7,8 +7,7 @@ user:admin
 user:update:status
 user:update:status:admin
 user:write:admin
-
-
+user:read:list_users:admin
 
 
 事件

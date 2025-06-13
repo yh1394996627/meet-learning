@@ -127,6 +127,15 @@
         order by course_time asc, begin_time asc
     </select>
 
+
+    <select id="selectByCourseDate" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student_class
+        where deleted = 0 and course_time = #{courseTime} and end_time = #{endTime}
+    </select>
+
+
     <select id="selectByParams" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

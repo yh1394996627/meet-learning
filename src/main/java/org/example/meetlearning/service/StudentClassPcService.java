@@ -134,6 +134,7 @@ public class StudentClassPcService extends BasePcService {
      * 3.学生扣掉课时币，添加扣除记录
      * 4.创建会议,生产会议链接
      */
+    @Transactional(rollbackFor = Exception.class)
     public RespVo<String> studentClassAdd(String userCode, String userName, StudentClassAddReqVo reqVo) throws IOException {
         //校验拉取老师学生信息组装数据
         //查询学生信息

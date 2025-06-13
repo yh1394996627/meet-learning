@@ -62,6 +62,16 @@
         where record_id = #{recordId,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectByRecordIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        where record_id in
+        <foreach collection="recordIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
     <select id="selectById" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

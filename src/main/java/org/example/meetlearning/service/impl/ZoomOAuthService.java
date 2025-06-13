@@ -30,6 +30,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Transactional
 public class ZoomOAuthService {
 
     @Value("${zoom.api-url}")
@@ -231,7 +233,7 @@ public class ZoomOAuthService {
 //                scheduleEndMeetingTask(parseMeetingId(result), teacher.getZoomAccountId(), meetingEnd);
 //            }
 //            return result;
-            return  response.body().string();
+            return response.body().string();
         }
 
     }
@@ -507,23 +509,12 @@ public class ZoomOAuthService {
         }
     }
 
-
-    private void scheduleEndMeetingTask(String meetingId, String accountId, Instant meetingEnd) {
-        // 计算30分钟后的执行时间
-        taskScheduler.schedule(() -> {
-            try {
-                // 1. 重新获取有效token
-                ZoomAccountSet account = zoomBaseService.selectByAccountId(accountId);
-                getValidAccessToken(account.getZoomClientId(), account.getZoomClientSecret(), accountId);
-
-                // 2. 调用结束会议API
-                endMeeting(meetingId);
-            } catch (Exception e) {
-                // 处理异常，记录日志
-                log.error("Failed to end meeting", e);
-                log.error("Failed to end meeting {}: {}", meetingId, e.getMessage());
-            }
-        }, meetingEnd);
+    public void scheduleEndMeetingTask(String meetingId, String accountId) throws IOException {
+        // 1. 重新获取有效token
+        ZoomAccountSet account = zoomBaseService.selectByAccountId(accountId);
+        getValidAccessToken(account.getZoomClientId(), account.getZoomClientSecret(), accountId);
+        // 2. 调用结束会议API
+        endMeeting(meetingId);
     }
 
     public void endMeeting(String meetingId) throws IOException {

@@ -24,6 +24,8 @@ public interface StudentClassMapper {
 
     List<StudentClass> selectByParams(@Param("params") Map<String, Object> params);
 
+    List<StudentClass> selectByCourseDate(Date courseTime, String endTime);
+
     List<StudentClass> selectAbsentByDate(Date courseTime);
 
     List<StudentClass> selectClassStatusGroupByParams(String teacherId);
