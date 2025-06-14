@@ -435,7 +435,7 @@ public class StudentClassPcService extends BasePcService {
         boolean canEnterMeeting =
                 diffInMillis <= fiveMinutesInMillis;
         //todo 先去掉校验，上线后开启
-        Assert.isTrue(canEnterMeeting, "You can only enter the meeting five minutes in advance");
+        //Assert.isTrue(canEnterMeeting, "You can only enter the meeting five minutes in advance");
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
         Assert.notNull(studentClassMeeting, "Meeting information not obtained");
         Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
