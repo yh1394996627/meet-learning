@@ -423,14 +423,19 @@ public class StudentClassPcService extends BasePcService {
             meetingRecordId = meetingEntity.getMeetId();
         }
         String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
-        Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
-        Date date1 = new Date();
 
-        long diffInMillis = Math.abs(beginDate.getTime() - date1.getTime());
+        // 1. 解析会议开始时间（固定为2025-06-14 13:09）
+        Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
+        // 2. 获取当前时间（精确到分钟）
+        Date currentDate = DateUtil.parse(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm");
+        // 3. 计算时间差（会议开始时间 - 当前时间）
+        long diffInMillis = beginDate.getTime() - currentDate.getTime();
         long fiveMinutesInMillis = 5 * 60 * 1000; // 5分钟的毫秒数
-        boolean isLessThan5Minutes = diffInMillis < fiveMinutesInMillis;
+        // 4. 核心校验逻辑：允许进入会议的条件
+        boolean canEnterMeeting =
+                diffInMillis <= fiveMinutesInMillis;
         //todo 先去掉校验，上线后开启
-        //Assert.isTrue(isLessThan5Minutes, "You can only enter the meeting five minutes in advance");
+        Assert.isTrue(canEnterMeeting, "You can only enter the meeting five minutes in advance");
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
         Assert.notNull(studentClassMeeting, "Meeting information not obtained");
         Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
