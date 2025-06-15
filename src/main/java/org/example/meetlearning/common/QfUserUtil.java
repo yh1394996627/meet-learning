@@ -10,6 +10,8 @@ import java.net.URL;
 @Service
 public class QfUserUtil {
 
+
+
     public final static class LoginResult {
         /**
          * code可能的取值：

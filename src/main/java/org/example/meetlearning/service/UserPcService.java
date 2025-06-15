@@ -5,8 +5,10 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
+import org.example.meetlearning.common.QfUserUtil;
 import org.example.meetlearning.converter.StudentConverter;
 import org.example.meetlearning.converter.UserConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
@@ -22,6 +24,7 @@ import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.*;
 import org.hibernate.usertype.UserType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -32,7 +35,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 @Transactional
 public class UserPcService extends BasePcService {
@@ -43,6 +46,14 @@ public class UserPcService extends BasePcService {
     private final UserFinanceService userFinanceService;
     private final UserFinanceRecordService userFinanceRecordService;
     private final AffiliateService affiliateService;
+    private final QfUserUtil qfUserUtil;
+
+    @Value("${value.qfPassword}")
+    private String qfPassword;
+
+    @Value("${value.pid}")
+    private String pid;
+
 
     public RespVo<String> manageRegister(UserManageOperaReqVo reqVo) {
         try {
@@ -98,6 +109,8 @@ public class UserPcService extends BasePcService {
                     respVo.setAvatarUrl(downloadFile(teacher.getAvatarUrl()));
                 }
             }
+            QfUserUtil.LoginResult result = qfUserUtil.loginOrRegister(accountUser.getName(), qfPassword, pid, accountUser.getAccountCode(), accountUser.getAccountCode(), accountUser.getAccountCode(), QfUserUtil.Gender.F);
+            respVo.setToken(result.token);
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("登陆失败", ex);

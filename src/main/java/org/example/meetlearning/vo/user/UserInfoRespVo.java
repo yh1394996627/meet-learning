@@ -44,4 +44,7 @@ public class UserInfoRespVo {
     @Schema(name = "wxQrCode", description = "微信二维码")
     private String wxQrCode;
 
+    @Schema(name = "token", description = "token")
+    private String token;
+
 }
