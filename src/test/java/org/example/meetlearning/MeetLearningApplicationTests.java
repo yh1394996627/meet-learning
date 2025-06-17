@@ -55,7 +55,7 @@ class MeetLearningApplicationTests {
     @Test
     void test2() throws JSONException, IOException {
         //todo 会议开始
-        String aa = "{\"event\":\"meeting.started\",\"payload\":{\"account_id\":\"E3Ker_gzTQC5z7cOj9goQg\",\"object\":{\"duration\":60,\"start_time\":\"2025-06-01T07:58:52Z\",\"timezone\":\"Asia/Shanghai\",\"topic\":\"08067811-a781-42bc-8bcb-b940ab790cec\",\"id\":\"86222216938\",\"type\":2,\"uuid\":\"ffyZvNmtQpibQgsZVWWygA==\",\"host_id\":\"pYV9SDB3TiKUFchDf007GQ\"}},\"event_ts\":1748764732415}";
+        String aa = "{\"payload\":{\"account_id\":\"rq8TEA_HRDCg2mPI6JZ0IQ\",\"object\":{\"uuid\":\"J6baDZUmSNi5eN2ODUSFFA==\",\"participant\":{\"public_ip\":\"223.73.64.72\",\"user_id\":\"16778240\",\"user_name\":\"Yuhang yuh\",\"participant_user_id\":\"qzi0MfIpQ-KXzzOKxPCMCw\",\"id\":\"pYV9SDB3TiKUFchDf007GQ\",\"join_time\":\"2025-06-17T07:55:24Z\",\"email\":\"yuh1394996627@gmail.com\",\"participant_uuid\":\"19F194AA-35F7-6457-9374-177DC0EC551C\"},\"id\":\"83494518167\",\"type\":2,\"topic\":\"3310f7e3-693e-4afe-956f-569ec81c4fd0\",\"host_id\":\"pYV9SDB3TiKUFchDf007GQ\",\"duration\":60,\"start_time\":\"2025-06-17T07:55:24Z\",\"timezone\":\"Asia/Shanghai\"}},\"event_ts\":1750146925910,\"event\":\"meeting.participant_joined\"}";
         //开始会议 - 加入会议
         zoomPcService.handleZoomEvent(null, aa);
         log.info("123123123");

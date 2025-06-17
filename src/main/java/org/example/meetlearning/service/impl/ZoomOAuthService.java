@@ -94,7 +94,7 @@ public class ZoomOAuthService {
      * 獲取生效的token
      */
     public String getValidAccessToken(String clientId, String clientSecret, String accountId) {
-        Object redis = redisTemplate.opsForValue().get(accountId);
+        Object redis = null;//redisTemplate.opsForValue().get(accountId);
         if (redis == null) {
             refreshToken(clientId, clientSecret, accountId);
         } else {
@@ -124,9 +124,9 @@ public class ZoomOAuthService {
                     HttpMethod.POST,
                     new HttpEntity<>(body, headers),
                     Map.class);
-            zoomUseRedisSetCommon.dailyIncrement(clientId);
+            //zoomUseRedisSetCommon.dailyIncrement(clientId);
             this.accessToken = (String) Objects.requireNonNull(response.getBody()).get("access_token");
-            redisTemplate.opsForValue().set(accountId, accessToken, 3590, TimeUnit.SECONDS);
+            //redisTemplate.opsForValue().set(accountId, accessToken, 3590, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException("Failed to refresh Zoom access token", e);
         }

@@ -125,6 +125,11 @@ public class ScheduledTasks {
         log.info("预约课程老师旷课处理执行结束");
     }
 
+    /**
+     * 定时任务目的 整时整点结束课程 更具course_time + end_time
+     *
+     * @throws IOException
+     */
     @Scheduled(cron = "0 0,30 * * * ?")
     public void closeMeetingTask() throws IOException {
         //获取到你跟前日期和结束时间节点
@@ -134,7 +139,6 @@ public class ScheduledTasks {
         List<String> teacherIds = studentClasses.stream().map(StudentClass::getTeacherId).distinct().toList();
         List<Teacher> teachers = teacherService.selectByRecordIds(teacherIds);
         Map<String, Teacher> teacherMap = teachers.stream().collect(Collectors.toMap(Teacher::getRecordId, Function.identity()));
-        //查询老师
         for (StudentClass studentClass : studentClasses) {
             Teacher teacher = teacherMap.get(studentClass.getTeacherId());
             if (teacher != null && StringUtils.isNotEmpty(teacher.getZoomAccountId())) {

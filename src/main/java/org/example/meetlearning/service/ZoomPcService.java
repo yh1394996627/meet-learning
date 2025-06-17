@@ -235,7 +235,7 @@ public class ZoomPcService {
         JSONObject participantData = eventData.getJSONObject("participant");
         String joinTimeStr = participantData.getString("join_time");
         Date joinTime = DateUtil.parse(joinTimeStr);
-        String email = eventData.optString("email", null); // 获取邮箱
+        String email = participantData.optString("email", null); // 获取邮箱
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
         updateStudentClass.setId(studentClass.getId());
@@ -265,7 +265,7 @@ public class ZoomPcService {
         JSONObject participantData = eventData.getJSONObject("participant");
         String leaveTimeStr = participantData.getString("leave_time");
         Date leaveTime = DateUtil.parse(leaveTimeStr);
-        String email = eventData.optString("email", null); // 获取邮箱
+        String email = participantData.optString("email", null); // 获取邮箱
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
         StudentClass updateStudentClass = new StudentClass();
         updateStudentClass.setId(studentClass.getId());
