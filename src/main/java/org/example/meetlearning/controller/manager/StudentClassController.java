@@ -144,7 +144,7 @@ public class StudentClassController implements BaseController {
 
     @Operation(summary = "老师备注查询", operationId = "selectRemarkPage")
     @PostMapping(value = "v1/student/class/remark/page")
-    public RespVo<PageVo<TeacherClassRemarkPageRespVo>> selectRemarkPage(TeacherClassRemarkQueryVo queryVo) {
+    public RespVo<PageVo<TeacherClassRemarkPageRespVo>> selectRemarkPage(@RequestBody TeacherClassRemarkQueryVo queryVo) {
         return new RespVo<>(teacherClassRemarkPcService.selectPageByStudentId(queryVo));
     }
 
