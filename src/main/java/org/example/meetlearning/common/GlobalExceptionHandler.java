@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.vo.common.RespVo;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,15 +18,17 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 @Hidden
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler implements BaseHandler {
 
     /**
      * 处理业务异常
      */
     @ExceptionHandler(BusinessException.class)
     public RespVo<?> handleBusinessException(BusinessException e, HttpServletRequest request) {
+        String language = getLanguage();
+
         log.error("业务异常: {}, 请求路径: {}", e, request.getRequestURI());
-        return new RespVo<>(null, false, e.getMessage());
+        return new RespVo<>(null, false, getExceptionMsg());
     }
 
     /**
@@ -33,7 +37,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public RespVo<?> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
         log.error("参数校验异常: {}, 请求路径: {}", e, request.getRequestURI());
-        return new RespVo<>(null, false, e.getMessage());
+        return new RespVo<>(null, false, getExceptionMsg());
     }
 
     /**
@@ -47,7 +51,7 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("; "));
 
         log.error("参数校验异常: {}, 请求路径: {}", message, request.getRequestURI());
-        return new RespVo<>(null, false, message);
+        return new RespVo<>(null, false, getExceptionMsg());
     }
 
     /**
@@ -63,7 +67,7 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("; "));
 
         log.error("参数校验异常: {}, 请求路径: {}", message, request.getRequestURI());
-        return new RespVo<>(null, false, message);
+        return new RespVo<>(null, false, getExceptionMsg());
     }
 
     /**
@@ -72,6 +76,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public RespVo<?> handleException(Exception e, HttpServletRequest request) {
         log.error("系统异常: {}, 请求路径: {}", e, request.getRequestURI(), e);
-        return new RespVo<>(null, false, e.getMessage());
+        return new RespVo<>(null, false, getExceptionMsg());
+    }
+
+
+    private String getExceptionMsg() {
+        String language = getLanguage();
+        return StringUtils.pathEquals("zn", language) ? "系统服务异常" : "System Exception";
     }
 }

@@ -3,7 +3,7 @@ package org.example.meetlearning.controller.commons;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.TokensLogPcService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "课时币接口")
 @RestController
 @AllArgsConstructor
-public class TokensLogController implements BaseController {
+public class TokensLogHandler implements BaseHandler {
 
     private final TokensLogPcService tokensLogPcService;
 

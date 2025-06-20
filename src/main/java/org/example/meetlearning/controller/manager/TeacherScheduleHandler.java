@@ -4,9 +4,8 @@ package org.example.meetlearning.controller.manager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.TeacherSchedulePcService;
-import org.example.meetlearning.vo.classes.StudentClassRegularReqVo;
 import org.example.meetlearning.vo.classes.StudentClassRegularRespVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.schedule.teacher.ScheduleAddOrUpdateReqVo;
@@ -23,7 +22,7 @@ import java.util.List;
 @Tag(name = "老师日程接口")
 @RestController
 @AllArgsConstructor
-public class TeacherScheduleController implements BaseController {
+public class TeacherScheduleHandler implements BaseHandler {
 
     private final TeacherSchedulePcService teacherSchedulePcService;
 

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.PayConfigPcService;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -21,7 +21,7 @@ import java.util.List;
 @Tag(name = "支付基础配置")
 @Slf4j
 @AllArgsConstructor
-public class PayConfigController implements BaseController {
+public class PayConfigHandler implements BaseHandler {
 
     private PayConfigPcService payConfigPcService;
 

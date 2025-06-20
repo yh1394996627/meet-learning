@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.enums.FileTypeEnum;
 import org.example.meetlearning.service.UserPcService;
 import org.example.meetlearning.vo.common.FileRecordVo;
@@ -14,18 +14,14 @@ import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.*;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.URL;
-import java.util.List;
 
 @Tag(name = "用户接口")
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class UserController implements BaseController {
+public class UserHandler implements BaseHandler {
 
     private final UserPcService userPcService;
 

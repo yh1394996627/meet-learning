@@ -8,17 +8,26 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Objects;
 
 
-public interface BaseController {
+public interface BaseHandler {
 
     @JsonIgnore
     default String getUserCode() {
         return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("userCode");
     }
 
-
     @JsonIgnore
     default String getUserName() {
         return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("userName");
     }
+
+    @JsonIgnore
+    default String getLanguage() {
+        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("language");
+    }
+
+
+
+
+
 
 }

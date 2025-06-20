@@ -1,18 +1,12 @@
 package org.example.meetlearning.controller.manager;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Date;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.controller.BaseController;
-import org.example.meetlearning.converter.TeacherClassRemarkConverter;
-import org.example.meetlearning.dao.entity.StudentClass;
-import org.example.meetlearning.dao.entity.TeacherClassRemark;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.StudentClassPcService;
 import org.example.meetlearning.service.TeacherClassRemarkPcService;
 import org.example.meetlearning.vo.classes.*;
@@ -25,20 +19,17 @@ import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
 import org.example.meetlearning.vo.remark.TeacherClassRemarkPageRespVo;
 import org.example.meetlearning.vo.remark.TeacherClassRemarkQueryVo;
 import org.example.meetlearning.vo.remark.TeacherClassRemarkReqVo;
-import org.example.meetlearning.vo.student.StudentInfoRespVo;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @Tag(name = "学生预约课程接口")
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class StudentClassController implements BaseController {
+public class StudentClassHandler implements BaseHandler {
 
     private final StudentClassPcService studentClassPcService;
 
@@ -147,5 +138,7 @@ public class StudentClassController implements BaseController {
     public RespVo<PageVo<TeacherClassRemarkPageRespVo>> selectRemarkPage(@RequestBody TeacherClassRemarkQueryVo queryVo) {
         return new RespVo<>(teacherClassRemarkPcService.selectPageByStudentId(queryVo));
     }
+
+
 
 }

@@ -3,7 +3,7 @@ package org.example.meetlearning.controller.manager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.enums.TeacherSpecialistsEnum;
 import org.example.meetlearning.service.TeacherPcService;
 import org.example.meetlearning.service.TeacherSalaryPcService;
@@ -16,16 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Tag(name = "老师接口")
 @RestController
 @AllArgsConstructor
-public class TeacherController implements BaseController {
+public class TeacherHandler implements BaseHandler {
 
     private final TeacherPcService teacherPcService;
 

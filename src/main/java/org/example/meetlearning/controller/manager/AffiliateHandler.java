@@ -7,9 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.AffiliatePcService;
-import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.vo.affiliate.*;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -22,21 +21,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 
 @Tag(name = "代理商接口")
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class AffiliateController implements BaseController {
+public class AffiliateHandler implements BaseHandler {
 
     private final AffiliatePcService affiliatePcService;
 
     @Operation(summary = "代理商列表", operationId = "affiliatePage")
     @PostMapping(value = "v1/affiliate/page")
     public RespVo<PageVo<AffiliateListPageRespVo>> affiliatePage(@RequestBody AffiliateQueryVo queryVo) {
-        return affiliatePcService.affiliatePage(queryVo);
+        return new RespVo<>(affiliatePcService.affiliatePage(queryVo));
     }
 
     @Operation(summary = "新增代理商", operationId = "affiliateAdd")

@@ -3,11 +3,10 @@ package org.example.meetlearning.controller.commons;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.ZoomPcService;
 import org.example.meetlearning.service.impl.ZoomOAuthService;
 import org.example.meetlearning.vo.common.RespVo;
-import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @EnableAsync
-public class ZoomController implements BaseController {
+public class ZoomHandler implements BaseHandler {
 
     private final ZoomPcService zoomPcService;
     private final ZoomOAuthService zoomOAuthService;

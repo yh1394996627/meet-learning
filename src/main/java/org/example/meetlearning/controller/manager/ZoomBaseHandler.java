@@ -4,7 +4,7 @@ package org.example.meetlearning.controller.manager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.ZoomBasePcService;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -18,7 +18,7 @@ import java.util.List;
 @Tag(name = "ZOOM基础配置接口")
 @RestController
 @AllArgsConstructor
-public class ZoomBaseController implements BaseController {
+public class ZoomBaseHandler implements BaseHandler {
 
     private final ZoomBasePcService zoomBasePcService;
 

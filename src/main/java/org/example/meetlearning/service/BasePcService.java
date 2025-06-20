@@ -7,15 +7,16 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.example.meetlearning.common.OssConfig;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.converter.FileRecordConverter;
 import org.example.meetlearning.converter.TokenConverter;
 import org.example.meetlearning.converter.UserConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.dao.entity.*;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -40,15 +41,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
 @Service
 @Slf4j
 @Transactional
-public class BasePcService {
+public class BasePcService implements BaseHandler {
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -427,4 +426,21 @@ public class BasePcService {
         user.setEnName(name);
         userService.updateEntity(user);
     }
+
+
+    /**
+     * 中英文后端提示
+     */
+    public String getHint(LanguageContextEnum contextEnum) {
+        if (contextEnum == null) {
+            return "";
+        }
+        String language = getLanguage();
+        if (StringUtils.isEmpty(language)) {
+            return contextEnum.getEn();
+        }
+        return contextEnum.getMessage(language);
+    }
+
+
 }

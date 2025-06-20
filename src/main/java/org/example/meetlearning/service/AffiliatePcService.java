@@ -9,6 +9,7 @@ import org.example.meetlearning.dao.entity.Affiliate;
 import org.example.meetlearning.dao.entity.Student;
 import org.example.meetlearning.dao.entity.User;
 import org.example.meetlearning.dao.entity.UserFinance;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.AffiliateService;
 import org.example.meetlearning.service.impl.StudentClassService;
@@ -47,68 +48,53 @@ public class AffiliatePcService extends BasePcService {
 
     private final UserFinanceService userFinanceService;
 
-    public RespVo<PageVo<AffiliateListPageRespVo>> affiliatePage(AffiliateQueryVo queryVo) {
-        try {
-            Page<Affiliate> page = affiliateService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
-            //获取代理商的学生数量
-            List<String> recordIds = page.getRecords().stream().map(Affiliate::getRecordId).distinct().collect(Collectors.toList());
-            Map<String, BigDecimal> countStuMap;
-            Map<String, BigDecimal> countCourseMap;
-            if (!CollectionUtils.isEmpty(recordIds)) {
-                Map<String, Object> params = Map.of("affiliateIds", recordIds);
-                List<SelectValueVo> selectValueVos = studentService.selectAffCountByParams(params);
-                countStuMap = selectValueVos.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getLabel())));
-                //课程数量
-                List<SelectValueVo> courseSelectList = studentClassService.selectAffCountByParams(params);
-                countCourseMap = courseSelectList.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getLabel())));
-            } else {
-                countCourseMap = new HashMap<>();
-                countStuMap = new HashMap<>();
-            }
-            PageVo<AffiliateListPageRespVo> pageVo = PageVo.map(page, list -> {
-                AffiliateListPageRespVo respVo = AffiliateConverter.INSTANCE.toListResp(list);
-                if (countStuMap.containsKey(list.getRecordId())) {
-                    respVo.setStudentTotal(countStuMap.get(list.getRecordId()));
-                }
-                if (countCourseMap.containsKey(list.getRecordId())) {
-                    respVo.setCourseTotal(countCourseMap.get(list.getRecordId()));
-                }
-                UserFinance userFinance = userFinanceService.selectByUserId(list.getRecordId());
-                if (userFinance != null) {
-                    respVo.setBalance(BigDecimalUtil.nullOrZero(userFinance.getBalanceQty()));
-                }
-                return respVo;
-            });
-            return new RespVo<>(pageVo);
-        } catch (Exception ex) {
-            log.error("查询失败", ex);
-            return new RespVo<>(null, false, ex.getMessage());
+    public PageVo<AffiliateListPageRespVo> affiliatePage(AffiliateQueryVo queryVo) {
+        Page<Affiliate> page = affiliateService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
+        //获取代理商的学生数量
+        List<String> recordIds = page.getRecords().stream().map(Affiliate::getRecordId).distinct().toList();
+        Map<String, BigDecimal> countStuMap;
+        Map<String, BigDecimal> countCourseMap;
+        if (!CollectionUtils.isEmpty(recordIds)) {
+            Map<String, Object> params = Map.of("affiliateIds", recordIds);
+            List<SelectValueVo> selectValueVos = studentService.selectAffCountByParams(params);
+            countStuMap = selectValueVos.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getLabel())));
+            //课程数量
+            List<SelectValueVo> courseSelectList = studentClassService.selectAffCountByParams(params);
+            countCourseMap = courseSelectList.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getLabel())));
+        } else {
+            countCourseMap = new HashMap<>();
+            countStuMap = new HashMap<>();
         }
+        PageVo<AffiliateListPageRespVo> pageVo = PageVo.map(page, list -> {
+            AffiliateListPageRespVo respVo = AffiliateConverter.INSTANCE.toListResp(list);
+            if (countStuMap.containsKey(list.getRecordId())) {
+                respVo.setStudentTotal(countStuMap.get(list.getRecordId()));
+            }
+            if (countCourseMap.containsKey(list.getRecordId())) {
+                respVo.setCourseTotal(countCourseMap.get(list.getRecordId()));
+            }
+            UserFinance userFinance = userFinanceService.selectByUserId(list.getRecordId());
+            if (userFinance != null) {
+                respVo.setBalance(BigDecimalUtil.nullOrZero(userFinance.getBalanceQty()));
+            }
+            return respVo;
+        });
+        return pageVo;
     }
 
     public RespVo<String> affiliateAdd(String userCode, String userName, AffiliateAddReqVo reqVo) {
-        try {
-
-            // 验证码校验
-            emailVerify(reqVo.getEmail(), reqVo.getVerifyCode());
-
-            // 保存代理商基础信息
-            Affiliate affiliate = AffiliateConverter.INSTANCE.toCreateAffiliate(userCode, userName, reqVo);
-            affiliateService.insertEntity(affiliate);
-
-            // 创建登陆帐号
-            User newUser = addUser(userCode, userName, affiliate.getRecordId(), affiliate.getEmail(), reqVo.getPassword(),
-                    RoleEnum.AFFILIATE, affiliate.getName(), affiliate.getEnName(), affiliate.getEmail(), null);
-
-            //创建用户关联的课时币
-            addFinance(userCode, userName, newUser);
-            return new RespVo<>("New successfully added");
-        } catch (Exception ex) {
-            log.error("Addition failed", ex);
-            return new RespVo<>(null, false, ex.getMessage());
-        }
+        // 验证码校验
+        emailVerify(reqVo.getEmail(), reqVo.getVerifyCode());
+        // 保存代理商基础信息
+        Affiliate affiliate = AffiliateConverter.INSTANCE.toCreateAffiliate(userCode, userName, reqVo);
+        affiliateService.insertEntity(affiliate);
+        // 创建登陆帐号
+        User newUser = addUser(userCode, userName, affiliate.getRecordId(), affiliate.getEmail(), reqVo.getPassword(),
+                RoleEnum.AFFILIATE, affiliate.getName(), affiliate.getEnName(), affiliate.getEmail(), null);
+        //创建用户关联的课时币
+        addFinance(userCode, userName, newUser);
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
-
 
     public RespVo<String> affiliateUpdate(String userCode, String userName, AffiliateUpdateReqVo reqVo) {
         try {

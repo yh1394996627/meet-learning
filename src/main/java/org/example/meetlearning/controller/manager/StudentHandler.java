@@ -3,15 +3,13 @@ package org.example.meetlearning.controller.manager;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.StudentPcService;
-import org.example.meetlearning.vo.classes.StudentClassListRespVo;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.student.*;
 import org.example.meetlearning.vo.teacher.TeacherInfoRespVo;
-import org.example.meetlearning.vo.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +20,7 @@ import java.util.List;
 
 @Tag(name = "学生接口")
 @RestController
-public class StudentController implements BaseController {
+public class StudentHandler implements BaseHandler {
 
     @Autowired
     private StudentPcService studentPcService;

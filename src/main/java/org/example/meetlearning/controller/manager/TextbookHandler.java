@@ -1,13 +1,10 @@
 package org.example.meetlearning.controller.manager;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.controller.BaseController;
-import org.example.meetlearning.converter.TextbookConverter;
-import org.example.meetlearning.dao.entity.Textbook;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.TextbookPcService;
 import org.example.meetlearning.vo.common.PageVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -17,7 +14,6 @@ import org.example.meetlearning.vo.textbook.TextbookQueryVo;
 import org.example.meetlearning.vo.textbook.TextbookRecordReqVo;
 import org.example.meetlearning.vo.textbook.TextbookReqVo;
 import org.example.meetlearning.vo.textbook.TextbookRespVo;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +24,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class TextbookController implements BaseController {
+public class TextbookHandler implements BaseHandler {
 
     private final TextbookPcService pcService;
 

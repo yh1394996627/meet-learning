@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.controller.BaseController;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.service.BaseConfigPcService;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class BaseConfigController implements BaseController {
+public class BaseConfigHandler implements BaseHandler {
 
     private final BaseConfigPcService baseConfigPcService;
 
