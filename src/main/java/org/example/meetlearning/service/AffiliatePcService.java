@@ -97,18 +97,13 @@ public class AffiliatePcService extends BasePcService {
     }
 
     public RespVo<String> affiliateUpdate(String userCode, String userName, AffiliateUpdateReqVo reqVo) {
-        try {
-            Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
-            Affiliate affiliate = affiliateService.findByRecordId(reqVo.getRecordId());
-            Assert.notNull(affiliate, "为获取到对象信息 recordId" + reqVo.getRecordId());
-            affiliate = AffiliateConverter.INSTANCE.toUpdateAffiliate(userCode, userName, affiliate, reqVo);
-            affiliateService.updateEntity(affiliate);
-            updateBaseDate(affiliate.getRecordId(), affiliate.getName(), affiliate.getEmail());
-            return new RespVo<>("New successfully added");
-        } catch (Exception ex) {
-            log.error("Addition failed", ex);
-            return new RespVo<>(null, false, "Addition failed,未知错误!");
-        }
+        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Affiliate affiliate = affiliateService.findByRecordId(reqVo.getRecordId());
+        Assert.notNull(affiliate, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        affiliate = AffiliateConverter.INSTANCE.toUpdateAffiliate(userCode, userName, affiliate, reqVo);
+        affiliateService.updateEntity(affiliate);
+        updateBaseDate(affiliate.getRecordId(), affiliate.getName(), affiliate.getEmail());
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
 
