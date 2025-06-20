@@ -37,7 +37,7 @@ public class GlobalExceptionHandler implements BaseHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public RespVo<?> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
         log.error("参数校验异常: {}, 请求路径: {}", e, request.getRequestURI());
-        return new RespVo<>(null, false, getExceptionMsg());
+        return new RespVo<>(null, false, e.getMessage());
     }
 
     /**

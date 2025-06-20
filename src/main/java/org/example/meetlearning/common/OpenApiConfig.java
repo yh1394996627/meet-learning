@@ -16,7 +16,9 @@ public class OpenApiConfig {
         return openApi -> {
             openApi.getPaths().values().forEach(pathItem -> pathItem.readOperations().forEach(operation -> {
                 operation.addParametersItem(new Parameter().in("header").name("userCode").description("当前登录用户编码").required(false).schema(new StringSchema()))
-                        .addParametersItem(new Parameter().in("header").name("userName").description("当前登录用户名称").required(false).schema(new StringSchema()));
+                        .addParametersItem(new Parameter().in("header").name("userName").description("当前登录用户名称").required(false).schema(new StringSchema()))
+                        .addParametersItem(new Parameter().in("header").name("language").description("语言").required(false).schema(new StringSchema()))
+                ;
             }));
         };
     }
