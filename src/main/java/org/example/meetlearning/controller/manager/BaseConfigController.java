@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class BaseConfigHandler implements BaseHandler {
+public class BaseConfigController implements BaseHandler {
 
     private final BaseConfigPcService baseConfigPcService;
 

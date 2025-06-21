@@ -20,7 +20,7 @@ import java.util.List;
 
 @Tag(name = "学生接口")
 @RestController
-public class StudentHandler implements BaseHandler {
+public class StudentController implements BaseHandler {
 
     @Autowired
     private StudentPcService studentPcService;

@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class TextbookHandler implements BaseHandler {
+public class TextbookController implements BaseHandler {
 
     private final TextbookPcService pcService;
 

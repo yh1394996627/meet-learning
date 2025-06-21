@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class StudentClassHandler implements BaseHandler {
+public class StudentClassController implements BaseHandler {
 
     private final StudentClassPcService studentClassPcService;
 

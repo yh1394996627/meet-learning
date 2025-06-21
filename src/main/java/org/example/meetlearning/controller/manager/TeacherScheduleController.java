@@ -22,7 +22,7 @@ import java.util.List;
 @Tag(name = "老师日程接口")
 @RestController
 @AllArgsConstructor
-public class TeacherScheduleHandler implements BaseHandler {
+public class TeacherScheduleController implements BaseHandler {
 
     private final TeacherSchedulePcService teacherSchedulePcService;
 

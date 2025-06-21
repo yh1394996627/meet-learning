@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class AffiliateHandler implements BaseHandler {
+public class AffiliateController implements BaseHandler {
 
     private final AffiliatePcService affiliatePcService;
 

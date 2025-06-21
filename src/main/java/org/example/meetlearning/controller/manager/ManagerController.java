@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class ManagerHandler implements BaseHandler {
+public class ManagerController implements BaseHandler {
 
     private final ManagerPcService managerPcService;
 

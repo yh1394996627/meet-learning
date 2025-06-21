@@ -18,7 +18,7 @@ import java.util.List;
 @Tag(name = "ZOOM基础配置接口")
 @RestController
 @AllArgsConstructor
-public class ZoomBaseHandler implements BaseHandler {
+public class ZoomBaseController implements BaseHandler {
 
     private final ZoomBasePcService zoomBasePcService;
 

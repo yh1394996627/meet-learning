@@ -22,7 +22,7 @@ import java.util.List;
 @Tag(name = "老师接口")
 @RestController
 @AllArgsConstructor
-public class TeacherHandler implements BaseHandler {
+public class TeacherController implements BaseHandler {
 
     private final TeacherPcService teacherPcService;
 

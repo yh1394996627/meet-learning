@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "邮件服务")
 @RestController
 @AllArgsConstructor
-public class MailHandler implements BaseHandler {
+public class MailController implements BaseHandler {
 
     private final EmailPcService emailPcService;
 
