@@ -83,7 +83,7 @@ public class BasePcService implements BaseHandler {
     public User addUser(String userCode, String userName, String recordId, String accountCode,
                         String password, RoleEnum roleType, String name, String enName, String email, String managerId) {
         User user = userService.selectByAccountCode(email);
-        Assert.isNull(user, "The user already exists and cannot be added");
+        Assert.isNull(user, getHint(LanguageContextEnum.USER_ALREADY));
 
         user = UserConverter.INSTANCE.toCreateUser(userCode, userName, recordId, accountCode,
                 password, roleType, name, enName, email, managerId);
@@ -173,23 +173,6 @@ public class BasePcService implements BaseHandler {
             return null;
         }
     }
-
-
-//    public String generateAndUploadQrCode(String content) throws WriterException, IOException {
-//        String fileName = "qrcode/" + content + ".png";
-//        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-//        Map<EncodeHintType, Object> hints = new HashMap<>();
-//        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-//        String qrUrl = String.format("https://www.12talk.com/#/register?recordId=%s", content);
-//        BitMatrix bitMatrix = qrCodeWriter.encode(qrUrl, BarcodeFormat.QR_CODE, 300, 300, hints);
-//        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
-//        byte[] qrCodeBytes = byteArrayOutputStream.toByteArray();
-//        InputStream inputStream = new ByteArrayInputStream(qrCodeBytes);
-//        ossConfig.getOssClient().putObject(ossConfig.getBucketName(), fileName, inputStream);
-//        return fileName;
-//    }
 
 
     public String generateAndUploadQrCode(String content) throws WriterException, IOException {
@@ -287,7 +270,7 @@ public class BasePcService implements BaseHandler {
     public RespVo<String> deletedFile(String userCode, FileRecordVo fileRecordVo) {
         try {
             fileRecordService.deleteByRecordId(fileRecordVo.getRecordId());
-            return new RespVo<>("Attachment deleted successfully");
+            return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
         } catch (Exception e) {
             log.error("File retrieval failed", e);
             return new RespVo<>(null, false, e.getMessage());
@@ -307,14 +290,14 @@ public class BasePcService implements BaseHandler {
     //充值消费接口
     public void financeTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, UserPayReqVo reqVo) {
         User user = userService.selectByRecordId(userId);
-        Assert.notNull(user, "user does not exist userId:" + userId);
+        Assert.notNull(user, getHint(LanguageContextEnum.USER_NOTNULL));
         UserFinance userFinance = userFinanceService.selectByUserId(userId);
-        Assert.notNull(userFinance, "To obtain management financial information");
+        Assert.notNull(userFinance, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
         BigDecimal balanceQty = userFinance.getBalanceQty();
         BigDecimal usedQty = userFinance.getConsumptionQty();
         BigDecimal balance = BigDecimalUtil.add(balanceQty, quantity);
-        Assert.isTrue(BigDecimalUtil.gteZero(balance), "Insufficient balance");
+        Assert.isTrue(BigDecimalUtil.gteZero(balance), getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
 
         //更新 userFinance
         userFinance.setBalanceQty(balance);
@@ -375,14 +358,14 @@ public class BasePcService implements BaseHandler {
 
     public void operaTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, String remark, PayConfig payConfig, RechargeOrder rechargeOrder, Date expirationTime) {
         User user = userService.selectByRecordId(userId);
-        Assert.notNull(user, "user does not exist userId:" + userId);
+        Assert.notNull(user, getHint(LanguageContextEnum.USER_NOTNULL));
         UserFinance userFinance = userFinanceService.selectByUserId(userId);
-        Assert.notNull(userFinance, "To obtain management financial information");
+        Assert.notNull(userFinance, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
         BigDecimal balanceQty = userFinance.getBalanceQty();
         BigDecimal usedQty = userFinance.getConsumptionQty();
         BigDecimal balance = BigDecimalUtil.add(balanceQty, quantity);
-        Assert.isTrue(BigDecimalUtil.gteZero(balance), "Insufficient balance");
+        Assert.isTrue(BigDecimalUtil.gteZero(balance), getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
         //更新 userFinance
         userFinance.setBalanceQty(balance);
         if (BigDecimalUtil.gtZero(quantity)) {

@@ -29,31 +29,21 @@ public class BaseConfigPcService {
     private final BaseConfigService baseConfigService;
 
     public RespVo<List<BaseConfigRespVo>> findList(BaseConfigQueryVo queryVo) {
-        try {
-            List<BaseConfig> configs = baseConfigService.selectListByType(queryVo.getConfigType().name());
-            List<BaseConfigRespVo> respVos = configs.stream().map(BaseConfigConverter.INSTANCE::toRespVo).toList();
-            return new RespVo<>(respVos);
-        } catch (Exception e) {
-            log.error("Query failed", e);
-            return new RespVo<>(null, false, "Query failed");
-        }
+        List<BaseConfig> configs = baseConfigService.selectListByType(queryVo.getConfigType().name());
+        List<BaseConfigRespVo> respVos = configs.stream().map(BaseConfigConverter.INSTANCE::toRespVo).toList();
+        return new RespVo<>(respVos);
     }
 
     public RespVo<String> addConfig(String userCode, BaseConfigReqVo queryVo) {
-        try {
-            BaseConfig codeBaseConfig = baseConfigService.selectByCode(queryVo.getCode());
-            Assert.isTrue(codeBaseConfig == null, "Configuration already exists code:【" + queryVo.getCode() + "】");
-            BaseConfig nameBaseConfig = baseConfigService.selectByName(queryVo.getName());
-            Assert.isTrue(nameBaseConfig == null, "Configuration already exists name:【" + queryVo.getName() + "】");
-            BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getSymbol());
-            Assert.isTrue(symbolBaseConfig == null, "Configuration already exists symbol:【" + queryVo.getSymbol() + "】");
-            BaseConfig config = BaseConfigConverter.INSTANCE.toCreate(userCode, queryVo.getCode(), queryVo.getName(), queryVo.getSymbol(), queryVo.getConfigType().name(), queryVo.getRate());
-            baseConfigService.insertEntity(config);
-            return new RespVo<>("New configuration successfully added");
-        } catch (Exception e) {
-            log.error("Failed to add configuration", e);
-            return new RespVo<>(null, false, "Failed to add configuration");
-        }
+        BaseConfig codeBaseConfig = baseConfigService.selectByCode(queryVo.getCode());
+        Assert.isTrue(codeBaseConfig == null, "Configuration already exists code:【" + queryVo.getCode() + "】");
+        BaseConfig nameBaseConfig = baseConfigService.selectByName(queryVo.getName());
+        Assert.isTrue(nameBaseConfig == null, "Configuration already exists name:【" + queryVo.getName() + "】");
+        BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getSymbol());
+        Assert.isTrue(symbolBaseConfig == null, "Configuration already exists symbol:【" + queryVo.getSymbol() + "】");
+        BaseConfig config = BaseConfigConverter.INSTANCE.toCreate(userCode, queryVo.getCode(), queryVo.getName(), queryVo.getSymbol(), queryVo.getConfigType().name(), queryVo.getRate());
+        baseConfigService.insertEntity(config);
+        return new RespVo<>("New configuration successfully added");
     }
 
 
@@ -82,25 +72,12 @@ public class BaseConfigPcService {
         return new RespVo<>("New configuration successfully update");
     }
 
-
     public RespVo<String> deletedConfig(RecordIdQueryVo queryVo) {
-        try {
-            baseConfigService.deleteByRecordId(queryVo.getRecordId());
-            return new RespVo<>("Configuration deleted successfully");
-        } catch (Exception e) {
-            log.error("Failed to delete configuration", e);
-            return new RespVo<>(null, false, "Failed to delete configurationn");
-        }
+        baseConfigService.deleteByRecordId(queryVo.getRecordId());
+        return new RespVo<>("Configuration deleted successfully");
     }
 
-
     public RespVo<List<SelectValueVo>> selectConfig(BaseConfigQueryVo queryVo) {
-        try {
-            return new RespVo<>(baseConfigService.selectByType(queryVo.getConfigType().name()));
-        } catch (Exception e) {
-            log.error("Query failed", e);
-            return new RespVo<>(null, false, "Query failed");
-        }
-
+        return new RespVo<>(baseConfigService.selectByType(queryVo.getConfigType().name()));
     }
 }

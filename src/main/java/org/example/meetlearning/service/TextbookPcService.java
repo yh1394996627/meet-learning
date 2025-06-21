@@ -7,6 +7,7 @@ import org.example.meetlearning.converter.TextbookConverter;
 import org.example.meetlearning.dao.entity.TeacherFeature;
 import org.example.meetlearning.dao.entity.Textbook;
 import org.example.meetlearning.dao.entity.TextbookRecord;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.service.impl.TeacherFeatureService;
 import org.example.meetlearning.service.impl.TextbookService;
 import org.example.meetlearning.vo.common.PageVo;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Transactional
-public class TextbookPcService {
+public class TextbookPcService extends BasePcService {
 
     private final TextbookService textbookService;
 
@@ -63,9 +64,9 @@ public class TextbookPcService {
     }
 
     public void add(String userCode, String userName, TextbookReqVo reqVo) {
-        Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCatalogs()), "catalogs cannot be empty");
+        Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCatalogs()), "catalogs" + getHint(LanguageContextEnum.OBJ_NOTNULL));
         Textbook oldBook = textbookService.selectByName(reqVo.getName());
-        Assert.isNull(oldBook, "Textbook already exists");
+        Assert.isNull(oldBook, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Textbook textbook = TextbookConverter.INSTANCE.toCreate(userCode, userName, reqVo);
         textbookService.insertEntity(textbook);
         if (!CollectionUtils.isEmpty(reqVo.getCatalogs())) {
@@ -75,9 +76,9 @@ public class TextbookPcService {
     }
 
     public void update(String userCode, String userName, TextbookReqVo reqVo) {
-        Assert.notNull(reqVo.getRecordId(), "recordId is null");
+        Assert.notNull(reqVo.getRecordId(), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Textbook oldBook = textbookService.selectByName(reqVo.getName());
-        Assert.isTrue(org.springframework.util.StringUtils.pathEquals(oldBook.getRecordId(), reqVo.getRecordId()), "Textbook already exists");
+        Assert.isTrue(org.springframework.util.StringUtils.pathEquals(oldBook.getRecordId(), reqVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         textbookService.deleteByTextbookId(reqVo.getRecordId());
         Textbook textbook = textbookService.selectByRecordId(reqVo.getRecordId());
         textbookService.updateEntity(textbook);
@@ -90,7 +91,7 @@ public class TextbookPcService {
     }
 
     public void deleted(RecordIdQueryVo queryVo) {
-        Assert.notNull(queryVo.getRecordId(), "recordId is null");
+        Assert.notNull(queryVo.getRecordId(), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         textbookService.deletedByRecordId(queryVo.getRecordId());
         textbookService.deleteByTextbookId(queryVo.getRecordId());
     }

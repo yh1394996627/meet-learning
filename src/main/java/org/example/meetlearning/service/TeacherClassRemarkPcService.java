@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.example.meetlearning.converter.TeacherClassRemarkConverter;
 import org.example.meetlearning.dao.entity.StudentClass;
 import org.example.meetlearning.dao.entity.TeacherClassRemark;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.service.impl.StudentClassService;
 import org.example.meetlearning.service.impl.TeacherClassRemarkService;
 import org.example.meetlearning.vo.common.PageVo;
@@ -17,7 +18,7 @@ import org.springframework.util.Assert;
 
 @Service
 @AllArgsConstructor
-public class TeacherClassRemarkPcService {
+public class TeacherClassRemarkPcService extends BasePcService {
 
     private TeacherClassRemarkService teacherClassRemarkService;
 
@@ -30,7 +31,7 @@ public class TeacherClassRemarkPcService {
 
     public void add(String userCode, String userName, TeacherClassRemarkReqVo queryVo) {
         StudentClass studentClass = studentClassService.selectByRecordId(queryVo.getRecordId());
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, "Student Class" + getHint(LanguageContextEnum.OBJ_NOTNULL));
         TeacherClassRemark remark = TeacherClassRemarkConverter.INSTANCE.toCreate(userCode, userName, queryVo, studentClass);
         teacherClassRemarkService.insertEntity(remark);
     }

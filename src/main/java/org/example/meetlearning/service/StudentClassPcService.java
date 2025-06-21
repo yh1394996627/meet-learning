@@ -76,7 +76,7 @@ public class StudentClassPcService extends BasePcService {
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(String userCode, StudentClassQueryVo queryVo) {
         User user = userService.selectByRecordId(userCode);
-        Assert.notNull(user, "User information not obtained");
+        Assert.notNull(user, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Map<String, Object> params = queryVo.getParams();
         if (StringUtils.equals(RoleEnum.TEACHER.name(), user.getType())) {
             params.put("teacherId", userCode);
@@ -139,16 +139,16 @@ public class StudentClassPcService extends BasePcService {
         //校验拉取老师学生信息组装数据
         //查询学生信息
         Student student = reqVo.getStudentId() != null ? studentService.findByRecordId(reqVo.getStudentId()) : null;
-        Assert.notNull(student, "Student information not obtained");
+        Assert.notNull(student, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         //查询老师信息
         Teacher teacher = reqVo.getTeacherId() != null ? teacherService.selectByRecordId(reqVo.getTeacherId()) : null;
-        Assert.notNull(teacher, "Teacher information not obtained");
+        Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         //查询代理商信息
         Affiliate affiliate = null;
         if (student != null && StringUtils.isNotEmpty(student.getAffiliateId())) {
             affiliate = affiliateService.findByRecordId(student.getAffiliateId());
         }
-        Assert.isTrue(reqVo.getCourseType() != null, "Course type cannot be empty");
+        Assert.isTrue(reqVo.getCourseType() != null, "Course type" + getHint(LanguageContextEnum.OBJ_NOTNULL));
         //新增课时币学生扣减记录
         operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null);
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
@@ -169,7 +169,7 @@ public class StudentClassPcService extends BasePcService {
         //记录老师已有课时
         teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
         teacherSalaryPcService.updateSalary(userCode, userName, studentClass.getTeacherId(), new Date());
-        return new RespVo<>("New successfully added");
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
     public RespVo<List<SelectValueVo>> classCoinList(StudentCoinQueryVo queryVo) {
@@ -298,7 +298,7 @@ public class StudentClassPcService extends BasePcService {
         User user = userService.selectByRecordId(userCode);
         Assert.notNull(user, "User information not obtained userCode:" + userCode);
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         if (StringUtils.equals(RoleEnum.TEACHER.name(), user.getType())) {
             Date classDate = studentClass.getCourseTime();
             long diffInMillie = Math.abs(classDate.getTime() - new Date().getTime());
@@ -321,7 +321,7 @@ public class StudentClassPcService extends BasePcService {
      */
     public void studentClassCancel(String userCode, RecordIdQueryVo reqVo) {
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         //todo 提前三天才能取消，三天内取消罚50%
         StudentClass newStudentClass = new StudentClass();
         newStudentClass.setId(studentClass.getId());
@@ -333,7 +333,7 @@ public class StudentClassPcService extends BasePcService {
 
     public void studentClassUpdateTime(String userCode, String userName, StudentClassUpdateTimeReqVo reqVo) {
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Date classDate = studentClass.getCourseTime();
         long diffInMillie = Math.abs(classDate.getTime() - new Date().getTime());
         long dayNum = TimeUnit.HOURS.convert(diffInMillie, TimeUnit.MILLISECONDS);
@@ -353,7 +353,7 @@ public class StudentClassPcService extends BasePcService {
     public void studentClassEvaluate(String userCode, String userName, TeacherEvaluationReqVo reqVo) {
         //新增评论
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         TeacherEvaluationRecord teacherEvaluationRecord = StudentClassConverter.INSTANCE.toCreateTeacherEvaluationRecord(userCode, reqVo.getRating(), reqVo.getRemark(), studentClass);
         teacherEvaluationService.insert(teacherEvaluationRecord);
 
@@ -385,7 +385,7 @@ public class StudentClassPcService extends BasePcService {
     public void studentClassComplaint(String userCode, TeacherComplaintReqVo reqVo) {
         //新增评论
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
         Assert.notNull(teacher, "Teacher information not obtained");
         TeacherComplaintRecord teacherEvaluationRecord = StudentClassConverter.INSTANCE.toCreateTeacherComplaintRecord(userCode, teacher.getPrice(), reqVo.getRemark(), studentClass);
@@ -398,16 +398,16 @@ public class StudentClassPcService extends BasePcService {
     public void studentClassCancelComplaint(RecordIdQueryVo reqVo) {
         //新增评论
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
-        Assert.notNull(teacher, "Teacher information not obtained");
+        Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         teacherComplaintService.deletedEntity(studentClass.getRecordId());
     }
 
 
     public String meetingJoinUrl(String classId) throws IOException {
         StudentClass studentClass = studentClassService.selectByRecordId(classId);
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         String meetingRecordId = studentClass.getMeetingRecordId();
         //如果没有会议信息则新建一个
         if (StringUtils.isEmpty(meetingRecordId)) {
@@ -434,22 +434,22 @@ public class StudentClassPcService extends BasePcService {
         boolean canEnterMeeting = diffInMillis <= fiveMinutesInMillis;
         //todo 为了测试
         if (!StringUtils.equals(studentClass.getStudentEmail(), "student@talk.com")) {
-            Assert.isTrue(canEnterMeeting, "You can only enter the meeting five minutes in advance");
+            Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE));
         }
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
-        Assert.notNull(studentClassMeeting, "Meeting information not obtained");
-        Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), "Meeting information not obtained");
+        Assert.notNull(studentClassMeeting, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         return studentClassMeeting.getMeetJoinUrl();
     }
 
     public void studentClassRegular(String userCode, String userName, StudentClassRegularReqVo reqVo) {
-        Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCourseDates()), "courseDates cannot be empty");
-        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getStudentId()), "studentId cannot be empty");
+        Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCourseDates()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getStudentId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Student student = studentService.findByRecordId(reqVo.getStudentId());
-        Assert.notNull(student, "Student information not obtained");
-        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getTeacherId()), "teacherId cannot be empty");
+        Assert.notNull(student, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getTeacherId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Teacher teacher = teacherService.selectByRecordId(reqVo.getTeacherId());
-        Assert.notNull(teacher, "Teacher information not obtained");
+        Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         //生成固定上课请求
         StudentClassRegular studentClassRegular = StudentClassRegularConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher);
         studentClassRegularService.insert(studentClassRegular);
@@ -464,7 +464,7 @@ public class StudentClassPcService extends BasePcService {
         BigDecimal sumQty = studentClassRegular.getPrice();
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         BigDecimal canQty = BigDecimalUtil.nullOrZero(userFinance.getBalanceQty());
-        Assert.isTrue(BigDecimalUtil.gteThan(canQty, sumQty), "余额不足，无法申请固定上课");
+        Assert.isTrue(BigDecimalUtil.gteThan(canQty, sumQty), getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
         regularRecords.forEach(studentClassRegularService::insertRecord);
         //生成固定请求排班
         teacherCourseTimeService.studentClassTimeSet(regularRecords.stream().map(item -> StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular, item)).toList());

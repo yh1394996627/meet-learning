@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.example.meetlearning.converter.ZoomBaseConverter;
 import org.example.meetlearning.dao.entity.ZoomAccountSet;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.service.impl.ZoomBaseService;
 import org.example.meetlearning.service.impl.ZoomOAuthService;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -23,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @Transactional
 @Slf4j
-public class ZoomBasePcService {
+public class ZoomBasePcService extends BasePcService {
 
     private final ZoomBaseService zoomBaseService;
 
@@ -43,9 +44,9 @@ public class ZoomBasePcService {
     }
 
     public void zoomUpdate(String userCode, String userName, ZoomBaseReqVo reqVo) {
-        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId cannot be empty");
+        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         ZoomAccountSet zoomAccountSet = zoomBaseService.selectByRecordId(reqVo.getRecordId());
-        Assert.notNull(zoomAccountSet, "Zoom config cannot be empty");
+        Assert.notNull(zoomAccountSet, "Zoom config" + getHint(LanguageContextEnum.OBJ_NOTNULL));
         ZoomAccountSet newZoomAccountSet = ZoomBaseConverter.INSTANCE.toUpdateZoomAccountSet(userCode, userName, zoomAccountSet.getId(), reqVo);
         zoomAccountSet.setZoomType(1);
         zoomAccountSet.setZoomStatusMsg("Unverified");
@@ -54,23 +55,23 @@ public class ZoomBasePcService {
     }
 
     public void zoomDeleted(RecordIdQueryVo reqVo) {
-        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId cannot be empty");
+        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         zoomBaseService.deletedByRecordId(reqVo.getRecordId());
     }
 
     public ZoomBaseVerifyRespVo zoomVerify(ZoomBaseStatusReqVo reqVo) {
         try {
-            Assert.isTrue(StringUtils.hasText(reqVo.getAccountId()), "accountId cannot be empty");
-            Assert.isTrue(StringUtils.hasText(reqVo.getClientId()), "clientId cannot be empty");
-            Assert.isTrue(StringUtils.hasText(reqVo.getClientSecret()), "clientSecret cannot be empty");
+            Assert.isTrue(StringUtils.hasText(reqVo.getAccountId()), "accountId" + getHint(LanguageContextEnum.OBJ_NOTNULL));
+            Assert.isTrue(StringUtils.hasText(reqVo.getClientId()), "clientId" + getHint(LanguageContextEnum.OBJ_NOTNULL));
+            Assert.isTrue(StringUtils.hasText(reqVo.getClientSecret()), "clientSecret" + getHint(LanguageContextEnum.OBJ_NOTNULL));
             String accessToken = zoomOAuthService.getValidAccessToken(reqVo.getClientId(), reqVo.getClientSecret(), reqVo.getAccountId());
             ZoomBaseVerifyRespVo respVo = zoomOAuthService.isTokenValid(reqVo.getAccountId(), accessToken);
             JsonObject obj = zoomOAuthService.getUserInfo(reqVo.getEmail());
             String zoomUserId = obj.get("id").getAsString();
             if (BooleanUtil.isTrue(respVo.getStatus()) && StringUtils.hasText(reqVo.getRecordId())) {
-                Assert.isTrue(StringUtils.hasText(reqVo.getEmail()), "email cannot be empty");
+                Assert.isTrue(StringUtils.hasText(reqVo.getEmail()), "email" + getHint(LanguageContextEnum.OBJ_NOTNULL));
                 ZoomAccountSet zoomAccountSet = zoomBaseService.selectByRecordId(reqVo.getRecordId());
-                Assert.notNull(zoomAccountSet, "Zoom config cannot be empty");
+                Assert.notNull(zoomAccountSet, "Zoom config" + getHint(LanguageContextEnum.OBJ_NOTNULL));
                 zoomAccountSet.setZoomUserId(zoomUserId);
                 zoomAccountSet.setIsException(false);
                 zoomAccountSet.setZoomStatusMsg(null);

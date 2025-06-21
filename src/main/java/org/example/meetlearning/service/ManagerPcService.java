@@ -29,8 +29,6 @@ public class ManagerPcService {
 
     private final UserFinanceRecordService userFinanceRecordService;
 
-    private final TokensLogService tokensLogService;
-
     public ManagerIncomeStatisticsRespVo dashboard(String userCode, ManagerIncomeStatisticsQueryVo queryVo) {
         ManagerIncomeStatisticsRespVo respVo = new ManagerIncomeStatisticsRespVo();
         List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParamsGroup(queryVo.getParams(userCode));

@@ -9,6 +9,7 @@ import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherSalary;
 import org.example.meetlearning.enums.CourseStatusEnum;
 import org.example.meetlearning.enums.CourseTypeEnum;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.service.impl.StudentClassService;
 import org.example.meetlearning.service.impl.TeacherSalaryService;
 import org.example.meetlearning.service.impl.TeacherService;
@@ -32,7 +33,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 @Transactional
-public class TeacherSalaryPcService {
+public class TeacherSalaryPcService extends BasePcService {
 
     private TeacherSalaryService teacherSalaryService;
 
@@ -41,11 +42,11 @@ public class TeacherSalaryPcService {
     private TeacherService teacherService;
 
     public void updateSalary(String userCode, String userName, String teacherId, Date endDate) {
-        Assert.isTrue(StringUtils.hasText(teacherId), "teacherId cannot be empty");
+        Assert.isTrue(StringUtils.hasText(teacherId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         TeacherSalary teacherSalary = teacherSalaryService.selectByUnVerTeacherId(teacherId);
         if (teacherSalary == null) {
             Teacher teacher = teacherService.selectByRecordId(teacherId);
-            Assert.notNull(teacher, "teacher cannot be empty");
+            Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
             teacherSalary = TeacherSalaryConverter.INSTANCE.toCreate(userCode, userName, teacher);
             teacherSalaryService.insertEntity(teacherSalary);
         }

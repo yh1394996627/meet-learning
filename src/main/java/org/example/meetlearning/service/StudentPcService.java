@@ -11,6 +11,7 @@ import org.example.meetlearning.converter.StudentConverter;
 import org.example.meetlearning.converter.TeacherConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseStatusEnum;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -95,8 +96,8 @@ public class StudentPcService extends BasePcService {
 
     @Transactional(rollbackFor = Exception.class)
     public RespVo<String> studentAdd(String userCode, String userName, StudentAddReqVo reqVo) {
-        Assert.isTrue(StringUtils.hasText(reqVo.getEnName()), "Email cannot be empty");
-        Assert.isTrue(StringUtils.hasText(reqVo.getPassword()), "Password cannot be empty");
+        Assert.isTrue(StringUtils.hasText(reqVo.getEnName()), "Email" + getHint(LanguageContextEnum.OBJ_NOTNULL));
+        Assert.isTrue(StringUtils.hasText(reqVo.getPassword()), "Password" + getHint(LanguageContextEnum.OBJ_NOTNULL));
 
         Student student = StudentConverter.INSTANCE.toCreateStudent(userCode, userName, reqVo);
         //如果是代理商 则添加代理商信息
@@ -114,18 +115,18 @@ public class StudentPcService extends BasePcService {
 
         //创建用户关联的课时币
         addFinance(userCode, userName, newUser);
-        return new RespVo<>("New successfully added");
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
     public RespVo<String> studentUpdate(String userCode, String userName, StudentUpdateReqVo reqVo) {
         String recordId = reqVo.getRecordId();
-        Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
+        Assert.isTrue(StringUtils.hasText(recordId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Student student = studentService.findByRecordId(recordId);
         String oldManagerId = student.getAffiliateId();
         student = StudentConverter.INSTANCE.toUpdateStudent(student, reqVo);
         if (StringUtils.hasText(reqVo.getAffiliateId())) {
             User affiliateUser = userService.selectByRecordId(reqVo.getAffiliateId());
-            Assert.notNull(affiliateUser, "Affiliate user cannot be empty");
+            Assert.notNull(affiliateUser, getHint(LanguageContextEnum.OBJECT_NOTNULL));
             student.setAffiliateId(affiliateUser.getRecordId());
             student.setAffiliateName(affiliateUser.getName());
         }
@@ -143,35 +144,35 @@ public class StudentPcService extends BasePcService {
         }
         //更新用户表数据
         updateBaseDate(student.getRecordId(), student.getName(), student.getEmail());
-        return new RespVo<>("Student update successful");
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
     public RespVo<String> deleteStudent(StudentRecordReqVo reqVo) {
         String recordId = reqVo.getRecordId();
-        Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
+        Assert.isTrue(StringUtils.hasText(recordId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         studentService.deletedByRecordId(recordId);
         //删除登陆帐号和余额信息
         deleteUser(recordId);
-        return new RespVo<>("Student deleted successfully");
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
     public RespVo<String> studentRemarkUpdate(StudentRemarkUpdateReqVo reqVo) {
         String recordId = reqVo.getRecordId();
-        Assert.isTrue(StringUtils.hasText(recordId), "recordId cannot be empty");
+        Assert.isTrue(StringUtils.hasText(recordId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Student student = studentService.findByRecordId(recordId);
         student.setRemark(reqVo.getRemark());
         studentService.update(student);
-        return new RespVo<>("Updated notes successfully");
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
 
     public RespVo<StudentInfoRespVo> studentInfo(RecordIdQueryVo reqVo) {
-        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId cannot be empty");
+        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Student student = studentService.findByRecordId(reqVo.getRecordId());
-        Assert.notNull(student, "Student information not obtained");
+        Assert.notNull(student, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         StudentInfoRespVo respVo = StudentConverter.INSTANCE.toStudentInfoRespVo(student);
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
-        Assert.notNull(userFinance, "Student Finance information not obtained");
+        Assert.notNull(userFinance, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         respVo.setBalance(userFinance.getBalanceQty());
         respVo.setExpirationTime(userFinance.getExpirationTime());
         if (StringUtils.hasText(student.getAvatarUrl())) {

@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,44 +109,31 @@ public class AffiliatePcService extends BasePcService {
 
 
     public RespVo<String> affiliateUpdateRemark(String userCode, String userName, AffiliateRemarkUpdateReqVo reqVo) {
-        try {
-            Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), "recordId不能为空");
-            Affiliate affiliate = affiliateService.findByRecordId(reqVo.getRecordId());
-            Assert.notNull(affiliate, "为获取到对象信息 recordId" + reqVo.getRecordId());
-            affiliate.setRemark(reqVo.getRemark());
-            affiliateService.updateEntity(affiliate);
-            return new RespVo<>("New successfully added");
-        } catch (Exception ex) {
-            log.error("Addition failed", ex);
-            return new RespVo<>("Addition failed", false, ex.getMessage());
-        }
+        Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Affiliate affiliate = affiliateService.findByRecordId(reqVo.getRecordId());
+        Assert.notNull(affiliate, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        affiliate.setRemark(reqVo.getRemark());
+        affiliate.setUpdator(userCode);
+        affiliate.setUpdateName(userName);
+        affiliate.setUpdateTime(new Date());
+        affiliateService.updateEntity(affiliate);
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
 
     public RespVo<List<SelectValueVo>> affiliateSelect(RecordIdQueryVo queryVo) {
-        try {
-            List<SelectValueVo> selectValueVos = affiliateService.affiliateSelect();
-            if (StringUtils.hasText(queryVo.getRecordId())) {
-                selectValueVos = selectValueVos.stream().filter(v -> !v.getValue().equals(queryVo.getRecordId())).toList();
-            }
-
-            return new RespVo<>(selectValueVos);
-        } catch (Exception ex) {
-            log.error("查询失败", ex);
-            return new RespVo<>(null, false, "查询失败,未知错误!");
+        List<SelectValueVo> selectValueVos = affiliateService.affiliateSelect();
+        if (StringUtils.hasText(queryVo.getRecordId())) {
+            selectValueVos = selectValueVos.stream().filter(v -> !v.getValue().equals(queryVo.getRecordId())).toList();
         }
+        return new RespVo<>(selectValueVos);
     }
 
 
     public RespVo<AffiliateDashboardRespVo> dashboard(String userCode) {
-        try {
-            UserFinance userFinance = userFinanceService.selectByUserId(userCode);
-            Affiliate affiliate = affiliateService.findByRecordId(userCode);
-            return new RespVo<>(new AffiliateDashboardRespVo(BigDecimalUtil.nullOrZero(affiliate.getCommissionRate()), BigDecimalUtil.nullOrZero(userFinance.getAmount()), BigDecimalUtil.nullOrZero(userFinance.getBalanceQty())));
-        } catch (Exception ex) {
-            log.error("Query failed", ex);
-            return new RespVo<>(null, false, ex.getMessage());
-        }
+        UserFinance userFinance = userFinanceService.selectByUserId(userCode);
+        Affiliate affiliate = affiliateService.findByRecordId(userCode);
+        return new RespVo<>(new AffiliateDashboardRespVo(BigDecimalUtil.nullOrZero(affiliate.getCommissionRate()), BigDecimalUtil.nullOrZero(userFinance.getAmount()), BigDecimalUtil.nullOrZero(userFinance.getBalanceQty())));
     }
 
     public String affiliateQrcode(String recordId) throws IOException, WriterException {

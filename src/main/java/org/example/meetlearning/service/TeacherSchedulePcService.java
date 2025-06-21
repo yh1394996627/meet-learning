@@ -10,6 +10,7 @@ import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.converter.StudentClassRegularConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseTypeEnum;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.enums.ScheduleTypeEnum;
 import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.service.impl.*;
@@ -63,54 +64,45 @@ public class TeacherSchedulePcService extends BasePcService {
 
 
     public RespVo<String> scheduleAdd(String userCode, ScheduleAddOrUpdateReqVo reqVo) {
-        try {
-            if (reqVo.getScheduleType() != ScheduleTypeEnum.OFF) {
-                //删除记录重新保存
-                teacherScheduleService.deleteSetByTeacherId(reqVo.getTeacherId(), reqVo.getWeekNum().name(), reqVo.getScheduleType().name());
-                List<TeacherScheduleSet> teacherSchedules = reqVo.getDateRespVos().stream().map(item ->
-                        ScheduleConverter.INSTANCE.toCreate(userCode, reqVo.getTeacherId(), reqVo.getWeekNum().name(), reqVo.getScheduleType().name(), item)
-                ).toList();
-                if (!CollectionUtils.isEmpty(teacherSchedules)) {
-                    teacherScheduleService.insertSetBatch(teacherSchedules);
-                }
-                updateSchedule(reqVo.getTeacherId(), reqVo.getWeekNum().name());
-            } else {
-                //删除记录重新保存
-                teacherScheduleService.deleteSetByTeacherId(reqVo.getTeacherId(), null, reqVo.getScheduleType().name());
-                List<TeacherScheduleSet> teacherOffSchedules = reqVo.getOffDates().stream().map(item ->
-                        ScheduleConverter.INSTANCE.toCreateOff(userCode, reqVo.getTeacherId(), null, reqVo.getScheduleType().name(), item)
-                ).toList();
-                if (!CollectionUtils.isEmpty(teacherOffSchedules)) {
-                    teacherScheduleService.insertSetBatch(teacherOffSchedules);
-                }
+        if (reqVo.getScheduleType() != ScheduleTypeEnum.OFF) {
+            //删除记录重新保存
+            teacherScheduleService.deleteSetByTeacherId(reqVo.getTeacherId(), reqVo.getWeekNum().name(), reqVo.getScheduleType().name());
+            List<TeacherScheduleSet> teacherSchedules = reqVo.getDateRespVos().stream().map(item ->
+                    ScheduleConverter.INSTANCE.toCreate(userCode, reqVo.getTeacherId(), reqVo.getWeekNum().name(), reqVo.getScheduleType().name(), item)
+            ).toList();
+            if (!CollectionUtils.isEmpty(teacherSchedules)) {
+                teacherScheduleService.insertSetBatch(teacherSchedules);
             }
-            return new RespVo<>("Successful");
-        } catch (Exception e) {
-            log.error("Add Or Update failed", e);
-            return new RespVo<>("Add Or Update failed", false, e.getMessage());
+            updateSchedule(reqVo.getTeacherId(), reqVo.getWeekNum().name());
+        } else {
+            //删除记录重新保存
+            teacherScheduleService.deleteSetByTeacherId(reqVo.getTeacherId(), null, reqVo.getScheduleType().name());
+            List<TeacherScheduleSet> teacherOffSchedules = reqVo.getOffDates().stream().map(item ->
+                    ScheduleConverter.INSTANCE.toCreateOff(userCode, reqVo.getTeacherId(), null, reqVo.getScheduleType().name(), item)
+            ).toList();
+            if (!CollectionUtils.isEmpty(teacherOffSchedules)) {
+                teacherScheduleService.insertSetBatch(teacherOffSchedules);
+            }
         }
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
     public RespVo<ScheduleInfoRespVo> scheduleInfo(ScheduleQueryVo reqVo) {
-        try {
-            String teacherId = reqVo.getTeacherId();
-            Assert.isTrue(StringUtils.hasText(teacherId), "teacherId cannot be empty");
-            String weekNum = reqVo.getWeekNum();
-            Assert.notNull(reqVo.getScheduleType(), "scheduleType cannot be empty");
-            String scheduleType = reqVo.getScheduleType().name();
-            if (reqVo.getScheduleType() == ScheduleTypeEnum.OFF || !StringUtils.hasText(weekNum)) {
-                weekNum = null;
-            }
-            List<TeacherScheduleSet> teacherSchedules = teacherScheduleService.selectSetByTeacherId(teacherId, weekNum, scheduleType);
-            ScheduleInfoRespVo scheduleInfoRespVo = null;
-            if (!CollectionUtils.isEmpty(teacherSchedules)) {
-                scheduleInfoRespVo = ScheduleConverter.INSTANCE.toScheduleInfoRespVo(teacherSchedules);
-            }
-            return new RespVo<>(scheduleInfoRespVo);
-        } catch (Exception e) {
-            log.error("Query failed", e);
-            return new RespVo<>(null, false, e.getMessage());
+        String teacherId = reqVo.getTeacherId();
+        Assert.isTrue(StringUtils.hasText(teacherId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        String weekNum = reqVo.getWeekNum();
+        Assert.notNull(reqVo.getScheduleType(), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        String scheduleType = reqVo.getScheduleType().name();
+        if (reqVo.getScheduleType() == ScheduleTypeEnum.OFF || !StringUtils.hasText(weekNum)) {
+            weekNum = null;
         }
+        List<TeacherScheduleSet> teacherSchedules = teacherScheduleService.selectSetByTeacherId(teacherId, weekNum, scheduleType);
+        ScheduleInfoRespVo scheduleInfoRespVo = null;
+        if (!CollectionUtils.isEmpty(teacherSchedules)) {
+            scheduleInfoRespVo = ScheduleConverter.INSTANCE.toScheduleInfoRespVo(teacherSchedules);
+        }
+        return new RespVo<>(scheduleInfoRespVo);
+
     }
 
 
@@ -166,7 +158,7 @@ public class TeacherSchedulePcService extends BasePcService {
         }
         List<String> recordIds = regulars.stream().map(StudentClassRegular::getRecordId).distinct().toList();
         List<StudentClassRegularRecord> records = studentClassRegularService.selectRecordByRegularId(recordIds);
-        Assert.isTrue(!CollectionUtils.isEmpty(records), "regular cannot be empty");
+        Assert.isTrue(!CollectionUtils.isEmpty(records), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Map<String, List<StudentClassRegularRecord>> recordMap = records.stream().collect(Collectors.groupingBy(StudentClassRegularRecord::getRegularId));
         return regulars.stream().map(item -> {
             List<StudentClassRegularRecord> list = recordMap.get(item.getRecordId());
@@ -180,9 +172,9 @@ public class TeacherSchedulePcService extends BasePcService {
 
 
     public void studentScheduleRegular(String userCode, String userName, ScheduleOperaVo scheduleOperaVo) throws IOException {
-        Assert.isTrue(StringUtils.hasText(scheduleOperaVo.getRecordId()), "recordId cannot be empty");
+        Assert.isTrue(StringUtils.hasText(scheduleOperaVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         StudentClassRegular studentClassRegular = studentClassRegularService.selectByRecordId(scheduleOperaVo.getRecordId());
-        Assert.notNull(studentClassRegular, "regular cannot be empty");
+        Assert.notNull(studentClassRegular, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         studentClassRegular.setAuditStatus(BooleanUtil.isTrue(scheduleOperaVo.getStatus()) ? 0 : 1);
         studentClassRegularService.updateEntity(studentClassRegular);
         //查询固定请求记录
@@ -192,17 +184,17 @@ public class TeacherSchedulePcService extends BasePcService {
         if (BooleanUtil.isTrue(scheduleOperaVo.getStatus())) {
             //批量预约课程
             Student student = studentClassRegular.getStudentId() != null ? studentService.findByRecordId(studentClassRegular.getStudentId()) : null;
-            Assert.notNull(student, "Student information not obtained");
+            Assert.notNull(student, getHint(LanguageContextEnum.OBJECT_NOTNULL));
             //查询老师信息
             Teacher teacher = studentClassRegular.getTeacherId() != null ? teacherService.selectByRecordId(studentClassRegular.getTeacherId()) : null;
-            Assert.notNull(teacher, "Teacher information not obtained");
+            Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
             //查询代理商信息
             Affiliate affiliate = null;
             if (student != null && org.codehaus.plexus.util.StringUtils.isNotEmpty(student.getAffiliateId())) {
                 affiliate = affiliateService.findByRecordId(student.getAffiliateId());
             }
             for (StudentClassRegularRecord record : records) {
-                Assert.isTrue(studentClassRegular.getCourseType() != null, "Course type cannot be empty");
+                Assert.isTrue(studentClassRegular.getCourseType() != null, getHint(LanguageContextEnum.OBJECT_NOTNULL));
                 //3.新增课时币学生扣减记录
                 operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getPrice().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null);
                 UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());

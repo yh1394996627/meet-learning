@@ -39,64 +39,28 @@ public class EmailPcService extends BasePcService {
 
 
     public RespVo<String> sendVerificationEmail(String userCode, String toEmail) throws Exception {
-        try {
-            int verificationCode = (int) (Math.random() * 900000) + 100000;
-            Config config = new Config()
-                    .setAccessKeyId(accessKeyId)
-                    .setAccessKeySecret(accessKeySecret);
-            config.endpoint = "dm.aliyuncs.com";
+        int verificationCode = (int) (Math.random() * 900000) + 100000;
+        Config config = new Config()
+                .setAccessKeyId(accessKeyId)
+                .setAccessKeySecret(accessKeySecret);
+        config.endpoint = "dm.aliyuncs.com";
 
-            Client client = new Client(config);
+        Client client = new Client(config);
 
-            // 动态替换模板变量
-            String htmlBody = verifyStr(String.valueOf(verificationCode));
-            SingleSendMailRequest request = new SingleSendMailRequest()
-                    .setAccountName(accountName)
-                    .setFromAlias(fromAlias)
-                    .setAddressType(1)
-                    .setToAddress(toEmail)
-                    .setSubject(subject)
-                    .setHtmlBody(htmlBody)
-                    .setReplyToAddress(true);
-            SingleSendMailResponse response = client.singleSendMailWithOptions(request, new RuntimeOptions());
-            redisTemplate.opsForValue().set(RedisCommonsUtil.emailKeyGet(toEmail), verificationCode, 300, TimeUnit.SECONDS);
-            log.info("发送成功-code:{}", redisTemplate.opsForValue().get(RedisCommonsUtil.emailKeyGet(toEmail)));
-            return new RespVo<>("发送成功");
-        } catch (Exception e) {
-            log.error("发送失败", e);
-            return new RespVo<>("发送失败", false, e.getMessage());
-        }
-    }
-
-
-    public void sendReEmail(String accessToken, String toEmail) {
-        try {
-            int verificationCode = (int) (Math.random() * 900000) + 100000;
-            Config config = new Config()
-                    .setAccessKeyId(accessKeyId)
-                    .setAccessKeySecret(accessKeySecret);
-            config.endpoint = "dm.aliyuncs.com";
-
-            Client client = new Client(config);
-
-            // 动态替换模板变量
-            String htmlBody = String.format(
-                    "请点击以下链接完成ZOOM账号注册: https://classx-cc.zoom.us/activate_help?code=%s\n\n" +
-                            "注册完成后，您将可以使用我们的会议预约服务。", accessToken);
-            SingleSendMailRequest request = new SingleSendMailRequest()
-                    .setAccountName(accountName)
-                    .setFromAlias(fromAlias)
-                    .setAddressType(1)
-                    .setToAddress(toEmail)
-                    .setSubject(subject)
-                    .setHtmlBody(htmlBody)
-                    .setReplyToAddress(true);
-            SingleSendMailResponse response = client.singleSendMailWithOptions(request, new RuntimeOptions());
-            redisTemplate.opsForValue().set(RedisCommonsUtil.emailKeyGet(toEmail), verificationCode, 300, TimeUnit.SECONDS);
-            log.info("发送成功-code:{}", redisTemplate.opsForValue().get(RedisCommonsUtil.emailKeyGet(toEmail)));
-        } catch (Exception e) {
-            log.error("发送失败", e);
-        }
+        // 动态替换模板变量
+        String htmlBody = verifyStr(String.valueOf(verificationCode));
+        SingleSendMailRequest request = new SingleSendMailRequest()
+                .setAccountName(accountName)
+                .setFromAlias(fromAlias)
+                .setAddressType(1)
+                .setToAddress(toEmail)
+                .setSubject(subject)
+                .setHtmlBody(htmlBody)
+                .setReplyToAddress(true);
+        SingleSendMailResponse response = client.singleSendMailWithOptions(request, new RuntimeOptions());
+        redisTemplate.opsForValue().set(RedisCommonsUtil.emailKeyGet(toEmail), verificationCode, 300, TimeUnit.SECONDS);
+        log.info("发送成功-code:{}", redisTemplate.opsForValue().get(RedisCommonsUtil.emailKeyGet(toEmail)));
+        return new RespVo<>("发送成功");
     }
 
 
