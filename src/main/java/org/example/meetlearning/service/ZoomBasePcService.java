@@ -37,13 +37,12 @@ public class ZoomBasePcService extends BasePcService {
 
     public List<ZoomBaseListRespVo> zoomList(ZoomBaseListQueryVo queryVo) {
         List<ZoomAccountSet> list = zoomBaseService.selectByParams(queryVo.getParams());
-        list.stream().map(item -> {
+        return list.stream().map(item -> {
             ZoomBaseListRespVo zoomBaseListRespVo = ZoomBaseConverter.INSTANCE.toListResp(item);
             long count = teacherService.selectCountByAccountId(item.getZoomAccountId());
             zoomBaseListRespVo.setUsedQty((int) count);
             return zoomBaseListRespVo;
         }).toList();
-        return list.stream().map(ZoomBaseConverter.INSTANCE::toListResp).toList();
     }
 
     public void zoomAdd(String userCode, String userName, ZoomBaseReqVo reqVo) {
