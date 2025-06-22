@@ -62,6 +62,13 @@
         where record_id = #{recordId,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectCountByAccountId" resultType="java.lang.Long">
+        select
+        count(1)
+        from teacher
+        where deleted = 0 and account_id = #{accountId,jdbcType=VARCHAR}
+    </select>
+
     <select id="selectByRecordIds" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

@@ -7,8 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.example.meetlearning.converter.ZoomBaseConverter;
+import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.ZoomAccountSet;
 import org.example.meetlearning.enums.LanguageContextEnum;
+import org.example.meetlearning.service.impl.TeacherService;
 import org.example.meetlearning.service.impl.ZoomBaseService;
 import org.example.meetlearning.service.impl.ZoomOAuthService;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -30,8 +33,16 @@ public class ZoomBasePcService extends BasePcService {
 
     private final ZoomOAuthService zoomOAuthService;
 
+    private final TeacherService teacherService;
+
     public List<ZoomBaseListRespVo> zoomList(ZoomBaseListQueryVo queryVo) {
         List<ZoomAccountSet> list = zoomBaseService.selectByParams(queryVo.getParams());
+        list.stream().map(item -> {
+            ZoomBaseListRespVo zoomBaseListRespVo = ZoomBaseConverter.INSTANCE.toListResp(item);
+            long count = teacherService.selectCountByAccountId(item.getZoomAccountId());
+            zoomBaseListRespVo.setUsedQty((int) count);
+            return zoomBaseListRespVo;
+        }).toList();
         return list.stream().map(ZoomBaseConverter.INSTANCE::toListResp).toList();
     }
 

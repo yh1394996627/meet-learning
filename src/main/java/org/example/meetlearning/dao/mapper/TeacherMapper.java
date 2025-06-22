@@ -55,4 +55,6 @@ public interface TeacherMapper {
 
     int updateEntity(Teacher record);
 
+    long selectCountByAccountId(String accountId);
+
 }

@@ -141,4 +141,11 @@ public class TeacherService {
     public List<Teacher> selectTop5ByRating() {
         return teacherMapper.selectTop5ByRating();
     }
+
+    /**
+     * 查询zoom的老师数量
+     */
+    public long selectCountByAccountId(String accountId) {
+        return teacherMapper.selectCountByAccountId(accountId);
+    }
 }
