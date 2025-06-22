@@ -233,7 +233,7 @@ public class TeacherPcService extends BasePcService {
     public RespVo<String> deleteTeacher(RecordIdQueryVo queryVo) {
         Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        Assert.isTrue(BooleanUtil.isTrue(teacher.getEnabledStatus()), getHint(LanguageContextEnum.TEACHER_CAN_DELETED));
+        Assert.isTrue(!BooleanUtil.isTrue(teacher.getEnabledStatus()), getHint(LanguageContextEnum.TEACHER_CAN_DELETED));
         Teacher newTeacher = new Teacher();
         newTeacher.setDeleted(true);
         newTeacher.setId(teacher.getId());
