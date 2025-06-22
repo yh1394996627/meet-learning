@@ -333,6 +333,9 @@ public class StudentClassPcService extends BasePcService {
 
     public void studentClassUpdateTime(String userCode, String userName, StudentClassUpdateTimeReqVo reqVo) {
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
+        String beginTime = studentClass.getBeginTime();
+        String endTime = studentClass.getEndTime();
+        Date courseTime = studentClass.getCourseTime();
         Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Date classDate = DateUtil.parse(DateUtil.format(reqVo.getCourseDate(), "yyyy-MM-dd") + " " + studentClass.getBeginTime());
         long diffInMillie = classDate.getTime() - new Date().getTime();
@@ -340,17 +343,15 @@ public class StudentClassPcService extends BasePcService {
         long dayNum = TimeUnit.HOURS.convert(diffInMillie, TimeUnit.MILLISECONDS);
         Assert.isTrue(BooleanUtil.isTrue(dayNum >= 3), getHint(LanguageContextEnum.NOT_CHANGE_TIME));
         //变更新时间
-        StudentClass newStudentClass = new StudentClass();
-        newStudentClass.setId(studentClass.getId());
-        newStudentClass.setCourseTime(reqVo.getCourseDate());
-        newStudentClass.setBeginTime(reqVo.getBeginTime());
-        newStudentClass.setEndTime(reqVo.getEndTime());
-        newStudentClass.setUpdateTime(new Date());
-        newStudentClass.setUpdator(userCode);
-        newStudentClass.setUpdateName(userName);
-        studentClassService.updateEntity(newStudentClass);
+        studentClass.setCourseTime(reqVo.getCourseDate());
+        studentClass.setBeginTime(reqVo.getBeginTime());
+        studentClass.setEndTime(reqVo.getEndTime());
+        studentClass.setUpdateTime(new Date());
+        studentClass.setUpdator(userCode);
+        studentClass.setUpdateName(userName);
+        studentClassService.updateEntity(studentClass);
         //删掉原有的占用时间
-        teacherCourseTimeService.deleteByTeacherCourseDateType(studentClass.getTeacherId(), studentClass.getCourseType(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime());
+        teacherCourseTimeService.deleteByTeacherCourseDateType(studentClass.getTeacherId(), studentClass.getCourseType(), courseTime, beginTime, endTime);
         //记录老师已有课时
         teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
         teacherSalaryPcService.updateSalary(userCode, userName, studentClass.getTeacherId(), new Date());
