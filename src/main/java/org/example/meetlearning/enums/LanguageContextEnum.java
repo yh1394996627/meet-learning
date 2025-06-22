@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 public enum LanguageContextEnum {
     OPERATION_SUCCESSFUL("Operation successful", "操作成功"),
     OBJECT_NOTNULL("No object information obtained，Please refresh and try again", "未获取到对象信息，请刷新后重试"),
+    TEACHER_NOTNULL("Teacher information not obtained", "未获取到教师信息"),
     USER_NOTNULL("User information not obtained", "未获取到用户信息"),
     USER_FINANCE_NOTNULL("To obtain management financial information", "未获取到用户账单信息"),
     OBJ_NOTNULL(" cannot be empty", " 不能为空"),
@@ -16,6 +17,9 @@ public enum LanguageContextEnum {
     INSUFFICIENT_BALANCE("Insufficient balance, unable to operate", "余额不足，无法操作"),
     MEETING_FIVE("You can only enter the meeting five minutes in advance", "您只能提前五分钟进入会议"),
     USER_ALREADY("The user already exists and cannot be added", "用户已存在无法添加"),
+    USER_EXIST("The user already exists", "用户已存在"),
+    NOT_CHANGE("The course has already started and cannot be changed", "课程已经开始，无法更改"),
+    NOT_CHANGE_TIME("There are still 3 hours left until the start of the course and the time cannot be changed", "距离课程开始还有3个小时，时间不能更改"),
 
     ;
 

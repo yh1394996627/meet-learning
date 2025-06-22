@@ -98,7 +98,9 @@ public class StudentPcService extends BasePcService {
     public RespVo<String> studentAdd(String userCode, String userName, StudentAddReqVo reqVo) {
         Assert.isTrue(StringUtils.hasText(reqVo.getEnName()), "Email" + getHint(LanguageContextEnum.OBJ_NOTNULL));
         Assert.isTrue(StringUtils.hasText(reqVo.getPassword()), "Password" + getHint(LanguageContextEnum.OBJ_NOTNULL));
-
+        //判断邮箱是否存在
+        User user = userService.selectByAccountCode(reqVo.getEmail());
+        Assert.isNull(user, getHint(LanguageContextEnum.USER_EXIST) + "【" + reqVo.getEmail() + "】");
         Student student = StudentConverter.INSTANCE.toCreateStudent(userCode, userName, reqVo);
         //如果是代理商 则添加代理商信息
         User managerUser = userService.selectByRecordId(userCode);

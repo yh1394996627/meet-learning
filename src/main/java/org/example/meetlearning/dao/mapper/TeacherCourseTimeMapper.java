@@ -9,6 +9,8 @@ public interface TeacherCourseTimeMapper {
 
     int deleteByRegularId(String teacherId, String regularId);
 
+    int deleteByCourseDateType(String teacherId, String courseType, Date courseDate, String beginTime, String endTime);
+
     int insert(TeacherCourseTime record);
 
     List<TeacherCourseTime> selectByTeacherIdTime(String teacherId, Date courseTime);

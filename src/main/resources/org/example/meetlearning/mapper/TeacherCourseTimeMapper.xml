@@ -50,6 +50,16 @@
         and regular_id = #{regularId}
   </delete>
 
+  <delete id="deleteByCourseDateType">
+      delete
+      from teacher_course_time
+      where teacher_id = #{teacherId}
+        and course_type = #{courseType}
+        and course_time = #{courseDate}
+        and begin_time >= #{beginTime}
+        and end_time &lt;= #{endTime}
+  </delete>
+
   <insert id="insert" parameterType="org.example.meetlearning.dao.entity.TeacherCourseTime">
       insert into teacher_course_time (record_id, teacher_id, course_time, begin_time, end_time, regular_id,
                                        course_type)

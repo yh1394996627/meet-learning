@@ -2,6 +2,7 @@ package org.example.meetlearning.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.dao.entity.StudentClass;
 import org.example.meetlearning.dao.entity.TeacherCourseTime;
 import org.example.meetlearning.dao.mapper.TeacherCourseTimeMapper;
@@ -11,18 +12,22 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class TeacherCourseTimeService {
 
     private TeacherCourseTimeMapper teacherCourseTimeMapper;
 
     public void deleteByRegularId(String teacherId, String regularId) {
         teacherCourseTimeMapper.deleteByRegularId(teacherId, regularId);
+    }
+
+    public void deleteByTeacherCourseDateType(String teacherId, String courseType, Date courseTime, String beginTime, String endTime) {
+        int value = teacherCourseTimeMapper.deleteByCourseDateType(teacherId, courseType, courseTime, beginTime, endTime);
+        log.info("删除状态:{}",value);
     }
 
     public void insert(TeacherCourseTime record) {

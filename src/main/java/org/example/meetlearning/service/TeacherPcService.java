@@ -150,6 +150,9 @@ public class TeacherPcService extends BasePcService {
     public RespVo<String> teacherAdd(String userCode, String userName, TeacherAddReqVo reqVo) {
         Assert.isTrue(StringUtils.hasText(reqVo.getEmail()), "Email" + getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Assert.isTrue(StringUtils.hasText(reqVo.getPassword()), "Password" + getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        //判断邮箱是否存在
+        User user = userService.selectByAccountCode(reqVo.getEmail());
+        Assert.isNull(user, getHint(LanguageContextEnum.USER_EXIST) + "【" + reqVo.getEmail() + "】");
         Teacher teacher = TeacherConverter.INSTANCE.toCreateTeacher(userCode, userName, reqVo);
         teacherService.insertEntity(teacher);
         //创建登陆帐号
@@ -163,6 +166,10 @@ public class TeacherPcService extends BasePcService {
 
     public RespVo<String> teacherUpdate(String userCode, String userName, TeacherUpdateReqVo reqVo) {
         Assert.isTrue(StringUtils.hasText(reqVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        //判断邮箱是否存在
+        User user = userService.selectByAccountCode(reqVo.getEmail());
+        Assert.isTrue(user == null || StringUtils.pathEquals(user.getRecordId(), reqVo.getRecordId()), getHint(LanguageContextEnum.USER_EXIST) + "【" + reqVo.getEmail() + "】");
+        
         Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         teacher = TeacherConverter.INSTANCE.toUpdateTeacher(userCode, userName, teacher, reqVo);

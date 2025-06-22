@@ -334,10 +334,12 @@ public class StudentClassPcService extends BasePcService {
     public void studentClassUpdateTime(String userCode, String userName, StudentClassUpdateTimeReqVo reqVo) {
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
         Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        Date classDate = studentClass.getCourseTime();
-        long diffInMillie = Math.abs(classDate.getTime() - new Date().getTime());
+        Date classDate = DateUtil.parse(DateUtil.format(reqVo.getCourseDate(), "yyyy-MM-dd") + " " + studentClass.getBeginTime());
+        long diffInMillie = classDate.getTime() - new Date().getTime();
+        Assert.isTrue(diffInMillie >= 0, getHint(LanguageContextEnum.NOT_CHANGE));
         long dayNum = TimeUnit.HOURS.convert(diffInMillie, TimeUnit.MILLISECONDS);
-        Assert.notNull(BooleanUtil.isTrue(dayNum >= 3), "There are still 3 hours left until the start of the course and the time cannot be changed");
+        Assert.isTrue(BooleanUtil.isTrue(dayNum >= 3), getHint(LanguageContextEnum.NOT_CHANGE_TIME));
+        //变更新时间
         StudentClass newStudentClass = new StudentClass();
         newStudentClass.setId(studentClass.getId());
         newStudentClass.setCourseTime(reqVo.getCourseDate());
@@ -347,6 +349,11 @@ public class StudentClassPcService extends BasePcService {
         newStudentClass.setUpdator(userCode);
         newStudentClass.setUpdateName(userName);
         studentClassService.updateEntity(newStudentClass);
+        //删掉原有的占用时间
+        teacherCourseTimeService.deleteByTeacherCourseDateType(studentClass.getTeacherId(), studentClass.getCourseType(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime());
+        //记录老师已有课时
+        teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
+        teacherSalaryPcService.updateSalary(userCode, userName, studentClass.getTeacherId(), new Date());
     }
 
 
@@ -360,7 +367,7 @@ public class StudentClassPcService extends BasePcService {
         //更新老师星级
         BigDecimal rating = teacherEvaluationService.selectRatingByTeacherId(studentClass.getTeacherId());
         Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
-        Assert.notNull(teacher, "Teacher information not obtained");
+        Assert.notNull(teacher, getHint(LanguageContextEnum.TEACHER_NOTNULL));
         teacher.setRating(BigDecimalUtil.nullOrZero(rating));
         Teacher newTeacher = new Teacher();
         newTeacher.setId(teacher.getId());
@@ -369,7 +376,6 @@ public class StudentClassPcService extends BasePcService {
         studentClass.setIsEvaluation(true);
         if (BigDecimalUtil.equals(reqVo.getRating(), BigDecimal.ONE)) {
             //新增投诉
-            Assert.notNull(teacher, "Teacher information not obtained");
             TeacherComplaintRecord teacherComplaintRecord = StudentClassConverter.INSTANCE.toCreateTeacherComplaintRecord(userCode, teacher.getPrice(), reqVo.getRemark(), studentClass);
             teacherComplaintService.insert(teacherComplaintRecord);
             studentClass.setIsComplaint(true);
