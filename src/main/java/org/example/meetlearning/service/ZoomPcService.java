@@ -247,10 +247,12 @@ public class ZoomPcService {
             if (StringUtils.equals(recordId, studentClass.getStudentId())) {
                 updateStudentClass.setStudentCourseStatus(courseStatus.getStatus());
                 meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getStudentName() + "] joins the meeting", joinTime);
-            }
-            if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
+            } else if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
                 updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
                 meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting", joinTime);
+            } else {
+                updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
+                meetingLogService.insert("SYSTEM", "SYSTEM", meetingId, "[" + email + "] joins the meeting", joinTime);
             }
             studentClassService.updateEntity(updateStudentClass);
         }
@@ -275,9 +277,10 @@ public class ZoomPcService {
             String recordId = user.getRecordId();
             if (StringUtils.equals(recordId, studentClass.getStudentId())) {
                 meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getTeacherName() + "] leaves the meeting", leaveTime);
-            }
-            if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
+            } else if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
                 meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] leaves the meeting", leaveTime);
+            } else {
+                meetingLogService.insert("SYSTEM", "SYSTEM", meetingId, "[" + email + "] leaves the meeting", leaveTime);
             }
             studentClassService.updateEntity(updateStudentClass);
         }

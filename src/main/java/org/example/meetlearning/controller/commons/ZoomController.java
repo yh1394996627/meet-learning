@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @EnableAsync
-public class ZoomHandler implements BaseHandler {
+public class ZoomController implements BaseHandler {
 
     private final ZoomPcService zoomPcService;
     private final ZoomOAuthService zoomOAuthService;

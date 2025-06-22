@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "课时币接口")
 @RestController
 @AllArgsConstructor
-public class TokensLogHandler implements BaseHandler {
+public class TokensLogController implements BaseHandler {
 
     private final TokensLogPcService tokensLogPcService;
 
