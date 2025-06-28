@@ -144,6 +144,8 @@ public class UserPcService extends BasePcService {
                     respVo.setAvatarUrl(downloadFile(teacher.getAvatarUrl()));
                 }
             }
+            QfUserUtil.LoginResult result = qfUserUtil.loginOrRegister(accountUser.getName(), qfPassword, pid, accountUser.getAccountCode(), accountUser.getAccountCode(), accountUser.getAccountCode(), QfUserUtil.Gender.F);
+            respVo.setToken(result.token);
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("查询个人信息失败", ex);
