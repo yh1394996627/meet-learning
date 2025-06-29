@@ -9,7 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 public enum LanguageContextEnum {
     OPERATION_SUCCESSFUL("Operation successful", "操作成功"),
     OBJECT_NOTNULL("No object information obtained，Please refresh and try again", "未获取到对象信息，请刷新后重试"),
-    TEACHER_NOTNULL("Teacher information not obtained", "未获取到教师信息"),
+    STUDENT_NOTNULL("Student information not obtained，Please refresh and try again", "未获取到学生信息，请刷新后重试"),
+    TEACHER_NOTNULL("Teacher information not obtained，Please refresh and try again", "未获取到教师信息，请刷新后重试"),
+    REGULAR_NOTNULL("Fixed class record information not obtained, please refresh and try again", "未获取到固定上课记录信息，请刷新后重新尝试"),
+    TEACHER_TIME_REPEAT("there is already an appointment, unable to make an appointment", "已经有预约了，无法预约"),
     USER_NOTNULL("User information not obtained", "未获取到用户信息"),
     USER_FINANCE_NOTNULL("To obtain management financial information", "未获取到用户账单信息"),
     OBJ_NOTNULL(" cannot be empty", " 不能为空"),

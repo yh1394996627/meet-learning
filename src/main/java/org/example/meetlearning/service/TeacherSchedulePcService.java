@@ -172,22 +172,21 @@ public class TeacherSchedulePcService extends BasePcService {
 
 
     public void studentScheduleRegular(String userCode, String userName, ScheduleOperaVo scheduleOperaVo) throws IOException {
-        Assert.isTrue(StringUtils.hasText(scheduleOperaVo.getRecordId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.isTrue(StringUtils.hasText(scheduleOperaVo.getRecordId()), getHint(LanguageContextEnum.REGULAR_NOTNULL));
         StudentClassRegular studentClassRegular = studentClassRegularService.selectByRecordId(scheduleOperaVo.getRecordId());
-        Assert.notNull(studentClassRegular, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.notNull(studentClassRegular, getHint(LanguageContextEnum.REGULAR_NOTNULL));
         studentClassRegular.setAuditStatus(BooleanUtil.isTrue(scheduleOperaVo.getStatus()) ? 0 : 1);
         studentClassRegularService.updateEntity(studentClassRegular);
         //查询固定请求记录
         List<StudentClassRegularRecord> records = studentClassRegularService.selectRecordByRegularId(List.of(studentClassRegular.getRecordId()));
 
-
         if (BooleanUtil.isTrue(scheduleOperaVo.getStatus())) {
             //批量预约课程
             Student student = studentClassRegular.getStudentId() != null ? studentService.findByRecordId(studentClassRegular.getStudentId()) : null;
-            Assert.notNull(student, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+            Assert.notNull(student, getHint(LanguageContextEnum.STUDENT_NOTNULL));
             //查询老师信息
             Teacher teacher = studentClassRegular.getTeacherId() != null ? teacherService.selectByRecordId(studentClassRegular.getTeacherId()) : null;
-            Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+            Assert.notNull(teacher, getHint(LanguageContextEnum.TEACHER_NOTNULL));
             //查询代理商信息
             Affiliate affiliate = null;
             if (student != null && org.codehaus.plexus.util.StringUtils.isNotEmpty(student.getAffiliateId())) {
@@ -204,17 +203,14 @@ public class TeacherSchedulePcService extends BasePcService {
                 String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
                 JSONObject meetObj = new JSONObject(meeting);
                 StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
-
                 studentClass.setMeetingRecordId(meetingEntity.getMeetId());
                 studentClassService.insertEntity(studentClass);
                 //记录老师已有课时
-                teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
+                teacherCourseTimeService.studentClassTimeSet(getLanguage(), List.of(studentClass));
             }
         } else {
-            for (StudentClassRegularRecord record : records) {
-                //删除占用的时间段
-                teacherCourseTimeService.deleteByRegularId(studentClassRegular.getTeacherId(), studentClassRegular.getRecordId());
-            }
+            //删除占用的时间段
+            teacherCourseTimeService.deleteByRegularId(studentClassRegular.getTeacherId(), studentClassRegular.getRecordId());
         }
     }
 }

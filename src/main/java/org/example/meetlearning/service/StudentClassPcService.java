@@ -167,7 +167,7 @@ public class StudentClassPcService extends BasePcService {
         studentClass.setMeetingRecordId(meetingEntity.getMeetId());
         studentClassService.insertEntity(studentClass);
         //记录老师已有课时
-        teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
+        teacherCourseTimeService.studentClassTimeSet(getLanguage(), List.of(studentClass));
         teacherSalaryPcService.updateSalary(userCode, userName, studentClass.getTeacherId(), new Date());
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
@@ -353,7 +353,7 @@ public class StudentClassPcService extends BasePcService {
         //删掉原有的占用时间
         teacherCourseTimeService.deleteByTeacherCourseDateType(studentClass.getTeacherId(), studentClass.getCourseType(), courseTime, beginTime, endTime);
         //记录老师已有课时
-        teacherCourseTimeService.studentClassTimeSet(List.of(studentClass));
+        teacherCourseTimeService.studentClassTimeSet(getLanguage(), List.of(studentClass));
         teacherSalaryPcService.updateSalary(userCode, userName, studentClass.getTeacherId(), new Date());
     }
 
@@ -449,14 +449,21 @@ public class StudentClassPcService extends BasePcService {
         return studentClassMeeting.getMeetJoinUrl();
     }
 
+    /**
+     * 1.生成固定上课记录
+     * 2.
+     *
+     * @param userName
+     * @param reqVo
+     */
     public void studentClassRegular(String userCode, String userName, StudentClassRegularReqVo reqVo) {
         Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCourseDates()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getStudentId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getStudentId()), getHint(LanguageContextEnum.STUDENT_NOTNULL));
         Student student = studentService.findByRecordId(reqVo.getStudentId());
-        Assert.notNull(student, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getTeacherId()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.notNull(student, getHint(LanguageContextEnum.STUDENT_NOTNULL));
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getTeacherId()), getHint(LanguageContextEnum.TEACHER_NOTNULL));
         Teacher teacher = teacherService.selectByRecordId(reqVo.getTeacherId());
-        Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.notNull(teacher, getHint(LanguageContextEnum.TEACHER_NOTNULL));
         //生成固定上课请求
         StudentClassRegular studentClassRegular = StudentClassRegularConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher);
         studentClassRegularService.insert(studentClassRegular);
@@ -474,6 +481,6 @@ public class StudentClassPcService extends BasePcService {
         Assert.isTrue(BigDecimalUtil.gteThan(canQty, sumQty), getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
         regularRecords.forEach(studentClassRegularService::insertRecord);
         //生成固定请求排班
-        teacherCourseTimeService.studentClassTimeSet(regularRecords.stream().map(item -> StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular, item)).toList());
+        teacherCourseTimeService.studentClassTimeSet(getLanguage(), regularRecords.stream().map(item -> StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular, item)).toList());
     }
 }
