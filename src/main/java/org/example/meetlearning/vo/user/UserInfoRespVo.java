@@ -47,4 +47,7 @@ public class UserInfoRespVo {
     @Schema(name = "token", description = "token")
     private String token;
 
+    @Schema(name = "qfUserId", description = "奇峰用户ID")
+    private Long qfUserId;
+
 }

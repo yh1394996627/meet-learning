@@ -16,12 +16,14 @@
         <result column="account_code" jdbcType="VARCHAR" property="accountCode"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
         <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="qf_user_id" jdbcType="VARCHAR" property="qfUserId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id
         , deleted, is_manager, creator, create_name, create_time, updator, update_name,
-    update_time, record_id, account_code, password, `type`, `name`, en_name, email, enabled, remark, manager_id
+        update_time, record_id, account_code, password, `type`, `name`, en_name, email,
+        enabled, remark, manager_id, qf_user_id
     </sql>
     <select id="selectByRecordId" resultMap="BaseResultMap">
         select
@@ -235,6 +237,9 @@
             </if>
             <if test="managerId != null">
                 manager_id = #{managerId,jdbcType=VARCHAR},
+            </if>
+            <if test="qfUserId != null">
+                qf_user_id = #{qfUserId,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

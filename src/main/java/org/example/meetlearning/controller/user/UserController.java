@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @Slf4j
 @AllArgsConstructor
-public class UserHandler implements BaseHandler {
+public class UserController implements BaseHandler {
 
     private final UserPcService userPcService;
 

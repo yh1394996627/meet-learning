@@ -45,4 +45,6 @@ public class User {
     private String remark;
 
     private String managerId;
+
+    private String qfUserId;
 }
