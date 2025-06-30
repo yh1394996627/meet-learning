@@ -63,6 +63,7 @@ public interface StudentClassConverter {
         respVo.setIsCanCenterClass(Objects.equals(studentClass.getClassStatus(), CourseStatusEnum.NOT_STARTED.getStatus()) && differenceInHours > 0);
         CourseStatusEnum statusEnum = CourseStatusEnum.getCourseStatusByType(studentClass.getClassStatus());
         respVo.setIsCanJoin(statusEnum == CourseStatusEnum.NOT_STARTED || statusEnum == CourseStatusEnum.PROCESS);
+        respVo.setIsFinish(!(statusEnum == CourseStatusEnum.NOT_STARTED || statusEnum == CourseStatusEnum.PROCESS));
         return respVo;
     }
 

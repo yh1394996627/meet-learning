@@ -95,4 +95,7 @@ public class StudentClassListRespVo {
     @Schema(name = "isCanJoin", description = "是否可以加入会议")
     private Boolean isCanJoin;
 
+    @Schema(name = "isFinish", description = "是否完成")
+    private Boolean isFinish;
+
 }
