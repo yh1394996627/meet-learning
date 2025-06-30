@@ -109,9 +109,9 @@ public class UserPcService extends BasePcService {
                     respVo.setAvatarUrl(downloadFile(teacher.getAvatarUrl()));
                 }
             }
-            QfUserUtil.LoginResult result = qfUserUtil.loginOrRegister(accountUser.getName(), qfPassword, pid, accountUser.getAccountCode(), accountUser.getAccountCode(), accountUser.getAccountCode(), QfUserUtil.Gender.F);
-            respVo.setToken(result.token);
-            respVo.setQfUserId(result.userId);
+//            QfUserUtil.LoginResult result = qfUserUtil.loginOrRegister(accountUser.getName(), qfPassword, pid, accountUser.getAccountCode(), accountUser.getAccountCode(), accountUser.getAccountCode(), QfUserUtil.Gender.F);
+//            respVo.setToken(result.token);
+//            respVo.setQfUserId(result.userId);
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("登陆失败", ex);
@@ -145,9 +145,9 @@ public class UserPcService extends BasePcService {
                     respVo.setAvatarUrl(downloadFile(teacher.getAvatarUrl()));
                 }
             }
-            QfUserUtil.LoginResult result = qfUserUtil.loginOrRegister(accountUser.getName(), qfPassword, pid, accountUser.getAccountCode(), accountUser.getAccountCode(), accountUser.getAccountCode(), QfUserUtil.Gender.F);
-            respVo.setToken(result.token);
-            respVo.setQfUserId(result.userId);
+//            QfUserUtil.LoginResult result = qfUserUtil.loginOrRegister(accountUser.getName(), qfPassword, pid, accountUser.getAccountCode(), accountUser.getAccountCode(), accountUser.getAccountCode(), QfUserUtil.Gender.F);
+//            respVo.setToken(result.token);
+//            respVo.setQfUserId(result.userId);
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("查询个人信息失败", ex);
