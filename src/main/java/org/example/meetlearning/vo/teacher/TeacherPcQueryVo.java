@@ -1,19 +1,15 @@
 package org.example.meetlearning.vo.teacher;
 
-import cn.hutool.core.date.DateUnit;
-import cn.hutool.core.date.DateUtil;
-import com.aliyuncs.utils.StringUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.example.meetlearning.dao.entity.Teacher;
-import org.example.meetlearning.enums.GenderEnum;
 import org.example.meetlearning.enums.ScheduleWeekEnum;
 import org.example.meetlearning.vo.common.PageRequestQuery;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +38,10 @@ public class TeacherPcQueryVo extends PageRequestQuery<Teacher> {
     @Schema(name = "country", description = "国家")
     private String country;
 
+    @Schema(name = "courseType", description = "课程类型")
+    private String courseType;
+
+
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
@@ -50,6 +50,13 @@ public class TeacherPcQueryVo extends PageRequestQuery<Teacher> {
         }
         if (!StringUtils.isEmpty(country)) {
             params.put("country", this.country);
+        }
+        if (!StringUtils.isEmpty(courseType)) {
+            if (StringUtils.equals("GROUP", courseType)) {
+                params.put("groupStatus", true);
+            } else if (StringUtils.equals("TEST", courseType)) {
+                params.put("testStatus", true);
+            }
         }
         return params;
     }

@@ -83,6 +83,7 @@ public class TeacherPcService extends BasePcService {
         //查询时间段有空的老师
         ScheduleWeekEnum weekEnum = queryVo.getWeek();
         List<String> teacher1Ids = teacherScheduleService.selectTeacherIdByWeekNumAndTime(weekEnum.name(), queryVo.getBeginTime(), queryVo.getEndTime());
+        teacher1Ids = teacher1Ids.stream().distinct().toList();
         if (CollectionUtils.isEmpty(teacher1Ids)) {
             return null;
         }

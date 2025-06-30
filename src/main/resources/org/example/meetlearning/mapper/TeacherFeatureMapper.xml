@@ -25,7 +25,7 @@
     <select id="selectTeacherIdByTextbookName" resultType="java.lang.String">
         select teacher_id
         from teacher_feature
-        where textbook_name = #{textbookName,jdbcType=VARCHAR}
+        where textbook_id = #{specialists,jdbcType=VARCHAR}
         <if test="teacherIds != null">
             and teacher_id in
             <foreach collection="teacherIds" item="item" separator="," open="(" close=")">
