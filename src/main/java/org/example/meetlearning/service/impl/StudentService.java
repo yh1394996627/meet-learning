@@ -8,7 +8,9 @@ import org.example.meetlearning.dao.mapper.StudentMapper;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,16 @@ public class StudentService {
      */
     public Student findByRecordId(String recordId) {
         return studentMapper.selectByRecordId(recordId);
+    }
+
+    /**
+     * 根据recordIds查询学生信息
+     */
+    public List<Student> findByRecordIds(List<String> recordIds) {
+        if (CollectionUtils.isEmpty(recordIds)) {
+            return new ArrayList<>();
+        }
+        return studentMapper.selectByRecordIds(recordIds);
     }
 
     /**

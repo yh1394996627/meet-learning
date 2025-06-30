@@ -16,13 +16,15 @@ public interface StudentMapper {
 
     Student selectByRecordId(String recordId);
 
+    List<Student> selectByRecordIds(List<String> recordIds);
+
     Student selectById(Long id);
 
-    List<Student> selectByParams(@Param("params")Map<String, Object> params);
+    List<Student> selectByParams(@Param("params") Map<String, Object> params);
 
-    List<SelectValueVo> selectAffCountByParams(@Param("params")Map<String, Object> params);
+    List<SelectValueVo> selectAffCountByParams(@Param("params") Map<String, Object> params);
 
-    Page<Student> selectPageByParams(@Param("params")Map<String, Object> params, Page<Student> page);
+    Page<Student> selectPageByParams(@Param("params") Map<String, Object> params, Page<Student> page);
 
     int updateByRecordId(Student record);
 

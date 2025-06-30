@@ -156,7 +156,7 @@
         select
         count(1)
         from student_class
-        where deleted = 0 and class_status = 7
+        where deleted = 0 and ( class_status = 7 or class_status = 8 )
         <include refid="common_where"/>
     </select>
 
@@ -166,7 +166,6 @@
         from student_class
         where deleted = 0 and class_status = 3
         <include refid="common_where"/>
-        order by course_time asc, begin_time asc
     </select>
 
     <select id="selectClassStatusGroupByParams" resultMap="BaseResultMap">

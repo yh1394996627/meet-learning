@@ -41,6 +41,16 @@
         where record_id = #{recordId}
     </select>
 
+    <select id="selectByRecordIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student
+        where record_id in
+        <foreach collection="recordIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
     <select id="selectById" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -96,7 +106,7 @@
             deleted = 0
             <include refid="where_common"/>
         </where>
-        order by  id desc
+        order by id desc
     </select>
 
 

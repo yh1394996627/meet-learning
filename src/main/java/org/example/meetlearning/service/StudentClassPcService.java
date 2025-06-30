@@ -100,6 +100,18 @@ public class StudentClassPcService extends BasePcService {
             userFinanceRecordHashMap = new HashMap<>();
             userFinanceMap = new HashMap<>();
         }
+        Map<String, Student> studentMap = new HashMap<>();
+        List<String> studentIds = page.getRecords().stream().map(StudentClass::getStudentId).toList();
+        if (CollectionUtils.isEmpty(studentIds)) {
+            List<Student> students = studentService.findByRecordIds(studentIds);
+            studentMap = students.stream().collect(Collectors.toMap(Student::getRecordId, Function.identity()));
+        }
+        Map<String, Teacher> teacherMap = new HashMap<>();
+        List<String> teacherIds = page.getRecords().stream().map(StudentClass::getTeacherId).toList();
+        if (CollectionUtils.isEmpty(teacherIds)) {
+            List<Teacher> teachers = teacherService.selectByRecordIds(teacherIds);
+            teacherMap = teachers.stream().collect(Collectors.toMap(Teacher::getRecordId, Function.identity()));
+        }
         // 语言MAP
         Map<String, String> countryMap = new HashMap<>();
         List<SelectValueVo> selectValueVos = baseConfigService.selectByType(ConfigTypeEnum.LANGUAGE.name());
@@ -108,6 +120,8 @@ public class StudentClassPcService extends BasePcService {
         }
         baseConfigService.selectByType(ConfigTypeEnum.COUNTRY.name()).stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
         Map<String, String> finalCountryMap = countryMap;
+        Map<String, Student> finalStudentMap = studentMap;
+        Map<String, Teacher> finalTeacherMap = teacherMap;
         PageVo<StudentClassListRespVo> pageVo = PageVo.map(page, list -> {
             StudentClassListRespVo respVo = StudentClassConverter.INSTANCE.toStudentClassListRespVo(list);
             if (StringUtils.isNotEmpty(list.getTeacherCountry())) {
@@ -121,6 +135,14 @@ public class StudentClassPcService extends BasePcService {
             if (userFinanceRecordHashMap.containsKey(list.getStudentId())) {
                 UserFinanceRecord userFinanceRecord = userFinanceRecordHashMap.get(list.getStudentId());
                 respVo.setEfficientDate(userFinanceRecord.getExpirationTime());
+            }
+            if (finalStudentMap.containsKey(list.getStudentId())) {
+                Student student = finalStudentMap.get(list.getStudentId());
+                respVo.setStudentLanguage(student.getLanguage());
+            }
+            if (finalTeacherMap.containsKey(list.getTeacherId())) {
+                Teacher teacher = finalTeacherMap.get(list.getTeacherId());
+                respVo.setTeacherLanguage(teacher.getLanguage());
             }
             return respVo;
         });
@@ -284,10 +306,13 @@ public class StudentClassPcService extends BasePcService {
 
     public RespVo<StudentClassTotalRespVo> classTotalList(String userCode, StudentClassQueryVo queryVo) {
         Map<String, Object> params = queryVo.getParams();
-        params.put("teacherId", userCode);
+        User user = userService.selectByRecordId(userCode);
+        if (StringUtils.equals(RoleEnum.TEACHER.name(), user.getType())) {
+            params.put("teacherId", userCode);
+        }
         Long cancelTotal = studentClassService.selectCancelByParams(params);
         Long completeTotal = studentClassService.selectCompleteByParams(params);
-        return new RespVo<>(new StudentClassTotalRespVo(new BigDecimal(completeTotal), new BigDecimal(cancelTotal)));
+        return new RespVo<>(new StudentClassTotalRespVo(new BigDecimal(cancelTotal), new BigDecimal(completeTotal)));
     }
 
     /**
