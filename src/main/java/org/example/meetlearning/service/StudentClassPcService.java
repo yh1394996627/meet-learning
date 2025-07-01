@@ -146,6 +146,7 @@ public class StudentClassPcService extends BasePcService {
                 Teacher teacher = finalTeacherMap.get(list.getTeacherId());
                 respVo.setTeacherLanguage(teacher.getLanguage());
             }
+            respVo.setIsCanJoin(true);
             return respVo;
         });
         return new RespVo<>(pageVo);
@@ -468,7 +469,7 @@ public class StudentClassPcService extends BasePcService {
         boolean canEnterMeeting = diffInMillis <= fiveMinutesInMillis;
         //todo 为了测试
         if (!StringUtils.equals(studentClass.getStudentEmail(), "student@talk.com")) {
-            Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE));
+            //Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE));
         }
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
         Assert.notNull(studentClassMeeting, getHint(LanguageContextEnum.OBJECT_NOTNULL));

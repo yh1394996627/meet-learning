@@ -103,6 +103,7 @@ public class ZoomPcService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<String> handleZoomEvent(String authToken, String payload) {
         try {
             log.info("payload: {}", payload);
