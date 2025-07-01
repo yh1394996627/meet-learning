@@ -140,5 +140,13 @@ public class StudentClassController implements BaseHandler {
     }
 
 
+    @Operation(summary = "查询会议操作记录", operationId = "selectMeetLog")
+    @PostMapping(value = "v1/student/class/meet/log")
+    public RespVo<List<StudentClassMeetLogRespVo>> selectMeetLog(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>(studentClassPcService.selectMeetLog(queryVo));
+    }
+
+
+
 
 }

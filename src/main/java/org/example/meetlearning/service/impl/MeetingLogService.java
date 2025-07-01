@@ -39,4 +39,6 @@ public class MeetingLogService {
         return meetingLogMapper.selectByMeetingId(meetingId);
     }
 
+
+
 }

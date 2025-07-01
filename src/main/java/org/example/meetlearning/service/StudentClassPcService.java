@@ -74,6 +74,8 @@ public class StudentClassPcService extends BasePcService {
 
     private final TeacherSalaryPcService teacherSalaryPcService;
 
+    private final MeetingLogService meetingLogService;
+
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(String userCode, StudentClassQueryVo queryVo) {
         User user = userService.selectByRecordId(userCode);
         Assert.notNull(user, getHint(LanguageContextEnum.OBJECT_NOTNULL));
@@ -507,5 +509,17 @@ public class StudentClassPcService extends BasePcService {
         regularRecords.forEach(studentClassRegularService::insertRecord);
         //生成固定请求排班
         teacherCourseTimeService.studentClassTimeSet(getLanguage(), regularRecords.stream().map(item -> StudentClassRegularConverter.INSTANCE.toStudentClass(studentClassRegular, item)).toList());
+    }
+
+
+    public List<StudentClassMeetLogRespVo> selectMeetLog(RecordIdQueryVo queryVo) {
+        String recordId = queryVo.getRecordId();
+        StudentClass studentClass = studentClassService.selectByRecordId(recordId);
+        Assert.notNull(studentClass, "Course information not obtained");
+        if (StringUtils.isEmpty(studentClass.getMeetingRecordId())) {
+            return new ArrayList<>();
+        }
+        List<MeetingLog> meetingLogs = meetingLogService.selectByMeetingId(studentClass.getMeetingRecordId());
+        return meetingLogs.stream().map(meetingLog -> new StudentClassMeetLogRespVo(meetingLog.getCreateTime(), meetingLog.getRemark())).toList();
     }
 }
