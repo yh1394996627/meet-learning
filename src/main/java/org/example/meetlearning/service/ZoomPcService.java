@@ -270,8 +270,6 @@ public class ZoomPcService {
         Date leaveTime = DateUtil.parse(leaveTimeStr);
         String email = participantData.optString("email", null); // 获取邮箱
         StudentClass studentClass = studentClassService.selectByMeetId(meetingId);
-        StudentClass updateStudentClass = new StudentClass();
-        updateStudentClass.setId(studentClass.getId());
         // 根据邮箱查询用户
         User user = userService.selectByAccountCode(email);
         if (user != null) {
@@ -283,7 +281,6 @@ public class ZoomPcService {
             } else {
                 meetingLogService.insert("SYSTEM", "SYSTEM", meetingId, "[" + email + "] leaves the meeting", leaveTime);
             }
-            studentClassService.updateEntity(updateStudentClass);
         }
     }
 
