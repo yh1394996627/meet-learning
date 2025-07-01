@@ -3,6 +3,7 @@ package org.example.meetlearning.vo.teacher;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.example.meetlearning.util.BigDecimalUtil;
 
 import java.math.BigDecimal;
 
@@ -17,12 +18,16 @@ public class TeacherDashboardRespVo {
     private BigDecimal cancelledQty;
     @Schema(name = "complaintsQty", description = "投诉数量")
     private BigDecimal complaintsQty;
+    @Schema(name = "absentQty", description = "缺席数量")
+    private BigDecimal absentQty;
     @Schema(name = "confirmedClassesAmount", description = "已确认课程金额")
     private BigDecimal confirmedClassesAmount;
     @Schema(name = "cancelledDeductionsAmount", description = "已取消课程扣款金额")
     private BigDecimal cancelledDeductionsAmount;
     @Schema(name = "complaintDeductionsAmount", description = "投诉扣款金额")
     private BigDecimal complaintDeductionsAmount;
+    @Schema(name = "absentAmount", description = "缺席扣款金额")
+    private BigDecimal absentAmount;
     @Schema(name = "bonus", description = "老师奖金")
     private BigDecimal bonus;
     @Schema(name = "commission", description = "老师佣金")
@@ -40,9 +45,12 @@ public class TeacherDashboardRespVo {
 
 
     @Schema(hidden = true)
-    public BigDecimal getTotalSalary(){
-        return confirmedClassesAmount.subtract(cancelledDeductionsAmount)
-                .subtract(complaintDeductionsAmount).add(bonus).add(commission);
+    public BigDecimal getTotalSalary() {
+        return confirmedClassesAmount.subtract(BigDecimalUtil.nullOrZero(cancelledDeductionsAmount))
+                .subtract(BigDecimalUtil.nullOrZero(absentAmount))
+                .subtract(BigDecimalUtil.nullOrZero(complaintDeductionsAmount))
+                .add(BigDecimalUtil.nullOrZero(bonus))
+                .add(BigDecimalUtil.nullOrZero(commission));
     }
 
 

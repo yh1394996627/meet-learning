@@ -82,7 +82,7 @@ class MeetLearningApplicationTests {
     @Test
     void test3() throws JSONException, IOException {
         //todo 薪资结算测试接口
-        teacherSalaryPcService.updateSalary("11111", "2222222", "1adcea54-a93a-4e01-8ebc-d5299df74fa6", new Date());
+        teacherSalaryPcService.updateSalary("SYSTEM", "SYSTEM", "8ec4a6b3-e1c2-4871-bf64-8f4fe390775a", new Date());
 
     }
 

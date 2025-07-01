@@ -55,8 +55,8 @@ public class TeacherSalaryPcService extends BasePcService {
         List<StudentClassPriceGroupVo> completeVos = studentClassPriceGroupVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).toList();
         BigDecimal completeQty = completeVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal completeGroupQty = completeVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal completeAmount = completeVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal completeGroupAmount = completeVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getGroupPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal completeAmount = completeVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal completeGroupAmount = completeVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getGroupPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add);
         teacherSalary.setConfirmedQty(completeQty);
         teacherSalary.setGroupConfirmedQty(completeGroupQty);
         teacherSalary.setConfirmedAmount(BigDecimalUtil.add(completeAmount, completeGroupAmount));
@@ -64,8 +64,8 @@ public class TeacherSalaryPcService extends BasePcService {
         List<StudentClassPriceGroupVo> oneStarVos = studentClassPriceGroupVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.ONT_STAR.getStatus())).toList();
         BigDecimal oneStarQty = oneStarVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal oneStarGroupQty = oneStarVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal oneStarAmount = oneStarVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal oneStarGroupAmount = oneStarVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getGroupPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal oneStarAmount = oneStarVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal oneStarGroupAmount = oneStarVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getGroupPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add);
         teacherSalary.setOneStarQty(oneStarQty);
         teacherSalary.setGroupOneStarQty(oneStarGroupQty);
         teacherSalary.setOneStarAmount(BigDecimalUtil.add(oneStarAmount, oneStarGroupAmount));
@@ -73,8 +73,8 @@ public class TeacherSalaryPcService extends BasePcService {
         List<StudentClassPriceGroupVo> absentVos = studentClassPriceGroupVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.ABSENT.getStatus())).toList();
         BigDecimal absentQty = absentVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal absentGroupQty = absentVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal absentAmount = absentVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal absentGroupAmount = absentVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getGroupPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal absentAmount = absentVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal absentGroupAmount = absentVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getGroupPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add);
         teacherSalary.setAbsentQty(absentQty);
         teacherSalary.setGroupAbsentQty(absentGroupQty);
         teacherSalary.setAbsentAmount(BigDecimalUtil.add(absentAmount, absentGroupAmount));
@@ -83,8 +83,8 @@ public class TeacherSalaryPcService extends BasePcService {
         List<StudentClassPriceGroupVo> cancelDeVos = studentClassPriceGroupVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL_DE.getStatus())).toList();
         BigDecimal cancelDeQty = cancelDeVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal cancelDeGroupQty = cancelDeVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal cancelDeAmount = absentVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal cancelDeGroupAmount = absentVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal cancelDeAmount = absentVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty())).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal cancelDeGroupAmount = absentVos.stream().filter(f -> StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty())).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add);
         teacherSalary.setDeductionQty(cancelDeQty);
         teacherSalary.setGroupDeductionQtyQty(cancelDeGroupQty);
         teacherSalary.setDeductionAmount(BigDecimalUtil.add(cancelDeAmount, cancelDeGroupAmount));

@@ -42,6 +42,7 @@ public class TeacherPcService extends BasePcService {
     private final TextbookService textbookService;
     private final StudentClassService studentClassService;
     private final TeacherSalaryService teacherSalaryService;
+    private final TeacherSalaryPcService teacherSalaryPcService;
 
     public RespVo<PageVo<TeacherListRespVo>> teacherPage(String userCode, TeacherQueryVo queryVo) {
         User accountUser = userService.selectByRecordId(userCode);
@@ -287,17 +288,19 @@ public class TeacherPcService extends BasePcService {
         return list.stream().map(TeacherConverter.INSTANCE::toCommentVo).toList();
     }
 
-    public RespVo<TeacherDashboardRespVo> dashboard(String userCode) {
+    public RespVo<TeacherDashboardRespVo> dashboard(String userCode,String userName) {
         Teacher teacher = teacherService.selectByRecordId(userCode);
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         TeacherDashboardRespVo respVo = TeacherConverter.INSTANCE.toTeacherDashboard(teacher);
         List<StudentClass> studentClasses = studentClassService.selectClassStatusGroupByParams(userCode);
         respVo.setConfirmedQty(BigDecimal.ZERO);
         respVo.setComplaintsQty(BigDecimal.ZERO);
+        respVo.setAbsentQty(BigDecimal.ZERO);
         respVo.setBonus(BigDecimal.ZERO);
         respVo.setConfirmedClassesAmount(BigDecimal.ZERO);
         respVo.setCancelledDeductionsAmount(BigDecimal.ZERO);
         respVo.setComplaintDeductionsAmount(BigDecimal.ZERO);
+        respVo.setAbsentAmount(BigDecimal.ZERO);
         TeacherSalary teacherSalary = teacherSalaryService.selectByUnVerTeacherId(userCode);
         if (teacherSalary != null) {
             respVo.setConfirmedQty(BigDecimalUtil.add(teacherSalary.getConfirmedQty(), teacherSalary.getGroupConfirmedQty()));
@@ -305,6 +308,8 @@ public class TeacherPcService extends BasePcService {
             respVo.setCancelledDeductionsAmount(BigDecimalUtil.add(teacherSalary.getDeductionQty(), teacherSalary.getGroupDeductionQtyQty()));
             respVo.setComplaintDeductionsAmount(teacherSalary.getOneStarAmount());
             respVo.setConfirmedClassesAmount(teacherSalary.getConfirmedAmount());
+            respVo.setAbsentQty(teacherSalary.getAbsentQty());
+            respVo.setAbsentAmount(teacherSalary.getAbsentAmount());
         }
         //查询老师当月已取消的课程数量
         long cancelledComplete = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL.getStatus())).count();

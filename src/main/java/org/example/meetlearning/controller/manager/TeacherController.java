@@ -136,7 +136,7 @@ public class TeacherController implements BaseHandler {
     @Operation(summary = "老师仪表盘", operationId = "dashboard")
     @PostMapping(value = "v1/teacher/dashboard")
     public RespVo<TeacherDashboardRespVo> dashboard() {
-        return teacherPcService.dashboard(getUserCode());
+        return teacherPcService.dashboard(getUserCode(),getUserName());
     }
 
     @Operation(summary = "老师详细信息查询", operationId = "teacherInfo")
