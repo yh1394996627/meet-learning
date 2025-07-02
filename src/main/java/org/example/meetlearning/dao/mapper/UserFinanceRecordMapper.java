@@ -14,11 +14,11 @@ public interface UserFinanceRecordMapper {
 
     List<UserFinanceRecord> selectByUserId(String userId);
 
-    Page<UserFinanceRecord> selectByParams(Map<String, Object> params, Page<UserFinanceRecord> page);
+    Page<UserFinanceRecord> selectByParams(@Param("params")Map<String, Object> params, Page<UserFinanceRecord> page);
 
     List<UserFinanceRecord> selectByParamsCurrencyGroup(@Param("params") Map<String, Object> params);
 
-    List<UserFinanceRecord> selectDaByParams(Map<String, Object> params);
+    List<UserFinanceRecord> selectDaByParams(@Param("params")Map<String, Object> params);
 
     List<UserFinanceRecord> selectDateGroupByUserIds(List<String> userIds);
 

@@ -78,7 +78,7 @@
         </if>
         <if test="params.userIds != null">
             and user_id in
-            <foreach collection="userIds" item="item" separator="," open="(" close=")">
+            <foreach collection="params.userIds" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>
