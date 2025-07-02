@@ -16,6 +16,7 @@ public enum LanguageContextEnum {
     USER_NOTNULL("User information not obtained", "未获取到用户信息"),
     USER_FINANCE_NOTNULL("To obtain management financial information", "未获取到用户账单信息"),
     OBJ_NOTNULL(" cannot be empty", " 不能为空"),
+    USER_EXISTS("The user already exists", " 用户已存在"),
     TEACHER_CAN_DELETED("The teacher is in the enabled state and cannot be deleted", "老师是启用状态无法删除"),
     INSUFFICIENT_BALANCE("Insufficient balance, unable to operate", "余额不足，无法操作"),
     MEETING_FIVE("You can only enter the meeting five minutes in advance", "您只能提前五分钟进入会议"),

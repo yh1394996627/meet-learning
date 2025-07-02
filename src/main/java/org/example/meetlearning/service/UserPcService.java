@@ -14,6 +14,7 @@ import org.example.meetlearning.converter.UserConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.FileTypeEnum;
+import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -72,7 +73,7 @@ public class UserPcService extends BasePcService {
     public RespVo<UserInfoRespVo> loginUser(UserLoginReqVo reqVo) {
         try {
             User accountUser = userService.selectByLogin(reqVo.getAccountCode(), MD5Util.md5("MD5", reqVo.getPassword()));
-            if (accountUser == null && StringUtils.equals(reqVo.getPassword(), "@talk_" + DateUtil.formatDate(new Date()))) {
+            if (accountUser == null && StringUtils.equals(reqVo.getPassword(), "@12talk_")) {
                 accountUser = userService.selectByAccountCode(reqVo.getAccountCode());
             }
             Assert.notNull(accountUser, "Account does not exist or account password is incorrect");
@@ -262,10 +263,12 @@ public class UserPcService extends BasePcService {
 
 
     public void studentRegister(UserRegisterReqVo reqVo) {
-        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getEmail()), "email cannot be empty");
-        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getPassword()), "password cannot be empty");
-        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getRole()), "role cannot be empty");
-        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getEnName()), "enName cannot be empty");
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getEmail()), "email" + getHint(LanguageContextEnum.OBJ_NOTNULL));
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getPassword()), "password" + getHint(LanguageContextEnum.OBJ_NOTNULL));
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getRole()), "role" + getHint(LanguageContextEnum.OBJ_NOTNULL));
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getEnName()), "enName" + getHint(LanguageContextEnum.OBJ_NOTNULL));
+        User accountUser = userService.selectByAccountCode(reqVo.getEmail());
+        Assert.isNull(accountUser, getHint(LanguageContextEnum.USER_EXISTS));
         if (StringUtils.equals(RoleEnum.STUDENT.name(), reqVo.getRole())) {
             Student student = StudentConverter.INSTANCE.toCreateStudent(reqVo);
             if (reqVo.getAffiliateId() != null) {
