@@ -55,8 +55,6 @@ public class ZoomPcService {
     private TeacherSalaryPcService teacherSalaryPcService;
 
 
-
-
     public Boolean isZoomInstalled(String userCode) {
         try {
             User user = userService.selectByRecordId(userCode);
@@ -213,6 +211,8 @@ public class ZoomPcService {
         StudentClass updateStudentClass = new StudentClass();
         updateStudentClass.setId(studentClass.getId());
         updateStudentClass.setClassStatus(CourseStatusEnum.FINISH.getStatus());
+        updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.FINISH.getStatus());
+        updateStudentClass.setStudentCourseStatus(CourseStatusEnum.FINISH.getStatus());
         //如果状态是未开始，则改为缺席
         if (Objects.equals(studentClass.getStudentCourseStatus(), CourseStatusEnum.NOT_STARTED.getStatus())) {
             updateStudentClass.setStudentCourseStatus(CourseStatusEnum.ABSENT.getStatus());
@@ -253,11 +253,10 @@ public class ZoomPcService {
             } else if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
                 updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
                 meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] joins the meeting", joinTime);
-            } else {
-                updateStudentClass.setTeacherCourseStatus(courseStatus.getStatus());
-                meetingLogService.insert("SYSTEM", "SYSTEM", meetingId, "[" + email + "] joins the meeting", joinTime);
             }
             studentClassService.updateEntity(updateStudentClass);
+        } else {
+            meetingLogService.insert("SYSTEM", "SYSTEM", meetingId, "[" + email + "] joins the meeting", joinTime);
         }
     }
 
@@ -280,9 +279,9 @@ public class ZoomPcService {
                 meetingLogService.insert(studentClass.getStudentId(), studentClass.getStudentName(), meetingId, "Student [" + studentClass.getTeacherName() + "] leaves the meeting", leaveTime);
             } else if (StringUtils.equals(recordId, studentClass.getTeacherId())) {
                 meetingLogService.insert(studentClass.getTeacherId(), studentClass.getTeacherName(), meetingId, "Teacher [" + studentClass.getTeacherName() + "] leaves the meeting", leaveTime);
-            } else {
-                meetingLogService.insert("SYSTEM", "SYSTEM", meetingId, "[" + email + "] leaves the meeting", leaveTime);
             }
+        } else {
+            meetingLogService.insert("SYSTEM", "SYSTEM", meetingId, "[" + email + "] leaves the meeting", leaveTime);
         }
     }
 

@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 @Data
 public class TeacherListRespVo {
 
+    @Schema(name = "id", description = "业务ID")
+    private long id;
+
     @Schema(name = "recordId", description = "业务ID")
     private String recordId;
 

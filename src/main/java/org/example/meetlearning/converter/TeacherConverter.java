@@ -25,6 +25,7 @@ public interface TeacherConverter {
 
     default TeacherListRespVo toListVo(Teacher teacher) {
         TeacherListRespVo respVo = new TeacherListRespVo();
+        respVo.setId(teacher.getId());
         respVo.setRecordId(teacher.getRecordId());
         respVo.setName(teacher.getName());
         respVo.setAttendance(teacher.getAttendance());
@@ -175,7 +176,7 @@ public interface TeacherConverter {
         respVo.setAttendanceRate(BigDecimalUtil.nullOrZero(teacher.getAttendance()));
         respVo.setRating(BigDecimalUtil.nullOrZero(teacher.getRating()));
         respVo.setCurrencyCode(teacher.getCurrencyCode());
-         respVo.setCurrencyName(teacher.getCurrencyName());
+        respVo.setCurrencyName(teacher.getCurrencyName());
         return respVo;
     }
 
