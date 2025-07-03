@@ -25,6 +25,7 @@ public interface StudentClassConverter {
 
     default StudentClassListRespVo toStudentClassListRespVo(StudentClass studentClass) {
         StudentClassListRespVo respVo = new StudentClassListRespVo();
+        respVo.setId(studentClass.getId());
         respVo.setRecordId(studentClass.getRecordId());
         respVo.setStudentId(studentClass.getStudentId());
         respVo.setStudentName(studentClass.getStudentName());

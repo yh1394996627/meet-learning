@@ -10,6 +10,9 @@ import java.util.Date;
 @Data
 public class StudentClassListRespVo {
 
+    @Schema(name = "id", description = "id")
+    private Long id;
+
     @Schema(name = "recordId", description = "业务ID")
     private String recordId;
 
