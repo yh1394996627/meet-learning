@@ -270,7 +270,7 @@ public class StudentClassPcService extends BasePcService {
         } else if (StringUtils.isNotEmpty(queryVo.getCourseDate())) {
             List<String> halfTimeList = getHalfTimeList(queryVo.getTeacherId(), queryVo.getCourseDate(), queryVo.getCourseType(), queryVo.getStartTime(), queryVo.getStopTime());
             halfTimeList = CollectionUtils.isEmpty(halfTimeList) ? new ArrayList<>() : halfTimeList;
-            if (StringUtils.equals(DateUtil.format(DateUtil.date(), "yyyy-MM-dd"), queryVo.getCourseDate())) {
+            if (StringUtils.equals(DateUtil.format(new Date(), "yyyy-MM-dd"), queryVo.getCourseDate())) {
                 //获取当前时间时分
                 String hour = DateUtil.format(new Date(), "HH:mm");
                 halfTimeList = halfTimeList.stream().filter(time -> {
