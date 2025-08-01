@@ -189,7 +189,7 @@ public interface StudentClassConverter {
         }
         studentClass.setCourseTime(studentClassRegularRecord.getCourseTime());
         studentClass.setBeginTime(studentClassRegularRecord.getBeginTime());
-        studentClass.setEndTime(studentClassRegular.getEndTime());
+        studentClass.setEndTime(studentClassRegularRecord.getEndTime());
         if (affiliate != null) {
             studentClass.setAffiliateId(affiliate.getRecordId());
             studentClass.setAffiliateName(affiliate.getName());
