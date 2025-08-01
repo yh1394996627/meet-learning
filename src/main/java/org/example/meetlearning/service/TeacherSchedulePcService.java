@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -171,7 +172,7 @@ public class TeacherSchedulePcService extends BasePcService {
     }
 
 
-    public void studentScheduleRegular(String userCode, String userName, ScheduleOperaVo scheduleOperaVo) throws IOException {
+    public void studentScheduleRegular(String userCode, String userName, ScheduleOperaVo scheduleOperaVo) throws IOException, ParseException {
         Assert.isTrue(StringUtils.hasText(scheduleOperaVo.getRecordId()), getHint(LanguageContextEnum.REGULAR_NOTNULL));
         StudentClassRegular studentClassRegular = studentClassRegularService.selectByRecordId(scheduleOperaVo.getRecordId());
         Assert.notNull(studentClassRegular, getHint(LanguageContextEnum.REGULAR_NOTNULL));
@@ -199,14 +200,14 @@ public class TeacherSchedulePcService extends BasePcService {
                 UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
                 StudentClass studentClass = StudentClassConverter.INSTANCE.toCreateByRegular(userCode, userName, studentClassRegular, record, student, teacher, affiliate, userFinance);
                 Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+                //记录老师已有课时
+                teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
                 //创建会议
                 String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
                 JSONObject meetObj = new JSONObject(meeting);
                 StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
                 studentClass.setMeetingRecordId(meetingEntity.getMeetId());
                 studentClassService.insertEntity(studentClass);
-                //记录老师已有课时
-                teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
             }
         } else {
             //删除占用的时间段

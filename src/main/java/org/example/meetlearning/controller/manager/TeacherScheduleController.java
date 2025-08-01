@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 @Tag(name = "老师日程接口")
@@ -46,7 +47,7 @@ public class TeacherScheduleController implements BaseHandler {
 
     @Operation(summary = "老师端日程-同意、不同意操作", operationId = "studentScheduleRegular")
     @PostMapping(value = "v1/schedule/class/regular/opera")
-    public RespVo<String> studentScheduleRegular(@RequestBody ScheduleOperaVo scheduleOperaVo) throws IOException {
+    public RespVo<String> studentScheduleRegular(@RequestBody ScheduleOperaVo scheduleOperaVo) throws IOException, ParseException {
         teacherSchedulePcService.studentScheduleRegular(getUserCode(), getUserName(),scheduleOperaVo);
         return new RespVo<>("Operation successful");
     }

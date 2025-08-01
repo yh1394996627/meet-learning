@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Tag(name = "学生预约课程接口")
@@ -43,7 +44,7 @@ public class StudentClassController implements BaseHandler {
 
     @Operation(summary = "新增学生预约", operationId = "studentClassAdd")
     @PostMapping(value = "v1/student/class/add")
-    public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) throws IOException {
+    public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) throws IOException, ParseException {
         return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), reqVo);
     }
 
@@ -122,7 +123,7 @@ public class StudentClassController implements BaseHandler {
 
     @Operation(summary = "返回会议加入链接", operationId = "studentClassMeeting")
     @PostMapping(value = "v1/student/class/meeting")
-    public RespVo<String> studentClassMeeting(@RequestBody RecordIdQueryVo queryVo) throws IOException {
+    public RespVo<String> studentClassMeeting(@RequestBody RecordIdQueryVo queryVo) throws IOException, ParseException {
         return new RespVo<>(studentClassPcService.meetingJoinUrl(queryVo.getRecordId()));
     }
 

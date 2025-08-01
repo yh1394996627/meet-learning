@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,7 +88,7 @@ class MeetLearningApplicationTests {
     }
 
     @Test
-    void test4() throws JSONException, IOException {
+    void test4() throws JSONException, IOException, ParseException {
         Teacher teacher = teacherService.selectByRecordId("1adcea54-a93a-4e01-8ebc-d5299df74fa6");
 
         zoomOAuthService.createMeeting(teacher,  "1adcea54-a93a-4e01-8ebc-d5299df74fa6", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"), CourseTypeEnum.SINGLE);

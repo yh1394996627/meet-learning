@@ -38,6 +38,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -191,7 +193,7 @@ public class ZoomOAuthService {
     /**
      * 创建会议
      */
-    public String createMeeting(Teacher teacher, String topic, String startTime, CourseTypeEnum courseType) throws IOException {
+    public String createMeeting(Teacher teacher, String topic, String startTime, CourseTypeEnum courseType) throws IOException, ParseException {
         //获取ZOOM生效的账号
         Integer duration = courseType == CourseTypeEnum.GROUP ? 60 : 30;
         Assert.isTrue(StringUtils.isNotEmpty(teacher.getZoomUserId()) && StringUtils.isNotEmpty(teacher.getZoomAccountId()), "Zoom userId not found");
@@ -200,9 +202,20 @@ public class ZoomOAuthService {
         // 获取token
         getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
         String url = zoomApiUrl + "/users/" + teacher.getZoomUserId() + "/meetings";
+
+        // 新增时间转换 ---
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        sdf.setTimeZone(TimeZone.getDefault());
+        Date date = sdf.parse(startTime);
+
+        SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String utcStartTime = utcFormat.format(date);
+
+
         String json = "{" +
                 "\"topic\":\"" + topic + "\"," +
-                "\"start_time\":\"" + startTime + "\"," +
+                "\"start_time\":\"" + utcStartTime + "\"," +
                 "\"duration\":" + duration + // 添加30分钟持续时间参数
                 "}";
         RequestBody body = RequestBody.create(json, okhttp3.MediaType.parse("application/json"));
@@ -233,6 +246,7 @@ public class ZoomOAuthService {
 //                scheduleEndMeetingTask(parseMeetingId(result), teacher.getZoomAccountId(), meetingEnd);
 //            }
 //            return result;
+            assert response.body() != null;
             return response.body().string();
         }
 

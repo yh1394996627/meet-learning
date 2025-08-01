@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -160,7 +161,7 @@ public class StudentClassPcService extends BasePcService {
      * 4.创建会议,生产会议链接
      */
     @Transactional(rollbackFor = Exception.class)
-    public RespVo<String> studentClassAdd(String userCode, String userName, StudentClassAddReqVo reqVo) throws IOException {
+    public RespVo<String> studentClassAdd(String userCode, String userName, StudentClassAddReqVo reqVo) throws IOException, ParseException {
         //校验拉取老师学生信息组装数据
         //查询学生信息
         Student student = reqVo.getStudentId() != null ? studentService.findByRecordId(reqVo.getStudentId()) : null;
@@ -450,7 +451,7 @@ public class StudentClassPcService extends BasePcService {
     }
 
 
-    public String meetingJoinUrl(String classId) throws IOException {
+    public String meetingJoinUrl(String classId) throws IOException, ParseException {
         StudentClass studentClass = studentClassService.selectByRecordId(classId);
         Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         String meetingRecordId = studentClass.getMeetingRecordId();
