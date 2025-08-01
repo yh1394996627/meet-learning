@@ -61,6 +61,23 @@ public class TeacherCourseTimeService {
         }
     }
 
+    public void studentRegularClassTimeSet(String language, String regularId, List<StudentClass> studentClasses) {
+        for (StudentClass studentClass : studentClasses) {
+            List<TeacherCourseTime> teacherCourseTimes = teacherCourseTimeMapper.selectByTeacherIdDateTime(studentClass.getTeacherId(), DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd"), studentClass.getBeginTime(), studentClass.getEndTime());
+            boolean isSetCount = teacherCourseTimes.stream().anyMatch(f -> !StringUtils.equals(regularId, f.getRegularId()));
+            Assert.isTrue(CollectionUtils.isEmpty(teacherCourseTimes) && isSetCount, "Teacher【" + studentClass.getTeacherName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】, " + getHint(language, LanguageContextEnum.TEACHER_TIME_REPEAT));
+            TeacherCourseTime teacherCourseTime = new TeacherCourseTime();
+            teacherCourseTime.setRecordId(UUID.randomUUID().toString());
+            teacherCourseTime.setTeacherId(studentClass.getTeacherId());
+            teacherCourseTime.setCourseTime(studentClass.getCourseTime());
+            teacherCourseTime.setBeginTime(studentClass.getBeginTime());
+            teacherCourseTime.setEndTime(studentClass.getEndTime());
+            teacherCourseTime.setRegularId(studentClass.getRecordId());
+            teacherCourseTime.setCourseType(studentClass.getCourseType());
+            insert(teacherCourseTime);
+        }
+    }
+
     /**
      * 中英文后端提示
      */

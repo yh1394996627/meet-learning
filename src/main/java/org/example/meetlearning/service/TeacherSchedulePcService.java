@@ -206,7 +206,7 @@ public class TeacherSchedulePcService extends BasePcService {
                 studentClass.setMeetingRecordId(meetingEntity.getMeetId());
                 studentClassService.insertEntity(studentClass);
                 //记录老师已有课时
-                teacherCourseTimeService.studentClassTimeSet(getLanguage(), List.of(studentClass));
+                teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
             }
         } else {
             //删除占用的时间段

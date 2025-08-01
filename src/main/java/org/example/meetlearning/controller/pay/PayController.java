@@ -24,9 +24,6 @@ public class PayController {
     @Autowired
     private WechatPayService payService;
 
-//    @Autowired
-//    private QRCodeUtil qrCodeUtil;
-
     // 创建支付订单
     @PostMapping(value = "/api/pay/wx/create", produces = "application/json;charset=UTF-8")
     public RespVo<PayRespVo> createOrder(@RequestBody WxPayCreateReqVo reqVo) {

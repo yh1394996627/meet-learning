@@ -188,7 +188,7 @@ public interface StudentClassConverter {
             studentClass.setCourseType(courseTypeEnum.name());
         }
         studentClass.setCourseTime(studentClassRegularRecord.getCourseTime());
-        studentClass.setBeginTime(studentClassRegular.getBeginTime());
+        studentClass.setBeginTime(studentClassRegularRecord.getBeginTime());
         studentClass.setEndTime(studentClassRegular.getEndTime());
         if (affiliate != null) {
             studentClass.setAffiliateId(affiliate.getRecordId());
