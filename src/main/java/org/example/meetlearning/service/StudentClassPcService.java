@@ -142,6 +142,7 @@ public class StudentClassPcService extends BasePcService {
             if (finalStudentMap.containsKey(list.getStudentId())) {
                 Student student = finalStudentMap.get(list.getStudentId());
                 respVo.setStudentLanguage(student.getLanguage());
+                respVo.setStudentEmail(student.getEmail());
             }
             if (finalTeacherMap.containsKey(list.getTeacherId())) {
                 Teacher teacher = finalTeacherMap.get(list.getTeacherId());
