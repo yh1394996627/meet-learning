@@ -25,6 +25,9 @@ public class StudentClassListRespVo {
     @Schema(name = "studentLanguage", description = "学生国籍")
     private String studentLanguage;
 
+    @Schema(name = "studentEmail", description = "学生邮箱")
+    private String studentEmail;
+
     @Schema(name = "teacherId", description = "老师ID")
     private String teacherId;
 

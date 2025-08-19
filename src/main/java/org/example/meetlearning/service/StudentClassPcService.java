@@ -89,7 +89,7 @@ public class StudentClassPcService extends BasePcService {
             params.put("affiliateIds", List.of(userCode));
         }
         Page<StudentClass> page = studentClassService.selectPageByParams(params, queryVo.getPageRequest());
-        List<String> userIds = page.getRecords().stream().map(StudentClass::getStudentId).toList();
+        List<String> userIds = page.getRecords().stream().map(StudentClass::getStudentId).distinct().toList();
         Map<String, UserFinance> userFinanceMap;
         Map<String, UserFinanceRecord> userFinanceRecordHashMap;
         if (!CollectionUtils.isEmpty(userIds)) {
@@ -104,14 +104,14 @@ public class StudentClassPcService extends BasePcService {
             userFinanceMap = new HashMap<>();
         }
         Map<String, Student> studentMap = new HashMap<>();
-        List<String> studentIds = page.getRecords().stream().map(StudentClass::getStudentId).toList();
-        if (CollectionUtils.isEmpty(studentIds)) {
+        List<String> studentIds = page.getRecords().stream().map(StudentClass::getStudentId).distinct().toList();
+        if (!CollectionUtils.isEmpty(studentIds)) {
             List<Student> students = studentService.findByRecordIds(studentIds);
             studentMap = students.stream().collect(Collectors.toMap(Student::getRecordId, Function.identity()));
         }
         Map<String, Teacher> teacherMap = new HashMap<>();
-        List<String> teacherIds = page.getRecords().stream().map(StudentClass::getTeacherId).toList();
-        if (CollectionUtils.isEmpty(teacherIds)) {
+        List<String> teacherIds = page.getRecords().stream().map(StudentClass::getTeacherId).distinct().toList();
+        if (!CollectionUtils.isEmpty(teacherIds)) {
             List<Teacher> teachers = teacherService.selectByRecordIds(teacherIds);
             teacherMap = teachers.stream().collect(Collectors.toMap(Teacher::getRecordId, Function.identity()));
         }
@@ -142,6 +142,7 @@ public class StudentClassPcService extends BasePcService {
             if (finalStudentMap.containsKey(list.getStudentId())) {
                 Student student = finalStudentMap.get(list.getStudentId());
                 respVo.setStudentLanguage(student.getLanguage());
+                respVo.setStudentEmail(student.getEmail());
             }
             if (finalTeacherMap.containsKey(list.getTeacherId())) {
                 Teacher teacher = finalTeacherMap.get(list.getTeacherId());
