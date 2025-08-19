@@ -478,13 +478,13 @@ public class StudentClassPcService extends BasePcService {
         long fiveMinutesInMillis = 5 * 60 * 1000; // 5分钟的毫秒数
         // 4. 核心校验逻辑：允许进入会议的条件
         boolean canEnterMeeting = diffInMillis <= fiveMinutesInMillis;
-        //todo 为了测试
-        if (!StringUtils.equals(studentClass.getStudentEmail(), "student@talk.com")) {
-            //Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE));
-        }
         StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
         Assert.notNull(studentClassMeeting, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        //todo 为了测试
+        if (!StringUtils.equals(studentClass.getStudentEmail(), "student@talk.com")) {
+            Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE) + "joinLink-->:" + studentClassMeeting.getMeetJoinUrl());
+        }
         return studentClassMeeting.getMeetJoinUrl();
     }
 
