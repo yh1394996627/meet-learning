@@ -148,6 +148,11 @@ public class StudentClassController implements BaseHandler {
     }
 
 
-
+    @Operation(summary = "课程删除接口", operationId = "classDeleted")
+    @PostMapping(value = "v1/student/class/deleted")
+    public RespVo<String> classDeleted(@RequestBody RecordIdQueryVo queryVo) {
+        studentClassPcService.classDeleted(getUserCode(), getUserName(), queryVo);
+        return new RespVo<>("successfully");
+    }
 
 }

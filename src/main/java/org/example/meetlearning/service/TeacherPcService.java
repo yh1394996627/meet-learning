@@ -171,7 +171,7 @@ public class TeacherPcService extends BasePcService {
         //判断邮箱是否存在
         User user = userService.selectByAccountCode(reqVo.getEmail());
         Assert.isTrue(user == null || StringUtils.pathEquals(user.getRecordId(), reqVo.getRecordId()), getHint(LanguageContextEnum.USER_EXIST) + "【" + reqVo.getEmail() + "】");
-        
+
         Teacher teacher = teacherService.selectByRecordId(reqVo.getRecordId());
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         teacher = TeacherConverter.INSTANCE.toUpdateTeacher(userCode, userName, teacher, reqVo);
@@ -195,6 +195,8 @@ public class TeacherPcService extends BasePcService {
         }
         //更新用户表数据
         updateBaseDate(teacher.getRecordId(), teacher.getName(), teacher.getEmail());
+        //更新课程数据
+        studentClassService.updateClassEntityByTeacher(teacher.getName(), teacher.getRecordId());
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
@@ -288,7 +290,7 @@ public class TeacherPcService extends BasePcService {
         return list.stream().map(TeacherConverter.INSTANCE::toCommentVo).toList();
     }
 
-    public RespVo<TeacherDashboardRespVo> dashboard(String userCode,String userName) {
+    public RespVo<TeacherDashboardRespVo> dashboard(String userCode, String userName) {
         Teacher teacher = teacherService.selectByRecordId(userCode);
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         TeacherDashboardRespVo respVo = TeacherConverter.INSTANCE.toTeacherDashboard(teacher);

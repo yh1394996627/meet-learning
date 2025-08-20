@@ -84,6 +84,20 @@ public class StudentClassService {
     }
 
     /**
+     * 更新
+     */
+    public int updateClassEntityByStudent(String studentName,String studentId) {
+        return studentClassMapper.updateClassEntityByStudent(studentName,studentId);
+    }
+
+    /**
+     * 更新
+     */
+    public int updateClassEntityByTeacher(String teacherName,String studentId) {
+        return studentClassMapper.updateClassEntityByTeacher(teacherName,studentId);
+    }
+
+    /**
      * 新增
      */
     public int insertEntity(StudentClass record) {

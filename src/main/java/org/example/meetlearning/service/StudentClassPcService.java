@@ -3,6 +3,7 @@ package org.example.meetlearning.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
@@ -20,6 +21,7 @@ import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.common.SelectValueVo;
 import org.example.meetlearning.vo.evaluation.TeacherComplaintReqVo;
 import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
+import org.example.meetlearning.vo.token.TokensLogAddReqVo;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +78,8 @@ public class StudentClassPcService extends BasePcService {
     private final TeacherSalaryPcService teacherSalaryPcService;
 
     private final MeetingLogService meetingLogService;
+
+    private final TokensLogPcService tokensLogPcService;
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(String userCode, StudentClassQueryVo queryVo) {
         User user = userService.selectByRecordId(userCode);
@@ -484,7 +488,7 @@ public class StudentClassPcService extends BasePcService {
         Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         //todo 为了测试
         if (!StringUtils.equals(studentClass.getStudentEmail(), "student@talk.com")) {
-            Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE) + "joinLink-->:" + studentClassMeeting.getMeetJoinUrl());
+            Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE) + "          joinLink-->:" + studentClassMeeting.getMeetJoinUrl());
         }
         return studentClassMeeting.getMeetJoinUrl();
     }
@@ -535,4 +539,31 @@ public class StudentClassPcService extends BasePcService {
         List<MeetingLog> meetingLogs = meetingLogService.selectByMeetingId(studentClass.getMeetingRecordId());
         return meetingLogs.stream().map(meetingLog -> new StudentClassMeetLogRespVo(meetingLog.getCreateTime(), meetingLog.getRemark())).toList();
     }
+
+
+    public void classDeleted(String userCode, String userName, RecordIdQueryVo queryVo) {
+        //查询课程信息
+        String recordId = queryVo.getRecordId();
+        StudentClass studentClass = studentClassService.selectByRecordId(recordId);
+        Assert.notNull(studentClass, "Course information not obtained");
+        //删除学生课程只限制单人测试课程
+        Assert.isTrue(!StringUtils.equals(studentClass.getCourseType(), CourseTypeEnum.GROUP.name()), "Group classes cannot be deleted");
+        studentClass.setDeleted(true);
+        studentClass.setUpdateTime(new Date());
+        studentClass.setUpdator(userCode);
+        studentClassService.updateEntity(studentClass);
+        //coin还原
+        BigDecimal coin = studentClass.getCoin();
+        TokensLogAddReqVo tokensLogAddReqVo = new TokensLogAddReqVo();
+        tokensLogAddReqVo.setUserId(studentClass.getStudentId());
+        tokensLogAddReqVo.setRecordId(studentClass.getStudentId());
+        tokensLogAddReqVo.setAmount(BigDecimal.ZERO);
+        tokensLogAddReqVo.setQuantity(coin);
+        tokensLogAddReqVo.setRemark("课程ID" + studentClass.getId() + "删除，课时币回退");
+        tokensLogAddReqVo.setPaymentCode("B002");
+        tokensLogAddReqVo.setCurrencyCode("CNY");
+        tokensLogAddReqVo.setCurrencyName("CNY");
+        tokensLogPcService.addTokensLog(userCode, userName, tokensLogAddReqVo);
+    }
+
 }

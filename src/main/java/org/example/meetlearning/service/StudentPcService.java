@@ -146,6 +146,8 @@ public class StudentPcService extends BasePcService {
         }
         //更新用户表数据
         updateBaseDate(student.getRecordId(), student.getName(), student.getEmail());
+        //更新课程数据
+        studentClassService.updateClassEntityByStudent(student.getName(), student.getRecordId());
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 

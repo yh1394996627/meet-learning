@@ -20,6 +20,12 @@ public interface StudentClassMapper {
 
     int updateEntity(StudentClass record);
 
+    int updateClassEntityByStudent(String studentName,String studentId);
+
+    int updateClassEntityByTeacher(String teacherName,String teacherId);
+
+    int deletedClass(String recordId);
+
     Page<StudentClass> selectPageByParams(@Param("params") Map<String, Object> params, Page<StudentClass> page);
 
     List<StudentClass> selectByParams(@Param("params") Map<String, Object> params);
