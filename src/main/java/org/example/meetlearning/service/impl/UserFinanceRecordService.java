@@ -39,6 +39,14 @@ public class UserFinanceRecordService {
     }
 
     /**
+     * 根据用户id查询
+     */
+    public List<UserFinanceRecord> selectByAllUserId(String userId) {
+        return userFinanceRecordMapper.selectByAllUserId(userId);
+    }
+
+
+    /**
      * 分页查询
      */
     public Page<UserFinanceRecord> selectByParams(Map<String, Object> params, Page<UserFinanceRecord> page) {

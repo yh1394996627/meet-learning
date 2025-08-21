@@ -213,13 +213,17 @@ public class ZoomPcService {
         updateStudentClass.setClassStatus(CourseStatusEnum.FINISH.getStatus());
         updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.FINISH.getStatus());
         updateStudentClass.setStudentCourseStatus(CourseStatusEnum.FINISH.getStatus());
-        //如果状态是未开始，则改为缺席
-        if (Objects.equals(studentClass.getStudentCourseStatus(), CourseStatusEnum.NOT_STARTED.getStatus())) {
-            updateStudentClass.setStudentCourseStatus(CourseStatusEnum.ABSENT.getStatus());
-        }
-        if (Objects.equals(studentClass.getTeacherCourseStatus(), CourseStatusEnum.NOT_STARTED.getStatus())) {
-            updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.ABSENT.getStatus());
-            updateStudentClass.setClassStatus(CourseStatusEnum.ABSENT.getStatus());
+        //获取课程结束时间
+        Date courseEndTime = DateUtil.parseDateTime(studentClass.getCourseTime() + " " + studentClass.getEndTime());
+        if (endTime.compareTo(courseEndTime) >= 0) {
+            //如果状态是未开始，则改为缺席
+            if (Objects.equals(studentClass.getStudentCourseStatus(), CourseStatusEnum.NOT_STARTED.getStatus())) {
+                updateStudentClass.setStudentCourseStatus(CourseStatusEnum.ABSENT.getStatus());
+            }
+            if (Objects.equals(studentClass.getTeacherCourseStatus(), CourseStatusEnum.NOT_STARTED.getStatus())) {
+                updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.ABSENT.getStatus());
+                updateStudentClass.setClassStatus(CourseStatusEnum.ABSENT.getStatus());
+            }
         }
         studentClassService.updateEntity(updateStudentClass);
         //todo 记录会议日志 展示没有需求实现

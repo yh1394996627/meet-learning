@@ -14,6 +14,8 @@ public interface UserFinanceRecordMapper {
 
     List<UserFinanceRecord> selectByUserId(String userId);
 
+    List<UserFinanceRecord> selectByAllUserId(String userId);
+
     Page<UserFinanceRecord> selectByParams(@Param("params")Map<String, Object> params, Page<UserFinanceRecord> page);
 
     List<UserFinanceRecord> selectByParamsCurrencyGroup(@Param("params") Map<String, Object> params);

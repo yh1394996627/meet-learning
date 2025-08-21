@@ -58,10 +58,10 @@ public class TokensLogPcService extends BasePcService {
 
 
     public RespVo<String> addTokensLog(String userCode, String userName, TokensLogAddReqVo tokensLogAddReqVo) {
-            String userId = StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()) ? tokensLogAddReqVo.getRecordId() : userCode;
-            Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()), "user is not null");
-            financeTokenLogs(userCode, userName, userId, tokensLogAddReqVo);
-            return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
+        String userId = StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()) ? tokensLogAddReqVo.getRecordId() : userCode;
+        Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()), "user is not null");
+        financeTokenLogs(userCode, userName, userId, tokensLogAddReqVo);
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
 
@@ -84,7 +84,7 @@ public class TokensLogPcService extends BasePcService {
         //添加记录课时币记录
         TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, userFinance, user, reqVo.getQuantity(), reqVo.getAmount(), reqVo.getRemark());
         tokensLog.setUserId(userId);
-        if (!org.apache.commons.lang3.StringUtils.isEmpty(reqVo.getCurrencyCode())) {
+        if (!StringUtils.isEmpty(reqVo.getCurrencyCode())) {
             BaseConfig baseConfig = baseConfigService.selectByCode(reqVo.getCurrencyCode());
             Assert.notNull(baseConfig, "Configuration information not obtained record:【" + reqVo.getCurrencyCode() + "】");
             tokensLog.setCurrencyCode(baseConfig.getCode());
@@ -94,4 +94,30 @@ public class TokensLogPcService extends BasePcService {
         userFinanceService.updateByEntity(userFinance);
     }
 
+
+    public void repairTokensLog(List<String> userIds) {
+        for (String userId : userIds) {
+            UserFinance userFinance = userFinanceService.selectByUserId(userId);
+            List<UserFinanceRecord> records = userFinanceRecordService.selectByAllUserId(userId);
+            records = records.stream().sorted(Comparator.comparing(UserFinanceRecord::getDeleted).reversed()).toList();
+            BigDecimal totalQty = records.stream().map(UserFinanceRecord::getUsedQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+            for (UserFinanceRecord record : records) {
+                record.setCanQty(record.getQuantity());
+                record.setUsedQty(BigDecimal.ZERO);
+                if (BigDecimalUtil.gtZero(totalQty)) {
+                    BigDecimal canQty = record.getCanQty();
+                    BigDecimal subQty = totalQty.min(canQty);
+                    record.setUsedQty(subQty);
+                    record.setCanQty(canQty.subtract(subQty));
+                    totalQty = totalQty.subtract(subQty);
+                }
+                userFinanceRecordService.updateByEntity(record);
+            }
+            BigDecimal baQty = records.stream().filter(f -> !f.getDeleted()).map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal baQty1 = records.stream().map(UserFinanceRecord::getUsedQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+            userFinance.setBalanceQty(baQty);
+            userFinance.setConsumptionQty(baQty1);
+            userFinanceService.updateByEntity(userFinance);
+        }
+    }
 }
