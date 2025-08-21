@@ -45,6 +45,7 @@ public class StudentClassController implements BaseHandler {
     @Operation(summary = "新增学生预约", operationId = "studentClassAdd")
     @PostMapping(value = "v1/student/class/add")
     public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) throws IOException, ParseException {
+        //
         return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), reqVo);
     }
 
