@@ -203,6 +203,8 @@ public interface StudentClassConverter {
         studentClass.setCourseName(studentClassRegular.getCourseName());
         studentClass.setPrice(teacher.getPrice());
         studentClass.setCreditsPrice(teacher.getCreditsPrice());
+        studentClass.setCoin(teacher.getCoin());
+        studentClass.setGroupCoin(teacher.getGroupCoin());
         return studentClass;
     }
 
