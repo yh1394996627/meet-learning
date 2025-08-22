@@ -214,7 +214,7 @@ public class ZoomPcService {
         updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.FINISH.getStatus());
         updateStudentClass.setStudentCourseStatus(CourseStatusEnum.FINISH.getStatus());
         //获取课程结束时间
-        Date courseEndTime = DateUtil.parseDateTime(studentClass.getCourseTime() + " " + studentClass.getEndTime());
+        Date courseEndTime = DateUtil.parseDateTime(studentClass.getCourseTime() + " " + studentClass.getEndTime()+":00");
         if (endTime.compareTo(courseEndTime) >= 0) {
             //如果状态是未开始，则改为缺席
             if (Objects.equals(studentClass.getStudentCourseStatus(), CourseStatusEnum.NOT_STARTED.getStatus())) {
