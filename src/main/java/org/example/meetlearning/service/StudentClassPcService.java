@@ -502,6 +502,7 @@ public class StudentClassPcService extends BasePcService {
      */
     public void studentClassRegular(String userCode, String userName, StudentClassRegularReqVo reqVo) {
         Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCourseDates()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.isTrue(!CollectionUtils.isEmpty(reqVo.getCourseTimes()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Assert.isTrue(StringUtils.isNotEmpty(reqVo.getStudentId()), getHint(LanguageContextEnum.STUDENT_NOTNULL));
         Student student = studentService.findByRecordId(reqVo.getStudentId());
         Assert.notNull(student, getHint(LanguageContextEnum.STUDENT_NOTNULL));

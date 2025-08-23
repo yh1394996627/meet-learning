@@ -383,12 +383,16 @@ public class BasePcService implements BaseHandler {
                         f.setExpirationTime(DateUtil.parse("2099-12-31", "yyyy-MM-dd"));
                     }
                 });
-                userFinanceRecordList = userFinanceRecordList.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime)).toList();
-                if (!CollectionUtils.isEmpty(userFinanceRecordList)) {
-                    UserFinanceRecord userFinanceRecord = userFinanceRecordList.get(0);
-                    userFinanceRecord.setCanQty(BigDecimalUtil.sub(userFinanceRecord.getCanQty(), quantity.abs()));
-                    userFinanceRecord.setUsedQty(BigDecimalUtil.add(userFinanceRecord.getUsedQty(), quantity.abs()));
-                    userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(quantity));
+                userFinanceRecordList = userFinanceRecordList.stream().filter(f -> BigDecimalUtil.gtZero(f.getCanQty())).sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime)).toList();
+                BigDecimal subTotalQty = quantity.abs();
+                for (UserFinanceRecord userFinanceRecord : userFinanceRecordList) {
+                    userFinanceRecord.setBalanceQty(balance);
+                    BigDecimal subQty = subTotalQty.min(BigDecimalUtil.nullOrZero(userFinanceRecord.getCanQty()));
+                    if (BigDecimalUtil.gtZero(subQty)) {
+                        userFinanceRecord.setCanQty(BigDecimalUtil.sub(userFinanceRecord.getCanQty(), subQty));
+                        userFinanceRecord.setUsedQty(BigDecimalUtil.add(userFinanceRecord.getUsedQty(), subQty));
+                    }
+                    subTotalQty = subTotalQty.subtract(subQty);
                     userFinanceRecordService.updateByEntity(userFinanceRecord);
                 }
             }

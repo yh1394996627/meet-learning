@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 public enum LanguageContextEnum {
     OPERATION_SUCCESSFUL("Operation successful", "操作成功"),
     OBJECT_NOTNULL("No object information obtained，Please refresh and try again", "未获取到对象信息，请刷新后重试"),
+    REGULAR_TIMES_NOTNULL("The designated class time slot cannot be empty", "申请固定上课时间段不能为空"),
+    REGULAR_DATES_NOTNULL("The requested fixed class date cannot be empty", "申请固定上课日期不能为空"),
     STUDENT_NOTNULL("Student information not obtained，Please refresh and try again", "未获取到学生信息，请刷新后重试"),
     TEACHER_NOTNULL("Teacher information not obtained，Please refresh and try again", "未获取到教师信息，请刷新后重试"),
     REGULAR_NOTNULL("Fixed class record information not obtained, please refresh and try again", "未获取到固定上课记录信息，请刷新后重新尝试"),

@@ -105,7 +105,7 @@ public class ScheduledTasks {
         List<UserFinance> userFinance = userFinanceService.selectByUserIds(userIds);
         for (UserFinance finance : userFinance) {
             List<UserFinanceRecord> list = userFinanceRecordMap.get(finance.getUserId());
-            BigDecimal balanceQty = list.stream().map(UserFinanceRecord::getBalanceQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal balanceQty = list.stream().map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add);
             finance.setBalanceQty(balanceQty);
             finance.setUpdateTime(new Date());
             finance.setExpirationTime(list.get(0).getExpirationTime());

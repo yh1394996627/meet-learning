@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Tag(name = "课时币接口")
 @RestController
 @AllArgsConstructor
@@ -28,13 +30,18 @@ public class TokensLogController implements BaseHandler {
         return tokensLogPcService.tokensLogPage(getUserCode(), getUserName(), queryVo);
     }
 
-    @Operation(summary = "课时币记录", operationId = "tokensLogPage")
+    @Operation(summary = "课时币记录", operationId = "addTokensLog")
     @PostMapping(value = "v1/token/record/add")
     public RespVo<String> addTokensLog(@RequestBody TokensLogAddReqVo tokensLogAddReqVo) {
         return tokensLogPcService.addTokensLog(getUserCode(), getUserName(), tokensLogAddReqVo);
     }
 
-
+    @Operation(summary = "课时币数据修复", operationId = "repairTokensLog")
+    @PostMapping(value = "v1/token/repair")
+    public RespVo<String> repairTokensLog(@RequestBody List<String> userIds) {
+        tokensLogPcService.repairTokensLog(userIds);
+        return new RespVo<>("success");
+    }
 
 
 }

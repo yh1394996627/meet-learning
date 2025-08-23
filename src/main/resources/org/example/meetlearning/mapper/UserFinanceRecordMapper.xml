@@ -40,6 +40,13 @@
         where deleted = 0 and user_id = #{userId}
     </select>
 
+    <select id="selectByAllUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_finance_record
+        where user_id = #{userId}
+    </select>
+
     <select id="selectByParams" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
