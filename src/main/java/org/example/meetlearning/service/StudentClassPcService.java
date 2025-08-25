@@ -553,6 +553,10 @@ public class StudentClassPcService extends BasePcService {
         studentClass.setUpdateTime(new Date());
         studentClass.setUpdator(userCode);
         studentClassService.updateEntity(studentClass);
+
+        //删除课程占用
+        teacherCourseTimeService.deleteByTeacherCourseDateType(studentClass.getTeacherId(), studentClass.getCourseType(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime());
+
         //coin还原
         BigDecimal coin = studentClass.getCoin();
         TokensLogAddReqVo tokensLogAddReqVo = new TokensLogAddReqVo();
@@ -565,6 +569,7 @@ public class StudentClassPcService extends BasePcService {
         tokensLogAddReqVo.setCurrencyCode("CNY");
         tokensLogAddReqVo.setCurrencyName("CNY");
         tokensLogPcService.addTokensLog(userCode, userName, tokensLogAddReqVo);
+
     }
 
 }
