@@ -34,6 +34,7 @@
             and week_num = #{weekNum,jdbcType=VARCHAR}
         </if>
     </select>
+
     <delete id="deleteByTeacherIdAndWeekNum">
         delete
         from teacher_schedule_set

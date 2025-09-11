@@ -2,7 +2,8 @@ package org.example.meetlearning.take;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.example.meetlearning.converter.TokenConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.CourseStatusEnum;
 import org.example.meetlearning.service.EmailPcService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
@@ -53,6 +55,8 @@ public class ScheduledTasks {
 
     @Autowired
     private TeacherService teacherService;
+    @Autowired
+    private TokensLogService tokensLogService;
 
 
     //@Scheduled(cron = "0 * * * * ?")  // 每分钟执行一次
@@ -91,10 +95,18 @@ public class ScheduledTasks {
     @Scheduled(cron = "0 0 0 * * ?")
     public void runTaskAtMidnight() {
         log.info("课时币有效期刷新定时任务执行");
+        List<TokensLog> tokenLogs = new ArrayList<>();
         List<UserFinanceRecord> records = userFinanceRecordService.selectByLtDate(new Date());
         for (UserFinanceRecord record : records) {
             record.setDeleted(true);
             userFinanceRecordService.updateByEntity(record);
+            TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord("SYSTEM", "SYSTEM", record.getUserId(), record.getUserName(), BigDecimal.ZERO, record.getUserEmail(), record.getCanQty().negate(), null, "Coin expiration handling");
+            tokensLog.setUserId(record.getUserId());
+            if (!StringUtils.isEmpty(record.getCurrencyCode())) {
+                tokensLog.setCurrencyCode(record.getCurrencyCode());
+                tokensLog.setCurrencyName(record.getCurrencyName());
+            }
+            tokenLogs.add(tokensLog);
         }
         List<String> userIds = records.stream().map(UserFinanceRecord::getUserId).distinct().toList();
         Map<String, Object> params = new HashMap<>();
@@ -110,6 +122,15 @@ public class ScheduledTasks {
             finance.setUpdateTime(new Date());
             finance.setExpirationTime(list.get(0).getExpirationTime());
             userFinanceService.updateByEntity(finance);
+            tokenLogs.stream().filter(tokenLog -> StringUtils.equals(tokenLog.getUserId(), finance.getUserId())).forEach(tokenLog -> {
+                tokenLog.setBalance(balanceQty);
+            });
+        }
+        //存储课时币记录
+        if (!CollectionUtils.isEmpty(tokenLogs)) {
+            for (TokensLog tokenLog : tokenLogs) {
+                tokensLogService.insertEntity(tokenLog);
+            }
         }
         log.info("课时币状态处理完成");
         log.info("预约课程老师旷课处理执行");

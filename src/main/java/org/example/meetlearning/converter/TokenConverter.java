@@ -86,4 +86,21 @@ public interface TokenConverter {
         tokensLog.setNote(remark);
         return tokensLog;
     }
+
+    default TokensLog toCreateTokenByFinanceRecord(String userCode, String userName, String userId, String userN, BigDecimal balance, String email, BigDecimal quantity, BigDecimal payAmount, String remark) {
+        TokensLog tokensLog = new TokensLog();
+        tokensLog.setDeleted(false);
+        tokensLog.setUserId(userId);
+        tokensLog.setUserName(userN);
+        tokensLog.setUserEmail(email);
+        tokensLog.setCreator(userCode);
+        tokensLog.setCreateName(userName);
+        tokensLog.setCreateTime(new Date());
+        tokensLog.setRecordId(UUID.randomUUID().toString());
+        tokensLog.setQuantity(quantity);
+        tokensLog.setBalance(balance);
+        tokensLog.setAmount(payAmount);
+        tokensLog.setNote(remark);
+        return tokensLog;
+    }
 }

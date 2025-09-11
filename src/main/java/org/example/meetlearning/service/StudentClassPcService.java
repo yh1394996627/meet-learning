@@ -249,6 +249,13 @@ public class StudentClassPcService extends BasePcService {
      * 3.固定上课课程
      */
     public List<String> classTimeList(StudentClassCommonQueryVo queryVo) {
+        List<TeacherScheduleSet> offTeacherSchedules = teacherScheduleService.selectSetByTeacherId(queryVo.getTeacherId(), null, ScheduleTypeEnum.OFF.name());
+        List<String> offDates = offTeacherSchedules.stream().filter(f -> f.getOffDate() != null).map(item -> DateUtil.formatDate(item.getOffDate())).distinct().toList();
+        offDates = CollectionUtils.isEmpty(offDates) ? List.of() : offDates;
+        //课程请求排除OFF类型
+        if (!queryVo.getIsRegular() && offDates.contains(queryVo.getCourseDate())) {
+            return List.of();
+        }
         //1.管理员接口
         if (queryVo.getPriceContent() != null) {
             List<Teacher> teachers = teacherService.selectListParams(queryVo.getParams());
