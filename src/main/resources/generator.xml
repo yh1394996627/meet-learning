@@ -37,6 +37,7 @@
         <!--        <table tableName="student_class_regular_record" domainObjectName="StudentClassRegularRecord"/>-->
         <!--        <table tableName="meeting_log" domainObjectName="MeetingLog"/>-->
         <!--        <table tableName="pay_config" domainObjectName="PayConfig"/>-->
-        <table tableName="zoom_callback_msg" domainObjectName="ZoomCallbackMsg"/>
+<!--        <table tableName="zoom_callback_msg" domainObjectName="ZoomCallbackMsg"/>-->
+        <table tableName="group_class_student_rec" domainObjectName="GroupClassStudentRec"/>
     </context>
 </generatorConfiguration>
