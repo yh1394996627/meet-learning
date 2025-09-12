@@ -51,7 +51,7 @@ public class TaskPcService {
             for (UserFinanceRecord userFinanceRecord : userFinanceRecords) {
                 userFinanceRecord.setExpirationTime(userFinanceRecord.getExpirationTime() != null
                         ? userFinanceRecord.getExpirationTime()
-                        : DateUtil.parseDate("2099-01-01"));
+                        : DateUtil.parseDate("2099-12-31"));
             }
             userFinanceRecords = userFinanceRecords.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime).reversed()).toList();
             Map<String, List<UserFinanceRecord>> userFinanceRecordMap = userFinanceRecords.stream().collect(Collectors.groupingBy(UserFinanceRecord::getUserId));

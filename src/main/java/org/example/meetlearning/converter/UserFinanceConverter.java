@@ -51,9 +51,8 @@ public interface UserFinanceConverter {
         userFinanceRecord.setUserType(user.getType());
         userFinanceRecord.setUserName(user.getName());
         userFinanceRecord.setUserEmail(user.getEmail());
-        if (StringUtils.isNotEmpty(reqVo.getExpirationTime())) {
-            userFinanceRecord.setExpirationTime(DateUtil.parse(reqVo.getExpirationTime(), "yyyy-MM-dd"));
-        }
+        String expirationTime = StringUtils.isNotEmpty(reqVo.getExpirationTime()) ? reqVo.getExpirationTime() : "2099-12-31";
+        userFinanceRecord.setExpirationTime(DateUtil.parse(expirationTime, "yyyy-MM-dd"));
         userFinanceRecord.setCurrencyCode(reqVo.getCurrencyCode());
         userFinanceRecord.setCurrencyName(reqVo.getCurrencyName());
         userFinanceRecord.setPayAmount(reqVo.getPayAmount());
@@ -90,9 +89,6 @@ public interface UserFinanceConverter {
     }
 
 
-
-
-
     default UserFinanceRecord toWeChatRechargeRecord(User user, UserFinance userFinance, PayConfig payConfig, RechargeOrder rechargeOrder, BigDecimal quantity, Date expirationTime) {
         UserFinanceRecord userFinanceRecord = new UserFinanceRecord();
         userFinanceRecord.setDeleted(false);
@@ -107,9 +103,8 @@ public interface UserFinanceConverter {
         userFinanceRecord.setUserType(userFinance.getUserType());
         userFinanceRecord.setUserName(user.getName());
         userFinanceRecord.setUserEmail(user.getEmail());
-        if (expirationTime != null) {
-            userFinanceRecord.setExpirationTime(expirationTime);
-        }
+        Date newExpirationTime = expirationTime == null ? DateUtil.parse("2099-12-31", "yyyy-MM-dd") : expirationTime;
+        userFinanceRecord.setExpirationTime(newExpirationTime);
         userFinanceRecord.setCurrencyCode(payConfig.getCurrencyCode());
         userFinanceRecord.setCurrencyName(payConfig.getCurrencyName());
         userFinanceRecord.setPayAmount(rechargeOrder.getAmount());
