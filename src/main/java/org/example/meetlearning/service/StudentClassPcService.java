@@ -200,6 +200,7 @@ public class StudentClassPcService extends BasePcService {
             }
             StudentClass studentClass1 = studentClassService.selectByRecordId(studentClass.getRecordId());
             groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass1);
+            return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
         }
         //教材补充
         if (StringUtils.isNotEmpty(reqVo.getTextbookId())) {
