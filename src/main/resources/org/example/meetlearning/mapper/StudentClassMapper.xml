@@ -97,7 +97,7 @@
     </select>
 
 
-    <select id="selectByDateTeacherIdTime" resultType="org.example.meetlearning.vo.classes.StudentClassPriceGroupVo">
+    <select id="selectByDateTeacherIdTime" resultMap="BaseResultMap">
         select record_id
         from student_class
         where deleted = 0

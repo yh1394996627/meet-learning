@@ -194,9 +194,9 @@ public class StudentClassPcService extends BasePcService {
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
         if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
             //查询课程是否存在，如果存在直接返回不保存
-            List<StudentClassPriceGroupVo> groupVoList = studentClassService.selectByDateTeacherIdTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime(), studentClass.getCourseType());
+            List<StudentClass> groupVoList = studentClassService.selectByDateTeacherIdTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime(), studentClass.getCourseType());
             if (groupVoList.size() > 0) {
-                StudentClass studentClass1 = studentClassService.selectByRecordId(studentClass.getRecordId());
+                StudentClass studentClass1 = studentClassService.selectByRecordId(groupVoList.get(0).getRecordId());
                 groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass1);
                 return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
             }
@@ -219,6 +219,7 @@ public class StudentClassPcService extends BasePcService {
             studentClass.setStudentName(null);
             studentClass.setStudentEmail(null);
             studentClass.setStudentCountry(null);
+            groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass);
         }
         studentClassService.insertEntity(studentClass);
         //记录老师已有课时

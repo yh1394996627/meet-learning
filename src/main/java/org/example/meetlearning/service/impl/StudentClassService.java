@@ -143,7 +143,7 @@ public class StudentClassService {
     /**
      * 查询是否又课程
      */
-    public List<StudentClassPriceGroupVo> selectByDateTeacherIdTime(String teacherId, Date courseDate, String beginTime, String endTime, String courseType) {
+    public List<StudentClass> selectByDateTeacherIdTime(String teacherId, Date courseDate, String beginTime, String endTime, String courseType) {
         return studentClassMapper.selectByDateTeacherIdTime(teacherId, courseDate, beginTime, endTime, courseType);
     }
 
