@@ -96,6 +96,18 @@
         group by course_type, price, group_price, class_status
     </select>
 
+
+    <select id="selectByDateTeacherIdTime" resultType="org.example.meetlearning.vo.classes.StudentClassPriceGroupVo">
+        select record_id
+        from student_class
+        where deleted = 0
+        and course_type = #{courseType}
+        and teacher_id = #{teacherId}
+        and course_time = #{courseDate}
+        and begin_time = #{beginTime}
+        and end_time = #{endTime}
+    </select>
+
     <update id="updateByGltDateTeacherId">
         update student_class
         set is_verification = true
@@ -218,6 +230,12 @@
         <if test="params.affiliateIds != null">
             and affiliate_id in
             <foreach collection="params.affiliateIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.groupClassIds != null">
+            or class_id in
+            <foreach collection="params.groupClassIds" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>

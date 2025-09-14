@@ -140,6 +140,13 @@ public class StudentClassService {
         return studentClassMapper.selectByGltDateTeacherId(teacherId, courseDate);
     }
 
+    /**
+     * 查询是否又课程
+     */
+    public List<StudentClassPriceGroupVo> selectByDateTeacherIdTime(String teacherId, Date courseDate, String beginTime, String endTime, String courseType) {
+        return studentClassMapper.selectByDateTeacherIdTime(teacherId, courseDate, beginTime, endTime, courseType);
+    }
+
      public void updateByGltDateTeacherId(String teacherId, Date courseDate) {
         studentClassMapper.updateByGltDateTeacherId(teacherId, courseDate);
     }

@@ -14,7 +14,7 @@ public interface GroupClassStudentRecConverter {
 
     default GroupClassStudentRec toCreate(String userCode, String classId, String studentId, String studentName) {
         GroupClassStudentRec groupClassStudentRec = new GroupClassStudentRec();
-        groupClassStudentRec.setCreator(studentId);
+        groupClassStudentRec.setCreator(userCode);
         groupClassStudentRec.setCreateTime(new Date());
         groupClassStudentRec.setClassId(classId);
         groupClassStudentRec.setStudentId(studentId);

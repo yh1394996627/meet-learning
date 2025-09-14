@@ -20,9 +20,9 @@ public interface StudentClassMapper {
 
     int updateEntity(StudentClass record);
 
-    int updateClassEntityByStudent(String studentName,String studentId);
+    int updateClassEntityByStudent(String studentName, String studentId);
 
-    int updateClassEntityByTeacher(String teacherName,String teacherId);
+    int updateClassEntityByTeacher(String teacherName, String teacherId);
 
     int deletedClass(String recordId);
 
@@ -45,6 +45,8 @@ public interface StudentClassMapper {
     List<StudentClass> selectByNowStudentId(String studentId, String nowDate);
 
     List<StudentClassPriceGroupVo> selectByGltDateTeacherId(String teacherId, Date courseDate);
+
+    List<StudentClassPriceGroupVo> selectByDateTeacherIdTime(String teacherId, Date courseDate, String beginTime, String endTime, String courseType);
 
     void updateByGltDateTeacherId(String teacherId, Date courseDate);
 

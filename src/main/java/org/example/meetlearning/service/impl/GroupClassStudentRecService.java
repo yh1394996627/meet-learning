@@ -10,6 +10,8 @@ import org.example.meetlearning.enums.CourseTypeEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GroupClassStudentRecService {
@@ -59,12 +61,12 @@ public class GroupClassStudentRecService {
     /**
      * 查询
      *
-     * @param classId
+     * @param studentId
      * @param studentId
      * @return
      */
-    public GroupClassStudentRec selectByClassId(String classId, String studentId) {
-        return groupClassStudentRecMapper.selectByClassId(classId, studentId);
+    public List<GroupClassStudentRec> selectByStudentId(String studentId) {
+        return groupClassStudentRecMapper.selectByStudentId(studentId);
     }
 
     /**

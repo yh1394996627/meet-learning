@@ -13,7 +13,7 @@ public interface GroupClassStudentRecMapper {
 
     int insert(GroupClassStudentRec record);
 
-    GroupClassStudentRec selectByClassId(String classId, String studentId);
+    List<GroupClassStudentRec> selectByStudentId(String studentId);
 
     int update(GroupClassStudentRec record);
 

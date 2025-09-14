@@ -18,11 +18,11 @@
         , deleted, creator, create_time, updator, update_time, class_id, student_id, student_name,
     student_course_status
     </sql>
-    <select id="selectByClassId" resultMap="BaseResultMap">
+    <select id="selectByStudentId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from group_class_student_rec
-        where deleted = 0 and class_id = #{classId}
+        where deleted = 0 and student_id = #{studentId}
     </select>
 
     <delete id="deleteByClassId">

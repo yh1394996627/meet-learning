@@ -81,6 +81,8 @@ public class StudentClassPcService extends BasePcService {
 
     private final TokensLogPcService tokensLogPcService;
 
+    private final GroupClassStudentRecService groupClassStudentRecService;
+
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(String userCode, StudentClassQueryVo queryVo) {
         User user = userService.selectByRecordId(userCode);
         Assert.notNull(user, getHint(LanguageContextEnum.OBJECT_NOTNULL));
@@ -89,6 +91,11 @@ public class StudentClassPcService extends BasePcService {
             params.put("teacherId", userCode);
         } else if (StringUtils.equals(RoleEnum.STUDENT.name(), user.getType())) {
             params.put("studentId", userCode);
+            //查询团体课程
+            List<String> groupClassIds = groupClassStudentRecService.selectByStudentId(userCode).stream().map(GroupClassStudentRec::getClassId).toList();
+            if (!CollectionUtils.isEmpty(groupClassIds)) {
+                params.put("groupClassIds", groupClassIds);
+            }
         } else if (StringUtils.equals(RoleEnum.AFFILIATE.name(), user.getType())) {
             params.put("affiliateIds", List.of(userCode));
         }
@@ -196,6 +203,20 @@ public class StudentClassPcService extends BasePcService {
         StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
 
         studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+        if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
+            //如果是团队课程
+            studentClass.setStudentId(null);
+            studentClass.setStudentName(null);
+            studentClass.setStudentEmail(null);
+            studentClass.setStudentCountry(null);
+            groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass);
+            //查询课程是否存在，如果存在直接返回不保存
+            List<StudentClassPriceGroupVo> groupVoList = studentClassService.selectByDateTeacherIdTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime(), studentClass.getCourseType());
+            if (groupVoList.size() > 0) {
+                return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
+            }
+
+        }
         studentClassService.insertEntity(studentClass);
         //记录老师已有课时
         teacherCourseTimeService.studentClassTimeSet(getLanguage(), List.of(studentClass));
