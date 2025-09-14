@@ -190,7 +190,17 @@ public class StudentClassPcService extends BasePcService {
         //新增课时币学生扣减记录
         operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null);
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
+
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
+        if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
+            //查询课程是否存在，如果存在直接返回不保存
+            List<StudentClassPriceGroupVo> groupVoList = studentClassService.selectByDateTeacherIdTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime(), studentClass.getCourseType());
+            if (groupVoList.size() > 0) {
+                return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
+            }
+            StudentClass studentClass1 = studentClassService.selectByRecordId(studentClass.getRecordId());
+            groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass1);
+        }
         //教材补充
         if (StringUtils.isNotEmpty(reqVo.getTextbookId())) {
             Textbook textbook = textbookService.selectByRecordId(reqVo.getTextbookId());
@@ -209,13 +219,6 @@ public class StudentClassPcService extends BasePcService {
             studentClass.setStudentName(null);
             studentClass.setStudentEmail(null);
             studentClass.setStudentCountry(null);
-            groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass);
-            //查询课程是否存在，如果存在直接返回不保存
-            List<StudentClassPriceGroupVo> groupVoList = studentClassService.selectByDateTeacherIdTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime(), studentClass.getCourseType());
-            if (groupVoList.size() > 0) {
-                return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
-            }
-
         }
         studentClassService.insertEntity(studentClass);
         //记录老师已有课时
