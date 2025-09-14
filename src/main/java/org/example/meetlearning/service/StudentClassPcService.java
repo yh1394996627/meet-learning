@@ -196,11 +196,10 @@ public class StudentClassPcService extends BasePcService {
             //查询课程是否存在，如果存在直接返回不保存
             List<StudentClassPriceGroupVo> groupVoList = studentClassService.selectByDateTeacherIdTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime(), studentClass.getCourseType());
             if (groupVoList.size() > 0) {
+                StudentClass studentClass1 = studentClassService.selectByRecordId(studentClass.getRecordId());
+                groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass1);
                 return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
             }
-            StudentClass studentClass1 = studentClassService.selectByRecordId(studentClass.getRecordId());
-            groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass1);
-            return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
         }
         //教材补充
         if (StringUtils.isNotEmpty(reqVo.getTextbookId())) {
