@@ -234,7 +234,7 @@
             </foreach>
         </if>
         <if test="params.groupClassIds != null">
-            or class_id in
+            or record_id in
             <foreach collection="params.groupClassIds" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
