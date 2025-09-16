@@ -15,27 +15,53 @@ public class TimeSplitterUtil {
      * @param endTime   结束时间 (格式: HH:mm)
      * @return 拆分后的时间段列表
      */
+//    public static List<String> splitByHalfHour(String startTime, String endTime, int addTime) {
+//        List<String> timeSlots = new ArrayList<>();
+//        while (startTime.compareTo(endTime) <= 0) {
+//            String oldStartTime = startTime;
+//            if (addTime == 30) {
+//                String[] arr = startTime.split(":");
+//                if (Integer.parseInt(arr[1]) == 30) {
+//                    startTime = (Integer.parseInt(arr[0]) + 1) + ":00";
+//                } else {
+//                    startTime = arr[0] + ":30";
+//                }
+//            } else if (addTime == 60) {
+//                String[] arr = startTime.split(":");
+//                startTime = (Integer.parseInt(arr[0]) + 1) + ":" + arr[1];
+//            }
+//            if (startTime.compareTo(endTime) <= 0) {
+//                timeSlots.add(oldStartTime + "-" + startTime);
+//            }
+//        }
+//        return timeSlots;
+//    }
+
     public static List<String> splitByHalfHour(String startTime, String endTime, int addTime) {
         List<String> timeSlots = new ArrayList<>();
         while (startTime.compareTo(endTime) <= 0) {
             String oldStartTime = startTime;
             if (addTime == 30) {
                 String[] arr = startTime.split(":");
-                if (Integer.parseInt(arr[1]) == 30) {
-                    startTime = (Integer.parseInt(arr[0]) + 1) + ":00";
+                int hour = Integer.parseInt(arr[0]);
+                int minute = Integer.parseInt(arr[1]);
+                if (minute == 30) {
+                    hour += 1;
+                    startTime = String.format("%02d", hour) + ":00";
                 } else {
-                    startTime = arr[0] + ":30";
+                    startTime = String.format("%02d", hour) + ":30";
                 }
             } else if (addTime == 60) {
                 String[] arr = startTime.split(":");
-                startTime = (Integer.parseInt(arr[0]) + 1) + ":" + arr[1];
+                int hour = Integer.parseInt(arr[0]);
+                hour += 1;
+                startTime = String.format("%02d", hour) + ":" + arr[1];
             }
             if (startTime.compareTo(endTime) <= 0) {
                 timeSlots.add(oldStartTime + "-" + startTime);
             }
         }
         return timeSlots;
-
     }
 
     public static void main(String[] args) {
