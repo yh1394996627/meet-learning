@@ -135,7 +135,11 @@ public class ScheduledTasks {
         log.info("课时币状态处理完成");
         log.info("预约课程老师旷课处理执行");
         //将课程结束时间小于当前时间但是课程状态还是未开始的课程按旷课处理
-        List<StudentClass> studentClasses = studentClassService.selectAbsentByDate(DateUtil.parse(DateUtil.format(new Date(), "yyyy-MM-dd")));
+        // 获取昨天的日期
+        Date yesterday = DateUtil.offsetDay(new Date(), -1);
+        // 格式化为 yyyy-MM-dd 并解析为日期对象（时间部分为 00:00:00）
+        Date yesterdayStart = DateUtil.parse(DateUtil.format(yesterday, "yyyy-MM-dd"));
+        List<StudentClass> studentClasses = studentClassService.selectAbsentByDate(yesterdayStart);
         log.info("缺席的课程数量 count:{}", studentClasses.size());
         for (StudentClass studentClass : studentClasses) {
             studentClass.setTeacherCourseStatus(CourseStatusEnum.ABSENT.getStatus());
