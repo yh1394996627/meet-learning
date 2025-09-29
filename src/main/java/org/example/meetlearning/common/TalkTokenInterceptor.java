@@ -2,12 +2,14 @@ package org.example.meetlearning.common;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
+@Slf4j
 public class TalkTokenInterceptor implements HandlerInterceptor {
 
     @Override
@@ -19,6 +21,7 @@ public class TalkTokenInterceptor implements HandlerInterceptor {
 
         // 获取 talkToken
         String talkToken = request.getHeader("talkToken");
+        log.info("talkToken: {}", talkToken);
         if (StringUtils.isEmpty(talkToken)) {
             throw new BusinessException(401, "talk token expired");
         }
