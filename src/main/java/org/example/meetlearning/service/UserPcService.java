@@ -113,6 +113,7 @@ public class UserPcService extends BasePcService {
             QfUserUtil.LoginResult result = qfUserUtil.loginOrRegister(accountUser.getName(), qfPassword, pid, accountUser.getAccountCode(), accountUser.getAccountCode(), accountUser.getAccountCode(), QfUserUtil.Gender.F);
             respVo.setToken(result.token);
             respVo.setQfUserId(result.userId);
+            respVo.setTalkToken("1");
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("登陆失败", ex);

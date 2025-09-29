@@ -50,4 +50,7 @@ public class UserInfoRespVo {
     @Schema(name = "qfUserId", description = "奇峰用户ID")
     private Long qfUserId;
 
+    @Schema(name = "talkToken", description = "talkToken")
+    private String talkToken;
+
 }
