@@ -30,7 +30,7 @@ public class GlobalExceptionHandler implements BaseHandler {
         if(StringUtils.pathEquals(e.getMessage(), "talk token expired")){
             return new RespVo<>(null, false, "talk token expired");
         }
-        return new RespVo<>(null, false, getExceptionMsg());
+        return new RespVo<>(401, false, getExceptionMsg());
     }
 
     /**
