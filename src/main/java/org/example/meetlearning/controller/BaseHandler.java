@@ -2,6 +2,8 @@ package org.example.meetlearning.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
+import org.example.meetlearning.common.BusinessException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -25,9 +27,12 @@ public interface BaseHandler {
         return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("language");
     }
 
-
-
-
-
-
+    @JsonIgnore
+    default String getTalkToken() {
+        String talkToken = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("talkToken");
+        if (StringUtils.isEmpty(talkToken)) {
+            throw new BusinessException(401, "talk token expired");
+        }
+        return talkToken;
+    }
 }
