@@ -26,8 +26,10 @@ public class GlobalExceptionHandler implements BaseHandler {
     @ExceptionHandler(BusinessException.class)
     public RespVo<?> handleBusinessException(BusinessException e, HttpServletRequest request) {
         String language = getLanguage();
-
         log.error("业务异常: {}, 请求路径: {}", e, request.getRequestURI());
+        if(StringUtils.pathEquals(e.getMessage(), "talk token expired")){
+            return new RespVo<>(null, false, "talk token expired");
+        }
         return new RespVo<>(null, false, getExceptionMsg());
     }
 
