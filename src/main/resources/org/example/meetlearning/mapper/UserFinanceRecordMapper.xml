@@ -147,7 +147,7 @@
                 #{userEmail,jdbcType=VARCHAR})
     </insert>
 
-    <select id="selectByLtDate" resultMap="BaseResultMap">
+     <select id="selectByLtDate" resultMap="BaseResultMap">
         select * from user_finance_record
         where deleted = 0 and expiration_time &lt;= #{expirationTime}
     </select>

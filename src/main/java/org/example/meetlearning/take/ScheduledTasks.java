@@ -93,10 +93,12 @@ public class ScheduledTasks {
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 * * * * ?")  // 每分钟
     public void runTaskAtMidnight() {
         log.info("课时币有效期刷新定时任务执行");
+        Date yesterday = DateUtil.offsetDay(new Date(), -1);
         List<TokensLog> tokenLogs = new ArrayList<>();
-        List<UserFinanceRecord> records = userFinanceRecordService.selectByLtDate(new Date());
+        List<UserFinanceRecord> records = userFinanceRecordService.selectByLtDate(yesterday);
         for (UserFinanceRecord record : records) {
             record.setDeleted(true);
             userFinanceRecordService.updateByEntity(record);
@@ -109,34 +111,34 @@ public class ScheduledTasks {
             tokenLogs.add(tokensLog);
         }
         List<String> userIds = records.stream().map(UserFinanceRecord::getUserId).distinct().toList();
-        Map<String, Object> params = new HashMap<>();
-        params.put("userIds", userIds);
-        List<UserFinanceRecord> userFinanceRecords = userFinanceRecordService.selectDaByParams(params);
-        userFinanceRecords = userFinanceRecords.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime).reversed()).toList();
-        Map<String, List<UserFinanceRecord>> userFinanceRecordMap = userFinanceRecords.stream().collect(Collectors.groupingBy(UserFinanceRecord::getUserId));
-        List<UserFinance> userFinance = userFinanceService.selectByUserIds(userIds);
-        for (UserFinance finance : userFinance) {
-            List<UserFinanceRecord> list = userFinanceRecordMap.get(finance.getUserId());
-            BigDecimal balanceQty = CollectionUtils.isEmpty(list) ? BigDecimal.ZERO : list.stream().map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add);
-            finance.setBalanceQty(balanceQty);
-            finance.setUpdateTime(new Date());
-            finance.setExpirationTime(CollectionUtils.isEmpty(list) ? null : list.get(0).getExpirationTime());
-            userFinanceService.updateByEntity(finance);
-            tokenLogs.stream().filter(tokenLog -> StringUtils.equals(tokenLog.getUserId(), finance.getUserId())).forEach(tokenLog -> {
-                tokenLog.setBalance(balanceQty);
-            });
-        }
-        //存储课时币记录
-        if (!CollectionUtils.isEmpty(tokenLogs)) {
-            for (TokensLog tokenLog : tokenLogs) {
-                tokensLogService.insertEntity(tokenLog);
+        if (!CollectionUtils.isEmpty(userIds)) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("userIds", userIds);
+            List<UserFinanceRecord> userFinanceRecords = userFinanceRecordService.selectDaByParams(params);
+            userFinanceRecords = userFinanceRecords.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime).reversed()).toList();
+            Map<String, List<UserFinanceRecord>> userFinanceRecordMap = userFinanceRecords.stream().collect(Collectors.groupingBy(UserFinanceRecord::getUserId));
+            List<UserFinance> userFinance = userFinanceService.selectByUserIds(userIds);
+            for (UserFinance finance : userFinance) {
+                List<UserFinanceRecord> list = userFinanceRecordMap.get(finance.getUserId());
+                BigDecimal balanceQty = CollectionUtils.isEmpty(list) ? BigDecimal.ZERO : list.stream().map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add);
+                finance.setBalanceQty(balanceQty);
+                finance.setUpdateTime(new Date());
+                finance.setExpirationTime(CollectionUtils.isEmpty(list) ? null : list.get(0).getExpirationTime());
+                userFinanceService.updateByEntity(finance);
+                tokenLogs.stream().filter(tokenLog -> StringUtils.equals(tokenLog.getUserId(), finance.getUserId())).forEach(tokenLog -> {
+                    tokenLog.setBalance(balanceQty);
+                });
+            }
+            //存储课时币记录
+            if (!CollectionUtils.isEmpty(tokenLogs)) {
+                for (TokensLog tokenLog : tokenLogs) {
+                    tokensLogService.insertEntity(tokenLog);
+                }
             }
         }
         log.info("课时币状态处理完成");
         log.info("预约课程老师旷课处理执行");
         //将课程结束时间小于当前时间但是课程状态还是未开始的课程按旷课处理
-        // 获取昨天的日期
-        Date yesterday = DateUtil.offsetDay(new Date(), -1);
         // 格式化为 yyyy-MM-dd 并解析为日期对象（时间部分为 00:00:00）
         Date yesterdayStart = DateUtil.parse(DateUtil.format(yesterday, "yyyy-MM-dd"));
         List<StudentClass> studentClasses = studentClassService.selectAbsentByDate(yesterdayStart);
