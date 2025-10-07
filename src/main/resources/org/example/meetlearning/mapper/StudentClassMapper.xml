@@ -368,6 +368,12 @@
             <if test="teacherLanguage != null">
                 teacher_language,
             </if>
+            <if test="studentEmail != null">
+                student_email,
+            </if>
+            <if test="teacherEmail != null">
+                teacher_email,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -489,6 +495,12 @@
             </if>
             <if test="teacherLanguage != null">
                 #{teacherLanguage,jdbcType=VARCHAR},
+            </if>
+            <if test="studentEmail != null">
+                #{studentEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="teacherEmail != null">
+                #{teacherEmail,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
