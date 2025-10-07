@@ -95,8 +95,19 @@ public interface TeacherConverter {
         commentVo.setComment(evaluationRecord.getRemark());
         commentVo.setCreateTime(evaluationRecord.getCreateTime());
         commentVo.setTeacherId(evaluationRecord.getTeacherId());
-        commentVo.setCourseId(UUID.randomUUID().toString());
-        commentVo.setCourseName("测试课程");
+        commentVo.setCourseId(evaluationRecord.getClassId()+"");
+        commentVo.setCourseName(evaluationRecord.getClassId()+"");
+        return commentVo;
+    }
+    default TeacherEvaluationRecordRespVo toEvaluationRecordVo(TeacherEvaluationRecord evaluationRecord) {
+        TeacherEvaluationRecordRespVo commentVo = new TeacherEvaluationRecordRespVo();
+        commentVo.setRecordId(evaluationRecord.getRecordId());
+        commentVo.setStudentId(evaluationRecord.getStudentId());
+        commentVo.setStudentName(evaluationRecord.getStudentName());
+        commentVo.setStudentEmail(evaluationRecord.getStudentEmail());
+        commentVo.setRating(evaluationRecord.getRating());
+        commentVo.setRemark(evaluationRecord.getRemark());
+        commentVo.setClassId(evaluationRecord.getClassId());
         return commentVo;
     }
 

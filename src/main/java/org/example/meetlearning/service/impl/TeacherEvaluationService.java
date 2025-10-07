@@ -1,5 +1,6 @@
 package org.example.meetlearning.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.TeacherEvaluationRecord;
 import org.example.meetlearning.dao.mapper.TeacherEvaluationRecordMapper;
@@ -20,6 +21,10 @@ public class TeacherEvaluationService {
 
     public List<TeacherEvaluationRecord> selectByTeacherIdLimit20(String teacherId) {
         return teacherEvaluationRecordMapper.selectByTeacherIdLimit20(teacherId);
+    }
+
+    public Page<TeacherEvaluationRecord> selectPageByTeacherId(String teacherId, Page<TeacherEvaluationRecord> page) {
+        return teacherEvaluationRecordMapper.selectPageByTeacherId(teacherId, page);
     }
 
     public BigDecimal selectRatingByTeacherId(String teacherId) {

@@ -42,6 +42,13 @@
         where teacher_id = #{teacherId} order by id desc limit 20
     </select>
 
+    <select id="selectPageByTeacherId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher_evaluation_record
+        where teacher_id = #{teacherId} order by id
+    </select>
+
 
     <select id="selectRatingByTeacherId" resultType="java.math.BigDecimal">
         select avg(rating)

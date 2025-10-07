@@ -10,10 +10,7 @@ import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.*;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
-import org.example.meetlearning.vo.common.PageVo;
-import org.example.meetlearning.vo.common.RecordIdQueryVo;
-import org.example.meetlearning.vo.common.RespVo;
-import org.example.meetlearning.vo.common.SelectValueVo;
+import org.example.meetlearning.vo.common.*;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherPriceReqVo;
 import org.example.meetlearning.vo.teacher.*;
@@ -289,6 +286,13 @@ public class TeacherPcService extends BasePcService {
         List<TeacherEvaluationRecord> list = teacherEvaluationService.selectByTeacherIdLimit20(userId);
         return list.stream().map(TeacherConverter.INSTANCE::toCommentVo).toList();
     }
+
+    public PageVo<TeacherEvaluationRecordRespVo> teacherEvaluationRecord(String userCode, RecordIdPageQueryVo<TeacherEvaluationRecord> queryVo) {
+        String userId = StringUtils.hasText(queryVo.getRecordId()) ? queryVo.getRecordId() : userCode;
+        Page<TeacherEvaluationRecord> page = teacherEvaluationService.selectPageByTeacherId(userId,queryVo.getPageRequest());
+        return PageVo.map(page, TeacherConverter.INSTANCE::toEvaluationRecordVo);
+    }
+
 
     public RespVo<TeacherDashboardRespVo> dashboard(String userCode, String userName) {
         Teacher teacher = teacherService.selectByRecordId(userCode);

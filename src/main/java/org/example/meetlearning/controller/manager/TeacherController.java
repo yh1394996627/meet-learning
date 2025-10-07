@@ -4,13 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.controller.BaseHandler;
+import org.example.meetlearning.dao.entity.TeacherEvaluationRecord;
 import org.example.meetlearning.enums.TeacherSpecialistsEnum;
 import org.example.meetlearning.service.TeacherPcService;
 import org.example.meetlearning.service.TeacherSalaryPcService;
-import org.example.meetlearning.vo.common.PageVo;
-import org.example.meetlearning.vo.common.RecordIdQueryVo;
-import org.example.meetlearning.vo.common.RespVo;
-import org.example.meetlearning.vo.common.SelectValueVo;
+import org.example.meetlearning.vo.common.*;
 import org.example.meetlearning.vo.teacher.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -135,14 +133,14 @@ public class TeacherController implements BaseHandler {
 
     @Operation(summary = "查询老师评分记录", operationId = "teacherEvaluationRecord")
     @PostMapping(value = "v1/teacher/evaluation/record")
-    public RespVo<List<TeacherLastCommentRespVo>> teacherEvaluationRecord(@RequestBody RecordIdQueryVo queryVo) {
-        return new RespVo<>(teacherPcService.teacherLastCommentRespVo(getUserCode(), queryVo));
+    public RespVo<PageVo<TeacherEvaluationRecordRespVo>> teacherEvaluationRecord(@RequestBody RecordIdPageQueryVo<TeacherEvaluationRecord> queryVo) {
+        return new RespVo<>(teacherPcService.teacherEvaluationRecord(getUserCode(), queryVo));
     }
 
     @Operation(summary = "老师仪表盘", operationId = "dashboard")
     @PostMapping(value = "v1/teacher/dashboard")
     public RespVo<TeacherDashboardRespVo> dashboard() {
-        return teacherPcService.dashboard(getUserCode(),getUserName());
+        return teacherPcService.dashboard(getUserCode(), getUserName());
     }
 
     @Operation(summary = "老师详细信息查询", operationId = "teacherInfo")
