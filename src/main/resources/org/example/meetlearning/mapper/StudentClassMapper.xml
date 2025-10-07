@@ -47,6 +47,8 @@
         <result column="is_evaluation" jdbcType="VARCHAR" property="isEvaluation"/>
         <result column="textbook" jdbcType="VARCHAR" property="textbook"/>
         <result column="is_verification" jdbcType="BIT" property="isVerification"/>
+        <result column="student_email" jdbcType="BIT" property="studentEmail"/>
+        <result column="teacher_email" jdbcType="BIT" property="teacherEmail"/>
     </resultMap>
     <sql id="Base_Column_List">
         id
@@ -56,7 +58,7 @@
         course_id, course_name, course_type, course_time, affiliate_id, begin_time, end_time, affiliate_id,
         affiliate_name, student_consumption, efficient_date, student_balance, cancel_id, cancel_time,
         meeting_record_id, is_complaint, is_evaluation, textbook, price, credits_price, class_status,
-        group_price, group_coin, coin, textbook, teacher_language, is_verification
+        group_price, group_coin, coin, textbook, teacher_language, is_verification, student_email, teacher_email
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -204,10 +206,12 @@
 
     <sql id="common_where">
         <if test="params.teacherKeyword != null">
-            and teacher_name like #{params.teacherKeyword}
+            and (teacher_name like #{params.teacherKeyword}
+            or teacher_email like #{params.teacherKeyword})
         </if>
         <if test="params.studentKeyword != null">
-            and student_name like #{params.studentKeyword}
+            and (student_name like #{params.studentKeyword}
+            or student_email like #{params.studentKeyword})
         </if>
         <if test="params.studentId != null">
             and student_id = #{params.studentId}

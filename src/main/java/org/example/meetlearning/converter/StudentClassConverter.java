@@ -84,9 +84,11 @@ public interface StudentClassConverter {
         studentClass.setIsCourseVideoExpired(false);
         studentClass.setStudentId(student.getRecordId());
         studentClass.setStudentName(student.getName());
+        studentClass.setStudentEmail(student.getEmail());
         studentClass.setStudentCountry(student.getCountry());
         studentClass.setTeacherId(teacher.getRecordId());
         studentClass.setTeacherName(teacher.getName());
+        studentClass.setTeacherEmail(teacher.getEmail());
         studentClass.setTeacherCountry(teacher.getCountry());
         if (reqVo.getCourseType() != null) {
             CourseTypeEnum courseTypeEnum = CourseTypeEnum.valueOf(reqVo.getCourseType());
@@ -131,7 +133,7 @@ public interface StudentClassConverter {
         teacherEvaluationRecord.setStudentEmail(studentClass.getStudentEmail());
         teacherEvaluationRecord.setStudentClassId(studentClass.getRecordId());
         teacherEvaluationRecord.setStudentClassDate(studentClass.getCourseTime());
-        teacherEvaluationRecord.setStudentCourse(studentClass.getCourseName());
+        teacherEvaluationRecord.setClassId(studentClass.getId());
         teacherEvaluationRecord.setStudentClassBeginTime(studentClass.getBeginTime());
         teacherEvaluationRecord.setStudentClassEndTime(studentClass.getEndTime());
         teacherEvaluationRecord.setRating(rating);
@@ -178,8 +180,10 @@ public interface StudentClassConverter {
         studentClass.setIsCourseVideoExpired(false);
         studentClass.setStudentId(student.getRecordId());
         studentClass.setStudentName(student.getName());
+        studentClass.setStudentEmail(student.getEmail());
         studentClass.setStudentCountry(student.getCountry());
         studentClass.setTeacherId(teacher.getRecordId());
+        studentClass.setTeacherEmail(teacher.getEmail());
         studentClass.setTeacherName(teacher.getName());
         studentClass.setTeacherCountry(teacher.getCountry());
         if (studentClassRegular.getCourseType() != null) {

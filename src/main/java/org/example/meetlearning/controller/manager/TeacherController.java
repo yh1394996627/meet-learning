@@ -133,6 +133,12 @@ public class TeacherController implements BaseHandler {
         return new RespVo<>(teacherPcService.teacherLastCommentRespVo(getUserCode(), queryVo));
     }
 
+    @Operation(summary = "查询老师评分记录", operationId = "teacherEvaluationRecord")
+    @PostMapping(value = "v1/teacher/evaluation/record")
+    public RespVo<List<TeacherLastCommentRespVo>> teacherEvaluationRecord(@RequestBody RecordIdQueryVo queryVo) {
+        return new RespVo<>(teacherPcService.teacherLastCommentRespVo(getUserCode(), queryVo));
+    }
+
     @Operation(summary = "老师仪表盘", operationId = "dashboard")
     @PostMapping(value = "v1/teacher/dashboard")
     public RespVo<TeacherDashboardRespVo> dashboard() {

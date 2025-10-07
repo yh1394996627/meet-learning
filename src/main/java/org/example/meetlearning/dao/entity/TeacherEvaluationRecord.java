@@ -32,7 +32,7 @@ public class TeacherEvaluationRecord {
 
     private Date studentClassDate;
 
-    private String studentCourse;
+    private long classId;
 
     private String studentClassBeginTime;
 
