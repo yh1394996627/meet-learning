@@ -435,6 +435,7 @@ public class StudentClassPcService extends BasePcService {
 
 
     public void studentClassEvaluate(String userCode, String userName, TeacherEvaluationReqVo reqVo) {
+        Assert.isTrue(StringUtils.isNotEmpty(reqVo.getRemark()), getHint(LanguageContextEnum.REMARK_VERIFY));
         //新增评论
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
         Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
@@ -578,9 +579,10 @@ public class StudentClassPcService extends BasePcService {
         //查询课程信息
         String recordId = queryVo.getRecordId();
         StudentClass studentClass = studentClassService.selectByRecordId(recordId);
-        Assert.notNull(studentClass, "Course information not obtained");
+        Assert.notNull(studentClass, getHint(LanguageContextEnum.COURSE_NULL_VERIFY));
+        Assert.isTrue(Objects.equals(studentClass.getClassStatus(), CourseStatusEnum.NOT_STARTED.getStatus()), getHint(LanguageContextEnum.COURSE_VERIFY_UNSTARTED));
         //删除学生课程只限制单人测试课程
-        Assert.isTrue(!StringUtils.equals(studentClass.getCourseType(), CourseTypeEnum.GROUP.name()), "Group classes cannot be deleted");
+        Assert.isTrue(!StringUtils.equals(studentClass.getCourseType(), CourseTypeEnum.GROUP.name()), getHint(LanguageContextEnum.COURSE_GROUP_DELETE_VERIFY));
         studentClass.setDeleted(true);
         studentClass.setUpdateTime(new Date());
         studentClass.setUpdator(userCode);

@@ -13,7 +13,7 @@
         <result column="student_name" jdbcType="VARCHAR" property="studentName"/>
         <result column="student_email" jdbcType="VARCHAR" property="studentEmail"/>
         <result column="student_class_id" jdbcType="VARCHAR" property="studentClassId"/>
-        <result column="student_course" jdbcType="VARCHAR" property="studentCourse"/>
+        <result column="classId" jdbcType="VARCHAR" property="classId"/>
         <result column="student_class_date" jdbcType="DATE" property="studentClassDate"/>
         <result column="student_class_begin_time" jdbcType="VARCHAR" property="studentClassBeginTime"/>
         <result column="student_class_end_time" jdbcType="VARCHAR" property="studentClassEndTime"/>
@@ -25,7 +25,7 @@
         id
         , creator, create_time, record_id, teacher_id, teacher_name, teacher_email, student_id,
     student_name, student_email, student_class_id, student_class_date, student_class_begin_time, 
-    student_class_end_time, rating, remark, student_course
+    student_class_end_time, rating, remark, class_id
     </sql>
 
     <select id="selectByTeacherId" resultMap="BaseResultMap">
@@ -62,13 +62,13 @@
                                                teacher_email, student_id, student_name,
                                                student_email, student_class_id, student_class_date,
                                                student_class_begin_time, student_class_end_time,
-                                               rating, remark, student_course)
+                                               rating, remark, class_id)
         values (#{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
                 #{recordId,jdbcType=VARCHAR}, #{teacherId,jdbcType=VARCHAR}, #{teacherName,jdbcType=VARCHAR},
                 #{teacherEmail,jdbcType=VARCHAR}, #{studentId,jdbcType=VARCHAR}, #{studentName,jdbcType=VARCHAR},
                 #{studentEmail,jdbcType=VARCHAR}, #{studentClassId,jdbcType=VARCHAR}, #{studentClassDate,jdbcType=DATE},
                 #{studentClassBeginTime,jdbcType=VARCHAR}, #{studentClassEndTime,jdbcType=VARCHAR},
-                #{rating,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR}, #{studentCourse,jdbcType=VARCHAR})
+                #{rating,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR}, #{classId,jdbcType=VARCHAR})
     </insert>
 
     <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.TeacherEvaluationRecord">

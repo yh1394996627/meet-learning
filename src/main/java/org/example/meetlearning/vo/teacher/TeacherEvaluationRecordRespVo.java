@@ -6,7 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class TeacherEvaluationRecordRespVo {
+public class  TeacherEvaluationRecordRespVo {
 
     @Schema(description = "评价记录ID")
     private String recordId;

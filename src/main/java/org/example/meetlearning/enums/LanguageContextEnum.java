@@ -26,7 +26,10 @@ public enum LanguageContextEnum {
     USER_EXIST("The user already exists", "用户已存在"),
     NOT_CHANGE("The course has already started and cannot be changed", "课程已经开始，无法更改"),
     NOT_CHANGE_TIME("There are still 3 hours left until the start of the course and the time cannot be changed", "距离课程开始还有3个小时，时间不能更改"),
-
+    COURSE_VERIFY_UNSTARTED("Courses that have already started cannot be deleted", "已开始的课程不能删除"),
+    COURSE_NULL_VERIFY("Course information not obtained", "未获取到课程信息"),
+    COURSE_GROUP_DELETE_VERIFY("Group classes cannot be deleted", "团体课程不能删除"),
+    REMARK_VERIFY("The remarks must be filled in", "备注信息碧血填写"),
     ;
 
     private final String en;
