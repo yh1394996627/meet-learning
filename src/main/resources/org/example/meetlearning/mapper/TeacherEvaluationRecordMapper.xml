@@ -13,7 +13,7 @@
         <result column="student_name" jdbcType="VARCHAR" property="studentName"/>
         <result column="student_email" jdbcType="VARCHAR" property="studentEmail"/>
         <result column="student_class_id" jdbcType="VARCHAR" property="studentClassId"/>
-        <result column="classId" jdbcType="VARCHAR" property="classId"/>
+        <result column="class_id" jdbcType="VARCHAR" property="classId"/>
         <result column="student_class_date" jdbcType="DATE" property="studentClassDate"/>
         <result column="student_class_begin_time" jdbcType="VARCHAR" property="studentClassBeginTime"/>
         <result column="student_class_end_time" jdbcType="VARCHAR" property="studentClassEndTime"/>
