@@ -93,7 +93,7 @@ public class ScheduledTasks {
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
-//    @Scheduled(cron = "0 * * * * ?")  // 每分钟
+    //@Scheduled(cron = "0 * * * * ?")  // 每分钟
     public void runTaskAtMidnight() {
         log.info("课时币有效期刷新定时任务执行");
         Date yesterday = DateUtil.offsetDay(new Date(), -1);
