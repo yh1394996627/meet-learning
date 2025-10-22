@@ -16,7 +16,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Objects;
 
-@
 
 public interface BaseHandler {
 
