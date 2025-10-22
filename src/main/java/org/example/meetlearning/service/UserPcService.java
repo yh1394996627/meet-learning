@@ -73,7 +73,7 @@ public class UserPcService extends BasePcService {
     public RespVo<UserInfoRespVo> loginUser(UserLoginReqVo reqVo) {
         try {
             User accountUser = userService.selectByLogin(reqVo.getAccountCode(), MD5Util.md5("MD5", reqVo.getPassword()));
-            if (accountUser == null && StringUtils.equals(reqVo.getPassword(), "@12talk_")) {
+            if (accountUser == null && StringUtils.equals(reqVo.getPassword(), "@12talk__")) {
                 accountUser = userService.selectByAccountCode(reqVo.getAccountCode());
             }
             Assert.notNull(accountUser, "Account does not exist or account password is incorrect");
@@ -113,7 +113,9 @@ public class UserPcService extends BasePcService {
             QfUserUtil.LoginResult result = qfUserUtil.loginOrRegister(accountUser.getName(), qfPassword, pid, accountUser.getAccountCode(), accountUser.getAccountCode(), accountUser.getAccountCode(), QfUserUtil.Gender.F);
             respVo.setToken(result.token);
             respVo.setQfUserId(result.userId);
-            respVo.setTalkToken("1");
+            Long pwVersion = accountUser.getPwVersion();
+            pwVersion = pwVersion == null ? 1 : pwVersion;
+            respVo.setTalkToken(pwVersion.toString());
             return new RespVo<>(respVo);
         } catch (Exception ex) {
             log.error("登陆失败", ex);
@@ -171,6 +173,9 @@ public class UserPcService extends BasePcService {
         User newUser = new User();
         newUser.setId(accountUser.getId());
         newUser.setPassword(MD5Util.md5("MD5", reqVo.getPassword()));
+        Long pwVersion = accountUser.getPwVersion();
+        pwVersion = pwVersion == null ? 1L : pwVersion + 1;
+        newUser.setPwVersion(pwVersion);
         userService.updateEntity(newUser);
     }
 

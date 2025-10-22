@@ -47,4 +47,6 @@ public class User {
     private String managerId;
 
     private String qfUserId;
+
+    private Long pwVersion;
 }
