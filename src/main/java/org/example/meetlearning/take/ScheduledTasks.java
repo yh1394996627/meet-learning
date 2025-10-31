@@ -173,4 +173,10 @@ public class ScheduledTasks {
             }
         }
     }
+
+
+//    voov.meeting.app-id=304901095834
+//    voov.meeting.secret-id=EOonFfGcgNFdaeBTZz4ngu6xggRrhkWT2
+//    voov.meeting.secret-key=cvP3MlGcqfMQna0eRGd7j4vnNrW9KtpvTzuh93uzA2DarChC3
+//    voov.meeting.base-url=https://api.meeting.qq.com
 }
