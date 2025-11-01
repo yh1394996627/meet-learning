@@ -17,6 +17,5 @@ public class VoovUserDto {
     public VoovUserDto(String email, String username) {
         this.email = email;
         this.username = username;
-        this.phone = phone;
     }
 }

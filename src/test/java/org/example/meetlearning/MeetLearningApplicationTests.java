@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,7 +118,8 @@ class MeetLearningApplicationTests {
 
     @Test
     void test6() {
-        VoovUserDto voovUserDto = new VoovUserDto("1394996627@qq.com", "Yuhang yuh");
-        voovService.inviteUserToGroup("", voovUserDto);
+        VoovUserDto voovUserDto = new VoovUserDto("1394996627@qq.com", "yuhang11");
+        voovUserDto.setUserId(UUID.randomUUID().toString());
+        voovService.createMeetUser(voovUserDto);
     }
 }

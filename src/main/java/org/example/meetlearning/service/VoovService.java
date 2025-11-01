@@ -1,18 +1,21 @@
 package org.example.meetlearning.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.tencentcloudapi.wemeet.Client;
 import com.tencentcloudapi.wemeet.core.authenticator.AuthenticatorBuilder;
 import com.tencentcloudapi.wemeet.core.authenticator.JWTAuthenticator;
 import com.tencentcloudapi.wemeet.core.exception.ClientException;
 import com.tencentcloudapi.wemeet.core.exception.ServiceException;
 import com.tencentcloudapi.wemeet.service.user_manager.api.UserManagerApi;
+import com.tencentcloudapi.wemeet.service.user_manager.model.V1UsersPostRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.example.meetlearning.common.VoovMeetingConfig;
+import org.example.meetlearning.common.TencentMeetingConfig;
 import org.example.meetlearning.dao.dto.VoovUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -20,8 +23,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -29,26 +30,40 @@ import java.util.UUID;
 public class VoovService {
 
     @Autowired
-    private VoovMeetingConfig config;
+    private TencentMeetingConfig config;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private Gson gson;
 
-    public void inviteUserToGroup(String groupId, VoovUserDto user) {
+    static String BODY_JSON = "{\n"
+            + "  \"operator_id\": \"admin1761468493\",\n"
+            + "  \"user_account_type\": 3,\n"
+            + "  \"userid\": \"0e4ffcd4-2302-4b1d-84bc-787f1063da43\",\n"
+            + "  \"email\": \"1394996627@qq.com\",\n"
+            + "  \"operator_id_type\": 1,\n"
+            + "  \"username\": \"yuhang1\",\n"
+            + "  \"iphone\": \"\"\n"
+            + "}";
+
+    /**
+     * 创建用户
+     * }
+     *
+     * @param user
+     */
+    public void createMeetUser(VoovUserDto user) {
         // 1.构造 client 客户端(jwt 鉴权需要配置 appId sdkId secretID 和 secretKey)
-        Client client = new Client.Builder()
-                .withAppId(config.getAppId()).withSdkId(config.getEntId())
-                .withSecret(config.getSecretId(),config.getSecretKey())
-                .build();
+        Client client = new Client.Builder().withAppId(config.getAppId()).withSdkId(config.getEntId()).withSecret(config.getSecretId(), config.getSecretKey()).build();
+        String operatorId = config.getAdminUserId();
+        String userEmail = user.getEmail();
+        String userName = user.getUsername();
+        log.info("BODY_JSON:{}", BODY_JSON);
+        V1UsersPostRequest body = JSON.parseObject(BODY_JSON, V1UsersPostRequest.class);
 
-
-        String userid= "";
         // 2.构造请求参数
-        UserManagerApi.ApiV1UsersUseridInviteActivatePutRequest request =
-                new UserManagerApi.ApiV1UsersUseridInviteActivatePutRequest.Builder(userid)
-                        .operatorId("admin1761468493")
-                        .operatorIdType("")
-                        .build();
+        UserManagerApi.ApiV1UsersPostRequest request =
+                new UserManagerApi.ApiV1UsersPostRequest.Builder()
+                        .body(body).build();
 
         // 3.构造 JWT 鉴权器
         // 随机数
@@ -60,20 +75,32 @@ public class VoovService {
 
         // 4.发送对应的请求
         try {
-            UserManagerApi.ApiV1UsersUseridInviteActivatePutResponse response =
-                    client.user_manager().v1UsersUseridInviteActivatePut(request, authenticatorBuilder);
-            // response from `v1UsersUseridInviteActivatePut`: Object
-            System.out.printf("Response from `UserManagerApi.v1UsersUseridInviteActivatePut`: \nheader: %s\n%s\n",
+            UserManagerApi.ApiV1UsersPostResponse response =
+                    client.user_manager().v1UsersPost(request, authenticatorBuilder);
+            // response from `v1UsersPost`: V1UsersPost200Response
+            System.out.printf("Response from `UserManagerApi.v1UsersPost`: \nheader: %s\n%s\n",
                     response.getHeader(), response.getData());
         } catch (ClientException e) {
-            System.out.printf("Error when calling `UserManagerApi.v1UsersUseridInviteActivatePut`: %s\n", e);
+            System.out.printf("Error when calling `UserManagerApi.v1UsersPost`: %s\n", e);
             throw new RuntimeException(e);
         } catch (ServiceException e) {
-            System.out.printf("Error when calling `UserManagerApi.v1UsersUseridInviteActivatePut`: %s\n", e);
+            System.out.printf("Error when calling `UserManagerApi.v1UsersPost`: %s\n", e);
             System.out.printf("Full HTTP response: %s\n", new String(e.getApiResp().getRawBody()));
             throw new RuntimeException(e);
         }
     }
+
+
+    /**
+     * 邀请用户
+     *
+     * @param user
+     */
+    public void inputMeetUser(VoovUserDto user) {
+
+
+    }
+
 
 //    public VoovMeeting createMeeting(String hostUserId, VoovMeeting meeting) {
 //        try {
