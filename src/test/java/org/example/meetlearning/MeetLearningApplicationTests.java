@@ -2,6 +2,7 @@ package org.example.meetlearning;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.example.meetlearning.dao.dto.VoovUserDto;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherSalary;
 import org.example.meetlearning.enums.CourseTypeEnum;
@@ -46,6 +47,9 @@ class MeetLearningApplicationTests {
 
     @Autowired
     private TaskPcService taskPcService;
+
+    @Autowired
+    private VoovService voovService;
 
 
 //    @Test
@@ -104,4 +108,16 @@ class MeetLearningApplicationTests {
 //    void test6() {
 //        taskPcService.runTaskAtMidnight();
 //    }
+
+
+//    @Test
+//    void test5() {
+//        emailPcService.sendNotice("2025-05-19 10:30", "Join", "https://www.12talk.com", "1394996627@qq.com");
+//    }
+
+    @Test
+    void test6() {
+        VoovUserDto voovUserDto = new VoovUserDto("1394996627@qq.com", "Yuhang yuh");
+        voovService.inviteUserToGroup("", voovUserDto);
+    }
 }

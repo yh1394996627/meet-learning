@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class VoovMeetingConfig {
     private String appId;
+    private String entId;
     private String secretId;
     private String secretKey;
     private String baseUrl;
