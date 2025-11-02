@@ -32,6 +32,27 @@ public interface MeetingConverter {
             studentClassMeeting.setMeetStartTime(date2);
         }
         studentClassMeeting.setMeetType(Integer.valueOf(meetingObj.get("type").toString()));
+        studentClassMeeting.setMeetMainType(1);
+        return studentClassMeeting;
+    }
+
+
+    default StudentClassMeeting toVoovCreateMeeting(String userCode, String userName, JSONObject meetingObj) {
+        StudentClassMeeting studentClassMeeting = new StudentClassMeeting();
+        studentClassMeeting.setDeleted(false);
+        studentClassMeeting.setCreator(userCode);
+        studentClassMeeting.setCreateName(userName);
+        studentClassMeeting.setCreateTime(new Date());
+        studentClassMeeting.setMeetEmail(meetingObj.get("hostEmail").toString());
+        studentClassMeeting.setMeetUuid(meetingObj.get("meetingId").toString());
+        studentClassMeeting.setMeetId(meetingObj.get("meetingId").toString());
+        studentClassMeeting.setMeetJoinUrl(meetingObj.get("joinUrl").toString());
+        studentClassMeeting.setCreateMeetZoomUserId(meetingObj.get("hostId").toString());
+        if (meetingObj.get("startTime") != null) {
+            studentClassMeeting.setMeetStartTime(DateUtil.parseDateTime(meetingObj.get("startTime").toString()));
+        }
+        studentClassMeeting.setMeetType(Integer.valueOf(meetingObj.get("type").toString()));
+        studentClassMeeting.setMeetMainType(2);
         return studentClassMeeting;
     }
 

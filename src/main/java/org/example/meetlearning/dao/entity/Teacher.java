@@ -86,6 +86,10 @@ public class Teacher {
 
     private String zoomUserId;
 
+    private String voovStatus;
+
+    private String voUserId;
+
     private String zoomAccountId;
 
     private Boolean zoomActivationStatus;

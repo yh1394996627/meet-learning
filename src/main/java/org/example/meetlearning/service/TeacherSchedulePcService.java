@@ -63,6 +63,8 @@ public class TeacherSchedulePcService extends BasePcService {
 
     private final TeacherCourseTimeService teacherCourseTimeService;
 
+    private final VoovService voovService;
+
 
     public RespVo<String> scheduleAdd(String userCode, ScheduleAddOrUpdateReqVo reqVo) {
         if (reqVo.getScheduleType() != ScheduleTypeEnum.OFF) {
@@ -203,10 +205,15 @@ public class TeacherSchedulePcService extends BasePcService {
                 //记录老师已有课时
                 teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
                 //创建会议
-                String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-                JSONObject meetObj = new JSONObject(meeting);
-                StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
+//                String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+//                JSONObject meetObj = new JSONObject(meeting);
+//                StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
+                JSONObject meeting = voovService.createMeeting(teacher.getVoUserId(), studentClass.getRecordId(), meetingDate, CourseTypeEnum.valueOf(studentClass.getCourseType()));
+                meeting.put("hostEmail", teacher.getEmail());
+                meeting.put("hostId", teacher.getVoUserId());
+                StudentClassMeeting meetingEntity = studentClassMeetingService.insertVoovMeeting(studentClass.getCreator(), studentClass.getCreateName(), meeting);
                 studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+                studentClass.setMeetMainType(meetingEntity.getMeetMainType());
                 studentClassService.insertEntity(studentClass);
             }
         } else {

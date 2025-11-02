@@ -8,11 +8,18 @@ import com.tencentcloudapi.wemeet.core.authenticator.AuthenticatorBuilder;
 import com.tencentcloudapi.wemeet.core.authenticator.JWTAuthenticator;
 import com.tencentcloudapi.wemeet.core.exception.ClientException;
 import com.tencentcloudapi.wemeet.core.exception.ServiceException;
+import com.tencentcloudapi.wemeet.service.meetings.api.MeetingsApi;
+import com.tencentcloudapi.wemeet.service.meetings.model.V1MeetingsMeetingIdCancelPostRequest;
+import com.tencentcloudapi.wemeet.service.meetings.model.V1MeetingsPost200Response;
+import com.tencentcloudapi.wemeet.service.meetings.model.V1MeetingsPost200ResponseMeetingInfoListInner;
+import com.tencentcloudapi.wemeet.service.meetings.model.V1MeetingsPostRequest;
 import com.tencentcloudapi.wemeet.service.user_manager.api.UserManagerApi;
+import com.tencentcloudapi.wemeet.service.user_manager.model.V1UsersListGet200Response;
 import com.tencentcloudapi.wemeet.service.user_manager.model.V1UsersPostRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.example.meetlearning.common.TencentMeetingConfig;
 import org.example.meetlearning.dao.dto.VoovUserDto;
+import org.example.meetlearning.enums.CourseTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -23,6 +30,8 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -39,7 +48,7 @@ public class VoovService {
             + "  \"operator_id\": \"admin1761468493\",\n"
             + "  \"user_account_type\": 3,\n"
             + "  \"userid\": \"0e4ffcd4-2302-4b1d-84bc-787f1063da43\",\n"
-            + "  \"email\": \"1394996627@qq.com\",\n"
+            + "  \"email\": \"yuh9527@aliyun.com\",\n"
             + "  \"operator_id_type\": 1,\n"
             + "  \"username\": \"yuhang1\",\n"
             + "  \"iphone\": \"\"\n"
@@ -94,168 +103,177 @@ public class VoovService {
     /**
      * 邀请用户
      *
-     * @param user
+     * @param userId
      */
-    public void inputMeetUser(VoovUserDto user) {
+    public void inputMeetUser(String userId) {
+        Client client = new Client.Builder().withAppId(config.getAppId()).withSdkId(config.getEntId()).withSecret(config.getSecretId(), config.getSecretKey()).build();
 
+        String operatorId = config.getAdminUserId();
+        // 2.构造请求参数
+        UserManagerApi.ApiV1UsersUseridInviteActivatePutRequest request =
+                new UserManagerApi.ApiV1UsersUseridInviteActivatePutRequest.Builder(userId)
+                        .operatorId(operatorId)
+                        .operatorIdType("1")
+                        .build();
+        // 随机数
+        BigInteger nonce = BigInteger.valueOf(Math.abs((new SecureRandom()).nextInt()));
+        // 当前时间戳
+        String timestamp = String.valueOf(System.currentTimeMillis() / 1000L);
+        AuthenticatorBuilder<JWTAuthenticator> authenticatorBuilder =
+                new JWTAuthenticator.Builder().nonce(nonce).timestamp(timestamp);
+        // 4.发送对应的请求
+        try {
+            UserManagerApi.ApiV1UsersUseridInviteActivatePutResponse response =
+                    client.user_manager().v1UsersUseridInviteActivatePut(request, authenticatorBuilder);
+            // response from `v1UsersUseridInviteActivatePut`: Object
+            System.out.printf("Response from `UserManagerApi.v1UsersUseridInviteActivatePut`: \nheader: %s\n%s\n",
+                    response.getHeader(), response.getData());
+        } catch (ClientException e) {
+            System.out.printf("Error when calling `UserManagerApi.v1UsersUseridInviteActivatePut`: %s\n", e);
+            throw new RuntimeException(e);
+        } catch (ServiceException e) {
+            System.out.printf("Error when calling `UserManagerApi.v1UsersUseridInviteActivatePut`: %s\n", e);
+            System.out.printf("Full HTTP response: %s\n", new String(e.getApiResp().getRawBody()));
+            throw new RuntimeException(e);
+        }
+    }
 
+    public org.json.JSONObject createMeeting(String userId, String subject, Date startTime, CourseTypeEnum courseType) {
+        String operatorId = config.getAdminUserId();
+        int duration = courseType == CourseTypeEnum.GROUP ? 60 : 30;
+        // 计算结束时间：startTime 时间 duration 分钟后的时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startTime);
+        calendar.add(Calendar.MINUTE, duration);
+        Date endTime = calendar.getTime();
+        JSONObject params = new JSONObject();
+        params.put("subject", subject);
+        //startTime秒级时间戳
+        String startLongTime = String.valueOf(startTime.getTime() / 1000);
+        params.put("start_time", startLongTime);
+        //endTime秒级时间戳
+        String endLongTime = String.valueOf(endTime.getTime() / 1000);
+        params.put("end_time", endLongTime);
+        params.put("user_id", operatorId);
+        params.put("instanceid", "1");
+        params.put("type", 0);
+        String BODY_JSON = params.toJSONString();
+        Client client = new Client.Builder().withAppId(config.getAppId()).withSdkId(config.getEntId()).withSecret(config.getSecretId(), config.getSecretKey()).build();
+        V1MeetingsPostRequest body = JSON.parseObject(BODY_JSON, V1MeetingsPostRequest.class);
+        // 2.构造请求参数
+        MeetingsApi.ApiV1MeetingsPostRequest request =
+                new MeetingsApi.ApiV1MeetingsPostRequest.Builder()
+                        .body(body).build();
+        // 随机数
+        BigInteger nonce = BigInteger.valueOf(Math.abs((new SecureRandom()).nextInt()));
+        // 当前时间戳
+        String timestamp = String.valueOf(System.currentTimeMillis() / 1000L);
+        AuthenticatorBuilder<JWTAuthenticator> authenticatorBuilder =
+                new JWTAuthenticator.Builder().nonce(nonce).timestamp(timestamp);
+        org.json.JSONObject resultObj = new org.json.JSONObject();
+        resultObj.put("joinUrl", "");
+        resultObj.put("meetingId", "");
+        resultObj.put("startTime", startTime);
+        // 4.发送对应的请求
+        try {
+            MeetingsApi.ApiV1MeetingsPostResponse response =
+                    client.meetings().v1MeetingsPost(request, authenticatorBuilder);
+            System.out.printf("Response from `MeetingsApi.v1MeetingsPost`: \nheader: %s\n%s\n",
+                    response.getHeader(), response.getData());
+            V1MeetingsPost200Response post200Response = response.getData();
+            V1MeetingsPost200ResponseMeetingInfoListInner meetingInfoListInner = post200Response.getMeetingInfoList().get(0);
+            String joinUtl = meetingInfoListInner.getJoinUrl();
+            resultObj.put("joinUrl", joinUtl);
+            String meetingId = meetingInfoListInner.getMeetingId();
+            resultObj.put("meetingId", meetingId);
+            log.info("joinUrl:{}", joinUtl);
+            log.info("meetingId:{}", meetingInfoListInner.getMeetingId());
+        } catch (ClientException e) {
+            System.out.printf("Error when calling `MeetingsApi.v1MeetingsPost`: %s\n", e);
+            throw new RuntimeException(e);
+        } catch (ServiceException e) {
+            System.out.printf("Error when calling `MeetingsApi.v1MeetingsPost`: %s\n", e);
+            System.out.printf("Full HTTP response: %s\n", new String(e.getApiResp().getRawBody()));
+            throw new RuntimeException(e);
+        }
+        return resultObj;
     }
 
 
-//    public VoovMeeting createMeeting(String hostUserId, VoovMeeting meeting) {
-//        try {
-//            String url = config.getBaseUrl() + "/v1/meetings";
-//
-//            Map<String, Object> requestBody = new HashMap<>();
-//            requestBody.put("userid", hostUserId);
-//            requestBody.put("instanceid", 1);
-//            requestBody.put("subject", meeting.getTopic());
-//            requestBody.put("type", meeting.getType());
-//
-//            if (meeting.getStartTime() != null) {
-//                requestBody.put("start_time", meeting.getStartTime());
-//            }
-//            if (meeting.getEndTime() != null) {
-//                requestBody.put("end_time", meeting.getEndTime());
-//            }
-//            if (meeting.getPassword() != null) {
-//                requestBody.put("password", meeting.getPassword());
-//            }
-//
-//            HttpHeaders headers = createHeaders();
-//            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-//
-//            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
-//
-//            if (response.getStatusCode() == HttpStatus.OK) {
-//                Map<String, Object> responseBody = response.getBody();
-//                if (responseBody != null && "0".equals(String.valueOf(responseBody.get("return_code")))) {
-//                    Map<String, Object> meetingInfo = (Map<String, Object>) responseBody.get("meeting_info");
-//                    meeting.setMeetingId(String.valueOf(meetingInfo.get("meeting_id")));
-//                    meeting.setJoinUrl(String.valueOf(meetingInfo.get("join_url")));
-//                    meeting.setStatus("created");
-//                    log.info("成功创建会议: {}", meeting.getMeetingId());
-//                    return meeting;
-//                }
-//            }
-//
-//            log.error("创建会议失败: {}", response.getBody());
-//            return null;
-//
-//        } catch (Exception e) {
-//            log.error("创建会议异常", e);
-//            return null;
-//        }
-//    }
+    public void closeMeeting(String userId, String meetingId) {
+        JSONObject params = new JSONObject();
+        params.put("reason_code", 1);
+        params.put("user_id", userId);
+        params.put("instanceid", 1);
+        String BODY_JSON = params.toJSONString();
+        Client client = new Client.Builder().withAppId(config.getAppId()).withSdkId(config.getEntId()).withSecret(config.getSecretId(), config.getSecretKey()).build();
+        V1MeetingsMeetingIdCancelPostRequest body = JSON.parseObject(BODY_JSON, V1MeetingsMeetingIdCancelPostRequest.class);
 
-//    public boolean endMeeting(String meetingId, String hostUserId) {
-//        try {
-//            String url = config.getBaseUrl() + "/v1/meetings/" + meetingId + "/dismiss";
-//
-//            Map<String, Object> requestBody = new HashMap<>();
-//            requestBody.put("userid", hostUserId);
-//            requestBody.put("instanceid", 1);
-//
-//            HttpHeaders headers = createHeaders();
-//            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-//
-//            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
-//
-//            if (response.getStatusCode() == HttpStatus.OK) {
-//                Map<String, Object> responseBody = response.getBody();
-//                if (responseBody != null && "0".equals(String.valueOf(responseBody.get("return_code")))) {
-//                    log.info("成功结束会议: {}", meetingId);
-//
-//                    // 触发结束会议事件
-//                    triggerMeetingEvent("end", meetingId, hostUserId, "host");
-//                    return true;
-//                }
-//            }
-//
-//            log.error("结束会议失败: {}", response.getBody());
-//            return false;
-//
-//        } catch (Exception e) {
-//            log.error("结束会议异常", e);
-//            return false;
-//        }
-//    }
+        // 2.构造请求参数
+        MeetingsApi.ApiV1MeetingsMeetingIdCancelPostRequest request =
+                new MeetingsApi.ApiV1MeetingsMeetingIdCancelPostRequest.Builder(meetingId)
+                        .body(body).build();
+        // 3.构造 JWT 鉴权器
+        BigInteger nonce = BigInteger.valueOf(Math.abs((new SecureRandom()).nextInt()));
+        // 当前时间戳
+        String timestamp = String.valueOf(System.currentTimeMillis() / 1000L);
+        AuthenticatorBuilder<JWTAuthenticator> authenticatorBuilder =
+                new JWTAuthenticator.Builder().nonce(nonce).timestamp(timestamp);
+        // 4.发送对应的请求
+        try {
+            MeetingsApi.ApiV1MeetingsMeetingIdCancelPostResponse response =
+                    client.meetings().v1MeetingsMeetingIdCancelPost(request, authenticatorBuilder);
+            // response from `v1MeetingsMeetingIdCancelPost`: Object
+            System.out.printf("Response from `MeetingsApi.v1MeetingsMeetingIdCancelPost`: \nheader: %s\n%s\n",
+                    response.getHeader(), response.getData());
+        } catch (ClientException e) {
+            System.out.printf("Error when calling `MeetingsApi.v1MeetingsMeetingIdCancelPost`: %s\n", e);
+            throw new RuntimeException(e);
+        } catch (ServiceException e) {
+            System.out.printf("Error when calling `MeetingsApi.v1MeetingsMeetingIdCancelPost`: %s\n", e);
+            System.out.printf("Full HTTP response: %s\n", new String(e.getApiResp().getRawBody()));
+            throw new RuntimeException(e);
+        }
+    }
 
-//    public List<VoovRecording> getMeetingRecordings(String meetingId) {
-//        try {
-//            String url = config.getBaseUrl() + "/v1/meetings/" + meetingId + "/records";
-//
-//            HttpHeaders headers = createHeaders();
-//            HttpEntity<Void> request = new HttpEntity<>(headers);
-//
-//            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
-//
-//            if (response.getStatusCode() == HttpStatus.OK) {
-//                Map<String, Object> responseBody = response.getBody();
-//                if (responseBody != null && "0".equals(String.valueOf(responseBody.get("return_code")))) {
-//                    List<Map<String, Object>> records = (List<Map<String, Object>>) responseBody.get("record_files");
-//                    List<VoovRecording> recordings = new ArrayList<>();
-//
-//                    for (Map<String, Object> record : records) {
-//                        VoovRecording recording = new VoovRecording();
-//                        recording.setRecordingId(String.valueOf(record.get("record_file_id")));
-//                        recording.setMeetingId(meetingId);
-//                        recording.setRecordingUrl(String.valueOf(record.get("download_address")));
-//                        recording.setStartTime(Long.valueOf(String.valueOf(record.get("record_start_time"))));
-//                        recording.setEndTime(Long.valueOf(String.valueOf(record.get("record_end_time"))));
-//                        recording.setFileSize(Long.valueOf(String.valueOf(record.get("total_size"))));
-//                        recording.setFileName(String.valueOf(record.get("filename")));
-//                        recording.setStatus(String.valueOf(record.get("status")));
-//                        recordings.add(recording);
-//                    }
-//
-//                    log.info("成功获取会议 {} 的录像，共 {} 个", meetingId, recordings.size());
-//                    return recordings;
-//                }
-//            }
-//
-//            log.error("获取会议录像失败: {}", response.getBody());
-//            return Collections.emptyList();
-//
-//        } catch (Exception e) {
-//            log.error("获取会议录像异常", e);
-//            return Collections.emptyList();
-//        }
-//    }
 
-//    public void addMeetingEventListener(String eventType, VoovMeetingEventListener listener) {
-//        eventListeners.computeIfAbsent(eventType, k -> new CopyOnWriteArrayList<>()).add(listener);
-//        log.info("添加 {} 事件监听器", eventType);
-//    }
-//
-//    public void removeMeetingEventListener(String eventType, VoovMeetingEventListener listener) {
-//        List<VoovMeetingEventListener> listeners = eventListeners.get(eventType);
-//        if (listeners != null) {
-//            listeners.remove(listener);
-//        }
-//    }
+    public V1UsersListGet200Response searchUserList(int page, int pageSize) {
+        String operatorId = config.getAdminUserId();
+        // 1.构造 client 客户端(jwt 鉴权需要配置 appId sdkId secretID 和 secretKey)
+        Client client = new Client.Builder().withAppId(config.getAppId()).withSdkId(config.getEntId()).withSecret(config.getSecretId(), config.getSecretKey()).build();
+        // 2.构造请求参数
+        UserManagerApi.ApiV1UsersListGetRequest request =
+                new UserManagerApi.ApiV1UsersListGetRequest.Builder()
+                        .page("" + page)
+                        .pageSize("+" + pageSize)
+                        .operatorId(operatorId)
+                        .operatorIdType("1")
+                        .build();
+        // 3.构造 JWT 鉴权器
+        // 随机数
+        BigInteger nonce = BigInteger.valueOf(Math.abs((new SecureRandom()).nextInt()));
+        // 当前时间戳
+        String timestamp = String.valueOf(System.currentTimeMillis() / 1000L);
+        AuthenticatorBuilder<JWTAuthenticator> authenticatorBuilder =
+                new JWTAuthenticator.Builder().nonce(nonce).timestamp(timestamp);
+        // 4.发送对应的请求
+        try {
+            UserManagerApi.ApiV1UsersListGetResponse response =
+                    client.user_manager().v1UsersListGet(request, authenticatorBuilder);
+            // response from `v1UsersListGet`: V1UsersListGet200Response
+            V1UsersListGet200Response response200 = response.getData();
+            log.info("查询voov列表成功:{}", response200.getUsers().size());
+            return response200;
+        } catch (ClientException e) {
+            System.out.printf("Error when calling `UserManagerApi.v1UsersListGet`: %s\n", e);
+            throw new RuntimeException(e);
+        } catch (ServiceException e) {
+            System.out.printf("Error when calling `UserManagerApi.v1UsersListGet`: %s\n", e);
+            System.out.printf("Full HTTP response: %s\n", new String(e.getApiResp().getRawBody()));
+            throw new RuntimeException(e);
+        }
+    }
 
-//    public void triggerMeetingEvent(String eventType, String meetingId, String userId, String userName) {
-//        VoovMeetingEvent event = new VoovMeetingEvent();
-//        event.setEventType(eventType);
-//        event.setMeetingId(meetingId);
-//        event.setUserId(userId);
-//        event.setUserName(userName);
-//        event.setTimestamp(System.currentTimeMillis());
-//
-//        List<VoovMeetingEventListener> listeners = eventListeners.get(eventType);
-//        if (listeners != null) {
-//            for (VoovMeetingEventListener listener : listeners) {
-//                try {
-//                    listener.onMeetingEvent(event);
-//                } catch (Exception e) {
-//                    log.error("处理会议事件异常", e);
-//                }
-//            }
-//        }
-//
-//        log.info("触发会议事件: {} - {}", eventType, meetingId);
-//    }
 
     /**
      * 创建请求头
@@ -294,4 +312,6 @@ public class VoovService {
             return "";
         }
     }
+
+
 }

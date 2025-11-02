@@ -103,4 +103,11 @@ public class StudentClass {
 
     private Boolean isVerification = false;
 
+    /**
+     * 会议类型 1-zoom 2-voov
+     */
+    private Integer meetMainType;
+
+
+
 }

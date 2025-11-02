@@ -3,6 +3,8 @@ package org.example.meetlearning.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.google.gson.JsonObject;
+import com.tencentcloudapi.wemeet.service.user_manager.model.V1UsersListGet200Response;
+import com.tencentcloudapi.wemeet.service.user_manager.model.V1UsersListGet200ResponseUsersInner;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.dao.entity.*;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -54,54 +57,57 @@ public class ZoomPcService {
     @Autowired
     private TeacherSalaryPcService teacherSalaryPcService;
 
+    @Autowired
+    private VoovService voovService;
+
 
     public Boolean isZoomInstalled(String userCode) {
         try {
             User user = userService.selectByRecordId(userCode);
             if (StringUtils.equals(user.getType(), RoleEnum.TEACHER.name())) {
                 Teacher teacher = teacherService.selectByRecordId(userCode);
-                if (BooleanUtil.isTrue(teacher.getZoomActivationStatus())) {
+                if (StringUtils.isNotEmpty(teacher.getVoUserId())) {
                     return true;
                 }
-                //判断zoomUserID 和accountId是否为空
-                if (StringUtils.isNotEmpty(teacher.getZoomUserId()) && StringUtils.isNotEmpty(teacher.getZoomAccountId())) {
-                    ZoomAccountSet zoomAccountSet = zoomBaseService.selectByAccountId(teacher.getZoomAccountId());
-                    Assert.notNull(zoomAccountSet, "Zoom account not found");
-                    zoomOAuthService.getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
-                    JsonObject jsonObject = zoomOAuthService.getConsistentUserId(teacher.getEmail());
-                    Teacher newTeacher = new Teacher();
-                    newTeacher.setZoomActivationStatus(false);
-                    if (jsonObject != null) {
-                        newTeacher.setId(teacher.getId());
-                        newTeacher.setZoomUserId(jsonObjReplace(jsonObject.get("id").toString()));
-                        newTeacher.setZoomAccountId(zoomAccountSet.getZoomAccountId());
-                        newTeacher.setZoomActivationStatus(StringUtils.equals("active", jsonObjReplace(jsonObject.get("status").toString())));
-                        teacherService.updateEntity(newTeacher);
-                    }
-                    return newTeacher.getZoomActivationStatus();
-                } else {
-                    ZoomAccountSet zoomAccountSet = zoomBaseService.selectOneOrderByQty();
-                    Assert.notNull(zoomAccountSet, "Zoom account not found");
-                    zoomOAuthService.getValidAccessToken(zoomAccountSet.getZoomClientId(), zoomAccountSet.getZoomClientSecret(), zoomAccountSet.getZoomAccountId());
-                    //创建用户绑定用户组，发送群组邮件
-                    JsonObject jsonObject = zoomOAuthService.checkUserAndGetActivationLink(teacher.getEmail());
+                String voovId = getVoovUserMeetId(1, 20, user.getEmail(),"");
+                if (StringUtils.isNotEmpty(voovId)) {
                     Teacher newTeacher = new Teacher();
                     newTeacher.setId(teacher.getId());
-                    newTeacher.setZoomUserId(jsonObjReplace(jsonObject.get("id").toString()));
-                    newTeacher.setZoomAccountId(zoomAccountSet.getZoomAccountId());
-                    //有延时 默认false
-                    newTeacher.setZoomActivationStatus(false);
+                    newTeacher.setVoUserId(voovId);
                     teacherService.updateEntity(newTeacher);
-                    return false;
+                    return true;
                 }
+                return false;
             } else {
                 return false;
             }
         } catch (Exception ex) {
-            log.error("Failed to verify zoom", ex);
+            log.error("Failed to verify voov", ex);
             return false;
         }
     }
+
+
+    public String getVoovUserMeetId(int page, int pageSize, String email,String voovId) {
+        V1UsersListGet200Response response200 = voovService.searchUserList(page, pageSize);
+        Long currentSize = response200.getCurrentSize();
+        List<V1UsersListGet200ResponseUsersInner> users = response200.getUsers();
+        List<V1UsersListGet200ResponseUsersInner> userList = users.stream().filter(f -> StringUtils.equals(f.getEmail(), email)).toList();
+        if (CollectionUtils.isEmpty(userList) && currentSize == 20) {
+            page++;
+            voovId = getVoovUserMeetId(page, pageSize, email,voovId);
+        } else {
+            V1UsersListGet200ResponseUsersInner user = userList.get(0);
+            if (StringUtils.equals(user.getStatus(), "1")) {
+                voovId =  userList.get(0).getUserid();
+                return  voovId;
+            }else{
+                return voovId;
+            }
+        }
+        return voovId;
+    }
+
 
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<String> handleZoomEvent(String authToken, String payload) {
@@ -214,7 +220,7 @@ public class ZoomPcService {
         updateStudentClass.setTeacherCourseStatus(CourseStatusEnum.FINISH.getStatus());
         updateStudentClass.setStudentCourseStatus(CourseStatusEnum.FINISH.getStatus());
         //获取课程结束时间
-        Date courseEndTime = DateUtil.parseDateTime(studentClass.getCourseTime() + " " + studentClass.getEndTime()+":00");
+        Date courseEndTime = DateUtil.parseDateTime(studentClass.getCourseTime() + " " + studentClass.getEndTime() + ":00");
         if (endTime.compareTo(courseEndTime) >= 0) {
             //如果状态是未开始，则改为缺席
             if (Objects.equals(studentClass.getStudentCourseStatus(), CourseStatusEnum.NOT_STARTED.getStatus())) {

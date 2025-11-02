@@ -30,6 +30,7 @@ public enum LanguageContextEnum {
     COURSE_NULL_VERIFY("Course information not obtained", "未获取到课程信息"),
     COURSE_GROUP_DELETE_VERIFY("Group classes cannot be deleted", "团体课程不能删除"),
     REMARK_VERIFY("The remarks must be filled in", "备注信息碧血填写"),
+    VOOV_ACTIVATED_VERIFY("Tencent Meeting account is not activated", "腾讯会议账号未激活"),
     ;
 
     private final String en;

@@ -25,6 +25,12 @@ public class StudentClassMeetingService {
         return meeting;
     }
 
+    public StudentClassMeeting insertVoovMeeting(String userCode, String userName, JSONObject meetingObj) {
+        StudentClassMeeting meeting = MeetingConverter.INSTANCE.toVoovCreateMeeting(userCode, userName, meetingObj);
+        studentClassMeetingMapper.insertEntity(meeting);
+        return meeting;
+    }
+
 
     public StudentClassMeeting selectByMeetingId(String meetId) {
         return studentClassMeetingMapper.selectByMeetingId(meetId);

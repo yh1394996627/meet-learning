@@ -43,6 +43,9 @@
         <result column="zoom_user_id" jdbcType="INTEGER" property="zoomUserId"/>
         <result column="zoom_account_id" jdbcType="INTEGER" property="zoomAccountId"/>
         <result column="zoom_activation_status" jdbcType="BIT" property="zoomActivationStatus"/>
+        <result column="voov_status" jdbcType="VARCHAR" property="voovStatus"/>
+        <result column="vo_user_id" jdbcType="INTEGER" property="voUserId"/>
+
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -52,7 +55,7 @@
         canceled_qty, complaints_qty, salary_amount, email, country, manager_id, manager,
         avatar_url, language, currency_code, currency_name, specialties, manager_status,
         test_status, enabled_status, video_url, gender, zoom_user_id, zoom_account_id, zoom_activation_status,
-        group_status, coin ,group_coin, group_price
+        group_status, coin ,group_coin, group_price, vo_user_id, voov_status
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -581,6 +584,12 @@
             </if>
             <if test="groupStatus != null">
                 group_status = #{groupStatus,jdbcType=BIT},
+            </if>
+            <if test="voUserId != null">
+                vo_user_id = #{voUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="voovStatus != null">
+                voov_status = #{voovStatus,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

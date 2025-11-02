@@ -118,8 +118,19 @@ class MeetLearningApplicationTests {
 
     @Test
     void test6() {
-        VoovUserDto voovUserDto = new VoovUserDto("1394996627@qq.com", "yuhang11");
-        voovUserDto.setUserId(UUID.randomUUID().toString());
-        voovService.createMeetUser(voovUserDto);
+//        VoovUserDto voovUserDto = new VoovUserDto("1394996627@qq.com", "yuhang11");
+//        voovUserDto.setUserId(UUID.randomUUID().toString());
+//
+//        voovService.createMeetUser(voovUserDto);
+        //邀请用户
+//        voovService.inputMeetUser("wemeeting7018448");
+        //创建会议
+      // voovService.createMeeting("wemeeting7018448","测试课程","1762142400","1762144200");
+
+
+//        voovService.closeMeeting("wemeeting7018448","885131082364896778");
+        //voovService.searchUserList(1,20);
+
+        zoomPcService.isZoomInstalled("6496b693-4fb0-4583-a920-d60c0dc072e4");
     }
 }

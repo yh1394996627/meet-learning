@@ -33,4 +33,8 @@ public class StudentClassMeeting {
 
     private Integer meetType;
 
+    /**
+     * 会议类型 1-zoom 2-voov
+     */
+    private Integer meetMainType;
 }

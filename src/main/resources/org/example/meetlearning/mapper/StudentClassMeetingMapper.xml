@@ -15,11 +15,12 @@
     <result column="meet_status" jdbcType="VARCHAR" property="meetStatus" />
     <result column="meet_start_time" jdbcType="TIMESTAMP" property="meetStartTime" />
     <result column="meet_type" jdbcType="INTEGER" property="meetType" />
+      <result column="meet_main_type" jdbcType="INTEGER" property="meetMainType" />
   </resultMap>
 
   <sql id="Base_Column_List">
     id, deleted, creator, create_name, create_time, meet_email, meet_uuid, meet_id, meet_join_url,
-    create_meet_zoom_user_id, meet_status, meet_start_time, meet_type
+    create_meet_zoom_user_id, meet_status, meet_start_time, meet_type, meet_main_type
   </sql>
 
   <select id="selectByRecordIds" resultMap="BaseResultMap">
@@ -50,55 +51,58 @@
       create_name, create_time, meet_email, 
       meet_uuid, meet_id, meet_join_url, 
       create_meet_zoom_user_id, meet_status, meet_start_time, 
-      meet_type)
+      meet_type, meet_main_type)
     values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
       #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{meetEmail,jdbcType=VARCHAR}, 
       #{meetUuid,jdbcType=VARCHAR}, #{meetId,jdbcType=VARCHAR}, #{meetJoinUrl,jdbcType=VARCHAR}, 
       #{createMeetZoomUserId,jdbcType=VARCHAR}, #{meetStatus,jdbcType=VARCHAR}, #{meetStartTime,jdbcType=TIMESTAMP}, 
-      #{meetType,jdbcType=INTEGER})
+      #{meetType,jdbcType=INTEGER},, #{meetMainType,jdbcType=INTEGER})
   </insert>
 
   <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.StudentClassMeeting">
-    update student_class_meeting
-    <set>
-      <if test="deleted != null">
-        deleted = #{deleted,jdbcType=BIT},
-      </if>
-      <if test="creator != null">
-        creator = #{creator,jdbcType=VARCHAR},
-      </if>
-      <if test="createName != null">
-        create_name = #{createName,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="meetEmail != null">
-        meet_email = #{meetEmail,jdbcType=VARCHAR},
-      </if>
-      <if test="meetUuid != null">
-        meet_uuid = #{meetUuid,jdbcType=VARCHAR},
-      </if>
-      <if test="meetId != null">
-        meet_id = #{meetId,jdbcType=VARCHAR},
-      </if>
-      <if test="meetJoinUrl != null">
-        meet_join_url = #{meetJoinUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="createMeetZoomUserId != null">
-        create_meet_zoom_user_id = #{createMeetZoomUserId,jdbcType=VARCHAR},
-      </if>
-      <if test="meetStatus != null">
-        meet_status = #{meetStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="meetStartTime != null">
-        meet_start_time = #{meetStartTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="meetType != null">
-        meet_type = #{meetType,jdbcType=INTEGER},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
+      update student_class_meeting
+      <set>
+          <if test="deleted != null">
+              deleted = #{deleted,jdbcType=BIT},
+          </if>
+          <if test="creator != null">
+              creator = #{creator,jdbcType=VARCHAR},
+          </if>
+          <if test="createName != null">
+              create_name = #{createName,jdbcType=VARCHAR},
+          </if>
+          <if test="createTime != null">
+              create_time = #{createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="meetEmail != null">
+              meet_email = #{meetEmail,jdbcType=VARCHAR},
+          </if>
+          <if test="meetUuid != null">
+              meet_uuid = #{meetUuid,jdbcType=VARCHAR},
+          </if>
+          <if test="meetId != null">
+              meet_id = #{meetId,jdbcType=VARCHAR},
+          </if>
+          <if test="meetJoinUrl != null">
+              meet_join_url = #{meetJoinUrl,jdbcType=VARCHAR},
+          </if>
+          <if test="createMeetZoomUserId != null">
+              create_meet_zoom_user_id = #{createMeetZoomUserId,jdbcType=VARCHAR},
+          </if>
+          <if test="meetStatus != null">
+              meet_status = #{meetStatus,jdbcType=VARCHAR},
+          </if>
+          <if test="meetStartTime != null">
+              meet_start_time = #{meetStartTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="meetType != null">
+              meet_type = #{meetType,jdbcType=INTEGER},
+          </if>
+          <if test="meetMainType != null">
+              meet_main_type = #{meetMainType,jdbcType=INTEGER},
+          </if>
+      </set>
+      where id = #{id,jdbcType=BIGINT}
   </update>
 
 </mapper>

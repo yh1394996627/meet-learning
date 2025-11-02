@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class VoovUserDto {
     private String email;
     private String username;
-    private String areaCode = "+86";
+    private String areaCode = "86";
     private String phone;
     private String userId;
 

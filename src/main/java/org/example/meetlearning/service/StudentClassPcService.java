@@ -83,6 +83,8 @@ public class StudentClassPcService extends BasePcService {
 
     private final GroupClassStudentRecService groupClassStudentRecService;
 
+    private final VoovService voovService;
+
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(String userCode, StudentClassQueryVo queryVo) {
         User user = userService.selectByRecordId(userCode);
         Assert.notNull(user, getHint(LanguageContextEnum.OBJECT_NOTNULL));
@@ -181,6 +183,7 @@ public class StudentClassPcService extends BasePcService {
         //查询老师信息
         Teacher teacher = reqVo.getTeacherId() != null ? teacherService.selectByRecordId(reqVo.getTeacherId()) : null;
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.isTrue(!StringUtils.isEmpty(teacher.getVoUserId()), getHint(LanguageContextEnum.VOOV_ACTIVATED_VERIFY));
         //查询代理商信息
         Affiliate affiliate = null;
         if (student != null && StringUtils.isNotEmpty(student.getAffiliateId())) {
@@ -207,12 +210,17 @@ public class StudentClassPcService extends BasePcService {
             studentClass.setTextbook(textbook.getName());
         }
         Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
-        //创建会议
-        String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-        JSONObject meetObj = new JSONObject(meeting);
-        StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
+        //创建ZOOM会议
+        //zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+        //创建腾讯会议
+
+        JSONObject meeting = voovService.createMeeting(teacher.getVoUserId(), studentClass.getRecordId(), meetingDate, CourseTypeEnum.valueOf(studentClass.getCourseType()));
+        meeting.put("hostEmail", teacher.getEmail());
+        meeting.put("hostId", teacher.getVoUserId());
+        StudentClassMeeting meetingEntity = studentClassMeetingService.insertVoovMeeting(userCode, userName, meeting);
 
         studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+        studentClass.setMeetMainType(meetingEntity.getMeetMainType());
         if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
             //如果是团队课程
             studentClass.setStudentId(null);
@@ -498,11 +506,15 @@ public class StudentClassPcService extends BasePcService {
             Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
             //创建会议
             Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
+            Assert.isTrue(!StringUtils.isEmpty(teacher.getVoUserId()), getHint(LanguageContextEnum.VOOV_ACTIVATED_VERIFY));
             //获取不到会议信息就重新创建
-            String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-            JSONObject meetObj = new JSONObject(meeting);
-            StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(studentClass.getCreator(), studentClass.getCreateName(), meetObj);
+            //zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+            JSONObject meeting = voovService.createMeeting(teacher.getVoUserId(), studentClass.getRecordId(), meetingDate, CourseTypeEnum.valueOf(studentClass.getCourseType()));
+            meeting.put("hostEmail", teacher.getEmail());
+            meeting.put("hostId", teacher.getVoUserId());
+            StudentClassMeeting meetingEntity = studentClassMeetingService.insertVoovMeeting(studentClass.getCreator(), studentClass.getCreateName(), meeting);
             studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+            meetingEntity.setMeetMainType(meetingEntity.getMeetMainType());
             studentClassService.updateEntity(studentClass);
             meetingRecordId = meetingEntity.getMeetId();
         }

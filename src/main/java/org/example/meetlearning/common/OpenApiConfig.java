@@ -18,6 +18,7 @@ public class OpenApiConfig {
                 operation.addParametersItem(new Parameter().in("header").name("userCode").description("当前登录用户编码").required(false).schema(new StringSchema()))
                         .addParametersItem(new Parameter().in("header").name("userName").description("当前登录用户名称").required(false).schema(new StringSchema()))
                         .addParametersItem(new Parameter().in("header").name("language").description("语言").required(false).schema(new StringSchema()))
+                        .addParametersItem(new Parameter().in("header").name("talkToken").description("talkToken").required(false).schema(new StringSchema()))
                 ;
             }));
         };
