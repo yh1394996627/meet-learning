@@ -117,4 +117,9 @@ public class TeacherInfoRespVo {
     @Schema(name = "textbooks", description = "教材")
     private List<String> textbooks;
 
+    @Schema(name = "meetLink", description = "腾讯会议链接")
+    private String meetLink;
+
+    @Schema(name = "meetPassWord", description = "腾讯会议密码")
+    private String meetPassWord;
 }

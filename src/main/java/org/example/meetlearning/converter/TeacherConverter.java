@@ -171,6 +171,8 @@ public interface TeacherConverter {
         teacherRespVo.setCreateTime(teacher.getCreateTime());
         teacherRespVo.setCreateName(teacher.getCreateName());
         teacherRespVo.setCreator(teacher.getCreator());
+        teacherRespVo.setMeetLink(teacher.getMeetLink());
+        teacherRespVo.setMeetPassWord(teacher.getMeetPassWord());
         return teacherRespVo;
     }
 
