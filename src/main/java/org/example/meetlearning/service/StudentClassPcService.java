@@ -530,9 +530,21 @@ public class StudentClassPcService extends BasePcService {
             return studentClassMeeting.getMeetJoinUrl();
         }else{
             Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
-
-
-
+            // 1. 解析会议开始时间
+            String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
+            Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
+            // 2. 获取当前时间（精确到分钟）
+            Date currentDate = DateUtil.parse(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm");
+            // 3. 计算时间差（会议开始时间 - 当前时间）
+            long diffInMillis = beginDate.getTime() - currentDate.getTime();
+            long fiveMinutesInMillis = 5 * 60 * 1000; // 5分钟的毫秒数
+            // 4. 核心校验逻辑：允许进入会议的条件
+            boolean canEnterMeeting = diffInMillis <= fiveMinutesInMillis;
+            //todo 为了测试
+            if (!StringUtils.equals(studentClass.getStudentEmail(), "student@talk.com")) {
+                Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE));
+            }
+            //todo 状态写入
             return teacher.getMeetLink();
         }
     }
