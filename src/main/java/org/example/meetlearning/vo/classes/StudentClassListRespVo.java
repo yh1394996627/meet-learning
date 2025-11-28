@@ -104,4 +104,10 @@ public class StudentClassListRespVo {
     @Schema(name = "isFinish", description = "是否完成")
     private Boolean isFinish;
 
+    @Schema(name = "meetLink", description = "腾讯会议链接")
+    private String meetLink;
+
+    @Schema(name = "meetPassWord", description = "腾讯会议密码")
+    private String meetPassWord;
+
 }

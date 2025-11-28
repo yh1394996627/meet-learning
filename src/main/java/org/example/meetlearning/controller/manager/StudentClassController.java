@@ -124,7 +124,7 @@ public class StudentClassController implements BaseHandler {
     @Operation(summary = "返回会议加入链接", operationId = "studentClassMeeting")
     @PostMapping(value = "v1/student/class/meeting")
     public RespVo<String> studentClassMeeting(@RequestBody RecordIdQueryVo queryVo) throws IOException, ParseException {
-        return new RespVo<>(studentClassPcService.meetingJoinUrl(queryVo.getRecordId()));
+        return new RespVo<>(studentClassPcService.meetingJoinUrl(getUserCode(),getUserName(),queryVo.getRecordId()));
     }
 
     @Operation(summary = "新增老师备注", operationId = "studentClassMeeting")

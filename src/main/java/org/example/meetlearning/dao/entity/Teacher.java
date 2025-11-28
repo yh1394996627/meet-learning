@@ -92,4 +92,9 @@ public class Teacher {
 
     private Boolean groupStatus;
 
+    private String meetLink;
+
+    private String meetPassWord;
+
+
 }

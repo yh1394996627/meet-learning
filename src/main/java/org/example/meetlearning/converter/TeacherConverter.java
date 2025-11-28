@@ -84,6 +84,8 @@ public interface TeacherConverter {
         teacher.setLanguage(reqVo.getLanguage());
         teacher.setCurrencyCode(reqVo.getCurrencyCode());
         teacher.setGender(reqVo.getGender());
+        teacher.setMeetLink(reqVo.getMeetLink());
+        teacher.setMeetPassWord(reqVo.getMeetPassWord());
         return teacher;
     }
 

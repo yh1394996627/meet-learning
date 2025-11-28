@@ -158,6 +158,8 @@ public class StudentClassPcService extends BasePcService {
             if (finalTeacherMap.containsKey(list.getTeacherId())) {
                 Teacher teacher = finalTeacherMap.get(list.getTeacherId());
                 respVo.setTeacherLanguage(teacher.getLanguage());
+                respVo.setMeetLink(teacher.getMeetLink());
+                respVo.setMeetPassWord(teacher.getMeetPassWord());
             }
             respVo.setIsCanJoin(true);
             return respVo;
@@ -207,12 +209,13 @@ public class StudentClassPcService extends BasePcService {
             studentClass.setTextbook(textbook.getName());
         }
         Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
-        //创建会议
-        String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-        JSONObject meetObj = new JSONObject(meeting);
-        StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
-
-        studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+        if (StringUtils.isNotEmpty(teacher.getZoomUserId())) {
+            //创建会议
+            String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+            JSONObject meetObj = new JSONObject(meeting);
+            StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
+            studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+        }
         if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
             //如果是团队课程
             studentClass.setStudentId(null);
@@ -489,41 +492,49 @@ public class StudentClassPcService extends BasePcService {
     }
 
 
-    public String meetingJoinUrl(String classId) throws IOException, ParseException {
+    public String meetingJoinUrl(String userCode,String userName,String classId) throws IOException, ParseException {
         StudentClass studentClass = studentClassService.selectByRecordId(classId);
         Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        String meetingRecordId = studentClass.getMeetingRecordId();
-        //如果没有会议信息则新建一个
-        if (StringUtils.isEmpty(meetingRecordId)) {
-            Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
-            //创建会议
+        if(StringUtils.isNotEmpty(studentClass.getMeetingRecordId())) {
+            String meetingRecordId = studentClass.getMeetingRecordId();
+            //如果没有会议信息则新建一个
+            if (StringUtils.isEmpty(meetingRecordId)) {
+                Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+                //创建会议
+                Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
+                //获取不到会议信息就重新创建
+                String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+                JSONObject meetObj = new JSONObject(meeting);
+                StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(studentClass.getCreator(), studentClass.getCreateName(), meetObj);
+                studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+                studentClassService.updateEntity(studentClass);
+                meetingRecordId = meetingEntity.getMeetId();
+            }
+            // 1. 解析会议开始时间
+            String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
+            Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
+            // 2. 获取当前时间（精确到分钟）
+            Date currentDate = DateUtil.parse(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm");
+            // 3. 计算时间差（会议开始时间 - 当前时间）
+            long diffInMillis = beginDate.getTime() - currentDate.getTime();
+            long fiveMinutesInMillis = 5 * 60 * 1000; // 5分钟的毫秒数
+            // 4. 核心校验逻辑：允许进入会议的条件
+            boolean canEnterMeeting = diffInMillis <= fiveMinutesInMillis;
+            StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
+            Assert.notNull(studentClassMeeting, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+            Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+            //todo 为了测试
+            if (!StringUtils.equals(studentClass.getStudentEmail(), "student@talk.com")) {
+                Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE) + "          joinLink-->:" + studentClassMeeting.getMeetJoinUrl());
+            }
+            return studentClassMeeting.getMeetJoinUrl();
+        }else{
             Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
-            //获取不到会议信息就重新创建
-            String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-            JSONObject meetObj = new JSONObject(meeting);
-            StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(studentClass.getCreator(), studentClass.getCreateName(), meetObj);
-            studentClass.setMeetingRecordId(meetingEntity.getMeetId());
-            studentClassService.updateEntity(studentClass);
-            meetingRecordId = meetingEntity.getMeetId();
+
+
+
+            return teacher.getMeetLink();
         }
-        // 1. 解析会议开始时间
-        String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
-        Date beginDate = DateUtil.parse(dateStr, "yyyy-MM-dd HH:mm");
-        // 2. 获取当前时间（精确到分钟）
-        Date currentDate = DateUtil.parse(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm");
-        // 3. 计算时间差（会议开始时间 - 当前时间）
-        long diffInMillis = beginDate.getTime() - currentDate.getTime();
-        long fiveMinutesInMillis = 5 * 60 * 1000; // 5分钟的毫秒数
-        // 4. 核心校验逻辑：允许进入会议的条件
-        boolean canEnterMeeting = diffInMillis <= fiveMinutesInMillis;
-        StudentClassMeeting studentClassMeeting = studentClassMeetingService.selectByMeetingId(meetingRecordId);
-        Assert.notNull(studentClassMeeting, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        Assert.isTrue(StringUtils.isNotEmpty(studentClassMeeting.getMeetJoinUrl()), getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        //todo 为了测试
-        if (!StringUtils.equals(studentClass.getStudentEmail(), "student@talk.com")) {
-            Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE) + "          joinLink-->:" + studentClassMeeting.getMeetJoinUrl());
-        }
-        return studentClassMeeting.getMeetJoinUrl();
     }
 
     /**

@@ -43,6 +43,10 @@
         <result column="zoom_user_id" jdbcType="INTEGER" property="zoomUserId"/>
         <result column="zoom_account_id" jdbcType="INTEGER" property="zoomAccountId"/>
         <result column="zoom_activation_status" jdbcType="BIT" property="zoomActivationStatus"/>
+        <result column="meet_link" jdbcType="BIT" property="meetLink"/>
+        <result column="meet_pass_word" jdbcType="BIT" property="meetPassWord"/>
+
+
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -52,7 +56,7 @@
         canceled_qty, complaints_qty, salary_amount, email, country, manager_id, manager,
         avatar_url, language, currency_code, currency_name, specialties, manager_status,
         test_status, enabled_status, video_url, gender, zoom_user_id, zoom_account_id, zoom_activation_status,
-        group_status, coin ,group_coin, group_price
+        group_status, coin ,group_coin, group_price, meet_link, meet_pass_word
     </sql>
 
     <select id="selectByRecordId" resultMap="BaseResultMap">
@@ -459,6 +463,7 @@
         </trim>
     </insert>
 
+
     <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.Teacher">
         update teacher
         <set>
@@ -581,6 +586,12 @@
             </if>
             <if test="groupStatus != null">
                 group_status = #{groupStatus,jdbcType=BIT},
+            </if>
+            <if test="meetLink != null">
+                meet_link = #{meetLink,jdbcType=VARCHAR},
+            </if>
+            <if test="meetPassWord != null">
+                meet_pass_word = #{meetPassWord,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}

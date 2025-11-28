@@ -77,5 +77,11 @@ public class TeacherUpdateReqVo {
     @Schema(name = "gender", description = "性别 1男 2女 3其他")
     private Integer gender;
 
+    @Schema(name = "meetLink", description = "腾讯会议链接")
+    private String meetLink;
+
+    @Schema(name = "meetPassWord", description = "腾讯会议密码")
+    private String meetPassWord;
+
 
 }
