@@ -545,6 +545,13 @@ public class StudentClassPcService extends BasePcService {
                 Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE));
             }
             //todo 状态写入
+            if(StringUtils.equals(userCode,studentClass.getStudentId())){
+                studentClass.setStudentCourseStatus(CourseStatusEnum.PROCESS.getStatus());
+            }
+            if(StringUtils.equals(userCode,studentClass.getTeacherId())){
+                studentClass.setTeacherCourseStatus(CourseStatusEnum.PROCESS.getStatus());
+                studentClass.setClassStatus(CourseStatusEnum.PROCESS.getStatus());
+            }
             return teacher.getMeetLink();
         }
     }

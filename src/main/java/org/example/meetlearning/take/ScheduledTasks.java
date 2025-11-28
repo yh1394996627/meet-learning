@@ -167,10 +167,26 @@ public class ScheduledTasks {
         List<Teacher> teachers = teacherService.selectByRecordIds(teacherIds);
         Map<String, Teacher> teacherMap = teachers.stream().collect(Collectors.toMap(Teacher::getRecordId, Function.identity()));
         for (StudentClass studentClass : studentClasses) {
-            Teacher teacher = teacherMap.get(studentClass.getTeacherId());
-            if (teacher != null && StringUtils.isNotEmpty(teacher.getZoomAccountId())) {
-                zoomOAuthService.scheduleEndMeetingTask(studentClass.getMeetingRecordId(), teacher.getZoomAccountId());
+            if(!StringUtils.isEmpty(studentClass.getMeetingRecordId())) {
+                Teacher teacher = teacherMap.get(studentClass.getTeacherId());
+                if (teacher != null && StringUtils.isNotEmpty(teacher.getZoomAccountId())) {
+                    zoomOAuthService.scheduleEndMeetingTask(studentClass.getMeetingRecordId(), teacher.getZoomAccountId());
+                }
+            }else{
+                studentClass.setClassStatus(getStatus(studentClass.getTeacherCourseStatus()));
+                studentClass.setStudentCourseStatus(getStatus(studentClass.getStudentCourseStatus()));
+                studentClass.setTeacherCourseStatus(getStatus(studentClass.getTeacherCourseStatus()));
+                studentClassService.updateEntity(studentClass);
             }
         }
+    }
+
+    private Integer getStatus(Integer status){
+        if(Objects.equals(status, CourseStatusEnum.PROCESS.getStatus())){
+            return CourseStatusEnum.FINISH.getStatus();
+        }else if(Objects.equals(status, CourseStatusEnum.NOT_STARTED.getStatus())){
+            return CourseStatusEnum.ABSENT.getStatus();
+        }
+        return CourseStatusEnum.ABSENT.getStatus();
     }
 }
