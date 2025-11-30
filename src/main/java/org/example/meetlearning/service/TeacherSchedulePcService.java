@@ -203,10 +203,10 @@ public class TeacherSchedulePcService extends BasePcService {
                 //记录老师已有课时
                 teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
                 //创建会议
-                String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-                JSONObject meetObj = new JSONObject(meeting);
-                StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
-                studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+//                String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+//                JSONObject meetObj = new JSONObject(meeting);
+//                StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
+//                studentClass.setMeetingRecordId(meetingEntity.getMeetId());
                 studentClassService.insertEntity(studentClass);
             }
         } else {
