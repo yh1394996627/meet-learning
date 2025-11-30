@@ -83,18 +83,18 @@
     </select>
 
     <select id="selectByGltDateTeacherId" resultType="org.example.meetlearning.vo.classes.StudentClassPriceGroupVo">
-        select teacher_id as teacherId,
-        record_id as recordId,
-        price as price,
-        group_price as groupPrice,
-        class_status as classStatus,
-        course_type as courseType,
-        count(1) as totalQty
+        select teacher_id   as teacherId,
+               record_id    as recordId,
+               price        as price,
+               group_price  as groupPrice,
+               class_status as classStatus,
+               course_type  as courseType,
+               count(1)     as totalQty
         from student_class
         where deleted = 0
-        and teacher_id = #{teacherId}
-        and is_verification = false
-        and course_time &lt;= #{courseDate}
+          and teacher_id = #{teacherId}
+          and is_verification = false
+          and course_time &lt;= #{courseDate}
         group by course_type, price, group_price, class_status
     </select>
 
@@ -103,33 +103,33 @@
         select record_id
         from student_class
         where deleted = 0
-        and course_type = #{courseType}
-        and teacher_id = #{teacherId}
-        and course_time = #{courseDate}
-        and begin_time = #{beginTime}
-        and end_time = #{endTime}
+          and course_type = #{courseType}
+          and teacher_id = #{teacherId}
+          and course_time = #{courseDate}
+          and begin_time = #{beginTime}
+          and end_time = #{endTime}
     </select>
 
     <update id="updateByGltDateTeacherId">
         update student_class
         set is_verification = true
         where deleted = 0
-        and teacher_id = #{teacherId}
-        and class_status in ('FINISH', 'ABSENT', 'CANCEL_DE', 'ONT_STAR')
-        and is_verification = false
-        and course_time &lt;= #{courseDate}
+          and teacher_id = #{teacherId}
+          and class_status in ('FINISH', 'ABSENT', 'CANCEL_DE', 'ONT_STAR')
+          and is_verification = false
+          and course_time &lt;= #{courseDate}
     </update>
 
     <select id="selectClassByTimeBt" resultMap="BaseResultMap">
         select record_id,
-        course_time,
-        begin_time,
-        student_id,
-        teacher_id
+               course_time,
+               begin_time,
+               student_id,
+               teacher_id
         from student_class
         where deleted = 0
-        and course_time = #{courseDate}
-        and begin_time = #{beginTime}
+          and course_time = #{courseDate}
+          and begin_time = #{beginTime}
     </select>
 
     <select id="selectPageByParams" resultMap="BaseResultMap">
@@ -146,7 +146,7 @@
         select
         <include refid="Base_Column_List"/>
         from student_class
-        where deleted = 0 and course_time = #{courseTime} and end_time = #{endTime}
+        where deleted = 0 and course_time &lt;= #{courseTime} and class_status in (1,2)
     </select>
 
 
@@ -184,13 +184,13 @@
 
     <select id="selectClassStatusGroupByParams" resultMap="BaseResultMap">
         SELECT teacher_id,
-        class_status,
-        price,
-        group_price
+               class_status,
+               price,
+               group_price
         from student_class
         WHERE deleted = 0
-        and teacher_id = #{teacherId}
-        and DATE_FORMAT(course_time, '%Y-%m') = DATE_FORMAT(CURRENT_DATE(), '%Y-%m')
+          and teacher_id = #{teacherId}
+          and DATE_FORMAT(course_time, '%Y-%m') = DATE_FORMAT(CURRENT_DATE(), '%Y-%m')
     </select>
 
     <select id="selectAffCountByParams" resultType="org.example.meetlearning.vo.common.SelectValueVo">
@@ -639,13 +639,15 @@
     <update id="updateClassEntityByStudent">
         update student_class
         set student_name = #{studentName}
-        where deleted = 0 and student_id = #{studentId};
+        where deleted = 0
+          and student_id = #{studentId};
     </update>
 
     <update id="updateClassEntityByTeacher">
         update student_class
         set teacher_name = #{teacherName}
-        where deleted = 0 and teacher_id = #{teacherId};
+        where deleted = 0
+          and teacher_id = #{teacherId};
     </update>
 
     <update id="deletedClass">

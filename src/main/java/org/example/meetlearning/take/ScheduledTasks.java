@@ -157,15 +157,17 @@ public class ScheduledTasks {
      *
      * @throws IOException
      */
-    @Scheduled(cron = "0 0,30 * * * ?")
+//    @Scheduled(cron = "0 0,30 * * * ?")
+    @Scheduled(cron = "0 * * * * ?")  // 每分钟
     public void closeMeetingTask() throws IOException {
         //获取到你跟前日期和结束时间节点
         Date courseTime = DateUtil.parseDate(DateUtil.format(new Date(), "yyyy-MM-dd"));
         String endTime = DateUtil.format(new Date(), "HH:mm");
         List<StudentClass> studentClasses = studentClassService.selectByCourseDate(courseTime, endTime);
+        studentClasses = studentClasses.stream().filter(studentClass -> StringUtils.compare(studentClass.getCourseTime()+studentClass.getEndTime(), DateUtil.formatDate(courseTime)+endTime) <= 0).toList();
         List<String> teacherIds = studentClasses.stream().map(StudentClass::getTeacherId).distinct().toList();
         List<Teacher> teachers = teacherService.selectByRecordIds(teacherIds);
-        Map<String, Teacher> teacherMap = teachers.stream().collect(Collectors.toMap(Teacher::getRecordId, Function.identity()));
+//        Map<String, Teacher> teacherMap = teachers.stream().collect(Collectors.toMap(Teacher::getRecordId, Function.identity()));
         for (StudentClass studentClass : studentClasses) {
 //            if(!StringUtils.isEmpty(studentClass.getMeetingRecordId())) {
 //                Teacher teacher = teacherMap.get(studentClass.getTeacherId());
@@ -187,6 +189,6 @@ public class ScheduledTasks {
         } else if (Objects.equals(status, CourseStatusEnum.NOT_STARTED.getStatus())) {
             return CourseStatusEnum.ABSENT.getStatus();
         }
-        return CourseStatusEnum.ABSENT.getStatus();
+        return status;
     }
 }
