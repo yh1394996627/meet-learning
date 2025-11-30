@@ -552,6 +552,7 @@ public class StudentClassPcService extends BasePcService {
                 studentClass.setTeacherCourseStatus(CourseStatusEnum.PROCESS.getStatus());
                 studentClass.setClassStatus(CourseStatusEnum.PROCESS.getStatus());
             }
+            studentClassService.updateEntity(studentClass);
             return teacher.getMeetLink();
         }
     }
