@@ -157,8 +157,8 @@ public class ScheduledTasks {
      *
      * @throws IOException
      */
-//    @Scheduled(cron = "0 0,30 * * * ?")
-    @Scheduled(cron = "0 * * * * ?")  // 每分钟
+    @Scheduled(cron = "0 0,30 * * * ?")
+    //@Scheduled(cron = "0 * * * * ?")  // 每分钟
     public void closeMeetingTask() throws IOException {
         //获取到你跟前日期和结束时间节点
         Date courseTime = DateUtil.parseDate(DateUtil.format(new Date(), "yyyy-MM-dd"));
