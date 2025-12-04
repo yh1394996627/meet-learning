@@ -231,7 +231,9 @@ public class TeacherPcService extends BasePcService {
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
-    public RespVo<String> deleteTeacher(RecordIdQueryVo queryVo) {
+    public RespVo<String> deleteTeacher(String userCode, RecordIdQueryVo queryVo) {
+        User user = userService.selectByRecordId(userCode);
+        Assert.isTrue(StringUtils.pathEquals(user.getEmail(), "admin@talk.com"), getHint(LanguageContextEnum.AUTO_DELETE));
         Teacher teacher = teacherService.selectByRecordId(queryVo.getRecordId());
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         Assert.isTrue(!BooleanUtil.isTrue(teacher.getEnabledStatus()), getHint(LanguageContextEnum.TEACHER_CAN_DELETED));
@@ -289,7 +291,7 @@ public class TeacherPcService extends BasePcService {
 
     public PageVo<TeacherEvaluationRecordRespVo> teacherEvaluationRecord(String userCode, RecordIdPageQueryVo<TeacherEvaluationRecord> queryVo) {
         String userId = StringUtils.hasText(queryVo.getRecordId()) ? queryVo.getRecordId() : userCode;
-        Page<TeacherEvaluationRecord> page = teacherEvaluationService.selectPageByTeacherId(userId,queryVo.getPageRequest());
+        Page<TeacherEvaluationRecord> page = teacherEvaluationService.selectPageByTeacherId(userId, queryVo.getPageRequest());
         return PageVo.map(page, TeacherConverter.INSTANCE::toEvaluationRecordVo);
     }
 

@@ -103,7 +103,7 @@ public class TeacherController implements BaseHandler {
     @Operation(summary = "删除老师功能", operationId = "deleteTeacher")
     @PostMapping(value = "v1/teacher/delete")
     public RespVo<String> deleteTeacher(@RequestBody RecordIdQueryVo reqVo) {
-        return teacherPcService.deleteTeacher(reqVo);
+        return teacherPcService.deleteTeacher(getUserCode(),reqVo);
     }
 
 

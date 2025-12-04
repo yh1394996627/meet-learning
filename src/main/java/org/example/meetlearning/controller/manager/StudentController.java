@@ -46,7 +46,7 @@ public class StudentController implements BaseHandler {
     @Operation(summary = "删除学生接口", operationId = "studentDeleted")
     @PostMapping(value = "v1/student/deleted")
     public RespVo<String> studentDeleted(@RequestBody StudentRecordReqVo reqVo) {
-        return studentPcService.deleteStudent(reqVo);
+        return studentPcService.deleteStudent(getUserCode(),reqVo);
     }
 
     @Operation(summary = "更新学生备注", operationId = "studentRemarkUpdate")

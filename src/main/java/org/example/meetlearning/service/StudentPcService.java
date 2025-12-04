@@ -151,7 +151,9 @@ public class StudentPcService extends BasePcService {
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
-    public RespVo<String> deleteStudent(StudentRecordReqVo reqVo) {
+    public RespVo<String> deleteStudent(String userCode,StudentRecordReqVo reqVo) {
+        User user = userService.selectByRecordId(userCode);
+        Assert.isTrue(org.codehaus.plexus.util.StringUtils.equals(user.getEmail(), "admin@talk.com"), getHint(LanguageContextEnum.AUTO_DELETE));
         String recordId = reqVo.getRecordId();
         Assert.isTrue(StringUtils.hasText(recordId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
         studentService.deletedByRecordId(recordId);

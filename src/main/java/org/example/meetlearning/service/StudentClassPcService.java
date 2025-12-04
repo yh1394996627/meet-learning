@@ -492,10 +492,10 @@ public class StudentClassPcService extends BasePcService {
     }
 
 
-    public String meetingJoinUrl(String userCode,String userName,String classId) throws IOException, ParseException {
+    public String meetingJoinUrl(String userCode, String userName, String classId) throws IOException, ParseException {
         StudentClass studentClass = studentClassService.selectByRecordId(classId);
         Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        if(StringUtils.isNotEmpty(studentClass.getMeetingRecordId())) {
+        if (StringUtils.isNotEmpty(studentClass.getMeetingRecordId())) {
             String meetingRecordId = studentClass.getMeetingRecordId();
             //如果没有会议信息则新建一个
             if (StringUtils.isEmpty(meetingRecordId)) {
@@ -528,7 +528,7 @@ public class StudentClassPcService extends BasePcService {
                 Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE) + "          joinLink-->:" + studentClassMeeting.getMeetJoinUrl());
             }
             return studentClassMeeting.getMeetJoinUrl();
-        }else{
+        } else {
             Teacher teacher = teacherService.selectByRecordId(studentClass.getTeacherId());
             // 1. 解析会议开始时间
             String dateStr = studentClass.getCourseTime() + " " + studentClass.getBeginTime();
@@ -545,10 +545,10 @@ public class StudentClassPcService extends BasePcService {
                 Assert.isTrue(canEnterMeeting, getHint(LanguageContextEnum.MEETING_FIVE));
             }
             //todo 状态写入
-            if(StringUtils.equals(userCode,studentClass.getStudentId())){
+            if (StringUtils.equals(userCode, studentClass.getStudentId())) {
                 studentClass.setStudentCourseStatus(CourseStatusEnum.PROCESS.getStatus());
             }
-            if(StringUtils.equals(userCode,studentClass.getTeacherId())){
+            if (StringUtils.equals(userCode, studentClass.getTeacherId())) {
                 studentClass.setTeacherCourseStatus(CourseStatusEnum.PROCESS.getStatus());
                 studentClass.setClassStatus(CourseStatusEnum.PROCESS.getStatus());
             }
@@ -607,6 +607,9 @@ public class StudentClassPcService extends BasePcService {
 
 
     public void classDeleted(String userCode, String userName, RecordIdQueryVo queryVo) {
+        User user = userService.selectByRecordId(userCode);
+        Assert.isTrue(StringUtils.equals(user.getEmail(), "admin@talk.com"), getHint(LanguageContextEnum.AUTO_DELETE));
+
         //查询课程信息
         String recordId = queryVo.getRecordId();
         StudentClass studentClass = studentClassService.selectByRecordId(recordId);

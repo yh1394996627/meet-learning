@@ -61,7 +61,6 @@ public class AffiliateController implements BaseHandler {
         return affiliatePcService.affiliateSelect(reqVo);
     }
 
-
     @Operation(summary = "代理商仪表盘", operationId = "dashboard")
     @PostMapping(value = "v1/affiliate/dashboard")
     public RespVo<AffiliateDashboardRespVo> dashboard() {
