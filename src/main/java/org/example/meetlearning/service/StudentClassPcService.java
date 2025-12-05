@@ -614,7 +614,7 @@ public class StudentClassPcService extends BasePcService {
         String recordId = queryVo.getRecordId();
         StudentClass studentClass = studentClassService.selectByRecordId(recordId);
         Assert.notNull(studentClass, getHint(LanguageContextEnum.COURSE_NULL_VERIFY));
-        Assert.isTrue(Objects.equals(studentClass.getClassStatus(), CourseStatusEnum.NOT_STARTED.getStatus()), getHint(LanguageContextEnum.COURSE_VERIFY_UNSTARTED));
+//        Assert.isTrue(Objects.equals(studentClass.getClassStatus(), CourseStatusEnum.NOT_STARTED.getStatus()), getHint(LanguageContextEnum.COURSE_VERIFY_UNSTARTED));
         //删除学生课程只限制单人测试课程
         Assert.isTrue(!StringUtils.equals(studentClass.getCourseType(), CourseTypeEnum.GROUP.name()), getHint(LanguageContextEnum.COURSE_GROUP_DELETE_VERIFY));
         studentClass.setDeleted(true);
