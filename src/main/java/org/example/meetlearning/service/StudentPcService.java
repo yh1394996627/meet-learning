@@ -64,13 +64,14 @@ public class StudentPcService extends BasePcService {
         Page<Student> page = studentService.findPageByParams(params, queryVo.getPageRequest());
         List<String> userIds = page.getRecords().stream().map(Student::getRecordId).toList();
         Map<String, UserFinance> userFinanceMap;
-        Map<String, List<UserFinanceRecord>> userFinanceRecordHashMap;
+        Map<String, UserFinanceRecord> userFinanceRecordHashMap;
         if (!CollectionUtils.isEmpty(userIds)) {
             //获取学生课时币信息
             List<UserFinance> userFinances = userFinanceService.selectByUserIds(userIds);
             userFinanceMap = userFinances.stream().collect(Collectors.toMap(UserFinance::getUserId, Function.identity()));
+
             List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectDateGroupByUserIds(userIds);
-            userFinanceRecordHashMap = userFinanceRecordList.stream().filter(f -> !BigDecimalUtil.eqZero(BigDecimalUtil.nullOrZero(f.getCanQty()))).collect(Collectors.groupingBy(UserFinanceRecord::getUserId));
+            userFinanceRecordHashMap = userFinanceRecordList.stream().collect(Collectors.toMap(UserFinanceRecord::getUserId, Function.identity()));
         } else {
             userFinanceRecordHashMap = new HashMap<>();
             userFinanceMap = new HashMap<>();
@@ -85,11 +86,8 @@ public class StudentPcService extends BasePcService {
                 respVo.setIsDeleted(BigDecimalUtil.eqZero(respVo.getBalance()));
             }
             if (userFinanceRecordHashMap.containsKey(list.getRecordId())) {
-                List<UserFinanceRecord> userFinanceRecords = userFinanceRecordHashMap.get(list.getRecordId());
-                if (!CollectionUtils.isEmpty(userFinanceRecords)) {
-                    userFinanceRecords = userFinanceRecords.stream().filter(f -> f.getExpirationTime() != null).sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime).reversed()).collect(Collectors.toList());
-                    respVo.setExpirationTime(userFinanceRecords.get(0).getExpirationTime());
-                }
+                UserFinanceRecord userFinanceRecord = userFinanceRecordHashMap.get(list.getRecordId());
+                respVo.setExpirationTime(userFinanceRecord.getExpirationTime());
             }
             return respVo;
         });
@@ -153,7 +151,7 @@ public class StudentPcService extends BasePcService {
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
-    public RespVo<String> deleteStudent(String userCode, StudentRecordReqVo reqVo) {
+    public RespVo<String> deleteStudent(String userCode,StudentRecordReqVo reqVo) {
         User user = userService.selectByRecordId(userCode);
         Assert.isTrue(org.codehaus.plexus.util.StringUtils.equals(user.getEmail(), "admin@talk.com"), getHint(LanguageContextEnum.AUTO_DELETE));
         String recordId = reqVo.getRecordId();

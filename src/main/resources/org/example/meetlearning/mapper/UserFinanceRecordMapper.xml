@@ -75,6 +75,7 @@
                 #{item}
             </foreach>
         </if>
+        and can_qty > 0
         and expiration_time is not null
         group by user_id
     </select>
