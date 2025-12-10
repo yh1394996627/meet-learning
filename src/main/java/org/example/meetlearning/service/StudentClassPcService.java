@@ -189,15 +189,14 @@ public class StudentClassPcService extends BasePcService {
             affiliate = affiliateService.findByRecordId(student.getAffiliateId());
         }
         Assert.isTrue(reqVo.getCourseType() != null, "Course type" + getHint(LanguageContextEnum.OBJ_NOTNULL));
-        //新增课时币学生扣减记录
-        operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null);
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
-
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
+        //新增课时币学生扣减记录
+        operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
         if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
             //查询课程是否存在，如果存在直接返回不保存
             List<StudentClass> groupVoList = studentClassService.selectByDateTeacherIdTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime(), studentClass.getCourseType());
-            if (groupVoList.size() > 0) {
+            if (!groupVoList.isEmpty()) {
                 StudentClass studentClass1 = studentClassService.selectByRecordId(groupVoList.get(0).getRecordId());
                 groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass1);
                 return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
@@ -208,14 +207,14 @@ public class StudentClassPcService extends BasePcService {
             Textbook textbook = textbookService.selectByRecordId(reqVo.getTextbookId());
             studentClass.setTextbook(textbook.getName());
         }
-        Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
-        if (StringUtils.isNotEmpty(teacher.getZoomUserId())) {
-            //创建会议
-            String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-            JSONObject meetObj = new JSONObject(meeting);
-            StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
-            studentClass.setMeetingRecordId(meetingEntity.getMeetId());
-        }
+//        Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+//        if (StringUtils.isNotEmpty(teacher.getZoomUserId())) {
+//            //创建会议
+//            String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
+//            JSONObject meetObj = new JSONObject(meeting);
+//            StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
+//            studentClass.setMeetingRecordId(meetingEntity.getMeetId());
+//        }
         if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
             //如果是团队课程
             studentClass.setStudentId(null);
@@ -636,7 +635,7 @@ public class StudentClassPcService extends BasePcService {
         tokensLogAddReqVo.setPaymentCode("B002");
         tokensLogAddReqVo.setCurrencyCode("CNY");
         tokensLogAddReqVo.setCurrencyName("CNY");
-        tokensLogPcService.addTokensLog(userCode, userName, tokensLogAddReqVo);
+        tokensLogPcService.addTokensLog(userCode, userName, tokensLogAddReqVo, true);
 
     }
 

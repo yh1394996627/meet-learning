@@ -33,4 +33,8 @@ public class TokensLogAddReqVo {
     @Schema(name = "remark", description = "备注")
     private String remark;
 
+    @Schema(name = "isDeletedCallBack", description = "是否是删除回退")
+    private Boolean isDeletedCallBack;
+
+
 }

@@ -148,7 +148,7 @@ public class WechatPayService extends BasePcService {
         User user = userService.selectByRecordId(order.getStudentId());
         PayConfig payConfig = payConfigService.getPayConfigByRecordId(order.getPayConfigId());
         Date expiringDate = DateUtil.offsetDay(new Date(), payConfig.getDays());
-        operaTokenLogs(user.getRecordId(), user.getName(), user.getRecordId(), order.getQuantity(), TokenContentEnum.WECHAT_RECHARGE.getEnContent(), payConfig, rechargeOrder, expiringDate);
+        operaTokenLogs(user.getRecordId(), user.getName(), user.getRecordId(), order.getQuantity(), TokenContentEnum.WECHAT_RECHARGE.getEnContent(), payConfig, rechargeOrder, expiringDate, null);
         if (StringUtils.isNotEmpty(user.getManagerId())) {
             User manager = userService.selectByRecordId(user.getManagerId());
             if (manager != null && StringUtils.equals(manager.getType(), RoleEnum.AFFILIATE.name())) {

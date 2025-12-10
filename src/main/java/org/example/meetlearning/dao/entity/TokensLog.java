@@ -46,4 +46,6 @@ public class TokensLog {
 
     private String note;
 
+    private String classId;
+
 }

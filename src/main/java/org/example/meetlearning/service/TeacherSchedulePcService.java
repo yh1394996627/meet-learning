@@ -195,11 +195,11 @@ public class TeacherSchedulePcService extends BasePcService {
             }
             for (StudentClassRegularRecord record : records) {
                 Assert.isTrue(studentClassRegular.getCourseType() != null, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-                //3.新增课时币学生扣减记录
-                operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null);
                 UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
                 StudentClass studentClass = StudentClassConverter.INSTANCE.toCreateByRegular(userCode, userName, studentClassRegular, record, student, teacher, affiliate, userFinance);
-                Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
+                //3.新增课时币学生扣减记录
+                operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
+//                Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
                 //记录老师已有课时
                 teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
                 //创建会议

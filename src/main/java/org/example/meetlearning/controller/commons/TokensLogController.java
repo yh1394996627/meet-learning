@@ -33,7 +33,7 @@ public class TokensLogController implements BaseHandler {
     @Operation(summary = "课时币新增日志", operationId = "addTokensLog")
     @PostMapping(value = "v1/token/record/add")
     public RespVo<String> addTokensLog(@RequestBody TokensLogAddReqVo tokensLogAddReqVo) {
-        return tokensLogPcService.addTokensLog(getUserCode(), getUserName(), tokensLogAddReqVo);
+        return tokensLogPcService.addTokensLog(getUserCode(), getUserName(), tokensLogAddReqVo,false);
     }
 
     @Operation(summary = "课时币数据修复", operationId = "repairTokensLog")

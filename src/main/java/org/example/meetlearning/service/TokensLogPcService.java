@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.TokenConverter;
 import org.example.meetlearning.converter.UserFinanceConverter;
@@ -21,6 +22,7 @@ import org.example.meetlearning.vo.token.TokensLogListRespVo;
 import org.example.meetlearning.vo.token.TokensLogQueryVo;
 import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,7 +59,8 @@ public class TokensLogPcService extends BasePcService {
     }
 
 
-    public RespVo<String> addTokensLog(String userCode, String userName, TokensLogAddReqVo tokensLogAddReqVo) {
+    public RespVo<String> addTokensLog(String userCode, String userName, TokensLogAddReqVo tokensLogAddReqVo, Boolean isDeletedCallBack) {
+        tokensLogAddReqVo.setIsDeletedCallBack(isDeletedCallBack);
         String userId = StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()) ? tokensLogAddReqVo.getRecordId() : userCode;
         Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()), "user is not null");
         financeTokenLogs(userCode, userName, userId, tokensLogAddReqVo);
@@ -65,12 +68,12 @@ public class TokensLogPcService extends BasePcService {
     }
 
 
+    @Transactional(rollbackFor = Exception.class)
     public void financeTokenLogs(String userCode, String userName, String userId, TokensLogAddReqVo reqVo) {
         User user = userService.selectByRecordId(userId);
         Assert.notNull(user, getHint(LanguageContextEnum.USER_NOTNULL));
         UserFinance userFinance = userFinanceService.selectByUserId(userId);
         Assert.notNull(userFinance, getHint(LanguageContextEnum.USER_FINANCE_NOTNULL));
-        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
         BigDecimal balanceQty = userFinance.getBalanceQty();
         BigDecimal balance = BigDecimalUtil.add(balanceQty, reqVo.getQuantity());
         Assert.isTrue(BigDecimalUtil.gteZero(balance), getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
@@ -89,6 +92,11 @@ public class TokensLogPcService extends BasePcService {
             Assert.notNull(baseConfig, "Configuration information not obtained record:【" + reqVo.getCurrencyCode() + "】");
             tokensLog.setCurrencyCode(baseConfig.getCode());
             tokensLog.setCurrencyName(baseConfig.getName());
+        }
+        if (BooleanUtils.isTrue(reqVo.getIsDeletedCallBack())) {
+            List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
+
+
         }
         tokensLogService.insertEntity(tokensLog);
         userFinanceService.updateByEntity(userFinance);
