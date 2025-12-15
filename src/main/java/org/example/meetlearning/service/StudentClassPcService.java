@@ -415,7 +415,7 @@ public class StudentClassPcService extends BasePcService {
         String endTime = studentClass.getEndTime();
         Date courseTime = studentClass.getCourseTime();
         Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        Date classDate = DateUtil.parse(DateUtil.format(reqVo.getCourseDate(), "yyyy-MM-dd") + " " + reqVo.getBeginTime());
+        Date classDate = DateUtil.parse(DateUtil.format(courseTime, "yyyy-MM-dd") + " " + beginTime);
         long diffInMillie = classDate.getTime() - new Date().getTime();
         Assert.isTrue(diffInMillie >= 0, getHint(LanguageContextEnum.NOT_CHANGE));
         long dayNum = TimeUnit.HOURS.convert(diffInMillie, TimeUnit.MILLISECONDS);
