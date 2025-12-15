@@ -356,7 +356,7 @@ public class BasePcService implements BaseHandler {
         userFinanceService.updateByEntity(userFinance);
     }
 
-    public String operaTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, String remark, PayConfig payConfig, RechargeOrder rechargeOrder, Date expirationTime, String classId) {
+    public void operaTokenLogs(String userCode, String userName, String userId, BigDecimal quantity, String remark, PayConfig payConfig, RechargeOrder rechargeOrder, Date expirationTime, String classId) {
         User user = userService.selectByRecordId(userId);
         Assert.notNull(user, getHint(LanguageContextEnum.USER_NOTNULL));
         UserFinance userFinance = userFinanceService.selectByUserId(userId);
