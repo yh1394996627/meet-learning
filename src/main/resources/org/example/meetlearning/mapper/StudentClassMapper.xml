@@ -116,10 +116,7 @@
         where deleted = 0
           and student_id = #{studentId}
           and course_time = #{courseDate}
-          and (
-            (begin_time &lt; #{endTime} and end_time > #{beginTime})
-            or (begin_time = #{beginTime} and end_time = #{endTime})
-          )
+          and begin_time = #{beginTime} and end_time = #{endTime})
           and class_status not in (7, 8)
     </select>
 
