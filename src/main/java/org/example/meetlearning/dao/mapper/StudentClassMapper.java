@@ -52,5 +52,10 @@ public interface StudentClassMapper {
 
     List<StudentClass> selectClassByTimeBt(Date courseDate, String beginTime);
 
+    /**
+     * 查询学生在指定日期和时间段是否有预约（排除已取消的）
+     */
+    Long countByStudentIdDateTime(String studentId, Date courseDate, String beginTime, String endTime);
+
 
 }

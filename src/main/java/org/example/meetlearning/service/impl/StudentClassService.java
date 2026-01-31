@@ -151,6 +151,12 @@ public class StudentClassService {
         studentClassMapper.updateByGltDateTeacherId(teacherId, courseDate);
     }
 
+    /**
+     * 查询学生在指定日期和时间段是否有预约（排除已取消的）
+     */
+    public Long countByStudentIdDateTime(String studentId, Date courseDate, String beginTime, String endTime) {
+        return studentClassMapper.countByStudentIdDateTime(studentId, courseDate, beginTime, endTime);
+    }
 
 
 }

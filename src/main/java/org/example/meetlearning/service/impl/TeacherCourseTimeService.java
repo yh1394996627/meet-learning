@@ -23,6 +23,8 @@ public class TeacherCourseTimeService {
 
     private TeacherCourseTimeMapper teacherCourseTimeMapper;
 
+    private StudentClassService studentClassService;
+
     public void deleteByRegularId(String teacherId, String regularId) {
         teacherCourseTimeMapper.deleteByRegularId(teacherId, regularId);
     }
@@ -46,7 +48,19 @@ public class TeacherCourseTimeService {
 
 
     public void studentClassTimeSet(String language, List<StudentClass> studentClasses) {
+
+
         for (StudentClass studentClass : studentClasses) {
+            //查询学生这个时间段是否有预约，如果有预约则报错
+            Long studentClassCount = studentClassService.countByStudentIdDateTime(
+                    studentClass.getStudentId(),
+                    studentClass.getCourseTime(),
+                    studentClass.getBeginTime(),
+                    studentClass.getEndTime()
+            );
+            Assert.isTrue(studentClassCount == null || studentClassCount == 0, "Student【" + studentClass.getStudentName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】, " + getHint(language, LanguageContextEnum.TEACHER_TIME_REPEAT));
+
+            //查询老师是否已经存在该时间段占用
             List<TeacherCourseTime> teacherCourseTimes = teacherCourseTimeMapper.selectByTeacherIdDateTime(studentClass.getTeacherId(), DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd"), studentClass.getBeginTime(), studentClass.getEndTime());
             Assert.isTrue(CollectionUtils.isEmpty(teacherCourseTimes), "Teacher【" + studentClass.getTeacherName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】, " + getHint(language, LanguageContextEnum.TEACHER_TIME_REPEAT));
             TeacherCourseTime teacherCourseTime = new TeacherCourseTime();
