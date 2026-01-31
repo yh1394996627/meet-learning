@@ -58,6 +58,7 @@ public class TeacherCourseTimeService {
                     studentClass.getBeginTime(),
                     studentClass.getEndTime()
             );
+            log.info("学生【{}】时间段【{}】预约数：{}", studentClass.getStudentName(), DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime(), studentClassCount);
             Assert.isTrue(studentClassCount == null || studentClassCount == 0, "Student【" + studentClass.getStudentName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】, " + getHint(language, LanguageContextEnum.TEACHER_TIME_REPEAT));
 
             //查询老师是否已经存在该时间段占用

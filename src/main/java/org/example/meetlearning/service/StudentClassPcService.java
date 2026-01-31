@@ -223,9 +223,9 @@ public class StudentClassPcService extends BasePcService {
             studentClass.setStudentCountry(null);
             groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass);
         }
-        studentClassService.insertEntity(studentClass);
         //记录老师已有课时
         teacherCourseTimeService.studentClassTimeSet(getLanguage(), List.of(studentClass));
+        studentClassService.insertEntity(studentClass);
         teacherSalaryPcService.updateSalary(userCode, userName, studentClass.getTeacherId(), new Date());
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
