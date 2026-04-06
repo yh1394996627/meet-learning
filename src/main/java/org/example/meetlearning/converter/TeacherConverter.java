@@ -1,7 +1,7 @@
 package org.example.meetlearning.converter;
 
 import cn.hutool.core.util.BooleanUtil;
-import org.codehaus.plexus.util.StringUtils;
+import com.aliyuncs.utils.StringUtils;
 import org.example.meetlearning.dao.entity.Teacher;
 import org.example.meetlearning.dao.entity.TeacherEvaluationRecord;
 import org.example.meetlearning.dao.entity.TeacherFeature;
@@ -87,7 +87,8 @@ public interface TeacherConverter {
         teacher.setGender(reqVo.getGender());
         teacher.setMeetLink(reqVo.getMeetLink());
         teacher.setMeetPassWord(reqVo.getMeetPassWord());
-        teacher.setZoomActivationStatus(StringUtils.isNotEmpty(reqVo.getMeetLink()));
+        Boolean isStatus = !StringUtils.isEmpty(reqVo.getMeetLink());
+        teacher.setZoomActivationStatus(isStatus);
         return teacher;
     }
 
