@@ -32,7 +32,7 @@ public interface StudentClassConverter {
         respVo.setStudentLanguage(studentClass.getStudentCountry());
         respVo.setTeacherId(studentClass.getTeacherId());
         respVo.setTeacherName(studentClass.getTeacherName());
-        respVo.setTeacherLanguage(studentClass.getTeacherLanguage());
+        respVo.setTeacherLanguage(studentClass.getTeacherCountry());
         respVo.setTextbookId(studentClass.getCourseId());
         respVo.setTextbookName(studentClass.getTextbook());
         respVo.setCourseTime(studentClass.getCourseTime().toString() + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime());
