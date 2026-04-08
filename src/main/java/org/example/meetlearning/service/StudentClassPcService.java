@@ -152,12 +152,12 @@ public class StudentClassPcService extends BasePcService {
             }
             if (finalStudentMap.containsKey(list.getStudentId())) {
                 Student student = finalStudentMap.get(list.getStudentId());
-                respVo.setStudentLanguage(student.getLanguage());
+                respVo.setStudentLanguage(student.getCountry());
                 respVo.setStudentEmail(student.getEmail());
             }
             if (finalTeacherMap.containsKey(list.getTeacherId())) {
                 Teacher teacher = finalTeacherMap.get(list.getTeacherId());
-                respVo.setTeacherLanguage(teacher.getLanguage());
+                respVo.setTeacherLanguage(teacher.getCountry());
                 respVo.setMeetLink(teacher.getMeetLink());
                 respVo.setMeetPassWord(teacher.getMeetPassWord());
             }
