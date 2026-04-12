@@ -216,8 +216,8 @@
 
     <sql id="common_where">
         <if test="params.teacherKeyword != null">
-            and (lower(teacher_name) = #{params.teacherKeyword}
-            or lower(teacher_email) = #{params.teacherKeyword})
+            and (lower(trim(teacher_name)) = #{params.teacherKeyword}
+            or lower(trim(teacher_email)) = #{params.teacherKeyword})
         </if>
         <if test="params.studentKeyword != null">
             and (student_name like #{params.studentKeyword}
