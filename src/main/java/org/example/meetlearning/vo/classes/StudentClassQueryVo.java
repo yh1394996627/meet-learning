@@ -11,12 +11,13 @@ import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Data
 public class StudentClassQueryVo extends PageRequestQuery<StudentClass> {
 
-    @Schema(name = "teacherKeyword", description = "老师模糊匹配")
+    @Schema(name = "teacherKeyword", description = "老师精准匹配（忽略大小写，匹配名称/邮箱，自动去掉前后空格）")
     private String teacherKeyword;
 
     @Schema(name = "studentKeyword", description = "学生模糊匹配")
@@ -34,8 +35,9 @@ public class StudentClassQueryVo extends PageRequestQuery<StudentClass> {
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        if (StringUtils.hasText(teacherKeyword)) {
-            params.put("teacherKeyword", "%" + teacherKeyword + "%");
+        String normalizedTeacherKeyword = teacherKeyword == null ? null : teacherKeyword.trim();
+        if (StringUtils.hasText(normalizedTeacherKeyword)) {
+            params.put("teacherKeyword", normalizedTeacherKeyword.toLowerCase(Locale.ROOT));
         }
         if (StringUtils.hasText(studentKeyword)) {
             params.put("studentKeyword", "%" + studentKeyword + "%");
