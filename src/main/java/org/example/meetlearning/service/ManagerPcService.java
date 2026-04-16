@@ -44,7 +44,11 @@ public class ManagerPcService {
             if (lastMap.containsKey(amountRespVo.getCurrencyCode())) {
                 BigDecimal lastAmount = BigDecimalUtil.nullOrOne(lastMap.get(amountRespVo.getCurrencyCode()).getPayAmount());
                 BigDecimal theAmount = BigDecimalUtil.nullOrOne(record.getPayAmount());
-                amountRespVo.setRate(BigDecimalUtil.divide(BigDecimalUtil.sub(theAmount, lastAmount), lastAmount, 4).multiply(new BigDecimal(100)));
+                if (BigDecimalUtil.eqZero(theAmount)) {
+                    amountRespVo.setRate(BigDecimal.ZERO);
+                } else {
+                    amountRespVo.setRate(BigDecimalUtil.divide(BigDecimalUtil.sub(theAmount, lastAmount), lastAmount, 4).multiply(new BigDecimal(100)));
+                }
             }
             return amountRespVo;
         }).collect(Collectors.toList());
