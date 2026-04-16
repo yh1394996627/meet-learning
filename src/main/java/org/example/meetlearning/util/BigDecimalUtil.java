@@ -25,7 +25,7 @@ public class BigDecimalUtil {
     }
 
     public static BigDecimal nullOrOne(BigDecimal v1) {
-        return v1 == null || v1.equals(BigDecimal.ZERO) ? BigDecimal.ONE : v1;
+        return v1 == null ? BigDecimal.ONE : v1;
     }
 
     public static Boolean gtZero(BigDecimal v1) {
