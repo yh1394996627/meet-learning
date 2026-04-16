@@ -29,7 +29,6 @@ public class ManagerIncomeStatisticsQueryVo extends PageRequestQuery<UserFinance
     public Map<String, Object> getParams(String userCode) {
         Map<String, Object> params = new HashMap<>();
         params.put("creator", userCode);
-        params.put("userType", RoleEnum.STUDENT.name());
         if (income != null) {
             params.put("income", income);
         }
