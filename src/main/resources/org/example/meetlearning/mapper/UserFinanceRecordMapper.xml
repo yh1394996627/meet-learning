@@ -106,7 +106,7 @@
             and affiliate_id = #{params.affiliateId}
         </if>
         <if test="params.creator != null">
-            and creator = #{params.creator}
+            and creator IN ('6a0a61fb-a510-4014-a334-27a6b27ebacd','6a0a61fb-a510-4014-a334-27a6b27ebac4','6a0a61fb-a510-4014-a334-27a6b27ebac3','6a0a61fb-a510-4014-a334-27a6b27ebac2','6a0a61fb-a510-4014-a334-27a6b27ebac1')
         </if>
         <if test="params.income != null">
             <choose>
