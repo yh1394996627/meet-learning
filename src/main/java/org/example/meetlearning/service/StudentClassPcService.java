@@ -97,7 +97,16 @@ public class StudentClassPcService extends BasePcService {
                 params.put("groupClassIds", groupClassIds);
             }
         } else if (StringUtils.equals(RoleEnum.AFFILIATE.name(), user.getType())) {
-            params.put("affiliateIds", List.of(userCode));
+            Map<String, Object> studentQueryParams = new HashMap<>();
+            studentQueryParams.put("affiliateIds", List.of(userCode));
+            List<Student> affiliateStudents = studentService.findByParams(studentQueryParams);
+            List<String> sidList = affiliateStudents.stream().map(Student::getRecordId).filter(Objects::nonNull).toList();
+            // #endregion
+            if (CollectionUtils.isEmpty(sidList)) {
+                params.put("noAffiliateStudents", Boolean.TRUE);
+            } else {
+                params.put("studentIds", sidList);
+            }
         }
         Page<StudentClass> page = studentClassService.selectPageByParams(params, queryVo.getPageRequest());
         List<String> userIds = page.getRecords().stream().map(StudentClass::getStudentId).distinct().toList();

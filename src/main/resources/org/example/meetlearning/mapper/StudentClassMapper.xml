@@ -226,6 +226,15 @@
         <if test="params.studentId != null">
             and student_id = #{params.studentId}
         </if>
+        <if test="params.studentIds != null and params.studentIds.size() > 0">
+            and student_id in
+            <foreach collection="params.studentIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.noAffiliateStudents != null and params.noAffiliateStudents == true">
+            and 1=0
+        </if>
         <if test="params.teacherId != null">
             and teacher_id = #{params.teacherId}
         </if>
