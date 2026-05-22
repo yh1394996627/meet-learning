@@ -14,6 +14,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 
@@ -33,7 +35,17 @@ public interface BaseHandler {
 
     @JsonIgnore
     default String getUserName() {
-        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("userName");
+        String encoded = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                .getRequest().getHeader("userName");
+        if (encoded == null) {
+            return null;
+        }
+        try {
+            return URLDecoder.decode(encoded, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            log.warn("userName 解码失败: {}", encoded, e);
+            return encoded; // 降级返回原始值
+        }
     }
 
     @JsonIgnore
