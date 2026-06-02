@@ -201,7 +201,7 @@ public class StudentClassPcService extends BasePcService {
         UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
         Date courseBeginTime = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
-        Assert.isTrue(courseBeginTime.after(DateUtil.offsetHour(new Date(), 1)), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR));
+        Assert.isTrue(courseBeginTime.after(new Date()), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR));
         //新增课时币学生扣减记录
         operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
         if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
