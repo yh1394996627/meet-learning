@@ -33,10 +33,10 @@ public class ManagerPcService implements BaseHandler {
     public ManagerIncomeStatisticsRespVo dashboard(String userCode, ManagerIncomeStatisticsQueryVo queryVo) {
         ManagerIncomeStatisticsRespVo respVo = new ManagerIncomeStatisticsRespVo();
         Map<String, Object> currentParams = queryVo.getParams(userCode);
-        appendExcludeCreators(currentParams);
+        appendExcludeUsers(currentParams);
         List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParamsGroup(currentParams);
         Map<String, Object> lastParams = queryVo.getLastParams(userCode);
-        appendExcludeCreators(lastParams);
+        appendExcludeUsers(lastParams);
         List<UserFinanceRecord> lastUserFinanceRecordList = userFinanceRecordService.selectByParamsGroup(lastParams);
         Map<String, UserFinanceRecord> lastMap = lastUserFinanceRecordList.stream().collect(Collectors.toMap(UserFinanceRecord::getCurrencyCode, Function.identity()));
         //总金额对比
@@ -60,7 +60,7 @@ public class ManagerPcService implements BaseHandler {
         respVo.setAmountList(amountList);
 
         Map<String, Object> params = queryVo.getParams(userCode);
-        appendExcludeCreators(params);
+        appendExcludeUsers(params);
         //学生充值记录
         params.put("userType", RoleEnum.STUDENT.name());
         List<UserFinanceRecord> recordList = userFinanceRecordService.selectDaByParams(params);
@@ -87,8 +87,8 @@ public class ManagerPcService implements BaseHandler {
         return PageVo.map(recordList, UserFinanceConverter.INSTANCE::toManagerFinanceStudentRecordRespVo);
     }
 
-    private void appendExcludeCreators(Map<String, Object> params) {
-        params.put("excludeCreators", SPECIAL_AFFILIATE_MANAGER_USER_CODES);
+    private void appendExcludeUsers(Map<String, Object> params) {
+        params.put("excludeUserIds", SPECIAL_AFFILIATE_MANAGER_USER_CODES);
     }
 
 
