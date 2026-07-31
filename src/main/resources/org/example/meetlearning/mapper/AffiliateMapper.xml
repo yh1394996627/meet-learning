@@ -49,6 +49,12 @@
         select record_id as value,`name` as label
         from affiliate
         where deleted = 0 and name is not null
+        <if test="params.excludedRecordIds != null">
+            and record_id not in
+            <foreach collection="params.excludedRecordIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         order by name asc;
     </select>
 
@@ -64,6 +70,12 @@
     <sql id="common_where">
         <if test="params.keyword != null">
             and (name like LOWER(#{params.keyword}) or email like LOWER(#{params.keyword}))
+        </if>
+        <if test="params.excludedRecordIds != null">
+            and record_id not in
+            <foreach collection="params.excludedRecordIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
         </if>
     </sql>
 

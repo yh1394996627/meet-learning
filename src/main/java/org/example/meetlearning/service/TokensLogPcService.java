@@ -63,6 +63,9 @@ public class TokensLogPcService extends BasePcService {
         tokensLogAddReqVo.setIsDeletedCallBack(isDeletedCallBack);
         String userId = StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()) ? tokensLogAddReqVo.getRecordId() : userCode;
         Assert.isTrue(StringUtils.isNotEmpty(tokensLogAddReqVo.getRecordId()), "user is not null");
+        if (BigDecimalUtil.gtZero(tokensLogAddReqVo.getQuantity()) && isSpecialAffiliateManager(userId)) {
+            Assert.isTrue(isSuperAdmin(userCode), getHint(LanguageContextEnum.SUPER_ADMIN_ONLY_RECHARGE));
+        }
         financeTokenLogs(userCode, userName, userId, tokensLogAddReqVo);
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }

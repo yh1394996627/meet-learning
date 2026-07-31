@@ -48,18 +48,20 @@ public class AffiliatePcService extends BasePcService {
 
     private final UserService userService;
 
-    public PageVo<AffiliateListPageRespVo> affiliatePage(AffiliateQueryVo queryVo) {
-        Page<Affiliate> page = affiliateService.findPageByParams(queryVo.getParams(), queryVo.getPageRequest());
+    public PageVo<AffiliateListPageRespVo> affiliatePage(String userCode, AffiliateQueryVo queryVo) {
+        Map<String, Object> params = queryVo.getParams();
+        appendSpecialAffiliateFilter(userCode, params);
+        Page<Affiliate> page = affiliateService.findPageByParams(params, queryVo.getPageRequest());
         //获取代理商的学生数量
         List<String> recordIds = page.getRecords().stream().map(Affiliate::getRecordId).distinct().toList();
         Map<String, BigDecimal> countStuMap;
         Map<String, BigDecimal> countCourseMap;
         if (!CollectionUtils.isEmpty(recordIds)) {
-            Map<String, Object> params = Map.of("affiliateIds", recordIds);
-            List<SelectValueVo> selectValueVos = studentService.selectAffCountByParams(params);
+            Map<String, Object> countParams = Map.of("affiliateIds", recordIds);
+            List<SelectValueVo> selectValueVos = studentService.selectAffCountByParams(countParams);
             countStuMap = selectValueVos.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getLabel())));
             //课程数量
-            List<SelectValueVo> courseSelectList = studentClassService.selectAffCountByParams(params);
+            List<SelectValueVo> courseSelectList = studentClassService.selectAffCountByParams(countParams);
             countCourseMap = courseSelectList.stream().collect(Collectors.toMap(SelectValueVo::getValue, v -> new BigDecimal(v.getLabel())));
         } else {
             countCourseMap = new HashMap<>();
@@ -123,8 +125,10 @@ public class AffiliatePcService extends BasePcService {
     }
 
 
-    public RespVo<List<SelectValueVo>> affiliateSelect(RecordIdQueryVo queryVo) {
-        List<SelectValueVo> selectValueVos = affiliateService.affiliateSelect();
+    public RespVo<List<SelectValueVo>> affiliateSelect(String userCode, RecordIdQueryVo queryVo) {
+        Map<String, Object> params = new HashMap<>();
+        appendSpecialAffiliateFilter(userCode, params);
+        List<SelectValueVo> selectValueVos = affiliateService.affiliateSelect(params);
         if (StringUtils.hasText(queryVo.getRecordId())) {
             selectValueVos = selectValueVos.stream().filter(v -> !v.getValue().equals(queryVo.getRecordId())).toList();
         }
@@ -146,5 +150,13 @@ public class AffiliatePcService extends BasePcService {
             affiliate.setQrCode(qrCode);
         }
         return downloadFile(qrCode);
+    }
+
+    private void appendSpecialAffiliateFilter(String userCode, Map<String, Object> params) {
+        User loginUser = userService.selectByRecordId(userCode);
+        boolean isManager = loginUser != null && StringUtils.pathEquals(RoleEnum.MANAGER.name(), loginUser.getType());
+        if (!isManager) {
+            params.put("excludedRecordIds", SPECIAL_AFFILIATE_MANAGER_USER_CODES);
+        }
     }
 }

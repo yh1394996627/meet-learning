@@ -3,6 +3,7 @@ package org.example.meetlearning.service;
 import java.math.BigDecimal;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.example.meetlearning.controller.BaseHandler;
 import org.example.meetlearning.converter.UserFinanceConverter;
 import org.example.meetlearning.enums.RoleEnum;
 import org.example.meetlearning.util.BigDecimalUtil;
@@ -25,14 +26,18 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class ManagerPcService {
+public class ManagerPcService implements BaseHandler {
 
     private final UserFinanceRecordService userFinanceRecordService;
 
     public ManagerIncomeStatisticsRespVo dashboard(String userCode, ManagerIncomeStatisticsQueryVo queryVo) {
         ManagerIncomeStatisticsRespVo respVo = new ManagerIncomeStatisticsRespVo();
-        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParamsGroup(queryVo.getParams(userCode));
-        List<UserFinanceRecord> lastUserFinanceRecordList = userFinanceRecordService.selectByParamsGroup(queryVo.getLastParams(userCode));
+        Map<String, Object> currentParams = queryVo.getParams(userCode);
+        appendExcludeCreators(currentParams);
+        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByParamsGroup(currentParams);
+        Map<String, Object> lastParams = queryVo.getLastParams(userCode);
+        appendExcludeCreators(lastParams);
+        List<UserFinanceRecord> lastUserFinanceRecordList = userFinanceRecordService.selectByParamsGroup(lastParams);
         Map<String, UserFinanceRecord> lastMap = lastUserFinanceRecordList.stream().collect(Collectors.toMap(UserFinanceRecord::getCurrencyCode, Function.identity()));
         //总金额对比
         List<ManagerAmountRespVo> amountList = userFinanceRecordList.stream().map(record -> {
@@ -55,6 +60,7 @@ public class ManagerPcService {
         respVo.setAmountList(amountList);
 
         Map<String, Object> params = queryVo.getParams(userCode);
+        appendExcludeCreators(params);
         //学生充值记录
         params.put("userType", RoleEnum.STUDENT.name());
         List<UserFinanceRecord> recordList = userFinanceRecordService.selectDaByParams(params);
@@ -79,6 +85,10 @@ public class ManagerPcService {
     public PageVo<ManagerFinanceStudentRecordRespVo> financeList(String userCode, ManagerFinanceRecordQueryVo queryVo) {
         Page<UserFinanceRecord> recordList = userFinanceRecordService.selectByParams(queryVo.getParams(userCode), queryVo.getPageRequest());
         return PageVo.map(recordList, UserFinanceConverter.INSTANCE::toManagerFinanceStudentRecordRespVo);
+    }
+
+    private void appendExcludeCreators(Map<String, Object> params) {
+        params.put("excludeCreators", SPECIAL_AFFILIATE_MANAGER_USER_CODES);
     }
 
 

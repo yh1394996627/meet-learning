@@ -16,7 +16,7 @@ public interface AffiliateMapper {
 
     Affiliate selectById(Integer id);
 
-    List<SelectValueVo> selectValueAll();
+    List<SelectValueVo> selectValueAll(@Param("params") Map<String, Object> params);
 
     Page<Affiliate> selectByParams(@Param("params")Map<String,Object> params, Page<Affiliate> page);
 

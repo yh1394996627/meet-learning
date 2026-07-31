@@ -34,7 +34,7 @@ public class AffiliateController implements BaseHandler {
     @Operation(summary = "代理商列表", operationId = "affiliatePage")
     @PostMapping(value = "v1/affiliate/page")
     public RespVo<PageVo<AffiliateListPageRespVo>> affiliatePage(@RequestBody AffiliateQueryVo queryVo) {
-        return new RespVo<>(affiliatePcService.affiliatePage(queryVo));
+        return new RespVo<>(affiliatePcService.affiliatePage(getUserCode(), queryVo));
     }
 
     @Operation(summary = "新增代理商", operationId = "affiliateAdd")
@@ -58,7 +58,7 @@ public class AffiliateController implements BaseHandler {
     @Operation(summary = "代理商(生效的)选择查询 key,value", operationId = "affiliateSelect")
     @PostMapping(value = "v1/affiliate/select")
     public RespVo<List<SelectValueVo>> affiliateSelect(@RequestBody RecordIdQueryVo reqVo) {
-        return affiliatePcService.affiliateSelect(reqVo);
+        return affiliatePcService.affiliateSelect(getUserCode(), reqVo);
     }
 
     @Operation(summary = "代理商仪表盘", operationId = "dashboard")

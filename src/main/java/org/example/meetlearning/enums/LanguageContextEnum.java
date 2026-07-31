@@ -25,6 +25,7 @@ public enum LanguageContextEnum {
     MEETING_FIVE("You can only enter the meeting five minutes in advance", "您只能提前五分钟进入会议"),
     USER_ALREADY("The user already exists and cannot be added", "用户已存在无法添加"),
     USER_EXIST("The user already exists", "用户已存在"),
+    SUPER_ADMIN_ONLY_RECHARGE("Only the super administrator can recharge these administrator accounts", "这4个管理员账号只能由超级管理员充值"),
     NOT_CHANGE("The course has already started and cannot be changed", "课程已经开始，无法更改"),
     NOT_CHANGE_TIME("There are still 3 hours left until the start of the course and the time cannot be changed", "距离课程开始还有3个小时，时间不能更改"),
     COURSE_VERIFY_UNSTARTED("Courses that have already started cannot be deleted", "已开始的课程不能删除"),
