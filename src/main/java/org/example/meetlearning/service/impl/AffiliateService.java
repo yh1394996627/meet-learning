@@ -58,8 +58,8 @@ public class AffiliateService {
     /**
      * 代理商选择查询
      */
-    public List<SelectValueVo> affiliateSelect() {
-        return affiliateMapper.selectValueAll();
+    public List<SelectValueVo> affiliateSelect(Map<String, Object> params) {
+        return affiliateMapper.selectValueAll(params);
     }
 
 }

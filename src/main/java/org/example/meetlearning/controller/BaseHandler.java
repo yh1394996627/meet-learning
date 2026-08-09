@@ -16,12 +16,20 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 
 
 public interface BaseHandler {
 
     Logger log = LoggerFactory.getLogger(BaseHandler.class);
+    String SUPER_ADMIN_USER_CODE = "6a0a61fb-a510-4014-a334-27a6b27ebacd";
+    List<String> SPECIAL_AFFILIATE_MANAGER_USER_CODES = List.of(
+            "6a0a61fb-a510-4014-a334-27a6b27ebac4",
+            "6a0a61fb-a510-4014-a334-27a6b27ebac3",
+            "6a0a61fb-a510-4014-a334-27a6b27ebac2",
+            "6a0a61fb-a510-4014-a334-27a6b27ebac1"
+    );
 
     @JsonIgnore
     default UserService getUserService() {
@@ -71,5 +79,15 @@ public interface BaseHandler {
             }
         }
         return talkToken;
+    }
+
+    @JsonIgnore
+    default boolean isSuperAdmin(String userCode) {
+        return StringUtils.equals(userCode, SUPER_ADMIN_USER_CODE);
+    }
+
+    @JsonIgnore
+    default boolean isSpecialAffiliateManager(String userCode) {
+        return SPECIAL_AFFILIATE_MANAGER_USER_CODES.contains(userCode);
     }
 }
