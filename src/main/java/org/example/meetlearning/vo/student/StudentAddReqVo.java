@@ -17,6 +17,9 @@ public class StudentAddReqVo {
     @Schema(name = "password", description = "密码")
     private String password;
 
+    @Schema(name = "country", description = "国家")
+    private String country;
+
     @Schema(name = "language", description = "语言")
     private String language;
 

@@ -223,6 +223,12 @@
             and (student_name like #{params.studentKeyword}
             or student_email like #{params.studentKeyword})
         </if>
+        <if test="params.studentCountry != null">
+            and student_country = #{params.studentCountry}
+        </if>
+        <if test="params.teacherCountry != null">
+            and teacher_country = #{params.teacherCountry}
+        </if>
         <if test="params.studentId != null">
             and student_id = #{params.studentId}
         </if>

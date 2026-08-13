@@ -32,6 +32,12 @@ public class StudentClassQueryVo extends PageRequestQuery<StudentClass> {
     @Schema(name = "studentClassStatus", description = "课程状态 0未上课 1已上课")
     private Integer studentClassStatus;
 
+    @Schema(name = "studentCountry", description = "学生国家")
+    private String studentCountry;
+
+    @Schema(name = "teacherCountry", description = "老师国家")
+    private String teacherCountry;
+
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
@@ -48,6 +54,12 @@ public class StudentClassQueryVo extends PageRequestQuery<StudentClass> {
         }
         if (studentClassStatus != null) {
             params.put("isUnClass", studentClassStatus == 0);
+        }
+        if (StringUtils.hasText(studentCountry)) {
+            params.put("studentCountry", studentCountry);
+        }
+        if (StringUtils.hasText(teacherCountry)) {
+            params.put("teacherCountry", teacherCountry);
         }
         return params;
     }

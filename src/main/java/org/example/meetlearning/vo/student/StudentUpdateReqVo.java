@@ -21,6 +21,12 @@ public class StudentUpdateReqVo {
     @Schema(name = "gender", description = "性别 0男  1女")
     private Integer gender;
 
+    @Schema(name = "country", description = "国家")
+    private String country;
+
+    @Schema(name = "language", description = "语言")
+    private String language;
+
     @Schema(name = "learnPurpose", description = "学习目的")
     private String learnPurpose;
 

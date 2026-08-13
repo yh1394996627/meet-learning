@@ -28,6 +28,7 @@ public interface StudentConverter {
         respVo.setRecordId(student.getRecordId());
         respVo.setPhone(student.getPhone());
         respVo.setEmail(student.getEmail());
+        respVo.setCountry(student.getCountry());
         respVo.setLastActivities(student.getLastActivities());
         respVo.setWebsite(student.getWebsite());
         respVo.setRemark(student.getRemark());
@@ -47,6 +48,7 @@ public interface StudentConverter {
         student.setName(reqVo.getEnName());
         student.setEncryption("MD5");
         student.setPassword(MD5Util.md5(student.getEncryption(), reqVo.getPassword()));
+        student.setCountry(reqVo.getCountry());
         student.setWebsite(reqVo.getWebsite());
         student.setLanguage(reqVo.getLanguage());
         return student;
@@ -71,6 +73,8 @@ public interface StudentConverter {
         student.setName(reqVo.getName());
         student.setAge(reqVo.getAge());
         student.setGender(reqVo.getGender());
+        student.setCountry(reqVo.getCountry());
+        student.setLanguage(reqVo.getLanguage());
         student.setLearnPurpose(reqVo.getLearnPurpose());
         student.setLearnPlan(reqVo.getLearnPlan());
         student.setAffiliateId(reqVo.getAffiliateId());

@@ -26,6 +26,9 @@ public class StudentListRespVo {
     @Schema(name = "email", description = "邮件")
     private String email;
 
+    @Schema(name = "country", description = "国家")
+    private String country;
+
     @Schema(name = "balance", description = "余额")
     private BigDecimal balance;
 

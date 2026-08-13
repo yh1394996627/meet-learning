@@ -18,6 +18,9 @@ public class StudentRequestQueryVo extends PageRequestQuery<Student> {
     @Schema(name = "keyword", description = "模糊匹配")
     private String keyword;
 
+    @Schema(name = "country", description = "国家")
+    private String country;
+
 
     @Schema(hidden = true)
     public Map<String, Object> getParams() {
@@ -25,6 +28,9 @@ public class StudentRequestQueryVo extends PageRequestQuery<Student> {
         if (StringUtils.hasText(keyword)) {
             String keywordStr = "%" + keyword.toLowerCase() + "%";
             params.put("keyword", keywordStr);
+        }
+        if (StringUtils.hasText(country)) {
+            params.put("country", country);
         }
         return params;
     }

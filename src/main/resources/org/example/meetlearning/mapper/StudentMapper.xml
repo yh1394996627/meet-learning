@@ -16,6 +16,7 @@
         <result column="gender" jdbcType="BIT" property="gender"/>
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="country" jdbcType="VARCHAR" property="country"/>
         <result column="last_activities" jdbcType="VARCHAR" property="lastActivities"/>
         <result column="website" jdbcType="VARCHAR" property="website"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
@@ -30,7 +31,7 @@
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
-        record_id, name, age, gender, phone, email,last_activities, website, remark, learn_purpose,
+        record_id, name, age, gender, phone, email, country, last_activities, website, remark, learn_purpose,
         learn_plan, affiliate_id, affiliate_name , language, avatar_url
     </sql>
 
@@ -89,6 +90,9 @@
             or affiliate_name like LOWER(#{params.keyword})
             or remark like LOWER(#{params.keyword})
             )
+        </if>
+        <if test="params.country != null">
+            and country = #{params.country}
         </if>
         <if test="params.affiliateIds != null">
             and affiliate_id in
@@ -154,6 +158,9 @@
             </if>
             <if test="email != null">
                 email,
+            </if>
+            <if test="country != null">
+                country,
             </if>
             <if test="lastActivities != null">
                 last_activities,
@@ -225,6 +232,9 @@
             </if>
             <if test="email != null">
                 #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                #{country,jdbcType=VARCHAR},
             </if>
             <if test="lastActivities != null">
                 #{lastActivities,jdbcType=VARCHAR},
@@ -298,6 +308,9 @@
             </if>
             <if test="email != null">
                 email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=VARCHAR},
             </if>
             <if test="lastActivities != null">
                 last_activities = #{lastActivities,jdbcType=VARCHAR},

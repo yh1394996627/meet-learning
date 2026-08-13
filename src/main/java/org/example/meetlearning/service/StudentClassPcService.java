@@ -135,21 +135,22 @@ public class StudentClassPcService extends BasePcService {
             List<Teacher> teachers = teacherService.selectByRecordIds(teacherIds);
             teacherMap = teachers.stream().collect(Collectors.toMap(Teacher::getRecordId, Function.identity()));
         }
-        // 语言MAP
         Map<String, String> countryMap = new HashMap<>();
-        List<SelectValueVo> selectValueVos = baseConfigService.selectByType(ConfigTypeEnum.LANGUAGE.name());
-        if (!CollectionUtils.isEmpty(selectValueVos)) {
-            countryMap = selectValueVos.stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
+        List<SelectValueVo> countryConfigs = baseConfigService.selectByType(ConfigTypeEnum.COUNTRY.name());
+        if (!CollectionUtils.isEmpty(countryConfigs)) {
+            countryMap = countryConfigs.stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
         }
-        baseConfigService.selectByType(ConfigTypeEnum.COUNTRY.name()).stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
+        Map<String, String> languageMap = new HashMap<>();
+        List<SelectValueVo> languageConfigs = baseConfigService.selectByType(ConfigTypeEnum.LANGUAGE.name());
+        if (!CollectionUtils.isEmpty(languageConfigs)) {
+            languageMap = languageConfigs.stream().collect(Collectors.toMap(SelectValueVo::getValue, SelectValueVo::getLabel));
+        }
         Map<String, String> finalCountryMap = countryMap;
+        Map<String, String> finalLanguageMap = languageMap;
         Map<String, Student> finalStudentMap = studentMap;
         Map<String, Teacher> finalTeacherMap = teacherMap;
         PageVo<StudentClassListRespVo> pageVo = PageVo.map(page, list -> {
             StudentClassListRespVo respVo = StudentClassConverter.INSTANCE.toStudentClassListRespVo(list);
-            if (StringUtils.isNotEmpty(list.getTeacherCountry())) {
-                respVo.setTeacherLanguage(finalCountryMap.get(list.getTeacherCountry()));
-            }
             if (userFinanceMap.containsKey(list.getStudentId())) {
                 UserFinance userFinance = userFinanceMap.get(list.getStudentId());
                 respVo.setStudentConsumption(BigDecimalUtil.nullOrZero(userFinance.getConsumptionQty()));
@@ -161,12 +162,16 @@ public class StudentClassPcService extends BasePcService {
             }
             if (finalStudentMap.containsKey(list.getStudentId())) {
                 Student student = finalStudentMap.get(list.getStudentId());
-                respVo.setStudentLanguage(student.getCountry());
+                if (StringUtils.isNotEmpty(student.getCountry()) && finalCountryMap.containsKey(student.getCountry())) {
+                    respVo.setStudentLanguage(finalCountryMap.get(student.getCountry()));
+                }
                 respVo.setStudentEmail(student.getEmail());
             }
             if (finalTeacherMap.containsKey(list.getTeacherId())) {
                 Teacher teacher = finalTeacherMap.get(list.getTeacherId());
-                respVo.setTeacherLanguage(teacher.getCountry());
+                if (StringUtils.isNotEmpty(teacher.getCountry()) && finalCountryMap.containsKey(teacher.getCountry())) {
+                    respVo.setTeacherLanguage(finalCountryMap.get(teacher.getCountry()));
+                }
                 respVo.setMeetLink(teacher.getMeetLink());
                 respVo.setMeetPassWord(teacher.getMeetPassWord());
             }
