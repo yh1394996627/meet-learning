@@ -153,7 +153,9 @@ public class AffiliatePcService extends BasePcService {
     }
 
     private void appendSpecialAffiliateFilter(String userCode, Map<String, Object> params) {
-        if (!isSuperAdmin(userCode)) {
+        User loginUser = userService.selectByRecordId(userCode);
+        boolean isManager = loginUser != null && StringUtils.pathEquals(RoleEnum.MANAGER.name(), loginUser.getType());
+        if (!isManager) {
             params.put("excludedRecordIds", SPECIAL_AFFILIATE_MANAGER_USER_CODES);
         }
     }
