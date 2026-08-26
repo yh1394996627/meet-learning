@@ -35,13 +35,14 @@ public class BaseConfigPcService {
     }
 
     public RespVo<String> addConfig(String userCode, BaseConfigReqVo queryVo) {
-        BaseConfig codeBaseConfig = baseConfigService.selectByCode(queryVo.getCode());
+        String type = queryVo.getConfigType().name();
+        BaseConfig codeBaseConfig = baseConfigService.selectByCodeAndType(queryVo.getCode(), type);
         Assert.isTrue(codeBaseConfig == null, "Configuration already exists code:【" + queryVo.getCode() + "】");
-        BaseConfig nameBaseConfig = baseConfigService.selectByName(queryVo.getName());
+        BaseConfig nameBaseConfig = baseConfigService.selectByNameAndType(queryVo.getName(), type);
         Assert.isTrue(nameBaseConfig == null, "Configuration already exists name:【" + queryVo.getName() + "】");
-        BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getSymbol());
+        BaseConfig symbolBaseConfig = baseConfigService.selectBySymbolAndType(queryVo.getSymbol(), type);
         Assert.isTrue(symbolBaseConfig == null, "Configuration already exists symbol:【" + queryVo.getSymbol() + "】");
-        BaseConfig config = BaseConfigConverter.INSTANCE.toCreate(userCode, queryVo.getCode(), queryVo.getName(), queryVo.getSymbol(), queryVo.getConfigType().name(), queryVo.getRate());
+        BaseConfig config = BaseConfigConverter.INSTANCE.toCreate(userCode, queryVo.getCode(), queryVo.getName(), queryVo.getSymbol(), type, queryVo.getRate());
         baseConfigService.insertEntity(config);
         return new RespVo<>("New configuration successfully added");
     }
@@ -50,23 +51,24 @@ public class BaseConfigPcService {
     public RespVo<String> updateConfig(String userCode, BaseConfigReqVo queryVo) {
         BaseConfig baseConfig = baseConfigService.selectByRecordId(queryVo.getRecordId());
         Assert.notNull(baseConfig, "Configuration information not obtained record:【" + queryVo.getRecordId() + "】");
+        String type = queryVo.getConfigType().name();
 
-        BaseConfig codeBaseConfig = baseConfigService.selectByCode(queryVo.getCode());
+        BaseConfig codeBaseConfig = baseConfigService.selectByCodeAndType(queryVo.getCode(), type);
         if (codeBaseConfig != null) {
             Assert.isTrue(StringUtils.equals(codeBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists code:【" + queryVo.getCode() + "】");
         }
-        BaseConfig nameBaseConfig = baseConfigService.selectByName(queryVo.getName());
+        BaseConfig nameBaseConfig = baseConfigService.selectByNameAndType(queryVo.getName(), type);
         if (nameBaseConfig != null) {
             Assert.isTrue(StringUtils.equals(nameBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists name:【" + queryVo.getName() + "】");
         }
-        BaseConfig symbolBaseConfig = baseConfigService.selectBySymbol(queryVo.getSymbol());
+        BaseConfig symbolBaseConfig = baseConfigService.selectBySymbolAndType(queryVo.getSymbol(), type);
         if (symbolBaseConfig != null) {
             Assert.isTrue(StringUtils.equals(symbolBaseConfig.getRecordId(), queryVo.getRecordId()), "Configuration already exists symbol:【" + queryVo.getSymbol() + "】");
         }
         baseConfig.setCode(queryVo.getCode());
         baseConfig.setName(queryVo.getName());
         baseConfig.setSymbol(queryVo.getSymbol());
-        baseConfig.setType(queryVo.getConfigType().name());
+        baseConfig.setType(type);
         baseConfig.setRate(queryVo.getRate());
         baseConfigService.updateEntity(baseConfig);
         return new RespVo<>("New configuration successfully update");

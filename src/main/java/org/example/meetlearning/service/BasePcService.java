@@ -385,6 +385,7 @@ public class BasePcService implements BaseHandler {
                     }
                 });
                 userFinanceRecordList = userFinanceRecordList.stream().filter(f -> BigDecimalUtil.gtZero(f.getCanQty())).sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime)).toList();
+                Assert.isTrue(CollectionUtils.isEmpty(userFinanceRecordList) ? false : userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add).compareTo(quantity.abs()) >= 0, getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
                 BigDecimal subTotalQty = quantity.abs();
                 for (UserFinanceRecord userFinanceRecord : userFinanceRecordList) {
                     userFinanceRecord.setBalanceQty(balance);
@@ -396,6 +397,7 @@ public class BasePcService implements BaseHandler {
                     subTotalQty = subTotalQty.subtract(subQty);
                     userFinanceRecordService.updateByEntity(userFinanceRecord);
                 }
+                Assert.isTrue(BigDecimalUtil.nullOrZero(subTotalQty).compareTo(BigDecimal.ZERO) == 0, getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
             }
             TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, user, balance, quantity, remark);
             tokensLog.setClassId(classId);

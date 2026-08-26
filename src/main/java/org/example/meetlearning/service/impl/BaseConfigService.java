@@ -22,12 +22,24 @@ public class BaseConfigService {
         return baseConfigMapper.selectByCode(code);
     }
 
+    public BaseConfig selectByCodeAndType(String code, String type) {
+        return baseConfigMapper.selectByCodeAndType(code, type);
+    }
+
     public BaseConfig selectByName(String name) {
         return baseConfigMapper.selectByName(name);
     }
 
+    public BaseConfig selectByNameAndType(String name, String type) {
+        return baseConfigMapper.selectByNameAndType(name, type);
+    }
+
     public BaseConfig selectBySymbol(String symbol) {
         return baseConfigMapper.selectBySymbol(symbol);
+    }
+
+    public BaseConfig selectBySymbolAndType(String symbol, String type) {
+        return baseConfigMapper.selectBySymbolAndType(symbol, type);
     }
 
     public List<BaseConfig> selectListByType(String type) {

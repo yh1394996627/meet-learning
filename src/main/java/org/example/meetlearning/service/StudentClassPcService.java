@@ -197,6 +197,7 @@ public class StudentClassPcService extends BasePcService {
         //查询老师信息
         Teacher teacher = reqVo.getTeacherId() != null ? teacherService.selectByRecordId(reqVo.getTeacherId()) : null;
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Assert.isTrue(BigDecimalUtil.gtZero(teacher.getCoin()), getHint(LanguageContextEnum.TEACHER_COIN_ZERO));
         //查询代理商信息
         Affiliate affiliate = null;
         if (student != null && StringUtils.isNotEmpty(student.getAffiliateId())) {

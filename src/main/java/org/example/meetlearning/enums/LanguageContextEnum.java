@@ -33,6 +33,7 @@ public enum LanguageContextEnum {
     COURSE_GROUP_DELETE_VERIFY("Group classes cannot be deleted", "团体课程不能删除"),
     REMARK_VERIFY("The remarks must be filled in", "备注信息碧血填写"),
     AUTO_DELETE("This account does not have deletion permissions", "该账号无删除权限"),
+    TEACHER_COIN_ZERO("The teacher has not set course credits, unable to book", "老师未设置课时币，无法预约课程"),
     ;
 
     private final String en;

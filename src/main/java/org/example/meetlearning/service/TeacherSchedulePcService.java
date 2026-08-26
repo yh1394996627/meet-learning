@@ -14,6 +14,7 @@ import org.example.meetlearning.enums.LanguageContextEnum;
 import org.example.meetlearning.enums.ScheduleTypeEnum;
 import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.service.impl.*;
+import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.util.TimeSplitterUtil;
 import org.example.meetlearning.vo.classes.StudentClassRegularRespVo;
 import org.example.meetlearning.vo.common.RespVo;
@@ -188,6 +189,7 @@ public class TeacherSchedulePcService extends BasePcService {
             //查询老师信息
             Teacher teacher = studentClassRegular.getTeacherId() != null ? teacherService.selectByRecordId(studentClassRegular.getTeacherId()) : null;
             Assert.notNull(teacher, getHint(LanguageContextEnum.TEACHER_NOTNULL));
+            Assert.isTrue(BigDecimalUtil.gtZero(teacher.getCoin()), getHint(LanguageContextEnum.TEACHER_COIN_ZERO));
             //查询代理商信息
             Affiliate affiliate = null;
             if (student != null && org.codehaus.plexus.util.StringUtils.isNotEmpty(student.getAffiliateId())) {

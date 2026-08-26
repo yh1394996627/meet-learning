@@ -37,6 +37,13 @@
       where code = #{code}
   </select>
 
+  <select id="selectByCodeAndType" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from base_config
+      where code = #{code} and type = #{type}
+  </select>
+
   <select id="selectByName" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List"/>
@@ -44,11 +51,25 @@
       where name = #{name}
   </select>
 
+  <select id="selectByNameAndType" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from base_config
+      where name = #{name} and type = #{type}
+  </select>
+
   <select id="selectBySymbol" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List"/>
       from base_config
       where symbol = #{symbol}
+  </select>
+
+  <select id="selectBySymbolAndType" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from base_config
+      where symbol = #{symbol} and type = #{type}
   </select>
 
   <delete id="deleteByRecordId">
