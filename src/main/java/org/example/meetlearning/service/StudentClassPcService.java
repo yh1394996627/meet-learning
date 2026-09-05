@@ -438,8 +438,7 @@ public class StudentClassPcService extends BasePcService {
         long dayNum = TimeUnit.HOURS.convert(diffInMillie, TimeUnit.MILLISECONDS);
         Assert.isTrue(BooleanUtil.isTrue(dayNum >= 3), getHint(LanguageContextEnum.NOT_CHANGE_TIME));
         Date newClassDate = DateUtil.parse(DateUtil.format(reqVo.getCourseDate(), "yyyy-MM-dd") + " " + reqVo.getBeginTime(), "yyyy-MM-dd HH:mm");
-        long newDiffInMillie = newClassDate.getTime() - new Date().getTime();
-        Assert.isTrue(newDiffInMillie >= TimeUnit.HOURS.toMillis(1), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR));
+        Assert.isTrue(newClassDate.after(new Date()), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR));
         //变更新时间
         studentClass.setCourseTime(reqVo.getCourseDate());
         studentClass.setBeginTime(reqVo.getBeginTime());
