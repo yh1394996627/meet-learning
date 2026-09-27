@@ -33,11 +33,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class TokensLogPcService extends BasePcService {
+
+    private static final Pattern COURSE_DELETE_REFUND_ZH_PATTERN = Pattern.compile("^课程ID(\\d+)删除，课时币回退$");
+    private static final Pattern COURSE_DELETE_REFUND_EN_PATTERN = Pattern.compile("^Course ID (\\d+) deleted, credits refunded$");
 
     private final TokensLogService tokensLogService;
 
@@ -54,7 +59,26 @@ public class TokensLogPcService extends BasePcService {
         String userId = StringUtils.isNotEmpty(queryVo.getRecordId()) ? queryVo.getRecordId() : userCode;
         params.put("userId", userId);
         Page<TokensLog> page = tokensLogService.selectPageByParams(params, queryVo.getPageRequest());
-        PageVo<TokensLogListRespVo> pageVO = PageVo.map(page, list -> TokenConverter.INSTANCE.toListVo(userCode, userName, list));
+        boolean zh = StringUtils.equals("zh", getLanguage());
+        PageVo<TokensLogListRespVo> pageVO = PageVo.map(page, list -> {
+            TokensLogListRespVo vo = TokenConverter.INSTANCE.toListVo(userCode, userName, list);
+            String remark = vo.getRemark();
+            if (remark != null) {
+                if ("课程预约".equals(remark) || "Course reservation".equals(remark)) {
+                    vo.setRemark(zh ? "课程预约" : "Course reservation");
+                } else if ("微信充值".equals(remark) || "WeChat recharge".equals(remark)) {
+                    vo.setRemark(zh ? "微信充值" : "WeChat recharge");
+                } else {
+                    Matcher m = COURSE_DELETE_REFUND_ZH_PATTERN.matcher(remark);
+                    if (!m.matches()) m = COURSE_DELETE_REFUND_EN_PATTERN.matcher(remark);
+                    if (m.matches()) {
+                        String id = m.group(1);
+                        vo.setRemark(zh ? "课程ID" + id + "删除，课时币回退" : "Course ID " + id + " deleted, credits refunded");
+                    }
+                }
+            }
+            return vo;
+        });
         return new RespVo<>(pageVO);
     }
 
