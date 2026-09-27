@@ -379,6 +379,16 @@ public class StudentClassPcService extends BasePcService {
         User user = userService.selectByRecordId(userCode);
         if (StringUtils.equals(RoleEnum.TEACHER.name(), user.getType())) {
             params.put("teacherId", userCode);
+        } else if (StringUtils.equals(RoleEnum.AFFILIATE.name(), user.getType())) {
+            Map<String, Object> studentQueryParams = new HashMap<>();
+            studentQueryParams.put("affiliateIds", List.of(userCode));
+            List<Student> affiliateStudents = studentService.findByParams(studentQueryParams);
+            List<String> sidList = affiliateStudents.stream().map(Student::getRecordId).filter(Objects::nonNull).toList();
+            if (CollectionUtils.isEmpty(sidList)) {
+                params.put("noAffiliateStudents", Boolean.TRUE);
+            } else {
+                params.put("studentIds", sidList);
+            }
         }
         Long cancelTotal = studentClassService.selectCancelByParams(params);
         Long completeTotal = studentClassService.selectCompleteByParams(params);
