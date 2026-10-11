@@ -62,4 +62,11 @@ public class AffiliateService {
         return affiliateMapper.selectValueAll(params);
     }
 
+    /**
+     * 根据recordId逻辑删除
+     */
+    public void deletedByRecordId(String recordId) {
+        affiliateMapper.deletedByRecordId(recordId);
+    }
+
 }

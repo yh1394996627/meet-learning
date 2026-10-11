@@ -55,6 +55,12 @@ public class AffiliateController implements BaseHandler {
         return affiliatePcService.affiliateUpdateRemark(getUserCode(), getUserName(), reqVo);
     }
 
+    @Operation(summary = "删除代理商接口", operationId = "affiliateDeleted")
+    @PostMapping(value = "v1/affiliate/deleted")
+    public RespVo<String> affiliateDeleted(@RequestBody RecordIdQueryVo reqVo) {
+        return affiliatePcService.affiliateDelete(getUserCode(), reqVo);
+    }
+
     @Operation(summary = "代理商(生效的)选择查询 key,value", operationId = "affiliateSelect")
     @PostMapping(value = "v1/affiliate/select")
     public RespVo<List<SelectValueVo>> affiliateSelect(@RequestBody RecordIdQueryVo reqVo) {

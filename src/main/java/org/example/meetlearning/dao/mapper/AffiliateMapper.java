@@ -22,4 +22,6 @@ public interface AffiliateMapper {
 
     int updateEntity(Affiliate record);
 
+    int deletedByRecordId(String recordId);
+
 }

@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,6 +122,17 @@ public class AffiliatePcService extends BasePcService {
         affiliate.setUpdateName(userName);
         affiliate.setUpdateTime(new Date());
         affiliateService.updateEntity(affiliate);
+        return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
+    }
+
+    public RespVo<String> affiliateDelete(String userCode, RecordIdQueryVo reqVo) {
+        User user = userService.selectByRecordId(userCode);
+        Assert.isTrue(Objects.equals(user.getEmail(), "admin@talk.com"), getHint(LanguageContextEnum.AUTO_DELETE));
+        String recordId = reqVo.getRecordId();
+        Assert.isTrue(StringUtils.hasText(recordId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        affiliateService.deletedByRecordId(recordId);
+        // 删除登陆帐号和余额信息
+        deleteUser(recordId);
         return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
     }
 
