@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.meetlearning.dao.mapper.ClassFinanceRecordDetailMapper">
+
+    <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.ClassFinanceRecordDetail">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="create_name" jdbcType="VARCHAR" property="createName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updator" jdbcType="VARCHAR" property="updator"/>
+        <result column="update_name" jdbcType="VARCHAR" property="updateName"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="record_id" jdbcType="VARCHAR" property="recordId"/>
+        <result column="class_id" jdbcType="VARCHAR" property="classId"/>
+        <result column="finance_record_id" jdbcType="BIGINT" property="financeRecordId"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="qty" jdbcType="DECIMAL" property="qty"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, deleted, creator, create_name, create_time, updator, update_name, update_time,
+        record_id, class_id, finance_record_id, user_id, qty
+    </sql>
+
+    <!-- 根据课程 record_id 查询有效扣减明细 -->
+    <select id="selectByClassId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from class_finance_record_detail
+        where deleted = 0 and class_id = #{classId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 批量插入扣减明细 -->
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into class_finance_record_detail
+        (deleted, creator, create_name, create_time, updator, update_name, update_time,
+         record_id, class_id, finance_record_id, user_id, qty)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.deleted,jdbcType=BIT},
+             #{item.creator,jdbcType=VARCHAR},
+             #{item.createName,jdbcType=VARCHAR},
+             #{item.createTime,jdbcType=TIMESTAMP},
+             #{item.updator,jdbcType=VARCHAR},
+             #{item.updateName,jdbcType=VARCHAR},
+             #{item.updateTime,jdbcType=TIMESTAMP},
+             #{item.recordId,jdbcType=VARCHAR},
+             #{item.classId,jdbcType=VARCHAR},
+             #{item.financeRecordId,jdbcType=BIGINT},
+             #{item.userId,jdbcType=VARCHAR},
+             #{item.qty,jdbcType=DECIMAL})
+        </foreach>
+    </insert>
+
+    <!-- 逻辑删除：删除课程回退后将明细标记为已回退 -->
+    <update id="deletedByClassId">
+        update class_finance_record_detail
+        set deleted = 1, update_time = now()
+        where deleted = 0 and class_id = #{classId,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

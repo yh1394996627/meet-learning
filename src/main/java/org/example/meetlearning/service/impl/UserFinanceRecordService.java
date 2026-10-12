@@ -25,6 +25,13 @@ public class UserFinanceRecordService {
     }
 
     /**
+     * 根据id查询
+     */
+    public UserFinanceRecord selectById(Long id) {
+        return userFinanceRecordMapper.selectById(id);
+    }
+
+    /**
      * 更新
      */
     public int updateByEntity(UserFinanceRecord record) {

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.codehaus.plexus.util.StringUtils;
 import org.example.meetlearning.converter.StudentClassConverter;
 import org.example.meetlearning.converter.StudentClassRegularConverter;
+import org.example.meetlearning.converter.TokenConverter;
 import org.example.meetlearning.dao.entity.*;
 import org.example.meetlearning.enums.*;
 import org.example.meetlearning.service.impl.*;
@@ -82,6 +83,10 @@ public class StudentClassPcService extends BasePcService {
     private final TokensLogPcService tokensLogPcService;
 
     private final GroupClassStudentRecService groupClassStudentRecService;
+
+    private final ClassFinanceRecordDetailService classFinanceRecordDetailService;
+
+    private final TokensLogService tokensLogService;
 
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(String userCode, StudentClassQueryVo queryVo) {
         User user = userService.selectByRecordId(userCode);
@@ -653,19 +658,101 @@ public class StudentClassPcService extends BasePcService {
         //删除课程占用
         teacherCourseTimeService.deleteByTeacherCourseDateType(studentClass.getTeacherId(), studentClass.getCourseType(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime());
 
-        //coin还原
-        BigDecimal coin = studentClass.getCoin();
-        TokensLogAddReqVo tokensLogAddReqVo = new TokensLogAddReqVo();
-        tokensLogAddReqVo.setUserId(studentClass.getStudentId());
-        tokensLogAddReqVo.setRecordId(studentClass.getStudentId());
-        tokensLogAddReqVo.setAmount(BigDecimal.ZERO);
-        tokensLogAddReqVo.setQuantity(coin);
-        tokensLogAddReqVo.setRemark("课程ID" + studentClass.getId() + "删除，课时币回退");
-        tokensLogAddReqVo.setPaymentCode("B002");
-        tokensLogAddReqVo.setCurrencyCode("CNY");
-        tokensLogAddReqVo.setCurrencyName("CNY");
-        tokensLogPcService.addTokensLog(userCode, userName, tokensLogAddReqVo, true);
+        //课时币回退：不再新增 user_finance_record，而是回滚原扣减记录
+        refundClassCoin(userCode, userName, studentClass);
 
+    }
+
+    /**
+     * 删除课程时回退课时币
+     * 优先按扣减明细精确回滚（新数据）；无明细时回退到该用户最新一条 record（历史数据）
+     */
+    private void refundClassCoin(String userCode, String userName, StudentClass studentClass) {
+        BigDecimal coin = studentClass.getCoin();
+        if (coin == null || !BigDecimalUtil.gtZero(coin)) {
+            return;
+        }
+        String studentId = studentClass.getStudentId();
+        User studentUser = userService.selectByRecordId(studentId);
+        Assert.notNull(studentUser, getHint(LanguageContextEnum.USER_NOTNULL));
+        UserFinance userFinance = userFinanceService.selectByUserId(studentId);
+        Assert.notNull(userFinance, getHint(LanguageContextEnum.USER_FINANCE_NOTNULL));
+
+        // 回退后的总余额
+        BigDecimal newBalance = BigDecimalUtil.add(userFinance.getBalanceQty(), coin);
+        // 更新 user_finance：余额加回，消费总量扣减
+        userFinance.setBalanceQty(newBalance);
+        userFinance.setConsumptionQty(BigDecimalUtil.sub(userFinance.getConsumptionQty(), coin));
+
+        // 查询该课程的扣减明细
+        List<ClassFinanceRecordDetail> details = classFinanceRecordDetailService.selectByClassId(studentClass.getRecordId());
+        if (!details.isEmpty()) {
+            // 新数据：按明细精确回滚原 record 的 canQty/usedQty
+            rollbackByDetails(studentId, details);
+            // 回滚完成后标记明细已处理
+            classFinanceRecordDetailService.deletedByClassId(studentClass.getRecordId());
+        } else {
+            // 历史数据：无扣减明细，将回退数量加到该用户最新一条 record 的可用余额
+            rollbackToLatestRecord(studentId, coin);
+        }
+
+        userFinanceService.updateByEntity(userFinance);
+
+        // 写 tokens_log 审计日志（quantity 为正，表示回退）
+        TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, studentUser, newBalance, coin, "课程ID" + studentClass.getId() + "删除，课时币回退");
+        tokensLog.setClassId(studentClass.getRecordId());
+        tokensLogService.insertEntity(tokensLog);
+    }
+
+    /**
+     * 新数据：按扣减明细逐条回滚原 user_finance_record
+     * canQty += qty（可用余额恢复），usedQty -= qty（已用扣减）
+     * 若某条 record 已被删除，则将该部分 qty 累计后加到最新一条存在的 record 上，保证余额与 record 之和一致
+     */
+    private void rollbackByDetails(String studentId, List<ClassFinanceRecordDetail> details) {
+        // 累计找不到原 record 的回退量，最后兜底加到最新 record
+        BigDecimal missingQty = BigDecimal.ZERO;
+        for (ClassFinanceRecordDetail detail : details) {
+            UserFinanceRecord record = userFinanceRecordService.selectById(detail.getFinanceRecordId());
+            if (record == null) {
+                // 原 record 已被删除，累计到兜底量
+                missingQty = BigDecimalUtil.add(missingQty, detail.getQty());
+                continue;
+            }
+            // 可用余额加回
+            record.setCanQty(BigDecimalUtil.add(record.getCanQty(), detail.getQty()));
+            // 已用数量扣减
+            record.setUsedQty(BigDecimalUtil.sub(record.getUsedQty(), detail.getQty()));
+            userFinanceRecordService.updateByEntity(record);
+        }
+        // 兜底：将找不到原 record 的回退量加到最新一条 record
+        if (BigDecimalUtil.gtZero(missingQty)) {
+            addToLatestRecord(studentId, missingQty);
+        }
+    }
+
+    /**
+     * 历史数据：无扣减明细，将回退数量加到该用户最新一条 record 的可用余额
+     * 注意：历史扣减的 usedQty 已分布在各 record 上，无法精确追溯，此处仅恢复 canQty，
+     * 不调整各 record 的 usedQty；user_finance.consumptionQty 已在上方统一扣减。
+     */
+    private void rollbackToLatestRecord(String studentId, BigDecimal coin) {
+        addToLatestRecord(studentId, coin);
+    }
+
+    /**
+     * 将指定数量加到该用户最新一条（id 最大）有效 record 的可用余额
+     */
+    private void addToLatestRecord(String studentId, BigDecimal qty) {
+        List<UserFinanceRecord> records = userFinanceRecordService.selectByUserId(studentId);
+        if (CollectionUtils.isEmpty(records)) {
+            return;
+        }
+        UserFinanceRecord latest = records.stream()
+                .max(Comparator.comparing(UserFinanceRecord::getId))
+                .orElse(records.get(0));
+        latest.setCanQty(BigDecimalUtil.add(latest.getCanQty(), qty));
+        userFinanceRecordService.updateByEntity(latest);
     }
 
 }

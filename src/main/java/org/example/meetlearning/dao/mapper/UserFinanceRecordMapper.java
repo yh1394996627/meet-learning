@@ -12,6 +12,8 @@ public interface UserFinanceRecordMapper {
 
     int insertEntity(UserFinanceRecord record);
 
+    UserFinanceRecord selectById(Long id);
+
     List<UserFinanceRecord> selectByUserId(String userId);
 
     List<UserFinanceRecord> selectByAllUserId(String userId);

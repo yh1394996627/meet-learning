@@ -76,6 +76,9 @@ public class BasePcService implements BaseHandler {
     @Autowired
     private StudentService studentService;
 
+    @Autowired
+    private ClassFinanceRecordDetailService classFinanceRecordDetailService;
+
 
     /**
      * 创建登陆帐号 学生 老师 代理商来源
@@ -387,15 +390,35 @@ public class BasePcService implements BaseHandler {
                 userFinanceRecordList = userFinanceRecordList.stream().filter(f -> BigDecimalUtil.gtZero(f.getCanQty())).sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime)).toList();
                 Assert.isTrue(CollectionUtils.isEmpty(userFinanceRecordList) ? false : userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add).compareTo(quantity.abs()) >= 0, getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
                 BigDecimal subTotalQty = quantity.abs();
+                // 收集本次课程扣减明细，用于删除课程时精确回退
+                List<ClassFinanceRecordDetail> detailList = new ArrayList<>();
                 for (UserFinanceRecord userFinanceRecord : userFinanceRecordList) {
                     userFinanceRecord.setBalanceQty(balance);
                     BigDecimal subQty = subTotalQty.min(BigDecimalUtil.nullOrZero(userFinanceRecord.getCanQty()));
                     if (BigDecimalUtil.gtZero(subQty)) {
                         userFinanceRecord.setCanQty(BigDecimalUtil.sub(userFinanceRecord.getCanQty(), subQty));
                         userFinanceRecord.setUsedQty(BigDecimalUtil.add(userFinanceRecord.getUsedQty(), subQty));
+                        // 记录本条 record 被本次课程扣减的数量
+                        if (StringUtils.isNotEmpty(classId)) {
+                            ClassFinanceRecordDetail detail = new ClassFinanceRecordDetail();
+                            detail.setDeleted(false);
+                            detail.setCreator(userCode);
+                            detail.setCreateName(userName);
+                            detail.setCreateTime(new Date());
+                            detail.setRecordId(UUID.randomUUID().toString());
+                            detail.setClassId(classId);
+                            detail.setFinanceRecordId(userFinanceRecord.getId());
+                            detail.setUserId(userId);
+                            detail.setQty(subQty);
+                            detailList.add(detail);
+                        }
                     }
                     subTotalQty = subTotalQty.subtract(subQty);
                     userFinanceRecordService.updateByEntity(userFinanceRecord);
+                }
+                // 课程扣减场景：批量持久化扣减明细，删除课程时据此精确回退
+                if (StringUtils.isNotEmpty(classId) && !detailList.isEmpty()) {
+                    classFinanceRecordDetailService.insertBatch(detailList);
                 }
                 Assert.isTrue(BigDecimalUtil.nullOrZero(subTotalQty).compareTo(BigDecimal.ZERO) == 0, getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
             }

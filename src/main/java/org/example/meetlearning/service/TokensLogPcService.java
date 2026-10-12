@@ -120,11 +120,6 @@ public class TokensLogPcService extends BasePcService {
             tokensLog.setCurrencyCode(baseConfig.getCode());
             tokensLog.setCurrencyName(baseConfig.getName());
         }
-        if (BooleanUtils.isTrue(reqVo.getIsDeletedCallBack())) {
-            List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
-
-
-        }
         tokensLogService.insertEntity(tokensLog);
         userFinanceService.updateByEntity(userFinance);
     }
