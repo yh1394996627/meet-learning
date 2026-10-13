@@ -18,6 +18,8 @@ public interface UserFinanceRecordMapper {
 
     List<UserFinanceRecord> selectByAllUserId(String userId);
 
+    List<UserFinanceRecord> selectValidByUserId(String userId);
+
     Page<UserFinanceRecord> selectByParams(@Param("params")Map<String, Object> params, Page<UserFinanceRecord> page);
 
     List<UserFinanceRecord> selectByParamsCurrencyGroup(@Param("params") Map<String, Object> params);
@@ -27,6 +29,21 @@ public interface UserFinanceRecordMapper {
     List<UserFinanceRecord> selectDateGroupByUserIds(List<String> userIds);
 
     int updateByEntity(UserFinanceRecord record);
+
+    /**
+     * 增量回滚 record 的 canQty 和 usedQty（数据库层原子操作，避免并发丢失更新）
+     * canQty += addCanQty, usedQty -= subUsedQty
+     */
+    int rollbackQtyById(@Param("id") Long id,
+                        @Param("addCanQty") java.math.BigDecimal addCanQty,
+                        @Param("subUsedQty") java.math.BigDecimal subUsedQty);
+
+    /**
+     * 增量更新 canQty（数据库层原子操作，避免并发丢失更新）
+     * canQty += addCanQty
+     */
+    int addCanQtyById(@Param("id") Long id,
+                      @Param("addCanQty") java.math.BigDecimal addCanQty);
 
     List<UserFinanceRecord> selectByLtDate(Date expirationTime);
 

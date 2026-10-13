@@ -68,6 +68,14 @@
         where record_id = #{record_id}
     </select>
 
+    <select id="selectByRecordIdForUpdate" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student_class
+        where record_id = #{record_id}
+        for update
+    </select>
+
     <select id="selectByMeetId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

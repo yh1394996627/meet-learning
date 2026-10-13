@@ -27,6 +27,10 @@ public class StudentClassService {
         return studentClassMapper.selectByRecordId(recordId);
     }
 
+    public StudentClass selectByRecordIdForUpdate(String recordId) {
+        return studentClassMapper.selectByRecordIdForUpdate(recordId);
+    }
+
     /**
      * 根据meetUuId查询
      */

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.meetlearning.dao.mapper.UserFinanceRecordMapper">
     <resultMap id="BaseResultMap" type="org.example.meetlearning.dao.entity.UserFinanceRecord">
-        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="id" jdbcType="BIGINT" property="id"/>
         <result column="deleted" jdbcType="BIT" property="deleted"/>
         <result column="creator" jdbcType="VARCHAR" property="creator"/>
         <result column="create_name" jdbcType="VARCHAR" property="createName"/>
@@ -27,8 +27,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id
-        , deleted, creator, create_name, create_time, user_id, quantity, used_qty, can_qty,
+        id, deleted, creator, create_name, create_time, user_id, quantity, used_qty, can_qty,
         user_type, expiration_time,currency_code, currency_name, pay_amount, payment_id, payment_name,
         remark, discount_rate, balance_qty,affiliate_id, user_name, user_email
     </sql>
@@ -52,6 +51,16 @@
         <include refid="Base_Column_List"/>
         from user_finance_record
         where user_id = #{userId}
+    </select>
+
+    <select id="selectValidByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_finance_record
+        where deleted = 0
+          and user_id = #{userId}
+          and can_qty > 0
+        order by expiration_time asc, id asc
     </select>
 
     <select id="selectByParams" resultMap="BaseResultMap">
@@ -210,5 +219,23 @@
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 增量回滚：canQty += addCanQty, usedQty -= subUsedQty（数据库原子操作，usedQty 减后非负校验放 where 里） -->
+    <update id="rollbackQtyById">
+        update user_finance_record
+        set can_qty = can_qty + #{addCanQty,jdbcType=DECIMAL},
+            used_qty = used_qty - #{subUsedQty,jdbcType=DECIMAL}
+        where id = #{id,jdbcType=BIGINT}
+          and deleted = 0
+          and used_qty &gt;= #{subUsedQty,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 增量更新 canQty（数据库原子操作，避免并发丢失更新） -->
+    <update id="addCanQtyById">
+        update user_finance_record
+        set can_qty = can_qty + #{addCanQty,jdbcType=DECIMAL}
+        where id = #{id,jdbcType=BIGINT}
+          and deleted = 0
     </update>
 </mapper>

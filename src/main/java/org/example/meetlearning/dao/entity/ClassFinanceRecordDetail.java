@@ -34,7 +34,7 @@ public class ClassFinanceRecordDetail {
     /** 课程 record_id（关联 student_class.record_id） */
     private String classId;
 
-    /** 关联 user_finance_record.id */
+    /** 关联 user_finance_record.id（自增主键） */
     private Long financeRecordId;
 
     /** 学生 record_id（冗余便于查询） */

@@ -111,4 +111,14 @@
         </set>
         where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
     </update>
+
+    <!-- 增量更新余额和消费总量（数据库层原子操作，避免并发丢失更新） -->
+    <update id="addBalanceAndSubConsumption">
+        update user_finance
+        set version = version + 1,
+            balance_qty = balance_qty + #{addBalance,jdbcType=DECIMAL},
+            consumption_qty = consumption_qty - #{subConsumption,jdbcType=DECIMAL},
+            update_time = now()
+        where user_id = #{userId}
+    </update>
 </mapper>

@@ -7,6 +7,7 @@ import org.example.meetlearning.enums.TokenContentEnum;
 import org.example.meetlearning.vo.manager.ManagerFinanceStudentRecordRespVo;
 import org.example.meetlearning.vo.token.TokensLogAddReqVo;
 import org.example.meetlearning.vo.user.UserStudentPayRecordRespVo;
+import org.example.meetlearning.vo.user.UserFinanceRecordRespVo;
 import org.example.meetlearning.vo.user.UserPayReqVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -141,6 +142,16 @@ public interface UserFinanceConverter {
         respVo.setCreator(record.getCreator());
         respVo.setCreateName(record.getCreateName());
         respVo.setCreateTime(record.getCreateTime());
+        return respVo;
+    }
+
+    default UserFinanceRecordRespVo toUserFinanceRecordRespVo(UserFinanceRecord record) {
+        UserFinanceRecordRespVo respVo = new UserFinanceRecordRespVo();
+        respVo.setId(record.getId());
+        respVo.setUserId(record.getUserId());
+        respVo.setQuantity(record.getQuantity());
+        respVo.setCanQty(record.getCanQty());
+        respVo.setUsedQty(record.getUsedQty());
         return respVo;
     }
 

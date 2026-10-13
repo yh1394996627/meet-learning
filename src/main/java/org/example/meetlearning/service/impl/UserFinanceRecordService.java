@@ -39,6 +39,21 @@ public class UserFinanceRecordService {
     }
 
     /**
+     * 增量回滚 canQty 和 usedQty（数据库原子操作，where 里带 used_qty >= subUsedQty 校验）
+     * @return 受影响行数，0 表示 record 不存在或 usedQty 不足
+     */
+    public int rollbackQtyById(Long id, java.math.BigDecimal addCanQty, java.math.BigDecimal subUsedQty) {
+        return userFinanceRecordMapper.rollbackQtyById(id, addCanQty, subUsedQty);
+    }
+
+    /**
+     * 增量更新 canQty（数据库原子操作，避免并发丢失更新）
+     */
+    public int addCanQtyById(Long id, java.math.BigDecimal addCanQty) {
+        return userFinanceRecordMapper.addCanQtyById(id, addCanQty);
+    }
+
+    /**
      * 根据用户id查询
      */
     public List<UserFinanceRecord> selectByUserId(String userId) {
@@ -50,6 +65,13 @@ public class UserFinanceRecordService {
      */
     public List<UserFinanceRecord> selectByAllUserId(String userId) {
         return userFinanceRecordMapper.selectByAllUserId(userId);
+    }
+
+    /**
+     * 根据用户id查询生效且可用数量>0的record
+     */
+    public List<UserFinanceRecord> selectValidByUserId(String userId) {
+        return userFinanceRecordMapper.selectValidByUserId(userId);
     }
 
 

@@ -16,6 +16,8 @@ public interface StudentClassMapper {
 
     StudentClass selectByRecordId(String recordId);
 
+    StudentClass selectByRecordIdForUpdate(String recordId);
+
     StudentClass selectByMeetId(String meetUuId);
 
     int updateEntity(StudentClass record);

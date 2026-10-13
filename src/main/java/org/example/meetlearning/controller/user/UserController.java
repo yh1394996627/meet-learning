@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Tag(name = "用户接口")
 @RestController
 @Slf4j
@@ -116,6 +118,12 @@ public class UserController implements BaseHandler {
     public RespVo<String> studentRegister(@RequestBody UserRegisterReqVo reqVo) {
         userPcService.studentRegister(reqVo);
         return new RespVo<>("Registered successfully");
+    }
+
+    @Operation(summary = "查询用户生效且可用的课时币record列表", operationId = "userFinanceRecordList")
+    @PostMapping(value = "v1/user/finance/record/valid")
+    public RespVo<List<UserFinanceRecordRespVo>> userFinanceRecordList(@RequestBody RecordIdQueryVo queryVo) {
+        return userPcService.userFinanceRecordList(queryVo.getRecordId());
     }
 
 

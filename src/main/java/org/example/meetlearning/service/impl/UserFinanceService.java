@@ -47,6 +47,13 @@ public class UserFinanceService {
     }
 
     /**
+     * 增量更新余额和消费总量（数据库层原子操作，避免并发丢失更新）
+     */
+    public int addBalanceAndSubConsumption(String userId, java.math.BigDecimal addBalance, java.math.BigDecimal subConsumption) {
+        return userFinanceMapper.addBalanceAndSubConsumption(userId, addBalance, subConsumption);
+    }
+
+    /**
      * 根据用户id删除
      */
     public void deleteByUserId(String userId) {

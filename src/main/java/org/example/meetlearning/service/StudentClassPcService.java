@@ -643,10 +643,12 @@ public class StudentClassPcService extends BasePcService {
         User user = userService.selectByRecordId(userCode);
         Assert.isTrue(StringUtils.equals(user.getEmail(), "admin@talk.com"), getHint(LanguageContextEnum.AUTO_DELETE));
 
-        //查询课程信息
+        //查询课程信息（加行锁防止并发重复删除）
         String recordId = queryVo.getRecordId();
-        StudentClass studentClass = studentClassService.selectByRecordId(recordId);
+        StudentClass studentClass = studentClassService.selectByRecordIdForUpdate(recordId);
         Assert.notNull(studentClass, getHint(LanguageContextEnum.COURSE_NULL_VERIFY));
+        // 防止重复删除：已删除的课程再次请求直接报错（避免课时币被重复回退）
+        Assert.isTrue(BooleanUtil.isFalse(studentClass.getDeleted()), "课程已删除，请勿重复操作");
 //        Assert.isTrue(Objects.equals(studentClass.getClassStatus(), CourseStatusEnum.NOT_STARTED.getStatus()), getHint(LanguageContextEnum.COURSE_VERIFY_UNSTARTED));
         //删除学生课程只限制单人测试课程
         Assert.isTrue(!StringUtils.equals(studentClass.getCourseType(), CourseTypeEnum.GROUP.name()), getHint(LanguageContextEnum.COURSE_GROUP_DELETE_VERIFY));
@@ -678,15 +680,15 @@ public class StudentClassPcService extends BasePcService {
         UserFinance userFinance = userFinanceService.selectByUserId(studentId);
         Assert.notNull(userFinance, getHint(LanguageContextEnum.USER_FINANCE_NOTNULL));
 
-        // 回退后的总余额
-        BigDecimal newBalance = BigDecimalUtil.add(userFinance.getBalanceQty(), coin);
-        // 更新 user_finance：余额加回，消费总量扣减
-        userFinance.setBalanceQty(newBalance);
-        userFinance.setConsumptionQty(BigDecimalUtil.sub(userFinance.getConsumptionQty(), coin));
-
         // 查询该课程的扣减明细
         List<ClassFinanceRecordDetail> details = classFinanceRecordDetailService.selectByClassId(studentClass.getRecordId());
         if (!details.isEmpty()) {
+            // 数据一致性校验：明细 qty 之和应等于课程 coin
+            BigDecimal detailSum = details.stream()
+                    .map(ClassFinanceRecordDetail::getQty)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            Assert.isTrue(BigDecimalUtil.equals(detailSum, coin),
+                    "扣减明细总额与课程 coin 不一致，classId=" + studentClass.getRecordId() + ", detailSum=" + detailSum + ", coin=" + coin);
             // 新数据：按明细精确回滚原 record 的 canQty/usedQty
             rollbackByDetails(studentId, details);
             // 回滚完成后标记明细已处理
@@ -696,7 +698,11 @@ public class StudentClassPcService extends BasePcService {
             rollbackToLatestRecord(studentId, coin);
         }
 
-        userFinanceService.updateByEntity(userFinance);
+        // 更新 user_finance：用增量 SQL 原子操作，避免并发丢失更新
+        userFinanceService.addBalanceAndSubConsumption(studentId, coin, coin);
+        // 重新查询最新余额用于写审计日志
+        userFinance = userFinanceService.selectByUserId(studentId);
+        BigDecimal newBalance = userFinance.getBalanceQty();
 
         // 写 tokens_log 审计日志（quantity 为正，表示回退）
         TokensLog tokensLog = TokenConverter.INSTANCE.toCreateTokenByFinanceRecord(userCode, userName, studentUser, newBalance, coin, "课程ID" + studentClass.getId() + "删除，课时币回退");
@@ -707,25 +713,21 @@ public class StudentClassPcService extends BasePcService {
     /**
      * 新数据：按扣减明细逐条回滚原 user_finance_record
      * canQty += qty（可用余额恢复），usedQty -= qty（已用扣减）
-     * 若某条 record 已被删除，则将该部分 qty 累计后加到最新一条存在的 record 上，保证余额与 record 之和一致
+     * 用数据库增量 SQL 原子更新，避免并发丢失更新；where 里校验 usedQty >= qty，防止负数
+     * 若某条 record 已被删除或 usedQty 不足，则将该部分 qty 累计后加到最新一条存在的 record 上
      */
     private void rollbackByDetails(String studentId, List<ClassFinanceRecordDetail> details) {
-        // 累计找不到原 record 的回退量，最后兜底加到最新 record
+        // 累计无法精确回滚的回退量，最后兜底加到最新 record
         BigDecimal missingQty = BigDecimal.ZERO;
         for (ClassFinanceRecordDetail detail : details) {
-            UserFinanceRecord record = userFinanceRecordService.selectById(detail.getFinanceRecordId());
-            if (record == null) {
-                // 原 record 已被删除，累计到兜底量
+            // 增量回滚：canQty += qty, usedQty -= qty（数据库原子操作，where 校验 used_qty >= qty）
+            int rows = userFinanceRecordService.rollbackQtyById(detail.getFinanceRecordId(), detail.getQty(), detail.getQty());
+            if (rows == 0) {
+                // record 不存在或 usedQty 不足，累计到兜底量
                 missingQty = BigDecimalUtil.add(missingQty, detail.getQty());
-                continue;
             }
-            // 可用余额加回
-            record.setCanQty(BigDecimalUtil.add(record.getCanQty(), detail.getQty()));
-            // 已用数量扣减
-            record.setUsedQty(BigDecimalUtil.sub(record.getUsedQty(), detail.getQty()));
-            userFinanceRecordService.updateByEntity(record);
         }
-        // 兜底：将找不到原 record 的回退量加到最新一条 record
+        // 兜底：将无法精确回滚的数量加到最新一条 record
         if (BigDecimalUtil.gtZero(missingQty)) {
             addToLatestRecord(studentId, missingQty);
         }
@@ -742,17 +744,18 @@ public class StudentClassPcService extends BasePcService {
 
     /**
      * 将指定数量加到该用户最新一条（id 最大）有效 record 的可用余额
+     * 用数据库增量 SQL 原子操作，避免并发丢失更新
      */
     private void addToLatestRecord(String studentId, BigDecimal qty) {
         List<UserFinanceRecord> records = userFinanceRecordService.selectByUserId(studentId);
-        if (CollectionUtils.isEmpty(records)) {
-            return;
-        }
+        Assert.isTrue(!CollectionUtils.isEmpty(records),
+                "用户无有效课时币记录，无法回退课时币，studentId=" + studentId + ", qty=" + qty);
         UserFinanceRecord latest = records.stream()
                 .max(Comparator.comparing(UserFinanceRecord::getId))
                 .orElse(records.get(0));
-        latest.setCanQty(BigDecimalUtil.add(latest.getCanQty(), qty));
-        userFinanceRecordService.updateByEntity(latest);
+        int rows = userFinanceRecordService.addCanQtyById(latest.getId(), qty);
+        Assert.isTrue(rows > 0,
+                "回退课时币失败，record.id=" + latest.getId() + ", qty=" + qty);
     }
 
 }
