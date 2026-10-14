@@ -12,9 +12,13 @@ public interface UserFinanceRecordMapper {
 
     int insertEntity(UserFinanceRecord record);
 
+    UserFinanceRecord selectById(Long id);
+
     List<UserFinanceRecord> selectByUserId(String userId);
 
     List<UserFinanceRecord> selectByAllUserId(String userId);
+
+    List<UserFinanceRecord> selectValidByUserId(String userId);
 
     Page<UserFinanceRecord> selectByParams(@Param("params")Map<String, Object> params, Page<UserFinanceRecord> page);
 

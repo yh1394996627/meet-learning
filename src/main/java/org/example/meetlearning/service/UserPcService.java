@@ -267,6 +267,14 @@ public class UserPcService extends BasePcService {
         return new RespVo<>(respVo);
     }
 
+    public RespVo<List<UserFinanceRecordRespVo>> userFinanceRecordList(String userId) {
+        List<UserFinanceRecord> records = userFinanceRecordService.selectValidByUserId(userId);
+        List<UserFinanceRecordRespVo> respVoList = records.stream()
+                .map(UserFinanceConverter.INSTANCE::toUserFinanceRecordRespVo)
+                .collect(java.util.stream.Collectors.toList());
+        return new RespVo<>(respVoList);
+    }
+
 
     public void studentRegister(UserRegisterReqVo reqVo) {
         Assert.isTrue(StringUtils.isNotEmpty(reqVo.getEmail()), "email" + getHint(LanguageContextEnum.OBJ_NOTNULL));

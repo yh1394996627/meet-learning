@@ -24,6 +24,7 @@ import org.example.meetlearning.util.RedisCommonsUtil;
 import org.example.meetlearning.vo.common.FileRecordVo;
 import org.example.meetlearning.vo.common.RespVo;
 import org.example.meetlearning.vo.user.UserPayReqVo;
+import org.example.meetlearning.vo.user.FinanceRecordDeductVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -293,7 +294,6 @@ public class BasePcService implements BaseHandler {
         Assert.notNull(user, getHint(LanguageContextEnum.USER_NOTNULL));
         UserFinance userFinance = userFinanceService.selectByUserId(userId);
         Assert.notNull(userFinance, getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        List<UserFinanceRecord> userFinanceRecordList = userFinanceRecordService.selectByUserId(userId);
         BigDecimal balanceQty = userFinance.getBalanceQty();
         BigDecimal usedQty = userFinance.getConsumptionQty();
         BigDecimal balance = BigDecimalUtil.add(balanceQty, quantity);
@@ -328,16 +328,28 @@ public class BasePcService implements BaseHandler {
             //已消费金额更新
             userFinance.setConsumptionQty(BigDecimalUtil.add(usedQty, quantity.abs()));
             if (StringUtils.equals(user.getType(), RoleEnum.STUDENT.name())) {
-                userFinanceRecordList.forEach(f -> {
-                    if (f.getExpirationTime() == null) {
-                        f.setExpirationTime(DateUtil.parse("2099-12-31", "yyyy-MM-dd"));
+                List<FinanceRecordDeductVo> deductRecords = reqVo.getDeductRecords();
+                Assert.isTrue(!CollectionUtils.isEmpty(deductRecords), getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
+                BigDecimal deductTotal = deductRecords.stream()
+                        .filter(d -> !BigDecimalUtil.eqZero(d.getQty()))
+                        .map(d -> {
+                            Assert.notNull(d.getId(), "扣减明细id不能为空");
+                            return d.getQty().abs();
+                        })
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                Assert.isTrue(BigDecimalUtil.equals(deductTotal, quantity.abs()), "扣减明细数量之和必须等于扣减数量");
+
+                for (FinanceRecordDeductVo deductVo : deductRecords) {
+                    if (BigDecimalUtil.eqZero(deductVo.getQty())) {
+                        continue;
                     }
-                });
-                userFinanceRecordList = userFinanceRecordList.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime)).toList();
-                if (!CollectionUtils.isEmpty(userFinanceRecordList)) {
-                    UserFinanceRecord userFinanceRecord = userFinanceRecordList.get(0);
-                    userFinanceRecord.setCanQty(BigDecimalUtil.sub(userFinanceRecord.getCanQty(), quantity.abs()));
-                    userFinanceRecord.setUsedQty(BigDecimalUtil.add(userFinanceRecord.getUsedQty(), quantity.abs()));
+                    BigDecimal deductQty = deductVo.getQty().abs();
+                    UserFinanceRecord userFinanceRecord = userFinanceRecordService.selectById(deductVo.getId());
+                    Assert.notNull(userFinanceRecord, "record不存在:【" + deductVo.getId() + "】");
+                    Assert.isTrue(StringUtils.equals(userFinanceRecord.getUserId(), userId), "record不属于该用户:【" + deductVo.getId() + "】");
+                    Assert.isTrue(BigDecimalUtil.gteThan(userFinanceRecord.getCanQty(), deductQty), "record可用数量不足:【" + deductVo.getId() + "】");
+                    userFinanceRecord.setCanQty(BigDecimalUtil.sub(userFinanceRecord.getCanQty(), deductQty));
+                    userFinanceRecord.setUsedQty(BigDecimalUtil.add(userFinanceRecord.getUsedQty(), deductQty));
                     userFinanceRecord.setBalanceQty(userFinance.getBalanceQty().add(reqVo.getQuantity()));
                     userFinanceRecordService.updateByEntity(userFinanceRecord);
                 }

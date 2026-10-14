@@ -25,6 +25,13 @@ public class UserFinanceRecordService {
     }
 
     /**
+     * 根据id查询
+     */
+    public UserFinanceRecord selectById(Long id) {
+        return userFinanceRecordMapper.selectById(id);
+    }
+
+    /**
      * 更新
      */
     public int updateByEntity(UserFinanceRecord record) {
@@ -43,6 +50,13 @@ public class UserFinanceRecordService {
      */
     public List<UserFinanceRecord> selectByAllUserId(String userId) {
         return userFinanceRecordMapper.selectByAllUserId(userId);
+    }
+
+    /**
+     * 根据用户id查询生效且可用数量>0的record
+     */
+    public List<UserFinanceRecord> selectValidByUserId(String userId) {
+        return userFinanceRecordMapper.selectValidByUserId(userId);
     }
 
 

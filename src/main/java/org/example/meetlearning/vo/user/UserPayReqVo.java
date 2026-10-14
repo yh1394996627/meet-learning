@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class UserPayReqVo {
@@ -43,5 +44,8 @@ public class UserPayReqVo {
 
     @Schema(name = "version", description = "版本号")
     private Long version;
+
+    @Schema(name = "deductRecords", description = "扣减明细，quantity为负数时必传，指定扣减哪些record及数量")
+    private List<FinanceRecordDeductVo> deductRecords;
 
 }
