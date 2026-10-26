@@ -33,6 +33,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -444,6 +446,25 @@ public class BasePcService implements BaseHandler {
             return contextEnum.getEn();
         }
         return contextEnum.getMessage(language);
+    }
+
+    /**
+     * 尝试获取分布式锁（非阻塞）
+     *
+     * @param lockKey       锁key
+     * @param expireSeconds 过期时间（秒），防止死锁
+     * @return true=获取成功，false=获取失败
+     */
+    protected boolean tryLock(String lockKey, long expireSeconds) {
+        Boolean success = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", expireSeconds, TimeUnit.SECONDS);
+        return Boolean.TRUE.equals(success);
+    }
+
+    /**
+     * 释放分布式锁
+     */
+    protected void unlock(String lockKey) {
+        redisTemplate.delete(lockKey);
     }
 
 

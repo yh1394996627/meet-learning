@@ -201,17 +201,22 @@ public class TeacherSchedulePcService extends BasePcService {
                 StudentClass studentClass = StudentClassConverter.INSTANCE.toCreateByRegular(userCode, userName, studentClassRegular, record, student, teacher, affiliate, userFinance);
                 Date regularCourseBeginTime = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
                 Assert.isTrue(regularCourseBeginTime.after(new Date()), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR) + "：" + DateUtil.format(regularCourseBeginTime, "yyyy-MM-dd HH:mm"));
-                //3.新增课时币学生扣减记录
-                operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
-//                Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
-                //记录老师已有课时
-                teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
-                //创建会议
-//                String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-//                JSONObject meetObj = new JSONObject(meeting);
-//                StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
-//                studentClass.setMeetingRecordId(meetingEntity.getMeetId());
-                studentClassService.insertEntity(studentClass);
+                //老师时间段原子级冲突校验：加分布式锁（老师+日期+开始时间粒度），防止并发预约同一时间段
+                String teacherLockKey = "lock:teacher:course:" + studentClass.getTeacherId() + ":" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + ":" + studentClass.getBeginTime();
+                Assert.isTrue(tryLock(teacherLockKey, 60), getHint(LanguageContextEnum.TEACHER_TIME_REPEAT));
+                try {
+                    List<TeacherCourseTime> teacherCourseTimes = teacherCourseTimeService.selectByTeacherIdDateTime(
+                            studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime());
+                    Assert.isTrue(CollectionUtils.isEmpty(teacherCourseTimes),
+                            "Teacher【" + studentClass.getTeacherName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】, " + getHint(LanguageContextEnum.TEACHER_TIME_REPEAT));
+                    //3.新增课时币学生扣减记录
+                    operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
+                    //记录老师已有课时（插入teacher_course_time占用记录，必须在锁内完成）
+                    teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
+                    studentClassService.insertEntity(studentClass);
+                } finally {
+                    unlock(teacherLockKey);
+                }
             }
         } else {
             //删除占用的时间段

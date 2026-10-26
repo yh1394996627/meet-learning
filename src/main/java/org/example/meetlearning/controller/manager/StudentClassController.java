@@ -19,12 +19,15 @@ import org.example.meetlearning.vo.evaluation.TeacherEvaluationReqVo;
 import org.example.meetlearning.vo.remark.TeacherClassRemarkPageRespVo;
 import org.example.meetlearning.vo.remark.TeacherClassRemarkQueryVo;
 import org.example.meetlearning.vo.remark.TeacherClassRemarkReqVo;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Tag(name = "学生预约课程接口")
 @RestController
@@ -36,6 +39,8 @@ public class StudentClassController implements BaseHandler {
 
     private final TeacherClassRemarkPcService teacherClassRemarkPcService;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Operation(summary = "学生预约记录列表", operationId = "studentClassPage")
     @PostMapping(value = "v1/student/class/page")
     public RespVo<PageVo<StudentClassListRespVo>> studentClassPage(@RequestBody StudentClassQueryVo queryVo) {
@@ -45,7 +50,16 @@ public class StudentClassController implements BaseHandler {
     @Operation(summary = "新增学生预约", operationId = "studentClassAdd")
     @PostMapping(value = "v1/student/class/add")
     public RespVo<String> studentClassAdd(@RequestBody StudentClassAddReqVo reqVo) throws IOException, ParseException {
-        return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), reqVo);
+        //原子级老师时间段冲突校验：在事务外加分布式锁，确保事务提交后才释放锁
+        String beginTime = reqVo.getCourseTime() != null ? reqVo.getCourseTime().split("-")[0] : "";
+        String teacherLockKey = "lock:teacher:course:" + reqVo.getTeacherId() + ":" + reqVo.getCourseDate() + ":" + beginTime;
+        Boolean locked = redisTemplate.opsForValue().setIfAbsent(teacherLockKey, "1", 60, TimeUnit.SECONDS);
+        Assert.isTrue(Boolean.TRUE.equals(locked), "老师该时间段已被预约，请选择其他时间");
+        try {
+            return studentClassPcService.studentClassAdd(getUserCode(), getUserName(), reqVo);
+        } finally {
+            redisTemplate.delete(teacherLockKey);
+        }
     }
 
     @Operation(summary = "选择课时币接口", operationId = "classCoinList")

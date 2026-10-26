@@ -208,30 +208,39 @@ public class StudentClassPcService extends BasePcService {
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
         Date courseBeginTime = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         Assert.isTrue(courseBeginTime.after(new Date()), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR) + "：" + DateUtil.format(courseBeginTime, "yyyy-MM-dd HH:mm"));
-        //新增课时币学生扣减记录
-        operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
+        //老师时间段冲突校验（锁在Controller层，事务外获取，确保事务提交后释放）
+        if (!CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
+            List<TeacherCourseTime> teacherCourseTimes = teacherCourseTimeService.selectByTeacherIdDateTime(
+                    studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime());
+            Assert.isTrue(CollectionUtils.isEmpty(teacherCourseTimes),
+                    "Teacher【" + studentClass.getTeacherName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】, " + getHint(LanguageContextEnum.TEACHER_TIME_REPEAT));
+            //新增课时币学生扣减记录
+            operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
+            //记录老师已有课时（插入teacher_course_time占用记录）
+            teacherCourseTimeService.studentClassTimeSet(getLanguage(), List.of(studentClass));
+            studentClassService.insertEntity(studentClass);
+            teacherSalaryPcService.updateSalary(userCode, userName, studentClass.getTeacherId(), new Date());
+            return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
+        }
+        //团体课：扣课时币放在团体课存在性判断之后
         if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
             //查询课程是否存在，如果存在直接返回不保存
             List<StudentClass> groupVoList = studentClassService.selectByDateTeacherIdTime(studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime(), studentClass.getCourseType());
             if (!groupVoList.isEmpty()) {
                 StudentClass studentClass1 = studentClassService.selectByRecordId(groupVoList.get(0).getRecordId());
+                //团体课已存在：扣课时币后加入
+                operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass1.getRecordId());
                 groupClassStudentRecService.addGroupClassStudent(userCode, userName, studentClass1);
                 return new RespVo<>(getHint(LanguageContextEnum.OPERATION_SUCCESSFUL));
             }
+            //团体课不存在：扣课时币后创建
+            operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
         }
         //教材补充
         if (StringUtils.isNotEmpty(reqVo.getTextbookId())) {
             Textbook textbook = textbookService.selectByRecordId(reqVo.getTextbookId());
             studentClass.setTextbook(textbook.getName());
         }
-//        Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
-//        if (StringUtils.isNotEmpty(teacher.getZoomUserId())) {
-//            //创建会议
-//            String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-//            JSONObject meetObj = new JSONObject(meeting);
-//            StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
-//            studentClass.setMeetingRecordId(meetingEntity.getMeetId());
-//        }
         if (CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
             //如果是团队课程
             studentClass.setStudentId(null);
