@@ -430,12 +430,20 @@ public class StudentClassPcService extends BasePcService {
 
     /**
      * 老师或者管理员取消预约课程
-     * 1.提前三天才能取消，三天内取消罚50%
-     * 2.记录取消时间，取消人，和取消状态
+     * 1.只有本节课的老师或者管理员才能撤销
+     * 2.提前三天才能取消，三天内取消罚50%
+     * 3.记录取消时间，取消人，和取消状态
      */
     public void studentClassCancel(String userCode, RecordIdQueryVo reqVo) {
         StudentClass studentClass = studentClassService.selectByRecordId(reqVo.getRecordId());
         Assert.notNull(studentClass, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        //权限校验：只有本节课的老师或者管理员才能撤销
+        User user = userService.selectByRecordId(userCode);
+        Assert.notNull(user, getHint(LanguageContextEnum.USER_NOTNULL));
+        boolean isManager = StringUtils.equals(RoleEnum.MANAGER.name(), user.getType());
+        boolean isTeacher = StringUtils.equals(RoleEnum.TEACHER.name(), user.getType());
+        Assert.isTrue(isManager || (isTeacher && StringUtils.equals(studentClass.getTeacherId(), userCode)),
+                getHint(LanguageContextEnum.NO_CANCEL_PERMISSION));
         //todo 提前三天才能取消，三天内取消罚50%
         StudentClass newStudentClass = new StudentClass();
         newStudentClass.setId(studentClass.getId());

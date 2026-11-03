@@ -34,6 +34,7 @@ public enum LanguageContextEnum {
     REMARK_VERIFY("The remarks must be filled in", "备注信息碧血填写"),
     AUTO_DELETE("This account does not have deletion permissions", "该账号无删除权限"),
     TEACHER_COIN_ZERO("The teacher has not set course credits, unable to book", "老师未设置课时币，无法预约课程"),
+    NO_CANCEL_PERMISSION("Only the teacher of this course or the administrator can cancel it", "只有本节课的老师或管理员才能撤销"),
     ;
 
     private final String en;
