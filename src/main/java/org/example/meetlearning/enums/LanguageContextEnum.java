@@ -14,6 +14,7 @@ public enum LanguageContextEnum {
     STUDENT_NOTNULL("Student information not obtained，Please refresh and try again", "未获取到学生信息，请刷新后重试"),
     TEACHER_NOTNULL("Teacher information not obtained，Please refresh and try again", "未获取到教师信息，请刷新后重试"),
     REGULAR_NOTNULL("Fixed class record information not obtained, please refresh and try again", "未获取到固定上课记录信息，请刷新后重新尝试"),
+    REGULAR_ALREADY_AUDITED("The application has already been processed, please refresh and try again", "该申请已处理，请刷新后重试"),
     TEACHER_TIME_REPEAT("there is already an appointment, unable to make an appointment", "已经有预约了，无法预约"),
     USER_NOTNULL("User information not obtained", "未获取到用户信息"),
     USER_FINANCE_NOTNULL("To obtain management financial information", "未获取到用户账单信息"),
@@ -34,6 +35,7 @@ public enum LanguageContextEnum {
     REMARK_VERIFY("The remarks must be filled in", "备注信息碧血填写"),
     AUTO_DELETE("This account does not have deletion permissions", "该账号无删除权限"),
     TEACHER_COIN_ZERO("The teacher has not set course credits, unable to book", "老师未设置课时币，无法预约课程"),
+    NO_CANCEL_PERMISSION("Only the teacher of this course or the administrator can cancel it", "只有本节课的老师或管理员才能撤销"),
     ;
 
     private final String en;

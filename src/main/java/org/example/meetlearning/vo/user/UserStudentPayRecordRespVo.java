@@ -14,8 +14,8 @@ public class UserStudentPayRecordRespVo {
     @Schema(name = "userId", description = "用户ID")
     private String userId;
 
-    @Schema(name = "recordId", description = "业务ID")
-    private String recordId;
+    @Schema(name = "id", description = "record自增id")
+    private Long id;
 
     @Schema(name = "quantity", description = "数量")
     private BigDecimal quantity;

@@ -126,8 +126,4 @@ public class UserController implements BaseHandler {
         return userPcService.userFinanceRecordList(queryVo.getRecordId());
     }
 
-
-
-
-
 }

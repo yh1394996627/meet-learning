@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -177,6 +178,8 @@ public class TeacherSchedulePcService extends BasePcService {
         Assert.isTrue(StringUtils.hasText(scheduleOperaVo.getRecordId()), getHint(LanguageContextEnum.REGULAR_NOTNULL));
         StudentClassRegular studentClassRegular = studentClassRegularService.selectByRecordId(scheduleOperaVo.getRecordId());
         Assert.notNull(studentClassRegular, getHint(LanguageContextEnum.REGULAR_NOTNULL));
+        //幂等防护：仅"待审核"(-1)状态的申请可被处理，避免重复审批导致重复生成课程与重复扣减课时币
+        Assert.isTrue(Integer.valueOf(-1).equals(studentClassRegular.getAuditStatus()), getHint(LanguageContextEnum.REGULAR_ALREADY_AUDITED));
         studentClassRegular.setAuditStatus(BooleanUtil.isTrue(scheduleOperaVo.getStatus()) ? 0 : 1);
         studentClassRegularService.updateEntity(studentClassRegular);
         //查询固定请求记录
@@ -201,16 +204,17 @@ public class TeacherSchedulePcService extends BasePcService {
                 StudentClass studentClass = StudentClassConverter.INSTANCE.toCreateByRegular(userCode, userName, studentClassRegular, record, student, teacher, affiliate, userFinance);
                 Date regularCourseBeginTime = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
                 Assert.isTrue(regularCourseBeginTime.after(new Date()), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR) + "：" + DateUtil.format(regularCourseBeginTime, "yyyy-MM-dd HH:mm"));
-                //3.新增课时币学生扣减记录
+                //老师时段占用已在"提交申请"阶段由本申请单持有（regular_id = 申请单 record_id），
+                //审批通过只需生成课程，不再重复写入占用；此处仅校验该时段是否被"其他预约"占用（排除本申请单自身的占用）
+                List<TeacherCourseTime> conflicts = teacherCourseTimeService.selectByTeacherIdDateTime(
+                                studentClass.getTeacherId(), studentClass.getCourseTime(), studentClass.getBeginTime(), studentClass.getEndTime())
+                        .stream()
+                        .filter(item -> !Objects.equals(studentClassRegular.getRecordId(), item.getRegularId()))
+                        .toList();
+                Assert.isTrue(CollectionUtils.isEmpty(conflicts),
+                        "Teacher【" + studentClass.getTeacherName() + "】time 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime() + "-" + studentClass.getEndTime() + "】, " + getHint(LanguageContextEnum.TEACHER_TIME_REPEAT));
+                //新增课时币学生扣减记录
                 operaTokenLogs(userCode, userName, student.getRecordId(), teacher.getCoin().negate(), TokenContentEnum.COURSE_CLASS.getEnContent(), null, null, null, studentClass.getRecordId());
-//                Date meetingDate = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
-                //记录老师已有课时
-                teacherCourseTimeService.studentRegularClassTimeSet(getLanguage(), studentClassRegular.getRecordId(), List.of(studentClass));
-                //创建会议
-//                String meeting = zoomOAuthService.createMeeting(teacher, studentClass.getRecordId(), DateUtil.format(meetingDate, "yyyy-MM-dd HH:mm"), CourseTypeEnum.valueOf(studentClass.getCourseType()));
-//                JSONObject meetObj = new JSONObject(meeting);
-//                StudentClassMeeting meetingEntity = studentClassMeetingService.insertMeeting(userCode, userName, meetObj);
-//                studentClass.setMeetingRecordId(meetingEntity.getMeetId());
                 studentClassService.insertEntity(studentClass);
             }
         } else {

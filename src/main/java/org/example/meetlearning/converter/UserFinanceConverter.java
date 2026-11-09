@@ -121,7 +121,7 @@ public interface UserFinanceConverter {
     default UserStudentPayRecordRespVo toUserStudentPayRecordRespVo(UserFinanceRecord record) {
         UserStudentPayRecordRespVo respVo = new UserStudentPayRecordRespVo();
         respVo.setUserId(record.getUserId());
-        respVo.setRecordId(UUID.randomUUID().toString());
+        respVo.setId(record.getId());
         respVo.setQuantity(record.getQuantity());
         respVo.setUsedQty(record.getUsedQty());
         respVo.setCanQty(record.getCanQty());

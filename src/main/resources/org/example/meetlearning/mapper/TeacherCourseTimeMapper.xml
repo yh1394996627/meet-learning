@@ -36,11 +36,11 @@
           and course_time = #{courseTime}
       </if>
       <if test="beginTime != null">
-          and (begin_time >= #{beginTime} and end_time &lt;= #{endTime})
+          and begin_time &lt; #{endTime}
       </if>
-<!--      <if test="endTime != null">-->
-<!--          and end_time >= #{endTime}-->
-<!--      </if>-->
+      <if test="endTime != null">
+          and end_time &gt; #{beginTime}
+      </if>
   </select>
 
   <delete id="deleteByRegularId">
