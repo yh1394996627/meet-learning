@@ -1,13 +1,11 @@
 package org.example.meetlearning.vo.student;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -32,12 +30,8 @@ public class StudentListRespVo {
     @Schema(name = "balance", description = "余额")
     private BigDecimal balance;
 
-    @Schema(name = "expirationTime", description = "课时币最近到期时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date expirationTime;
-
-    @Schema(name = "expirationQty", description = "最近到期时间对应的课时币数量")
-    private BigDecimal expirationQty;
+    @Schema(name = "expirationTime", description = "课时币最近到期时间及数量，格式：日期/数量")
+    private String expirationTime;
 
     @Schema(name = "lastActivities", description = "最近活动")
     private String lastActivities;
