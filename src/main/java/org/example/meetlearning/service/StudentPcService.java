@@ -88,6 +88,7 @@ public class StudentPcService extends BasePcService {
             if (userFinanceRecordHashMap.containsKey(list.getRecordId())) {
                 UserFinanceRecord userFinanceRecord = userFinanceRecordHashMap.get(list.getRecordId());
                 respVo.setExpirationTime(userFinanceRecord.getExpirationTime());
+                respVo.setExpirationQty(userFinanceRecord.getCanQty());
             }
             return respVo;
         });

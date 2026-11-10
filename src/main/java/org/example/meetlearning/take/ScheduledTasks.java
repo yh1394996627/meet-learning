@@ -115,7 +115,9 @@ public class ScheduledTasks {
             Map<String, Object> params = new HashMap<>();
             params.put("userIds", userIds);
             List<UserFinanceRecord> userFinanceRecords = userFinanceRecordService.selectDaByParams(params);
-            userFinanceRecords = userFinanceRecords.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime).reversed()).toList();
+            //expiration_time为NULL的永久币参与排序会触发NPE，nullsFirst配合reversed()使其排在末尾
+            userFinanceRecords = userFinanceRecords.stream().sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime,
+                    Comparator.nullsFirst(Comparator.naturalOrder())).reversed()).toList();
             Map<String, List<UserFinanceRecord>> userFinanceRecordMap = userFinanceRecords.stream().collect(Collectors.groupingBy(UserFinanceRecord::getUserId));
             List<UserFinance> userFinance = userFinanceService.selectByUserIds(userIds);
             for (UserFinance finance : userFinance) {

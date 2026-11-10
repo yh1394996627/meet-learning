@@ -32,9 +32,12 @@ public class StudentListRespVo {
     @Schema(name = "balance", description = "余额")
     private BigDecimal balance;
 
-    @Schema(name = "expirationTime", description = "课时币到期")
+    @Schema(name = "expirationTime", description = "课时币最近到期时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date expirationTime;
+
+    @Schema(name = "expirationQty", description = "最近到期时间对应的课时币数量")
+    private BigDecimal expirationQty;
 
     @Schema(name = "lastActivities", description = "最近活动")
     private String lastActivities;

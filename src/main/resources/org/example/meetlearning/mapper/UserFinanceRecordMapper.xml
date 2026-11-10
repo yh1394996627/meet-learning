@@ -83,18 +83,26 @@
 
     <select id="selectDateGroupByUserIds" resultMap="BaseResultMap">
         select
-        user_id,min(expiration_time) as expiration_time
-        from user_finance_record
-        where deleted = 0
-        <if test="userIds != null">
-            and user_id in
-            <foreach collection="userIds" item="item" separator="," open="(" close=")">
-                #{item}
-            </foreach>
-        </if>
-        and can_qty > 0
-        and expiration_time is not null
-        group by user_id
+        r.user_id, r.expiration_time, sum(r.can_qty) as can_qty
+        from user_finance_record r
+        join (
+            select user_id, min(expiration_time) as min_expiration_time
+            from user_finance_record
+            where deleted = 0
+            and can_qty > 0
+            and expiration_time is not null
+            and expiration_time &gt; now()
+            <if test="userIds != null">
+                and user_id in
+                <foreach collection="userIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            group by user_id
+        ) t on r.user_id = t.user_id and r.expiration_time = t.min_expiration_time
+        where r.deleted = 0
+        and r.can_qty &gt; 0
+        group by r.user_id, r.expiration_time
     </select>
 
     <sql id="common_where">
