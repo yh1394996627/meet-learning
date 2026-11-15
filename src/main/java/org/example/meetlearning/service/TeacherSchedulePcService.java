@@ -202,6 +202,9 @@ public class TeacherSchedulePcService extends BasePcService {
                 Assert.isTrue(studentClassRegular.getCourseType() != null, getHint(LanguageContextEnum.OBJECT_NOTNULL));
                 UserFinance userFinance = userFinanceService.selectByUserId(student.getRecordId());
                 StudentClass studentClass = StudentClassConverter.INSTANCE.toCreateByRegular(userCode, userName, studentClassRegular, record, student, teacher, affiliate, userFinance);
+                //校验老师假期（OFF），假期日期不允许生成课程
+                Assert.isTrue(!teacherScheduleService.isTeacherOff(studentClass.getTeacherId(), studentClass.getCourseTime()),
+                        "Teacher【" + studentClass.getTeacherName() + "】is off on 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + "】");
                 Date regularCourseBeginTime = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
                 Assert.isTrue(regularCourseBeginTime.after(new Date()), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR) + "：" + DateUtil.format(regularCourseBeginTime, "yyyy-MM-dd HH:mm"));
                 //老师时段占用已在"提交申请"阶段由本申请单持有（regular_id = 申请单 record_id），

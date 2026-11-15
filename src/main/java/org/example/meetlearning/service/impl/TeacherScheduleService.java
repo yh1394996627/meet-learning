@@ -1,13 +1,16 @@
 package org.example.meetlearning.service.impl;
 
 
+import cn.hutool.core.date.DateUtil;
 import lombok.AllArgsConstructor;
 import org.example.meetlearning.dao.entity.TeacherSchedule;
 import org.example.meetlearning.dao.entity.TeacherScheduleSet;
 import org.example.meetlearning.dao.mapper.TeacherScheduleMapper;
 import org.example.meetlearning.dao.mapper.TeacherScheduleSetMapper;
+import org.example.meetlearning.enums.ScheduleTypeEnum;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +56,18 @@ public class TeacherScheduleService {
 
     public List<TeacherScheduleSet> selectSetByTeacherId(String teacherId, String weekNum, String scheduleType) {
         return teacherScheduleSetMapper.selectByTeacherIdAndWeekNum(teacherId, weekNum, scheduleType);
+    }
+
+    /**
+     * 校验老师指定日期是否为假期（OFF类型，offDate为具体日期）
+     */
+    public boolean isTeacherOff(String teacherId, Date courseDate) {
+        if (courseDate == null) {
+            return false;
+        }
+        List<TeacherScheduleSet> offSets = teacherScheduleSetMapper.selectByTeacherIdAndWeekNum(teacherId, null, ScheduleTypeEnum.OFF.name());
+        String date = DateUtil.formatDate(courseDate);
+        return offSets.stream().anyMatch(item -> item.getOffDate() != null && DateUtil.formatDate(item.getOffDate()).equals(date));
     }
 
 
