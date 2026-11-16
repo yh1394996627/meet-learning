@@ -139,8 +139,10 @@ public class TeacherController implements BaseHandler {
 
     @Operation(summary = "老师仪表盘", operationId = "dashboard")
     @PostMapping(value = "v1/teacher/dashboard")
-    public RespVo<TeacherDashboardRespVo> dashboard() {
-        return teacherPcService.dashboard(getUserCode(), getUserName());
+    public RespVo<TeacherDashboardRespVo> dashboard(@RequestBody(required = false) TeacherDashboardQueryVo queryVo) {
+        String beginDate = queryVo == null ? null : queryVo.getBeginDate();
+        String endDate = queryVo == null ? null : queryVo.getEndDate();
+        return teacherPcService.dashboard(getUserCode(), getUserName(), beginDate, endDate);
     }
 
     @Operation(summary = "老师详细信息查询", operationId = "teacherInfo")
@@ -179,10 +181,16 @@ public class TeacherController implements BaseHandler {
         return new RespVo<>(teacherSalaryPcService.settlementSalaryList(queryVo));
     }
 
+    @Operation(summary = "管理员老师列表-算薪预览", operationId = "settlementPreview")
+    @PostMapping(value = "v1/teacher/settlement/preview")
+    public RespVo<TeacherDashboardRespVo> settlementPreview(@RequestBody TeacherSettlementQueryVo queryVo) {
+        return new RespVo<>(teacherSalaryPcService.settlementPreview(queryVo.getRecordId(), queryVo.getBeginDate(), queryVo.getEndDate()));
+    }
+
     @Operation(summary = "管理员老师列表-结算工资操作", operationId = "settlementSalary")
     @PostMapping(value = "v1/teacher/settlement/salary")
-    public RespVo<String> settlementSalary(@RequestBody RecordIdQueryVo queryVo) {
-        teacherSalaryPcService.settlementSalary(getUserCode(), getUserName(), queryVo.getRecordId());
+    public RespVo<String> settlementSalary(@RequestBody TeacherSettlementQueryVo queryVo) {
+        teacherSalaryPcService.settlementSalary(getUserCode(), getUserName(), queryVo.getRecordId(), queryVo.getEndDate(), queryVo.getTotalSalary());
         return new RespVo<>("Operation successful");
     }
 }

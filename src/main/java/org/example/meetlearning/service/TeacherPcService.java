@@ -11,6 +11,7 @@ import org.example.meetlearning.enums.*;
 import org.example.meetlearning.service.impl.*;
 import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.common.*;
+import org.example.meetlearning.vo.classes.StudentClassPriceGroupVo;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherListRespVo;
 import org.example.meetlearning.vo.shared.teacher.SharedTeacherPriceReqVo;
 import org.example.meetlearning.vo.teacher.*;
@@ -297,6 +298,10 @@ public class TeacherPcService extends BasePcService {
 
 
     public RespVo<TeacherDashboardRespVo> dashboard(String userCode, String userName) {
+        return dashboard(userCode, userName, null, null);
+    }
+
+    public RespVo<TeacherDashboardRespVo> dashboard(String userCode, String userName, String beginDate, String endDate) {
         Teacher teacher = teacherService.selectByRecordId(userCode);
         Assert.notNull(teacher, getHint(LanguageContextEnum.OBJECT_NOTNULL));
         TeacherDashboardRespVo respVo = TeacherConverter.INSTANCE.toTeacherDashboard(teacher);
@@ -309,19 +314,46 @@ public class TeacherPcService extends BasePcService {
         respVo.setCancelledDeductionsAmount(BigDecimal.ZERO);
         respVo.setComplaintDeductionsAmount(BigDecimal.ZERO);
         respVo.setAbsentAmount(BigDecimal.ZERO);
-        TeacherSalary teacherSalary = teacherSalaryService.selectByUnVerTeacherId(userCode);
-        if (teacherSalary != null) {
-            respVo.setConfirmedQty(BigDecimalUtil.add(teacherSalary.getConfirmedQty(), teacherSalary.getGroupConfirmedQty()));
-            respVo.setComplaintsQty(BigDecimalUtil.add(teacherSalary.getOneStarQty(), teacherSalary.getGroupOneStarQty()));
-            respVo.setCancelledDeductionsAmount(BigDecimalUtil.add(teacherSalary.getDeductionQty(), teacherSalary.getGroupDeductionQtyQty()));
-            respVo.setComplaintDeductionsAmount(teacherSalary.getOneStarAmount());
-            respVo.setConfirmedClassesAmount(teacherSalary.getConfirmedAmount());
-            respVo.setAbsentQty(teacherSalary.getAbsentQty());
-            respVo.setAbsentAmount(teacherSalary.getAbsentAmount());
+        respVo.setCancelledQty(BigDecimal.ZERO);
+        if (StringUtils.hasText(beginDate) && StringUtils.hasText(endDate)) {
+            // 指定时间范围: 直接按课程时间范围从 student_class 统计
+            List<StudentClassPriceGroupVo> rangeVos = studentClassService.selectByDateRangeTeacherId(userCode, beginDate, endDate);
+            List<StudentClassPriceGroupVo> completeVos = rangeVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.FINISH.getStatus())).toList();
+            respVo.setConfirmedQty(completeVos.stream().filter(f -> !StringUtils.pathEquals(f.getCourseType(), CourseTypeEnum.GROUP.name())).map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add));
+            respVo.setConfirmedClassesAmount(completeVos.stream().map(item -> StringUtils.pathEquals(item.getCourseType(), CourseTypeEnum.GROUP.name())
+                    ? BigDecimalUtil.nullOrZero(item.getGroupPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))
+                    : BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add));
+            List<StudentClassPriceGroupVo> oneStarVos = rangeVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.ONT_STAR.getStatus())).toList();
+            respVo.setComplaintsQty(oneStarVos.stream().map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add));
+            respVo.setComplaintDeductionsAmount(oneStarVos.stream().map(item -> StringUtils.pathEquals(item.getCourseType(), CourseTypeEnum.GROUP.name())
+                    ? BigDecimalUtil.nullOrZero(item.getGroupPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))
+                    : BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add));
+            List<StudentClassPriceGroupVo> absentVos = rangeVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.ABSENT.getStatus())).toList();
+            respVo.setAbsentQty(absentVos.stream().map(item -> BigDecimalUtil.nullOrZero(item.getTotalQty())).reduce(BigDecimal.ZERO, BigDecimal::add));
+            respVo.setAbsentAmount(absentVos.stream().map(item -> StringUtils.pathEquals(item.getCourseType(), CourseTypeEnum.GROUP.name())
+                    ? BigDecimalUtil.nullOrZero(item.getGroupPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))
+                    : BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty()))).reduce(BigDecimal.ZERO, BigDecimal::add));
+            List<StudentClassPriceGroupVo> cancelDeVos = rangeVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL_DE.getStatus())).toList();
+            respVo.setCancelledDeductionsAmount(cancelDeVos.stream().map(item -> StringUtils.pathEquals(item.getCourseType(), CourseTypeEnum.GROUP.name())
+                    ? BigDecimalUtil.nullOrZero(item.getGroupPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty())).divide(new BigDecimal(2), 2)
+                    : BigDecimalUtil.nullOrZero(item.getPrice()).multiply(BigDecimalUtil.nullOrOne(item.getTotalQty())).divide(new BigDecimal(2), 2)).reduce(BigDecimal.ZERO, BigDecimal::add));
+            long rangeCancelled = rangeVos.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL.getStatus())).count();
+            respVo.setCancelledQty(new BigDecimal(rangeCancelled));
+        } else {
+            TeacherSalary teacherSalary = teacherSalaryService.selectByUnVerTeacherId(userCode);
+            if (teacherSalary != null) {
+                respVo.setConfirmedQty(BigDecimalUtil.add(teacherSalary.getConfirmedQty(), teacherSalary.getGroupConfirmedQty()));
+                respVo.setComplaintsQty(BigDecimalUtil.add(teacherSalary.getOneStarQty(), teacherSalary.getGroupOneStarQty()));
+                respVo.setCancelledDeductionsAmount(BigDecimalUtil.add(teacherSalary.getDeductionQty(), teacherSalary.getGroupDeductionQtyQty()));
+                respVo.setComplaintDeductionsAmount(teacherSalary.getOneStarAmount());
+                respVo.setConfirmedClassesAmount(teacherSalary.getConfirmedAmount());
+                respVo.setAbsentQty(teacherSalary.getAbsentQty());
+                respVo.setAbsentAmount(teacherSalary.getAbsentAmount());
+            }
+            //查询老师当月已取消的课程数量
+            long cancelledComplete = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL.getStatus())).count();
+            respVo.setCancelledQty(new BigDecimal(cancelledComplete));
         }
-        //查询老师当月已取消的课程数量
-        long cancelledComplete = studentClasses.stream().filter(item -> Objects.equals(item.getClassStatus(), CourseStatusEnum.CANCEL.getStatus())).count();
-        respVo.setCancelledQty(new BigDecimal(cancelledComplete));
         //查询管理老师佣金
         respVo.setBonus(BigDecimal.ZERO);
         //总薪资

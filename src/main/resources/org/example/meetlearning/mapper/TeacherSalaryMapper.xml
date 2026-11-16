@@ -26,13 +26,17 @@
         <result column="confirmed_amount" jdbcType="DECIMAL" property="confirmedAmount"/>
         <result column="one_star_amount" jdbcType="DECIMAL" property="oneStarAmount"/>
         <result column="absent_amount" jdbcType="DECIMAL" property="absentAmount"/>
+        <result column="deduction_qty" jdbcType="DECIMAL" property="deductionQty"/>
+        <result column="group_deduction_qty_qty" jdbcType="DECIMAL" property="groupDeductionQtyQty"/>
+        <result column="deduction_amount" jdbcType="DECIMAL" property="deductionAmount"/>
+        <result column="bonus" jdbcType="DECIMAL" property="bonus"/>
     </resultMap>
     <sql id="Base_Column_List">
         id
         , deleted, creator, create_name, create_time, updator, update_name, update_time,
     record_id, teacher_id, is_verification, price, group_price, confirmed_qty, one_star_qty, absent_qty, group_confirmed_qty,
-    group_one_star_qty, group_absent_qty, begin_date, end_date, confirmed_amount, one_star_amount, 
-    absent_amount
+    group_one_star_qty, group_absent_qty, begin_date, end_date, confirmed_amount, one_star_amount,
+    absent_amount, deduction_qty, group_deduction_qty_qty, deduction_amount, bonus
     </sql>
 
     <select id="selectByTeacherId" resultMap="BaseResultMap">
@@ -69,7 +73,8 @@
                                     one_star_qty, absent_qty, group_confirmed_qty,
                                     group_one_star_qty, group_absent_qty, begin_date,
                                     end_date, confirmed_amount, one_star_amount,
-                                    absent_amount)
+                                    absent_amount, deduction_qty, group_deduction_qty_qty,
+                                    deduction_amount, bonus)
         values (#{deleted,jdbcType=BIT}, #{creator,jdbcType=VARCHAR},
                 #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updator,jdbcType=VARCHAR},
                 #{updateName,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{recordId,jdbcType=VARCHAR},
@@ -78,7 +83,8 @@
                 #{oneStarQty,jdbcType=DECIMAL}, #{absentQty,jdbcType=DECIMAL}, #{groupConfirmedQty,jdbcType=DECIMAL},
                 #{groupOneStarQty,jdbcType=DECIMAL}, #{groupAbsentQty,jdbcType=DECIMAL}, #{beginDate,jdbcType=DATE},
                 #{endDate,jdbcType=DATE}, #{confirmedAmount,jdbcType=DECIMAL}, #{oneStarAmount,jdbcType=DECIMAL},
-                #{absentAmount,jdbcType=DECIMAL})
+                #{absentAmount,jdbcType=DECIMAL}, #{deductionQty,jdbcType=DECIMAL}, #{groupDeductionQtyQty,jdbcType=DECIMAL},
+                #{deductionAmount,jdbcType=DECIMAL}, #{bonus,jdbcType=DECIMAL})
     </insert>
 
     <update id="updateEntity" parameterType="org.example.meetlearning.dao.entity.TeacherSalary">
@@ -146,6 +152,18 @@
             </if>
             <if test="absentAmount != null">
                 absent_amount = #{absentAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="deductionQty != null">
+                deduction_qty = #{deductionQty,jdbcType=DECIMAL},
+            </if>
+            <if test="groupDeductionQtyQty != null">
+                group_deduction_qty_qty = #{groupDeductionQtyQty,jdbcType=DECIMAL},
+            </if>
+            <if test="deductionAmount != null">
+                deduction_amount = #{deductionAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="bonus != null">
+                bonus = #{bonus,jdbcType=DECIMAL},
             </if>
             <if test="isVerification != null">
                 is_verification = #{isVerification,jdbcType=BIT},

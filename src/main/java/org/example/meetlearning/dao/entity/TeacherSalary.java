@@ -66,4 +66,6 @@ public class TeacherSalary {
 
     private BigDecimal deductionAmount;
 
+    private BigDecimal bonus;
+
 }

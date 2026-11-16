@@ -98,6 +98,22 @@
         group by course_type, price, group_price, class_status
     </select>
 
+    <select id="selectByDateRangeTeacherId" resultType="org.example.meetlearning.vo.classes.StudentClassPriceGroupVo">
+        select teacher_id   as teacherId,
+               record_id    as recordId,
+               price        as price,
+               group_price  as groupPrice,
+               class_status as classStatus,
+               course_type  as courseType,
+               count(1)     as totalQty
+        from student_class
+        where deleted = 0
+          and teacher_id = #{teacherId}
+          and course_time &gt;= #{beginDate}
+          and course_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+        group by course_type, price, group_price, class_status
+    </select>
+
 
     <select id="selectByDateTeacherIdTime" resultMap="BaseResultMap">
         select record_id
@@ -125,7 +141,7 @@
         set is_verification = true
         where deleted = 0
           and teacher_id = #{teacherId}
-          and class_status in ('FINISH', 'ABSENT', 'CANCEL_DE', 'ONT_STAR')
+          and class_status in (3, 6, 8, 11)
           and is_verification = false
           and course_time &lt;= #{courseDate}
     </update>

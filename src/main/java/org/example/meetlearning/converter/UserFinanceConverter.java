@@ -149,6 +149,8 @@ public interface UserFinanceConverter {
         UserFinanceRecordRespVo respVo = new UserFinanceRecordRespVo();
         respVo.setId(record.getId());
         respVo.setUserId(record.getUserId());
+        respVo.setCreateTime(record.getCreateTime());
+        respVo.setExpirationTime(record.getExpirationTime());
         respVo.setQuantity(record.getQuantity());
         respVo.setCanQty(record.getCanQty());
         respVo.setUsedQty(record.getUsedQty());

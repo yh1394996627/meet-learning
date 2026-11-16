@@ -46,6 +46,8 @@ public interface StudentClassMapper {
 
     List<StudentClassPriceGroupVo> selectByGltDateTeacherId(String teacherId, Date courseDate);
 
+    List<StudentClassPriceGroupVo> selectByDateRangeTeacherId(@Param("teacherId") String teacherId, @Param("beginDate") String beginDate, @Param("endDate") String endDate);
+
     List<StudentClass> selectByDateTeacherIdTime(String teacherId, Date courseDate, String beginTime, String endTime, String courseType);
 
     void updateByGltDateTeacherId(String teacherId, Date courseDate);
