@@ -308,8 +308,8 @@ public class StudentClassPcService extends BasePcService {
         List<TeacherScheduleSet> offTeacherSchedules = teacherScheduleService.selectSetByTeacherId(queryVo.getTeacherId(), null, ScheduleTypeEnum.OFF.name());
         List<String> offDates = offTeacherSchedules.stream().filter(f -> f.getOffDate() != null).map(item -> DateUtil.formatDate(item.getOffDate())).distinct().toList();
         offDates = CollectionUtils.isEmpty(offDates) ? List.of() : offDates;
-        //课程请求排除OFF类型（普通约课与固定课申请均过滤假期日期）
-        if (offDates.contains(queryVo.getCourseDate())) {
+        //课程请求排除OFF类型（普通约课过滤假期日期，固定课申请不做OFF过滤）
+        if (!BooleanUtil.isTrue(queryVo.getIsRegular()) && offDates.contains(queryVo.getCourseDate())) {
             return List.of();
         }
         //1.管理员接口
