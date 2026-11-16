@@ -60,6 +60,7 @@
         where deleted = 0
           and user_id = #{userId}
           and can_qty > 0
+          and (expiration_time is null or expiration_time &gt; now())
         order by expiration_time asc, id asc
     </select>
 

@@ -401,7 +401,9 @@ public class BasePcService implements BaseHandler {
                         f.setExpirationTime(DateUtil.parse("2099-12-31", "yyyy-MM-dd"));
                     }
                 });
-                userFinanceRecordList = userFinanceRecordList.stream().filter(f -> BigDecimalUtil.gtZero(f.getCanQty())).sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime)).toList();
+                // 过滤已过期记录：过期课时币不可消费，仅可扣未删除且未过期的记录
+                Date nowDate = new Date();
+                userFinanceRecordList = userFinanceRecordList.stream().filter(f -> BigDecimalUtil.gtZero(f.getCanQty())).filter(f -> f.getExpirationTime().after(nowDate)).sorted(Comparator.comparing(UserFinanceRecord::getExpirationTime)).toList();
                 Assert.isTrue(CollectionUtils.isEmpty(userFinanceRecordList) ? false : userFinanceRecordList.stream().map(UserFinanceRecord::getCanQty).reduce(BigDecimal.ZERO, BigDecimal::add).compareTo(quantity.abs()) >= 0, getHint(LanguageContextEnum.INSUFFICIENT_BALANCE));
                 BigDecimal subTotalQty = quantity.abs();
                 // 收集本次课程扣减明细，用于删除课程时精确回退
