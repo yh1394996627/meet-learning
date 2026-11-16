@@ -6,12 +6,15 @@ import lombok.Data;
 import org.example.meetlearning.util.BigDecimalUtil;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 public class TeacherDashboardRespVo {
 
     @Schema(name = "rate", description = "比率")
     private BigDecimal rate;
+    @Schema(name = "lastSettlementDate", description = "上次结算时间(取最近一次已结算记录的 end_date, yyyy-MM-dd)")
+    private String lastSettlementDate;
     @Schema(name = "confirmedQty", description = "已确认课程数量")
     private BigDecimal confirmedQty;
     @Schema(name = "cancelledQty", description = "已取消课程数量")

@@ -87,7 +87,13 @@ public class StudentPcService extends BasePcService {
             }
             if (userFinanceRecordHashMap.containsKey(list.getRecordId())) {
                 UserFinanceRecord userFinanceRecord = userFinanceRecordHashMap.get(list.getRecordId());
-                respVo.setExpirationTime(userFinanceRecord.getExpirationTime());
+                if (userFinanceRecord.getExpirationTime() != null) {
+                    String expiration = DateUtil.format(userFinanceRecord.getExpirationTime(), "yyyy-MM-dd");
+                    if (userFinanceRecord.getCanQty() != null) {
+                        expiration += "/" + userFinanceRecord.getCanQty().stripTrailingZeros().toPlainString();
+                    }
+                    respVo.setExpirationTime(expiration);
+                }
             }
             return respVo;
         });

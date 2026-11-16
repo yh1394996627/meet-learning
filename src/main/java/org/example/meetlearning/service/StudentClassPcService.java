@@ -213,6 +213,9 @@ public class StudentClassPcService extends BasePcService {
         StudentClass studentClass = StudentClassConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher, affiliate, userFinance);
         Date courseBeginTime = DateUtil.parse(DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + " " + studentClass.getBeginTime(), "yyyy-MM-dd HH:mm");
         Assert.isTrue(courseBeginTime.after(new Date()), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR) + "：" + DateUtil.format(courseBeginTime, "yyyy-MM-dd HH:mm"));
+        //校验老师假期（OFF），假期日期不允许约课
+        Assert.isTrue(!teacherScheduleService.isTeacherOff(studentClass.getTeacherId(), studentClass.getCourseTime()),
+                "Teacher【" + studentClass.getTeacherName() + "】is off on 【" + DateUtil.format(studentClass.getCourseTime(), "yyyy-MM-dd") + "】");
         //老师时间段冲突校验（锁在Controller层，事务外获取，确保事务提交后释放）
         if (!CourseTypeEnum.GROUP.name().equals(reqVo.getCourseType())) {
             List<TeacherCourseTime> teacherCourseTimes = teacherCourseTimeService.selectByTeacherIdDateTime(
@@ -310,8 +313,8 @@ public class StudentClassPcService extends BasePcService {
         List<TeacherScheduleSet> offTeacherSchedules = teacherScheduleService.selectSetByTeacherId(queryVo.getTeacherId(), null, ScheduleTypeEnum.OFF.name());
         List<String> offDates = offTeacherSchedules.stream().filter(f -> f.getOffDate() != null).map(item -> DateUtil.formatDate(item.getOffDate())).distinct().toList();
         offDates = CollectionUtils.isEmpty(offDates) ? List.of() : offDates;
-        //课程请求排除OFF类型
-        if (!queryVo.getIsRegular() && offDates.contains(queryVo.getCourseDate())) {
+        //课程请求排除OFF类型（普通约课过滤假期日期，固定课申请不做OFF过滤）
+        if (!BooleanUtil.isTrue(queryVo.getIsRegular()) && offDates.contains(queryVo.getCourseDate())) {
             return List.of();
         }
         //1.管理员接口
@@ -471,6 +474,17 @@ public class StudentClassPcService extends BasePcService {
         Assert.isTrue(BooleanUtil.isTrue(dayNum >= 3), getHint(LanguageContextEnum.NOT_CHANGE_TIME));
         Date newClassDate = DateUtil.parse(DateUtil.format(reqVo.getCourseDate(), "yyyy-MM-dd") + " " + reqVo.getBeginTime(), "yyyy-MM-dd HH:mm");
         Assert.isTrue(newClassDate.after(new Date()), getHint(LanguageContextEnum.COURSE_TIME_GT_ONE_HOUR) + "：" + DateUtil.format(newClassDate, "yyyy-MM-dd HH:mm"));
+        //校验老师假期（OFF），新日期为假期不允许改课
+        Assert.isTrue(!teacherScheduleService.isTeacherOff(studentClass.getTeacherId(), reqVo.getCourseDate()),
+                "Teacher【" + studentClass.getTeacherName() + "】is off on 【" + DateUtil.format(reqVo.getCourseDate(), "yyyy-MM-dd") + "】");
+        //校验新时段是否与老师其他预约冲突（排除本节课自身占用，避免改课导致重复占用）
+        List<TeacherCourseTime> updateTimeConflicts = teacherCourseTimeService.selectByTeacherIdDateTime(
+                        studentClass.getTeacherId(), reqVo.getCourseDate(), reqVo.getBeginTime(), reqVo.getEndTime())
+                .stream()
+                .filter(item -> !Objects.equals(studentClass.getRecordId(), item.getRegularId()))
+                .toList();
+        Assert.isTrue(CollectionUtils.isEmpty(updateTimeConflicts),
+                "Teacher【" + studentClass.getTeacherName() + "】time 【" + DateUtil.format(reqVo.getCourseDate(), "yyyy-MM-dd") + " " + reqVo.getBeginTime() + "-" + reqVo.getEndTime() + "】, " + getHint(LanguageContextEnum.TEACHER_TIME_REPEAT));
         //变更新时间
         studentClass.setCourseTime(reqVo.getCourseDate());
         studentClass.setBeginTime(reqVo.getBeginTime());
@@ -623,6 +637,11 @@ public class StudentClassPcService extends BasePcService {
         Assert.isTrue(StringUtils.isNotEmpty(reqVo.getTeacherId()), getHint(LanguageContextEnum.TEACHER_NOTNULL));
         Teacher teacher = teacherService.selectByRecordId(reqVo.getTeacherId());
         Assert.notNull(teacher, getHint(LanguageContextEnum.TEACHER_NOTNULL));
+        //校验老师假期（OFF），假期日期不允许提交固定课申请
+        for (String courseDate : reqVo.getCourseDates()) {
+            Assert.isTrue(!teacherScheduleService.isTeacherOff(teacher.getRecordId(), DateUtil.parse(courseDate, "yyyy-MM-dd")),
+                    "Teacher【" + teacher.getName() + "】is off on 【" + courseDate + "】");
+        }
         //生成固定上课请求
         StudentClassRegular studentClassRegular = StudentClassRegularConverter.INSTANCE.toCreate(userCode, userName, reqVo, student, teacher);
         studentClassRegularService.insert(studentClassRegular);

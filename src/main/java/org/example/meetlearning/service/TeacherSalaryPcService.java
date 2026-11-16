@@ -17,6 +17,7 @@ import org.example.meetlearning.util.BigDecimalUtil;
 import org.example.meetlearning.vo.classes.StudentClassPriceGroupVo;
 import org.example.meetlearning.vo.common.RecordIdQueryVo;
 import org.example.meetlearning.vo.common.RespVo;
+import org.example.meetlearning.vo.teacher.TeacherDashboardRespVo;
 import org.example.meetlearning.vo.teacher.TeacherSalaryRespVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,16 +98,90 @@ public class TeacherSalaryPcService extends BasePcService {
     }
 
 
-    public void settlementSalary(String userCode, String userName, String teacherId) {
+    public void settlementSalary(String userCode, String userName, String teacherId, String endDateStr, BigDecimal totalSalary) {
         Assert.isTrue(StringUtils.hasText(teacherId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
-        Date endDate = DateUtil.parseDate(DateUtil.formatDate(new Date()));
+        // 结算截止日期: 优先用前端弹窗选择的范围结束日, 未传则用当天(老逻辑)
+        Date endDate = StringUtils.hasText(endDateStr)
+                ? DateUtil.parseDate(endDateStr)
+                : DateUtil.parseDate(DateUtil.formatDate(new Date()));
         updateSalary(userCode, userName, teacherId, endDate);
         TeacherSalary teacherSalary = teacherSalaryService.selectByUnVerTeacherId(teacherId);
         Assert.notNull(teacherSalary, getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        if (totalSalary != null) {
+            BigDecimal calculated = BigDecimalUtil.nullOrZero(teacherSalary.getConfirmedAmount())
+                    .subtract(BigDecimalUtil.nullOrZero(teacherSalary.getDeductionAmount()))
+                    .subtract(BigDecimalUtil.nullOrZero(teacherSalary.getAbsentAmount()))
+                    .subtract(BigDecimalUtil.nullOrZero(teacherSalary.getOneStarAmount()));
+            teacherSalary.setBonus(totalSalary.subtract(calculated));
+        }
         teacherSalary.setIsVerification(true);
         teacherSalary.setEndDate(endDate);
         studentClassService.updateByGltDateTeacherId(teacherId, endDate);
         teacherSalaryService.updateEntity(teacherSalary);
+    }
+
+
+    public TeacherDashboardRespVo settlementPreview(String teacherId, String beginDate, String endDate) {
+        Assert.isTrue(StringUtils.hasText(teacherId), getHint(LanguageContextEnum.OBJECT_NOTNULL));
+        Teacher teacher = teacherService.selectByRecordId(teacherId);
+        Assert.notNull(teacher, getHint(LanguageContextEnum.TEACHER_NOTNULL));
+        TeacherDashboardRespVo respVo = TeacherConverter.INSTANCE.toTeacherDashboard(teacher);
+        teacherSalaryService.selectByTeacherId(teacherId).stream()
+                .filter(s -> Boolean.TRUE.equals(s.getIsVerification()) && s.getEndDate() != null)
+                // 取最新一笔已结算记录的 end_date(而非所有记录中最大的 end_date)
+                .max(Comparator.comparing(TeacherSalary::getId))
+                .map(TeacherSalary::getEndDate)
+                .ifPresent(d -> respVo.setLastSettlementDate(DateUtil.formatDate(d)));
+        List<StudentClassPriceGroupVo> studentClassPriceGroupVos;
+        if (StringUtils.hasText(beginDate) && StringUtils.hasText(endDate)) {
+            studentClassPriceGroupVos = studentClassService.selectByDateRangeTeacherId(teacherId, beginDate, endDate);
+        } else {
+            studentClassPriceGroupVos = studentClassService.selectByGltDateTeacherId(teacherId, DateUtil.parseDate(DateUtil.formatDate(new Date())));
+        }
+        BigDecimal confirmedAmount = BigDecimal.ZERO;
+        BigDecimal oneStarAmount = BigDecimal.ZERO;
+        BigDecimal absentAmount = BigDecimal.ZERO;
+        BigDecimal deductionAmount = BigDecimal.ZERO;
+        BigDecimal confirmedQty = BigDecimal.ZERO;
+        BigDecimal complaintsQty = BigDecimal.ZERO;
+        BigDecimal absentQty = BigDecimal.ZERO;
+        BigDecimal cancelledQty = BigDecimal.ZERO;
+        for (StudentClassPriceGroupVo vo : studentClassPriceGroupVos) {
+            boolean isGroup = StringUtils.pathEquals(vo.getCourseType(), CourseTypeEnum.GROUP.name());
+            BigDecimal unit = isGroup ? BigDecimalUtil.nullOrZero(vo.getGroupPrice()) : BigDecimalUtil.nullOrZero(vo.getPrice());
+            BigDecimal qty = BigDecimalUtil.nullOrZero(vo.getTotalQty());
+            if (Objects.equals(vo.getClassStatus(), CourseStatusEnum.FINISH.getStatus())) {
+                confirmedAmount = confirmedAmount.add(unit.multiply(qty));
+                if (!isGroup) {
+                    confirmedQty = confirmedQty.add(qty);
+                }
+            } else if (Objects.equals(vo.getClassStatus(), CourseStatusEnum.ONT_STAR.getStatus())) {
+                oneStarAmount = oneStarAmount.add(unit.multiply(qty));
+                if (!isGroup) {
+                    complaintsQty = complaintsQty.add(qty);
+                }
+            } else if (Objects.equals(vo.getClassStatus(), CourseStatusEnum.ABSENT.getStatus())) {
+                absentAmount = absentAmount.add(unit.multiply(qty));
+                if (!isGroup) {
+                    absentQty = absentQty.add(qty);
+                }
+            } else if (Objects.equals(vo.getClassStatus(), CourseStatusEnum.CANCEL_DE.getStatus())) {
+                deductionAmount = deductionAmount.add(unit.multiply(qty).divide(new BigDecimal(2), 2));
+            } else if (Objects.equals(vo.getClassStatus(), CourseStatusEnum.CANCEL.getStatus())) {
+                cancelledQty = cancelledQty.add(qty);
+            }
+        }
+        respVo.setConfirmedClassesAmount(confirmedAmount);
+        respVo.setCancelledDeductionsAmount(deductionAmount);
+        respVo.setComplaintDeductionsAmount(oneStarAmount);
+        respVo.setAbsentAmount(absentAmount);
+        respVo.setConfirmedQty(confirmedQty);
+        respVo.setComplaintsQty(complaintsQty);
+        respVo.setAbsentQty(absentQty);
+        respVo.setCancelledQty(cancelledQty);
+        respVo.setBonus(BigDecimal.ZERO);
+        respVo.setCommission(BigDecimal.ZERO);
+        return respVo;
     }
 
 }
